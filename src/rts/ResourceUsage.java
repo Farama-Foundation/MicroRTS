@@ -1,0 +1,54 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package rts;
+
+import java.util.LinkedList;
+import java.util.List;
+
+/**
+ *
+ * @author santi
+ */
+public class ResourceUsage {
+    List<Integer> positionsUsed = new LinkedList<Integer>();
+    int []resourcesUsed = new int[2];   // 2 players is hardcoded here! FIX!!!
+    
+    public boolean consistentWith(ResourceUsage u, GameState gs) {
+        for(Integer pos:positionsUsed) 
+            if (u.positionsUsed.contains(pos)) return false;
+        
+        for(int i = 0;i<resourcesUsed.length;i++) {
+            if (resourcesUsed[i] + u.resourcesUsed[i] > gs.getPlayer(i).getResources()) return false;            
+        }
+        
+        return true;
+    }
+    
+    public ResourceUsage mergeIntoNew(ResourceUsage u) {
+        ResourceUsage u2 = new ResourceUsage();
+        u2.positionsUsed.addAll(positionsUsed);
+        u2.positionsUsed.addAll(u.positionsUsed);
+        for(int i = 0;i<resourcesUsed.length;i++) {
+            u2.resourcesUsed[i] = resourcesUsed[i] + u.resourcesUsed[i];
+        }
+        return u2;
+    }
+
+    public void merge(ResourceUsage u) {
+        positionsUsed.addAll(u.positionsUsed);
+        for(int i = 0;i<resourcesUsed.length;i++) {
+            resourcesUsed[i] += u.resourcesUsed[i];
+        }
+    }
+    
+    public ResourceUsage clone() {
+        ResourceUsage ru = new ResourceUsage();
+        ru.positionsUsed.addAll(positionsUsed);
+        ru.resourcesUsed[0] = resourcesUsed[0];
+        ru.resourcesUsed[1] = resourcesUsed[1];
+        return ru;
+    }
+
+}
