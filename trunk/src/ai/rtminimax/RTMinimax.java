@@ -26,16 +26,21 @@ public class RTMinimax extends AI {
     public static long MAX_BRANCHING = 0;
     public static int MAX_LEAVES = 0;
     
+    int LOOKAHEAD = 40;
+    
+    public RTMinimax(int la) {
+        LOOKAHEAD = la;
+    }
+            
     
     public void reset() {
     }
     
     public AI clone() {
-        return new RTMinimax();
+        return new RTMinimax(LOOKAHEAD);
     }     
     
     public PlayerAction getAction(int player, GameState gs) throws Exception {
-        int LOOKAHEAD = 40;
         
         if (gs.canExecuteAnyAction(player) && gs.winner()==-1) {
             PlayerAction pa = realTimeMinimaxAB(player, gs, LOOKAHEAD); 

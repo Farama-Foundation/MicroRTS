@@ -46,9 +46,9 @@ public class NaiveMonteCarlo extends AI {
     float epsilon2 = 0.2f;
     int minSamples = 10;
     
-    public NaiveMonteCarlo(int simulations, int time, float e1, float e2, AI policy) {
+    public NaiveMonteCarlo(int simulations, int lookahead, float e1, float e2, AI policy) {
         NSIMULATIONS = simulations;
-        MAXSIMULATIONTIME = time;
+        MAXSIMULATIONTIME = lookahead;
         randomAI = policy;
         epsilon1 = e1;
         epsilon2 = e2;
