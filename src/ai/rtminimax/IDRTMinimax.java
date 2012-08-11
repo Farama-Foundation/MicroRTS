@@ -25,6 +25,7 @@ public class IDRTMinimax extends RTMinimax {
     int TIME_PER_CYCLE = 100;
     
     public IDRTMinimax(int tpc) {
+        super(1);
         TIME_PER_CYCLE = tpc;
     }
     
