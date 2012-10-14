@@ -20,26 +20,26 @@ import util.Pair;
  *
  * @author santi
  */
-public class LightRush extends AbstractionLayerAI {
+public class RangedRush extends AbstractionLayerAI {
     Random r = new Random();
 
-    // If we have any "light": send it to attack to the nearest enemy unit
+    // If we have any "Ranged": send it to attack to the nearest enemy unit
     // If we have a base: train worker until we have 1 workers
-    // If we have a barracks: train light
+    // If we have a barracks: train Ranged
     // If we have a worker: do this if needed: build base, build barracks, harvest resources
     
     public void reset() {
     }
     
     public AI clone() {
-        return new LightRush();
+        return new RangedRush();
     }
     
     public PlayerAction getAction(int player, GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         Player p = gs.getPlayer(player);
         PlayerAction pa = new PlayerAction();
-//        System.out.println("LightRushAI for player " + player + " (cycle " + gs.getTime() + ")");
+//        System.out.println("RangedRushAI for player " + player + " (cycle " + gs.getTime() + ")");
                 
         // behavior of bases:
         for(Unit u:pgs.getUnits()) {
@@ -64,7 +64,7 @@ public class LightRush extends AbstractionLayerAI {
             if (((u instanceof Light) || (u instanceof Heavy) || (u instanceof Ranged)) && 
                 u.getPlayer() == player && 
                 gs.getActionAssignment(u)==null) {
-                meleeUnitBehavior(u,p,pgs);
+                rangedUnitBehavior(u,p,pgs);
             }        
         }
         
@@ -93,10 +93,10 @@ public class LightRush extends AbstractionLayerAI {
     }
 
     public void barracksBehavior(Unit u,Player p, PhysicalGameState pgs) {
-        if (p.getResources()>Light.LIGHT_COST) train(u, Unit.LIGHT);
+        if (p.getResources()>Ranged.RANGED_COST) train(u, Unit.RANGED);
     }
     
-    public void meleeUnitBehavior(Unit u,Player p, PhysicalGameState pgs) {
+    public void rangedUnitBehavior(Unit u,Player p, PhysicalGameState pgs) {
         Unit closestEnemy = null;
         int closestDistance = 0;
         for(Unit u2:pgs.getUnits()) {
@@ -109,7 +109,7 @@ public class LightRush extends AbstractionLayerAI {
             }
         }
         if (closestEnemy!=null) {
-//            System.out.println("LightRushAI.meleeUnitBehavior: " + u + " attacks " + closestEnemy);
+//            System.out.println("RangedRushAI.meleeUnitBehavior: " + u + " attacks " + closestEnemy);
             attack(u,closestEnemy);
         }
     }

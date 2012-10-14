@@ -112,16 +112,22 @@ public class PhysicalGameStatePanel extends JPanel {
                 if (uaa!=null) {
                     int offsx = 0;
                     int offsy = 0;
-                    if (uaa.action.getDirection()==UnitAction.DIRECTION_UP) offsy = -grid;
-                    if (uaa.action.getDirection()==UnitAction.DIRECTION_RIGHT) offsx = grid;
-                    if (uaa.action.getDirection()==UnitAction.DIRECTION_DOWN) offsy = grid;
-                    if (uaa.action.getDirection()==UnitAction.DIRECTION_LEFT) offsx = -grid;
+                    if (uaa.action.getType()==UnitAction.TYPE_ATTACK_LOCATION) {
+                        offsx = (uaa.action.getLocationX() - u.getX())*grid;
+                        offsy = (uaa.action.getLocationY() - u.getY())*grid;
+                    } else {
+                        if (uaa.action.getDirection()==UnitAction.DIRECTION_UP) offsy = -grid;
+                        if (uaa.action.getDirection()==UnitAction.DIRECTION_RIGHT) offsx = grid;
+                        if (uaa.action.getDirection()==UnitAction.DIRECTION_DOWN) offsy = grid;
+                        if (uaa.action.getDirection()==UnitAction.DIRECTION_LEFT) offsx = -grid;
+                    }
                     switch(uaa.action.getType()) {
                         case UnitAction.TYPE_MOVE:
                             g.setColor(Color.GRAY);
                             g.drawLine(u.getX()*grid+grid/2, u.getY()*grid+grid/2, u.getX()*grid+grid/2 + offsx, u.getY()*grid+grid/2 + offsy);
                             break;
                         case UnitAction.TYPE_ATTACK:
+                        case UnitAction.TYPE_ATTACK_LOCATION:
                             g.setColor(Color.RED);
                             g.drawLine(u.getX()*grid+grid/2, u.getY()*grid+grid/2, u.getX()*grid+grid/2 + offsx, u.getY()*grid+grid/2 + offsy);
                             break;
@@ -148,6 +154,7 @@ public class PhysicalGameStatePanel extends JPanel {
                     case Unit.BARRACKS:g.setColor(Color.lightGray);reduction = 2;break;
                     case Unit.WORKER:g.setColor(Color.gray);reduction = 8;break;
                     case Unit.HEAVY:g.setColor(Color.yellow);reduction = 0;break;
+                    case Unit.RANGED:g.setColor(Color.cyan);reduction = 6;break;
                     case Unit.LIGHT:g.setColor(Color.orange);reduction = 4;break;
                 }
                 if ((u instanceof Resource) || (u instanceof Base) || (u instanceof Barracks)) {

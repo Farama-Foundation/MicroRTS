@@ -24,10 +24,11 @@ public abstract class Unit {
     public static final int WORKER = 2;
     public static final int LIGHT = 3;
     public static final int HEAVY = 4;
-    
-    public static final String typeNames[] = {"base","barracks","worker","light","heavy"};
+    public static final int RANGED = 5;
 
-    public static final int RESOURCE = 5;
+    public static final int RESOURCE = 6;
+    
+    public static final String typeNames[] = {"base","barracks","worker","light","heavy","ranged","resource"};
 
     public static int next_ID = 0;
     

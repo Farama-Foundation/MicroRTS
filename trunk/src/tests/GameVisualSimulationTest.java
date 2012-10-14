@@ -6,6 +6,7 @@ package tests;
 
 import ai.abstraction.LightRush;
 import ai.*;
+import ai.abstraction.RangedRush;
 import ai.uct.UCT;
 import ai.rtminimax.IDContinuingRTMinimax;
 import gui.PhysicalGameStatePanel;
@@ -25,15 +26,17 @@ import util.XMLWriter;
  */
 public class GameVisualSimulationTest {
     public static void main(String args[]) throws Exception {
-        PhysicalGameState pgs = PhysicalGameState.load("maps/basesWorkers16x16.xml");
+        PhysicalGameState pgs = PhysicalGameState.load("maps/basesWorkers8x8.xml");
 
         GameState gs = new GameState(pgs);
         int MAXCYCLES = 5000;
         int PERIOD = 20;
         boolean gameover = false;
         
-        AI ai1 = new LightRush();
-        AI ai2 = new RandomBiasedAI();
+//        AI ai1 = new LightRush();
+        AI ai1 = new RangedRush();
+//        AI ai2 = new RandomBiasedAI();
+        AI ai2 = new LightRush();
         
         XMLWriter xml = new XMLWriter(new OutputStreamWriter(System.out));
         pgs.toxml(xml);
@@ -61,5 +64,7 @@ public class GameVisualSimulationTest {
                 }
             }
         }while(!gameover && gs.getTime()<MAXCYCLES);
+        
+        System.out.println("Game Over");
     }    
 }

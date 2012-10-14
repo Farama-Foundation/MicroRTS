@@ -75,10 +75,10 @@ public class GameState {
                 if (ua.action.type==UnitAction.TYPE_ATTACK ||
                     ua.action.type==UnitAction.TYPE_MOVE ||
                     ua.action.type==UnitAction.TYPE_PRODUCE) {
-                    if (ua.action.direction==UnitAction.DIRECTION_UP && u.getX()==x && u.getY()==y+1) return false;
-                    if (ua.action.direction==UnitAction.DIRECTION_RIGHT && u.getX()==x-1 && u.getY()==y) return false;
-                    if (ua.action.direction==UnitAction.DIRECTION_DOWN && u.getX()==x && u.getY()==y-1) return false;
-                    if (ua.action.direction==UnitAction.DIRECTION_LEFT && u.getX()==x+1 && u.getY()==y) return false;
+                    if (ua.action.param1==UnitAction.DIRECTION_UP && u.getX()==x && u.getY()==y+1) return false;
+                    if (ua.action.param1==UnitAction.DIRECTION_RIGHT && u.getX()==x-1 && u.getY()==y) return false;
+                    if (ua.action.param1==UnitAction.DIRECTION_DOWN && u.getX()==x && u.getY()==y-1) return false;
+                    if (ua.action.param1==UnitAction.DIRECTION_LEFT && u.getX()==x+1 && u.getY()==y) return false;
                 }
             }
         }

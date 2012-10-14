@@ -17,6 +17,7 @@ public class UnitAction {
     public static final int TYPE_HARVEST = 3;
     public static final int TYPE_RETURN = 4;
     public static final int TYPE_PRODUCE = 5;
+    public static final int TYPE_ATTACK_LOCATION = 6;   // direction is "x", unit_Type is "y"
 
     String actionName[] ={"none","move","attack","harvest","return","produce"};
     
@@ -27,14 +28,14 @@ public class UnitAction {
     public static final int DIRECTION_LEFT = 3;
  
     int type = TYPE_NONE;
-    int direction = DIRECTION_NONE;
-    int unit_type = Unit.NONE;
+    int param1 = DIRECTION_NONE;    // used mostly for "direction"
+    int param2 = Unit.NONE;         // used mostly for unit type
     ResourceUsage r_cache = null;
     
     public UnitAction(int a_type, int a_direction, int a_unit_type) {
         type = a_type;
-        direction = a_direction;
-        unit_type = a_unit_type;
+        param1 = a_direction;
+        param2 = a_unit_type;
     }
     
    
@@ -44,7 +45,7 @@ public class UnitAction {
     
    
     public int getUnitType() {
-        return unit_type;
+        return param2;
     }
     
     
@@ -56,7 +57,7 @@ public class UnitAction {
             case TYPE_MOVE:
                 {
                     int pos = u.getX() + u.getY()*pgs.getWidth();
-                    switch(direction) {
+                    switch(param1) {
                         case DIRECTION_UP: pos -= pgs.getWidth(); break;
                         case DIRECTION_RIGHT: pos ++; break;
                         case DIRECTION_DOWN: pos += pgs.getWidth(); break;
@@ -73,7 +74,7 @@ public class UnitAction {
                 break;
             case TYPE_PRODUCE:
                 {
-                    switch(unit_type) {
+                    switch(param2) {
                         case Unit.BASE: r_cache.resourcesUsed[u.getPlayer()]+=Base.BASE_COST; break;
                         case Unit.BARRACKS: r_cache.resourcesUsed[u.getPlayer()]+=Barracks.BARRACKS_COST; break;
                         case Unit.WORKER: r_cache.resourcesUsed[u.getPlayer()]+=Worker.WORKER_COST; break;
@@ -81,7 +82,7 @@ public class UnitAction {
                         case Unit.HEAVY: r_cache.resourcesUsed[u.getPlayer()]+=Heavy.HEAVY_COST; break;
                     }
                     int pos = u.getX() + u.getY()*pgs.getWidth();
-                    switch(direction) {
+                    switch(param1) {
                         case DIRECTION_UP: pos -= pgs.getWidth(); break;
                         case DIRECTION_RIGHT: pos ++; break;
                         case DIRECTION_DOWN: pos += pgs.getWidth(); break;
@@ -89,6 +90,8 @@ public class UnitAction {
                     }
                     r_cache.positionsUsed.add(pos);
                 }
+                break;
+            case TYPE_ATTACK_LOCATION:
                 break;
         }
         
@@ -103,13 +106,14 @@ public class UnitAction {
             case TYPE_MOVE:
                 return u.getMoveTime();
             case TYPE_ATTACK:
+            case TYPE_ATTACK_LOCATION:
                 return u.getAttackTime();
             case TYPE_HARVEST:
                 return 20;
             case TYPE_RETURN:
                 return u.getMoveTime();
             case TYPE_PRODUCE:
-                switch(unit_type) {
+                switch(param2) {
                     case Unit.BASE: return Base.BASE_PRODUCTION_TIME;
                     case Unit.BARRACKS: return Barracks.BARRACKS_PRODUCTION_TIME;
                     case Unit.WORKER: return Worker.WORKER_PRODUCTION_TIME;
@@ -129,7 +133,7 @@ public class UnitAction {
             case TYPE_NONE:
                 break;
             case TYPE_MOVE:
-                switch(direction) {
+                switch(param1) {
                     case DIRECTION_UP:      u.setY(u.getY()-1); break;
                     case DIRECTION_RIGHT:   u.setX(u.getX()+1); break;
                     case DIRECTION_DOWN:    u.setY(u.getY()+1); break;
@@ -139,7 +143,7 @@ public class UnitAction {
             case TYPE_ATTACK:
                 {
                     Unit u2 = null;
-                    switch(direction) {
+                    switch(param1) {
                         case DIRECTION_UP:      u2 = pgs.getUnitAt(u.getX(), u.getY()-1); break;
                         case DIRECTION_RIGHT:   u2 = pgs.getUnitAt(u.getX()+1, u.getY()); break;
                         case DIRECTION_DOWN:    u2 = pgs.getUnitAt(u.getX(), u.getY()+1); break;
@@ -153,10 +157,21 @@ public class UnitAction {
                     }
                 }
                 break;
+            case TYPE_ATTACK_LOCATION:
+                {
+                    Unit u2 = pgs.getUnitAt(param1, param2);
+                    if (u2!=null) {
+                        u2.setHitPoints(u2.getHitPoints() - u.getDamage());
+                        if (u2.getHitPoints()<=0) {
+                            s.removeUnit(u2);
+                        }
+                    }
+                }
+                break;
             case TYPE_HARVEST:
                 {
                     Unit u2 = null;
-                    switch(direction) {
+                    switch(param1) {
                         case DIRECTION_UP:      u2 = pgs.getUnitAt(u.getX(), u.getY()-1); break;
                         case DIRECTION_RIGHT:   u2 = pgs.getUnitAt(u.getX()+1, u.getY()); break;
                         case DIRECTION_DOWN:    u2 = pgs.getUnitAt(u.getX(), u.getY()+1); break;
@@ -183,13 +198,13 @@ public class UnitAction {
                     Unit newUnit = null;
                     int targetx = u.getX();
                     int targety = u.getY();
-                    switch(direction) {
+                    switch(param1) {
                         case DIRECTION_UP:      targety--; break;
                         case DIRECTION_RIGHT:   targetx++; break;
                         case DIRECTION_DOWN:    targety++; break;
                         case DIRECTION_LEFT:    targetx--; break;
                     }
-                    switch(unit_type) {
+                    switch(param2) {
                         case Unit.BASE:
                             newUnit = new Base(u.getPlayer(), targetx, targety);
                             break;
@@ -205,7 +220,10 @@ public class UnitAction {
                         case Unit.HEAVY:
                             newUnit = new Heavy(u.getPlayer(), targetx, targety);
                             break;
-                        default: System.err.println("UnitAction.execute unknown unit type " + unit_type);
+                        case Unit.RANGED:
+                            newUnit = new Ranged(u.getPlayer(), targetx, targety);
+                            break;
+                        default: System.err.println("UnitAction.execute unknown unit type " + param2);
                     }
                     pgs.addUnit(newUnit);
                     Player p = pgs.getPlayer(u.getPlayer());
@@ -219,14 +237,18 @@ public class UnitAction {
     public String toString() {
         String tmp = actionName[type] + "(";
         
-        if (direction == DIRECTION_UP) tmp += "up";
-        if (direction == DIRECTION_RIGHT) tmp += "right";
-        if (direction == DIRECTION_DOWN) tmp += "down";
-        if (direction == DIRECTION_LEFT) tmp += "left";
-        
-        if (direction!=DIRECTION_NONE && unit_type!=Unit.NONE) tmp += ",";
-        
-        if (unit_type!=Unit.NONE) tmp += Unit.typeNames[unit_type];
+        if (type==TYPE_ATTACK_LOCATION) {
+            tmp+=param1 + "," + param2;
+        } else {
+            if (param1 == DIRECTION_UP) tmp += "up";
+            if (param1 == DIRECTION_RIGHT) tmp += "right";
+            if (param1 == DIRECTION_DOWN) tmp += "down";
+            if (param1 == DIRECTION_LEFT) tmp += "left";
+
+            if (param1!=DIRECTION_NONE && param2!=Unit.NONE) tmp += ",";
+
+            if (param2!=Unit.NONE) tmp += Unit.typeNames[param2];        
+        }
         
         return tmp + ")";
     }
@@ -236,7 +258,16 @@ public class UnitAction {
     }
 
     public int getDirection() {
-        return direction;
+        return param1;
+    }
+
+    // for TYPE_ATTACK_LOCATION
+    public int getLocationX() {
+        return param1;
+    }
+    
+    public int getLocationY() {
+        return param2;
     }
 
 }
