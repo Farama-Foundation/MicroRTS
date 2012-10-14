@@ -51,7 +51,7 @@ public class TraceEntry {
        pgs.toxml(w);
        w.tag("actions");
        for(Pair<Unit,UnitAction> ua:actions) {
-           w.tagWithAttributes("unitAction", "unitID=\"" + ua.m_a.getID() + "\" type=\"" + ua.m_b.type  + "\" direction=\"" + ua.m_b.direction + "\" unit_type=\"" + ua.m_b.unit_type + "\"");
+           w.tagWithAttributes("unitAction", "unitID=\"" + ua.m_a.getID() + "\" type=\"" + ua.m_b.type  + "\" direction=\"" + ua.m_b.param1 + "\" unit_type=\"" + ua.m_b.param2 + "\"");
            w.tag("/unitAction");           
        }
        w.tag("/actions");
