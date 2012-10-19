@@ -7,6 +7,8 @@ package tests;
 import ai.abstraction.LightRush;
 import ai.*;
 import ai.abstraction.RangedRush;
+import ai.montecarlo.ContinuingDownsamplingMC;
+import ai.montecarlo.ContinuingNaiveMC;
 import ai.uct.UCT;
 import ai.rtminimax.IDContinuingRTMinimax;
 import gui.PhysicalGameStatePanel;
@@ -26,7 +28,8 @@ import util.XMLWriter;
  */
 public class GameVisualSimulationTest {
     public static void main(String args[]) throws Exception {
-        PhysicalGameState pgs = PhysicalGameState.load("maps/basesWorkers8x8.xml");
+//        PhysicalGameState pgs = PhysicalGameState.load("maps/basesWorkers16x16.xml");
+        PhysicalGameState pgs = MapGenerator.basesWorkers16x16();
 
         GameState gs = new GameState(pgs);
         int MAXCYCLES = 5000;
@@ -34,7 +37,9 @@ public class GameVisualSimulationTest {
         boolean gameover = false;
         
 //        AI ai1 = new LightRush();
-        AI ai1 = new RangedRush();
+//        AI ai1 = new RangedRush();
+        AI ai1 = new ContinuingNaiveMC(PERIOD, 200, 0.33f, 0.2f, new RandomBiasedAI());
+
 //        AI ai2 = new RandomBiasedAI();
         AI ai2 = new LightRush();
         
