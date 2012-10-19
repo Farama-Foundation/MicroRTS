@@ -213,7 +213,10 @@ public class ContinuingNaiveMC extends AI {
                     dist[i] = 1;
                     total+=dist[i];
                 }
-                if (ate.visit_count[maxIdx]!=0) dist[maxIdx] = ((total - 1)/epsilon1) * (1 - epsilon1);   // the maximum index has "1 - epsilon probability of being chosen
+                if (ate.visit_count[maxIdx]!=0) {
+                    if (total>1) dist[maxIdx] = ((total - 1)/epsilon1) * (1 - epsilon1);
+//                    System.out.println("Num: " + ate.nactions + " total: " + total + " max: " + dist[maxIdx]);
+                }   // the maximum index has "1 - epsilon probability of being chosen
 
                 if (DEBUG>=3) {
                     System.out.print("[ ");
