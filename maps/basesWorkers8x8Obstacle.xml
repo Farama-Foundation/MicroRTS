@@ -7,17 +7,17 @@
     </rts.Player>
   </players>
   <units>
-    <rts.units.Resource ID="0" player="-1" x="0" y="0" resources="20" hitpoints="0">
-    </rts.units.Resource>
-    <rts.units.Resource ID="1" player="-1" x="7" y="7" resources="20" hitpoints="0">
-    </rts.units.Resource>
-    <rts.units.Base ID="2" player="0" x="2" y="1" resources="0" hitpoints="10">
-    </rts.units.Base>
-    <rts.units.Base ID="3" player="1" x="5" y="6" resources="0" hitpoints="10">
-    </rts.units.Base>
-    <rts.units.Worker ID="4" player="0" x="1" y="1" resources="0" hitpoints="1">
-    </rts.units.Worker>
-    <rts.units.Worker ID="5" player="1" x="6" y="6" resources="0" hitpoints="1">
-    </rts.units.Worker>
+    <rts.units.Unit type="Resource" ID="10" player="-1" x="0" y="0" resources="20" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="11" player="-1" x="7" y="7" resources="20" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Base" ID="12" player="0" x="2" y="1" resources="0" hitpoints="10" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Base" ID="13" player="1" x="5" y="6" resources="0" hitpoints="10" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Worker" ID="14" player="0" x="1" y="1" resources="0" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Worker" ID="15" player="1" x="6" y="6" resources="0" hitpoints="1" >
+    </rts.units.Unit>
   </units>
 </rts.PhysicalGameState>
