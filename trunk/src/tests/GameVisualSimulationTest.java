@@ -7,6 +7,7 @@ package tests;
 import ai.abstraction.LightRush;
 import ai.*;
 import ai.abstraction.RangedRush;
+import ai.abstraction.WorkerRush;
 import ai.montecarlo.ContinuingDownsamplingMC;
 import ai.montecarlo.ContinuingNaiveMC;
 import ai.uct.UCT;
@@ -20,6 +21,7 @@ import rts.GameState;
 import rts.PhysicalGameState;
 import rts.PlayerAction;
 import rts.Trace;
+import rts.units.UnitTypeTable;
 import util.XMLWriter;
 
 /**
@@ -31,17 +33,18 @@ public class GameVisualSimulationTest {
 //        PhysicalGameState pgs = PhysicalGameState.load("maps/basesWorkers16x16.xml");
         PhysicalGameState pgs = MapGenerator.basesWorkers16x16();
 
-        GameState gs = new GameState(pgs);
+        GameState gs = new GameState(pgs, UnitTypeTable.utt);
         int MAXCYCLES = 5000;
         int PERIOD = 20;
         boolean gameover = false;
         
-//        AI ai1 = new LightRush();
-//        AI ai1 = new RangedRush();
+//        AI ai1 = new RandomAI();
+//        AI ai1 = new WorkerRush(MapGenerator.utt);
+//        AI ai1 = new RangedRush(MapGenerator.utt);
         AI ai1 = new ContinuingNaiveMC(PERIOD, 200, 0.33f, 0.2f, new RandomBiasedAI());
 
-//        AI ai2 = new RandomBiasedAI();
-        AI ai2 = new LightRush();
+        AI ai2 = new RandomBiasedAI();
+//        AI ai2 = new LightRush();
         
         XMLWriter xml = new XMLWriter(new OutputStreamWriter(System.out));
         pgs.toxml(xml);

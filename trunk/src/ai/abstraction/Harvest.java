@@ -9,7 +9,6 @@ import java.util.List;
 import rts.GameState;
 import rts.PhysicalGameState;
 import rts.UnitAction;
-import rts.units.Resource;
 import rts.units.Unit;
 
 /**
@@ -41,13 +40,13 @@ public class Harvest extends AbstractAction  {
 
             // harvest:
             if (target.getX() == unit.getX() &&
-                target.getY() == unit.getY()-1) return new UnitAction(UnitAction.TYPE_HARVEST,UnitAction.DIRECTION_UP,Unit.NONE);
+                target.getY() == unit.getY()-1) return new UnitAction(UnitAction.TYPE_HARVEST,UnitAction.DIRECTION_UP);
             if (target.getX() == unit.getX()+1 &&
-                target.getY() == unit.getY()) return new UnitAction(UnitAction.TYPE_HARVEST,UnitAction.DIRECTION_RIGHT,Unit.NONE);
+                target.getY() == unit.getY()) return new UnitAction(UnitAction.TYPE_HARVEST,UnitAction.DIRECTION_RIGHT);
             if (target.getX() == unit.getX() &&
-                target.getY() == unit.getY()+1) return new UnitAction(UnitAction.TYPE_HARVEST,UnitAction.DIRECTION_DOWN,Unit.NONE);
+                target.getY() == unit.getY()+1) return new UnitAction(UnitAction.TYPE_HARVEST,UnitAction.DIRECTION_DOWN);
             if (target.getX() == unit.getX()-1 &&
-                target.getY() == unit.getY()) return new UnitAction(UnitAction.TYPE_HARVEST,UnitAction.DIRECTION_LEFT,Unit.NONE);
+                target.getY() == unit.getY()) return new UnitAction(UnitAction.TYPE_HARVEST,UnitAction.DIRECTION_LEFT);
         } else {
             // return resources:
             UnitAction move = AStar.findPathToAdjacentPosition(unit, base.getX()+base.getY()*gs.getPhysicalGameState().getWidth(), gs);
@@ -55,13 +54,13 @@ public class Harvest extends AbstractAction  {
 
             // harvest:
             if (base.getX() == unit.getX() &&
-                base.getY() == unit.getY()-1) return new UnitAction(UnitAction.TYPE_RETURN,UnitAction.DIRECTION_UP,Unit.NONE);
+                base.getY() == unit.getY()-1) return new UnitAction(UnitAction.TYPE_RETURN,UnitAction.DIRECTION_UP);
             if (base.getX() == unit.getX()+1 &&
-                base.getY() == unit.getY()) return new UnitAction(UnitAction.TYPE_RETURN,UnitAction.DIRECTION_RIGHT,Unit.NONE);
+                base.getY() == unit.getY()) return new UnitAction(UnitAction.TYPE_RETURN,UnitAction.DIRECTION_RIGHT);
             if (base.getX() == unit.getX() &&
-                base.getY() == unit.getY()+1) return new UnitAction(UnitAction.TYPE_RETURN,UnitAction.DIRECTION_DOWN,Unit.NONE);
+                base.getY() == unit.getY()+1) return new UnitAction(UnitAction.TYPE_RETURN,UnitAction.DIRECTION_DOWN);
             if (base.getX() == unit.getX()-1 &&
-                base.getY() == unit.getY()) return new UnitAction(UnitAction.TYPE_RETURN,UnitAction.DIRECTION_LEFT,Unit.NONE);
+                base.getY() == unit.getY()) return new UnitAction(UnitAction.TYPE_RETURN,UnitAction.DIRECTION_LEFT);
         }
         return null;
     }    

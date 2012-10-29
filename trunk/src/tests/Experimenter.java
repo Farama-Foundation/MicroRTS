@@ -19,6 +19,7 @@ import javax.swing.JFrame;
 import rts.GameState;
 import rts.PhysicalGameState;
 import rts.PlayerAction;
+import rts.units.UnitTypeTable;
 
 /**
  *
@@ -61,7 +62,7 @@ public class Experimenter {
                         ai1.reset();
                         ai2.reset();
 
-                        GameState gs = new GameState(pgs.clone());
+                        GameState gs = new GameState(pgs.clone(),UnitTypeTable.utt);
                         JFrame w = null;
                         if (visualize) w = PhysicalGameStatePanel.newVisualizer(gs, 600, 600);
 

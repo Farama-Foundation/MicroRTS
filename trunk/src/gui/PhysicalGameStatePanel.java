@@ -16,9 +16,6 @@ import rts.GameState;
 import rts.PhysicalGameState;
 import rts.UnitAction;
 import rts.UnitActionAssignment;
-import rts.units.Barracks;
-import rts.units.Base;
-import rts.units.Resource;
 import rts.units.Unit;
 import tests.TraceVisualizationTest;
 
@@ -126,7 +123,6 @@ public class PhysicalGameStatePanel extends JPanel {
                             g.setColor(Color.GRAY);
                             g.drawLine(u.getX()*grid+grid/2, u.getY()*grid+grid/2, u.getX()*grid+grid/2 + offsx, u.getY()*grid+grid/2 + offsy);
                             break;
-                        case UnitAction.TYPE_ATTACK:
                         case UnitAction.TYPE_ATTACK_LOCATION:
                             g.setColor(Color.RED);
                             g.drawLine(u.getX()*grid+grid/2, u.getY()*grid+grid/2, u.getX()*grid+grid/2 + offsx, u.getY()*grid+grid/2 + offsy);
@@ -148,16 +144,25 @@ public class PhysicalGameStatePanel extends JPanel {
                 } else if (u.getPlayer()==1) {
                     playerColor = Color.red;
                 }
-                switch(u.getType()) {
-                    case Unit.RESOURCE:g.setColor(Color.green);break;
-                    case Unit.BASE:g.setColor(Color.white);break;
-                    case Unit.BARRACKS:g.setColor(Color.lightGray);reduction = 2;break;
-                    case Unit.WORKER:g.setColor(Color.gray);reduction = 8;break;
-                    case Unit.HEAVY:g.setColor(Color.yellow);reduction = 0;break;
-                    case Unit.RANGED:g.setColor(Color.cyan);reduction = 6;break;
-                    case Unit.LIGHT:g.setColor(Color.orange);reduction = 4;break;
+
+                if (u.getType().name.equals("Resource")) g.setColor(Color.green);
+                if (u.getType().name.equals("Base")) g.setColor(Color.white);
+                if (u.getType().name.equals("Barracks")) g.setColor(Color.lightGray);
+                if (u.getType().name.equals("Worker")) {
+                    g.setColor(Color.gray);
+                    reduction = 8;
                 }
-                if ((u instanceof Resource) || (u instanceof Base) || (u instanceof Barracks)) {
+                if (u.getType().name.equals("Light")) {
+                    g.setColor(Color.orange);
+                    reduction = 4;
+                }
+                if (u.getType().name.equals("Heavy")) g.setColor(Color.yellow);
+                if (u.getType().name.equals("Ranged")) {
+                    g.setColor(Color.cyan);
+                    reduction = 4;
+                }
+                
+                if (!u.getType().canMove) {
                     g.fillRect(u.getX()*grid+reduction, u.getY()*grid+reduction, grid-reduction*2, grid-reduction*2);
                     g.setColor(playerColor);
                     g.drawRect(u.getX()*grid+reduction, u.getY()*grid+reduction, grid-reduction*2, grid-reduction*2);        
@@ -167,7 +172,7 @@ public class PhysicalGameStatePanel extends JPanel {
                     g.drawOval(u.getX()*grid+reduction, u.getY()*grid+reduction, grid-reduction*2, grid-reduction*2);        
                 }
 
-                if (u instanceof Base) {
+                if (u.getType().isStockpile) {
                     // print the player resources in the base:
                     String txt = "" + pgs.getPlayer(u.getPlayer()).getResources();
                     g.setColor(Color.black);

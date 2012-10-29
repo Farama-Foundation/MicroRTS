@@ -20,6 +20,14 @@ import util.XMLWriter;
  */
 public class MapGenerator {
     
+    static UnitType resourceType = UnitTypeTable.utt.getUnitType("Resource");
+    static UnitType baseType = UnitTypeTable.utt.getUnitType("Base");
+    static UnitType barracksType = UnitTypeTable.utt.getUnitType("Barracks");
+    static UnitType workerType = UnitTypeTable.utt.getUnitType("Worker");
+    static UnitType lightType = UnitTypeTable.utt.getUnitType("Light");
+    static UnitType heavyType = UnitTypeTable.utt.getUnitType("Heavy");
+    static UnitType rangedType = UnitTypeTable.utt.getUnitType("Ranged");
+    
     public static void main(String args[]) throws IOException {
         // Complete game maps:
         XMLWriter xml = new XMLWriter(new FileWriter("maps/bases8x8.xml"));
@@ -77,13 +85,13 @@ public class MapGenerator {
         pgs.addPlayer(p0);
         pgs.addPlayer(p1);
         
-        Unit r0 = new Resource(-1,0,0, 20);
-        Unit r1 = new Resource(-1,7,7, 20);
+        Unit r0 = new Unit(-1,resourceType,0,0, 20);
+        Unit r1 = new Unit(-1,resourceType,7,7, 20);
         pgs.addUnit(r0);
         pgs.addUnit(r1);
 
-        Unit u0 = new Base(0,2,1);
-        Unit u1 = new Base(1,5,6);
+        Unit u0 = new Unit(0,baseType,2,1,0);
+        Unit u1 = new Unit(1,baseType,5,6,0);
         pgs.addUnit(u0);
         pgs.addUnit(u1);
         
@@ -98,18 +106,18 @@ public class MapGenerator {
         pgs.addPlayer(p0);
         pgs.addPlayer(p1);
         
-        Unit r0 = new Resource(-1,0,0, 20);
-        Unit r1 = new Resource(-1,7,7, 20);
+        Unit r0 = new Unit(-1,resourceType,0,0, 20);
+        Unit r1 = new Unit(-1,resourceType,7,7, 20);
         pgs.addUnit(r0);
         pgs.addUnit(r1);
 
-        Unit u0 = new Base(0,2,1);
-        Unit u1 = new Base(1,5,6);
+        Unit u0 = new Unit(0,baseType,2,1,0);
+        Unit u1 = new Unit(1,baseType,5,6,0);
         pgs.addUnit(u0);
         pgs.addUnit(u1);
         
-        Unit w0 = new Worker(0,1,1,0);
-        Unit w1 = new Worker(1,6,6,0);
+        Unit w0 = new Unit(0,workerType, 1,1,0);
+        Unit w1 = new Unit(1,workerType,6,6,0);
         pgs.addUnit(w0);
         pgs.addUnit(w1);
 
@@ -125,18 +133,18 @@ public class MapGenerator {
         pgs.addPlayer(p0);
         pgs.addPlayer(p1);
         
-        Unit r0 = new Resource(-1,0,0, 20);
-        Unit r1 = new Resource(-1,7,7, 20);
+        Unit r0 = new Unit(-1,resourceType,0,0, 20);
+        Unit r1 = new Unit(-1,resourceType,7,7, 20);
         pgs.addUnit(r0);
         pgs.addUnit(r1);
 
-        Unit u0 = new Base(0,2,1);
-        Unit u1 = new Base(1,5,6);
+        Unit u0 = new Unit(0,baseType,2,1,0);
+        Unit u1 = new Unit(1,baseType,5,6,0);
         pgs.addUnit(u0);
         pgs.addUnit(u1);
         
-        Unit w0 = new Worker(0,1,1,0);
-        Unit w1 = new Worker(1,6,6,0);
+        Unit w0 = new Unit(0,workerType,1,1,0);
+        Unit w1 = new Unit(1,workerType,6,6,0);
         pgs.addUnit(w0);
         pgs.addUnit(w1);
         
@@ -160,22 +168,22 @@ public class MapGenerator {
         pgs.addPlayer(p0);
         pgs.addPlayer(p1);
         
-        Unit r0 = new Resource(-1,0,0, 25);
-        Unit r1 = new Resource(-1,0,1, 25);
-        Unit r2 = new Resource(-1,15,14, 25);
-        Unit r3 = new Resource(-1,15,15, 25);
+        Unit r0 = new Unit(-1,resourceType,0,0, 25);
+        Unit r1 = new Unit(-1,resourceType,0,1, 25);
+        Unit r2 = new Unit(-1,resourceType,15,14, 25);
+        Unit r3 = new Unit(-1,resourceType,15,15, 25);
         pgs.addUnit(r0);
         pgs.addUnit(r1);
         pgs.addUnit(r2);
         pgs.addUnit(r3);
 
-        Unit u0 = new Base(0,2,2);
-        Unit u1 = new Base(1,13,13);
+        Unit u0 = new Unit(0,baseType,2,2,0);
+        Unit u1 = new Unit(1,baseType,13,13,0);
         pgs.addUnit(u0);
         pgs.addUnit(u1);
         
-        Unit w0 = new Worker(0,1,1,0);
-        Unit w1 = new Worker(1,14,14,0);
+        Unit w0 = new Unit(0,workerType,1,1,0);
+        Unit w1 = new Unit(1,workerType,14,14,0);
         pgs.addUnit(w0);
         pgs.addUnit(w1);
 
@@ -191,23 +199,23 @@ public class MapGenerator {
         pgs.addPlayer(p0);
         pgs.addPlayer(p1);
         
-        Unit r0 = new Resource(-1,0,0, 10);
-        Unit r1 = new Resource(-1,7,7, 10);
+        Unit r0 = new Unit(-1,resourceType,0,0, 10);
+        Unit r1 = new Unit(-1,resourceType,7,7, 10);
         pgs.addUnit(r0);
         pgs.addUnit(r1);
 
-        Unit u0 = new Base(0,2,1);
-        Unit u1 = new Base(1,5,6);
+        Unit u0 = new Unit(0,baseType,2,1,0);
+        Unit u1 = new Unit(1,baseType,5,6,0);
         pgs.addUnit(u0);
         pgs.addUnit(u1);
         
-        Unit w0 = new Worker(0,1,1,0);
-        Unit w1 = new Worker(1,6,6,0);
+        Unit w0 = new Unit(0,workerType,1,1,0);
+        Unit w1 = new Unit(1,workerType,6,6,0);
         pgs.addUnit(w0);
         pgs.addUnit(w1);
 
-        Unit b0 = new Barracks(0,4,0);
-        Unit b1 = new Barracks(1,3,7);
+        Unit b0 = new Unit(0,barracksType,4,0,0);
+        Unit b1 = new Unit(1,barracksType,3,7,0);
         pgs.addUnit(b0);
         pgs.addUnit(b1);
 
@@ -224,10 +232,10 @@ public class MapGenerator {
         pgs.addPlayer(p0);
         pgs.addPlayer(p1);
         
-        Unit l0 = new Light(0,0,0);
-        Unit l1 = new Light(0,0,1);
-        Unit l4 = new Light(1,3,2);
-        Unit l5 = new Light(1,3,3);
+        Unit l0 = new Unit(0,lightType,0,0);
+        Unit l1 = new Unit(0,lightType,0,1);
+        Unit l4 = new Unit(1,lightType,3,2);
+        Unit l5 = new Unit(1,lightType,3,3);
         pgs.addUnit(l0);
         pgs.addUnit(l1);
         pgs.addUnit(l4);
@@ -245,14 +253,14 @@ public class MapGenerator {
         pgs.addPlayer(p0);
         pgs.addPlayer(p1);
         
-        Unit l0 = new Light(0,1,1);
-        Unit l1 = new Light(0,2,1);
-        Unit l2 = new Light(0,1,2);
-        Unit l3 = new Light(0,2,2);
-        Unit l4 = new Light(1,5,5);
-        Unit l5 = new Light(1,5,6);
-        Unit l6 = new Light(1,6,5);
-        Unit l7 = new Light(1,6,6);
+        Unit l0 = new Unit(0,lightType,1,1);
+        Unit l1 = new Unit(0,lightType,2,1);
+        Unit l2 = new Unit(0,lightType,1,2);
+        Unit l3 = new Unit(0,lightType,2,2);
+        Unit l4 = new Unit(1,lightType,5,5);
+        Unit l5 = new Unit(1,lightType,5,6);
+        Unit l6 = new Unit(1,lightType,6,5);
+        Unit l7 = new Unit(1,lightType,6,6);
         pgs.addUnit(l0);
         pgs.addUnit(l1);
         pgs.addUnit(l2);
@@ -274,14 +282,14 @@ public class MapGenerator {
         pgs.addPlayer(p0);
         pgs.addPlayer(p1);
         
-        Unit l0 = new Heavy(0,1,1);
-        Unit l1 = new Light(0,2,1);
-        Unit l2 = new Heavy(0,1,2);
-        Unit l3 = new Light(0,2,2);
-        Unit l4 = new Light(1,5,5);
-        Unit l5 = new Light(1,5,6);
-        Unit l6 = new Heavy(1,6,5);
-        Unit l7 = new Heavy(1,6,6);
+        Unit l0 = new Unit(0,heavyType,1,1);
+        Unit l1 = new Unit(0,lightType,2,1);
+        Unit l2 = new Unit(0,heavyType,1,2);
+        Unit l3 = new Unit(0,lightType,2,2);
+        Unit l4 = new Unit(1,lightType,5,5);
+        Unit l5 = new Unit(1,lightType,5,6);
+        Unit l6 = new Unit(1,heavyType,6,5);
+        Unit l7 = new Unit(1,heavyType,6,6);
         pgs.addUnit(l0);
         pgs.addUnit(l1);
         pgs.addUnit(l2);
@@ -303,19 +311,19 @@ public class MapGenerator {
         pgs.addPlayer(p0);
         pgs.addPlayer(p1);
         
-        pgs.addUnit(new Light(0,2,0));
-        pgs.addUnit(new Light(0,2,1));
-        pgs.addUnit(new Heavy(0,1,0));
-        pgs.addUnit(new Heavy(0,1,1));
-        pgs.addUnit(new Ranged(0,0,0));
-        pgs.addUnit(new Ranged(0,0,1));
+        pgs.addUnit(new Unit(0,lightType,2,0));
+        pgs.addUnit(new Unit(0,lightType,2,1));
+        pgs.addUnit(new Unit(0,heavyType,1,0));
+        pgs.addUnit(new Unit(0,heavyType,1,1));
+        pgs.addUnit(new Unit(0,rangedType,0,0));
+        pgs.addUnit(new Unit(0,rangedType,0,1));
 
-        pgs.addUnit(new Light(1,5,6));
-        pgs.addUnit(new Light(1,5,7));
-        pgs.addUnit(new Heavy(1,6,6));
-        pgs.addUnit(new Heavy(1,6,7));
-        pgs.addUnit(new Ranged(1,7,6));
-        pgs.addUnit(new Ranged(1,7,7));
+        pgs.addUnit(new Unit(1,lightType,5,6));
+        pgs.addUnit(new Unit(1,lightType,5,7));
+        pgs.addUnit(new Unit(1,heavyType,6,6));
+        pgs.addUnit(new Unit(1,heavyType,6,7));
+        pgs.addUnit(new Unit(1,rangedType,7,6));
+        pgs.addUnit(new Unit(1,rangedType,7,7));
 
         return pgs;
     }        
@@ -329,23 +337,23 @@ public class MapGenerator {
         pgs.addPlayer(p0);
         pgs.addPlayer(p1);
         
-        pgs.addUnit(new Light(0,2,1));
-        pgs.addUnit(new Light(0,2,2));
-        pgs.addUnit(new Light(0,2,3));
-        pgs.addUnit(new Light(0,2,4));
-        pgs.addUnit(new Heavy(0,1,1));
-        pgs.addUnit(new Heavy(0,1,2));
-        pgs.addUnit(new Heavy(0,1,3));
-        pgs.addUnit(new Heavy(0,1,4));
+        pgs.addUnit(new Unit(0,lightType,2,1));
+        pgs.addUnit(new Unit(0,lightType,2,2));
+        pgs.addUnit(new Unit(0,lightType,2,3));
+        pgs.addUnit(new Unit(0,lightType,2,4));
+        pgs.addUnit(new Unit(0,heavyType,1,1));
+        pgs.addUnit(new Unit(0,heavyType,1,2));
+        pgs.addUnit(new Unit(0,heavyType,1,3));
+        pgs.addUnit(new Unit(0,heavyType,1,4));
 
-        pgs.addUnit(new Light(1,13,11));
-        pgs.addUnit(new Light(1,13,12));
-        pgs.addUnit(new Light(1,13,13));
-        pgs.addUnit(new Light(1,13,14));
-        pgs.addUnit(new Heavy(1,14,11));
-        pgs.addUnit(new Heavy(1,14,12));
-        pgs.addUnit(new Heavy(1,14,13));
-        pgs.addUnit(new Heavy(1,14,14));
+        pgs.addUnit(new Unit(1,lightType,13,11));
+        pgs.addUnit(new Unit(1,lightType,13,12));
+        pgs.addUnit(new Unit(1,lightType,13,13));
+        pgs.addUnit(new Unit(1,lightType,13,14));
+        pgs.addUnit(new Unit(1,heavyType,14,11));
+        pgs.addUnit(new Unit(1,heavyType,14,12));
+        pgs.addUnit(new Unit(1,heavyType,14,13));
+        pgs.addUnit(new Unit(1,heavyType,14,14));
 
         return pgs;
     }    
@@ -358,31 +366,31 @@ public class MapGenerator {
         pgs.addPlayer(p0);
         pgs.addPlayer(p1);
         
-        pgs.addUnit(new Light(0,2,1));
-        pgs.addUnit(new Light(0,2,2));
-        pgs.addUnit(new Light(0,2,3));
-        pgs.addUnit(new Light(0,2,4));
-        pgs.addUnit(new Heavy(0,1,1));
-        pgs.addUnit(new Heavy(0,1,2));
-        pgs.addUnit(new Heavy(0,1,3));
-        pgs.addUnit(new Heavy(0,1,4));
-        pgs.addUnit(new Ranged(0,0,0));
-        pgs.addUnit(new Ranged(0,0,1));
-        pgs.addUnit(new Ranged(0,0,2));
-        pgs.addUnit(new Ranged(0,0,3));
+        pgs.addUnit(new Unit(0,lightType,2,1));
+        pgs.addUnit(new Unit(0,lightType,2,2));
+        pgs.addUnit(new Unit(0,lightType,2,3));
+        pgs.addUnit(new Unit(0,lightType,2,4));
+        pgs.addUnit(new Unit(0,heavyType,1,1));
+        pgs.addUnit(new Unit(0,heavyType,1,2));
+        pgs.addUnit(new Unit(0,heavyType,1,3));
+        pgs.addUnit(new Unit(0,heavyType,1,4));
+        pgs.addUnit(new Unit(1,rangedType,0,0));
+        pgs.addUnit(new Unit(1,rangedType,0,1));
+        pgs.addUnit(new Unit(1,rangedType,0,2));
+        pgs.addUnit(new Unit(1,rangedType,0,3));
 
-        pgs.addUnit(new Light(1,13,11));
-        pgs.addUnit(new Light(1,13,12));
-        pgs.addUnit(new Light(1,13,13));
-        pgs.addUnit(new Light(1,13,14));
-        pgs.addUnit(new Heavy(1,14,11));
-        pgs.addUnit(new Heavy(1,14,12));
-        pgs.addUnit(new Heavy(1,14,13));
-        pgs.addUnit(new Heavy(1,14,14));
-        pgs.addUnit(new Ranged(1,15,11));
-        pgs.addUnit(new Ranged(1,15,12));
-        pgs.addUnit(new Ranged(1,15,13));
-        pgs.addUnit(new Ranged(1,15,14));
+        pgs.addUnit(new Unit(1,lightType,13,11));
+        pgs.addUnit(new Unit(1,lightType,13,12));
+        pgs.addUnit(new Unit(1,lightType,13,13));
+        pgs.addUnit(new Unit(1,lightType,13,14));
+        pgs.addUnit(new Unit(1,heavyType,14,11));
+        pgs.addUnit(new Unit(1,heavyType,14,12));
+        pgs.addUnit(new Unit(1,heavyType,14,13));
+        pgs.addUnit(new Unit(1,heavyType,14,14));
+        pgs.addUnit(new Unit(1,rangedType,15,11));
+        pgs.addUnit(new Unit(1,rangedType,15,12));
+        pgs.addUnit(new Unit(1,rangedType,15,13));
+        pgs.addUnit(new Unit(1,rangedType,15,14));
 
         return pgs;
     }        

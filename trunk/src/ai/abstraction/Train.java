@@ -7,19 +7,19 @@ package ai.abstraction;
 import rts.GameState;
 import rts.PhysicalGameState;
 import rts.UnitAction;
-import rts.units.Resource;
 import rts.units.Unit;
+import rts.units.UnitType;
 
 /**
  *
  * @author santi
  */
 public class Train extends AbstractAction {
-    int type;
+    UnitType type;
     
     boolean completed = false;
     
-    public Train(Unit u, int a_type) {
+    public Train(Unit u, UnitType a_type) {
         super(u);
         type = a_type;
     }
@@ -76,14 +76,14 @@ public class Train extends AbstractAction {
         return null;
     }
     
-    public int score(int x, int y, int type, int player, PhysicalGameState pgs) {
+    public int score(int x, int y, UnitType type, int player, PhysicalGameState pgs) {
         int distance = 0;
         boolean first = true;
                 
-        if (type==Unit.WORKER) {
+        if (type.canHarvest) {
             // score is minus distance to closest resource
             for(Unit u:pgs.getUnits()) {
-                if (u instanceof Resource) {
+                if (u.getType().isResource) {
                     int d = Math.abs(u.getX() - x) + Math.abs(u.getY() - y);
                     if (first || d<distance) {
                         distance = d;

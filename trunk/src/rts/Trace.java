@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import org.jdom.Element;
 import rts.units.Unit;
+import rts.units.UnitTypeTable;
 import util.XMLWriter;
 
 /**
@@ -15,14 +16,19 @@ import util.XMLWriter;
  * @author santi
  */
 public class Trace {
+    UnitTypeTable utt = null;
     List<TraceEntry> entries = new LinkedList<TraceEntry>();
     
     public Trace() {
-        
+        utt = new UnitTypeTable();
     }
     
     public List<TraceEntry> getEntries() {
         return entries;
+    }
+    
+    public UnitTypeTable getUnitTypeTable() {
+        return utt;
     }
     
     public void addEntry(TraceEntry te) {
@@ -37,12 +43,13 @@ public class Trace {
        w.tag("/" + this.getClass().getName());
     }
         
-    public Trace(Element e) {
+    public Trace(Element e, UnitTypeTable utt) {
         Element entries_e = e.getChild("entries");
+        utt = new UnitTypeTable();
         
         for(Object o:entries_e.getChildren()) {
             Element entry_e = (Element)o;
-            entries.add(new TraceEntry(entry_e));
+            entries.add(new TraceEntry(entry_e, utt));
         }
     }    
     

@@ -62,7 +62,7 @@ public class RandomBiasedAI extends AI {
                     int i = 0;
                     for(UnitAction a:l) {
                         if (a.getType()==UnitAction.TYPE_NONE) none = a;
-                        if (a.getType()==UnitAction.TYPE_ATTACK ||
+                        if (a.getType()==UnitAction.TYPE_ATTACK_LOCATION ||
                             a.getType()==UnitAction.TYPE_HARVEST ||
                             a.getType()==UnitAction.TYPE_RETURN) {
                             distribution[i]=5;

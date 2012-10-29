@@ -7,6 +7,7 @@ package tests;
 import java.util.List;
 import rts.*;
 import rts.units.Unit;
+import rts.units.UnitTypeTable;
 
 /**
  *
@@ -18,7 +19,7 @@ public class PlayerActionGenerationTest {
 //        PhysicalGameState pgs = MapGenerator.basesWorkers8x8();
 //        PhysicalGameState pgs = MapGenerator.basesWorkersBarracks8x8();        
         PhysicalGameState pgs = MapGenerator.melee8x8light4();        
-        GameState gs = new GameState(pgs);
+        GameState gs = new GameState(pgs, UnitTypeTable.utt);
         
         for(Player p:pgs.getPlayers()) {
             List<PlayerAction> pal = gs.getPlayerActions(p.getID());

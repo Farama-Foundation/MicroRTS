@@ -13,6 +13,7 @@ import util.XMLWriter;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import rts.units.UnitTypeTable;
 
 
 /**
@@ -30,8 +31,8 @@ public class PhysicalGameState {
     List<Unit> units = new LinkedList<Unit>();
     
     
-    public static PhysicalGameState load(String fileName) throws JDOMException, IOException {
-        return new PhysicalGameState(new SAXBuilder().build(fileName).getRootElement());        
+    public static PhysicalGameState load(String fileName, UnitTypeTable utt) throws JDOMException, IOException {
+        return new PhysicalGameState(new SAXBuilder().build(fileName).getRootElement(), utt);        
     }
     
     public PhysicalGameState(int a_width, int a_height) {
@@ -87,7 +88,7 @@ public class PhysicalGameState {
         return players.get(pID);
     }
     
-    public Unit getUnit(int ID) {
+    public Unit getUnit(long ID) {
         for(Unit u:units) if (u.getID()==ID) return u;
         return null;
     }
@@ -204,7 +205,7 @@ public class PhysicalGameState {
        w.tag("/" + this.getClass().getName());
     }
     
-    public PhysicalGameState(Element e) {
+    public PhysicalGameState(Element e, UnitTypeTable utt) {
         Element terrain_e = e.getChild("terrain");
         Element players_e = e.getChild("players");
         Element units_e = e.getChild("units");
@@ -225,7 +226,7 @@ public class PhysicalGameState {
         }
         for(Object o:units_e.getChildren()) {
             Element unit_e = (Element)o;
-            Unit u = Unit.fromxml(unit_e);
+            Unit u = new Unit(unit_e, utt);
 //            System.out.println(u);
             units.add(u);
         }

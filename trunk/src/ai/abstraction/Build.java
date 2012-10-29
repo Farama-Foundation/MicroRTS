@@ -10,16 +10,17 @@ import rts.GameState;
 import rts.PhysicalGameState;
 import rts.UnitAction;
 import rts.units.Unit;
+import rts.units.UnitType;
 
 /**
  *
  * @author santi
  */
 public class Build extends AbstractAction  {
-    int type;
+    UnitType type;
     int x,y;
     
-    public Build(Unit u, int a_type, int a_x, int a_y) {
+    public Build(Unit u, UnitType a_type, int a_x, int a_y) {
         super(u);
         type = a_type;
         x = a_x;

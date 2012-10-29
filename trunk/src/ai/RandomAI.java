@@ -52,7 +52,7 @@ public class RandomAI extends AI {
                         pa.getResourceUsage().merge(ru);                        
                         pa.addUnitAction(u, ua);
                     } else {
-                        pa.addUnitAction(u, new UnitAction(UnitAction.TYPE_NONE,UnitAction.DIRECTION_NONE,Unit.NONE));
+                        pa.addUnitAction(u, new UnitAction(UnitAction.TYPE_NONE));
                     }
                 }
             }
