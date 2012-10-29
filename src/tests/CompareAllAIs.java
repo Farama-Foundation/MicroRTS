@@ -24,6 +24,7 @@ import javax.swing.JFrame;
 import rts.GameState;
 import rts.PhysicalGameState;
 import rts.PlayerAction;
+import rts.units.UnitTypeTable;
 
 /**
  *
@@ -35,8 +36,8 @@ public class CompareAllAIs {
     {
         List<AI> bots = new LinkedList<AI>();
         bots.add(new RandomBiasedAI());
-        bots.add(new LightRush());
-        bots.add(new WorkerRush());
+        bots.add(new LightRush(UnitTypeTable.utt));
+        bots.add(new WorkerRush(UnitTypeTable.utt));
         bots.add(new IDContinuingRTMinimax(100));
         bots.add(new IDContinuingRTMinimaxRandomized(100));
         bots.add(new ContinuingMC(100, 100, new RandomBiasedAI()));
@@ -48,9 +49,9 @@ public class CompareAllAIs {
         bots.add(new ContinuingNaiveMCTS(100, 100, 0.33f, 0.2f, new RandomBiasedAI()));
         List<PhysicalGameState> maps = new LinkedList<PhysicalGameState>();
 
-        maps.add(PhysicalGameState.load("maps/melee8x8light4.xml"));
-        maps.add(PhysicalGameState.load("maps/basesWorkers8x8.xml"));
-        maps.add(PhysicalGameState.load("maps/basesWorkers16x16.xml"));
+        maps.add(PhysicalGameState.load("maps/melee8x8light4.xml",UnitTypeTable.utt));
+        maps.add(PhysicalGameState.load("maps/basesWorkers8x8.xml",UnitTypeTable.utt));
+        maps.add(PhysicalGameState.load("maps/basesWorkers16x16.xml",UnitTypeTable.utt));
         
         Experimenter.runExperiments(bots, maps, 10, 3000, true);
     }

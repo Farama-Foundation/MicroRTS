@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import org.jdom.Element;
 import rts.units.Unit;
+import rts.units.UnitTypeTable;
 import util.Pair;
 import util.XMLWriter;
 
@@ -51,26 +52,25 @@ public class TraceEntry {
        pgs.toxml(w);
        w.tag("actions");
        for(Pair<Unit,UnitAction> ua:actions) {
-           w.tagWithAttributes("unitAction", "unitID=\"" + ua.m_a.getID() + "\" type=\"" + ua.m_b.type  + "\" direction=\"" + ua.m_b.param1 + "\" unit_type=\"" + ua.m_b.param2 + "\"");
-           w.tag("/unitAction");           
+           w.tagWithAttributes("action", "unitID=\"" + ua.m_a.getID() + "\"");
+           ua.m_b.toxml(w);
+           w.tag("/action");
        }
        w.tag("/actions");
        w.tag("/" + this.getClass().getName());
     }    
     
-    public TraceEntry(Element e) {
+    public TraceEntry(Element e, UnitTypeTable utt) {
         Element actions_e = e.getChild("actions");
   
         Element pgs_e = e.getChild(PhysicalGameState.class.getName());
-        pgs = new PhysicalGameState(pgs_e);
+        pgs = new PhysicalGameState(pgs_e, utt);
         
         for(Object o:actions_e.getChildren()) {
             Element action_e = (Element)o;
-            // <unitAction unitID="2" type="0" direction="-1" unit_type="-1">
-            Unit u = pgs.getUnit(Integer.parseInt(action_e.getAttributeValue("unitID")));
-            UnitAction a = new UnitAction(Integer.parseInt(action_e.getAttributeValue("type")),
-                                          Integer.parseInt(action_e.getAttributeValue("direction")),
-                                          Integer.parseInt(action_e.getAttributeValue("unit_type")));
+            long ID = Long.parseLong(action_e.getAttributeValue("unitID"));
+            UnitAction a = new UnitAction(action_e.getChild("UnitAction"), utt);
+            Unit u = pgs.getUnit(ID);
             actions.add(new Pair<Unit,UnitAction>(u,a));
         }
     }        

@@ -12,6 +12,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import rts.*;
+import rts.units.UnitTypeTable;
 import util.XMLWriter;
 
 /**
@@ -26,7 +27,7 @@ public class TraceGenerationTest {
 //        PhysicalGameState pgs = MapGenerator.basesWorkersBarracks8x8();        
 //        PhysicalGameState pgs = MapGenerator.melee4x4light2();        
 //        PhysicalGameState pgs = MapGenerator.melee4x4Mixed2();        
-        GameState gs = new GameState(pgs);
+        GameState gs = new GameState(pgs, UnitTypeTable.utt);
         int MAXCYCLES = 5000;
         boolean gameover = false;
         
@@ -38,7 +39,7 @@ public class TraceGenerationTest {
 
 //        AI ai2 = new RandomAI();
 //        AI ai2 = new StochasticBiasedAI();
-        AI ai2 = new WorkerRush();
+        AI ai2 = new WorkerRush(UnitTypeTable.utt);
 //        AI ai2 = new LightRushAI();
 //        AI ai2 = new RTMinimaxAI();
 //        AI ai2 = new MonteCarloAI();

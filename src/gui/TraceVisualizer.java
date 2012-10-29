@@ -48,7 +48,7 @@ public class TraceVisualizer extends JPanel implements ListSelectionListener {
         trace = t;
 
         for(TraceEntry te:trace.getEntries()) {
-            states.add(new GameState(te.getPhysicalGameState()));
+            states.add(new GameState(te.getPhysicalGameState(), t.getUnitTypeTable()));
         }
 
         setPreferredSize(new Dimension(dx,dy));
@@ -65,7 +65,7 @@ public class TraceVisualizer extends JPanel implements ListSelectionListener {
         removeAll();
         setLayout(new BoxLayout(this,BoxLayout.X_AXIS));
 
-        statePanel = new PhysicalGameStatePanel(new GameState(t.getEntries().get(0).getPhysicalGameState())); //, 320, 320);
+        statePanel = new PhysicalGameStatePanel(new GameState(t.getEntries().get(0).getPhysicalGameState(), t.getUnitTypeTable())); //, 320, 320);
         statePanel.setPreferredSize(new Dimension((int)(dx*0.6),dy));
         add(statePanel);
 

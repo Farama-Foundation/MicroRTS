@@ -52,10 +52,10 @@ public class AStar {
                     pos = parent;
                     parent = closed[pos];
                 }
-                if (last == pos+pgs.getWidth()) return new UnitAction(UnitAction.TYPE_MOVE, UnitAction.DIRECTION_DOWN, Unit.NONE);
-                if (last == pos-1) return new UnitAction(UnitAction.TYPE_MOVE, UnitAction.DIRECTION_LEFT, Unit.NONE);
-                if (last == pos-pgs.getWidth()) return new UnitAction(UnitAction.TYPE_MOVE, UnitAction.DIRECTION_UP, Unit.NONE);
-                if (last == pos+1) return new UnitAction(UnitAction.TYPE_MOVE, UnitAction.DIRECTION_RIGHT, Unit.NONE);
+                if (last == pos+pgs.getWidth()) return new UnitAction(UnitAction.TYPE_MOVE, UnitAction.DIRECTION_DOWN);
+                if (last == pos-1) return new UnitAction(UnitAction.TYPE_MOVE, UnitAction.DIRECTION_LEFT);
+                if (last == pos-pgs.getWidth()) return new UnitAction(UnitAction.TYPE_MOVE, UnitAction.DIRECTION_UP);
+                if (last == pos+1) return new UnitAction(UnitAction.TYPE_MOVE, UnitAction.DIRECTION_RIGHT);
                 return null;
             }
             
@@ -118,10 +118,10 @@ public class AStar {
                     pos = parent;
                     parent = closed[pos];
                 }
-                if (last == pos+pgs.getWidth()) return new UnitAction(UnitAction.TYPE_MOVE, UnitAction.DIRECTION_DOWN, Unit.NONE);
-                if (last == pos-1) return new UnitAction(UnitAction.TYPE_MOVE, UnitAction.DIRECTION_LEFT, Unit.NONE);
-                if (last == pos-pgs.getWidth()) return new UnitAction(UnitAction.TYPE_MOVE, UnitAction.DIRECTION_UP, Unit.NONE);
-                if (last == pos+1) return new UnitAction(UnitAction.TYPE_MOVE, UnitAction.DIRECTION_RIGHT, Unit.NONE);
+                if (last == pos+pgs.getWidth()) return new UnitAction(UnitAction.TYPE_MOVE, UnitAction.DIRECTION_DOWN);
+                if (last == pos-1) return new UnitAction(UnitAction.TYPE_MOVE, UnitAction.DIRECTION_LEFT);
+                if (last == pos-pgs.getWidth()) return new UnitAction(UnitAction.TYPE_MOVE, UnitAction.DIRECTION_UP);
+                if (last == pos+1) return new UnitAction(UnitAction.TYPE_MOVE, UnitAction.DIRECTION_RIGHT);
                 return null;
             }
             

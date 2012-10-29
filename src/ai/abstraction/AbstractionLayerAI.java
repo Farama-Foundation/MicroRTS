@@ -10,8 +10,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import rts.*;
-import rts.units.Base;
 import rts.units.Unit;
+import rts.units.UnitType;
 import util.Pair;
 
 /**
@@ -76,12 +76,12 @@ public abstract class AbstractionLayerAI extends AI {
     }
 
     
-    public void train(Unit u, int unit_type) {
+    public void train(Unit u, UnitType unit_type) {
         actions.put(u,new Train(u,unit_type));
     }
 
 
-    public void build(Unit u, int unit_type, int x, int y) {
+    public void build(Unit u, UnitType unit_type, int x, int y) {
         actions.put(u,new Build(u,unit_type,x,y));
     }
 

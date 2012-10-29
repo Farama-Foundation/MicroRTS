@@ -23,6 +23,7 @@ import javax.swing.JFrame;
 import rts.GameState;
 import rts.PhysicalGameState;
 import rts.PlayerAction;
+import rts.units.UnitTypeTable;
 
 /**
  *
@@ -65,7 +66,7 @@ public class RTMonteCarloAIExperiments {
 //                            ai1 = new WorkerRushAI();
                             break;
                         case 1:
-                            ai1 = new LightRush();
+                            ai1 = new LightRush(UnitTypeTable.utt);
                             break;
                     }
                     switch (ai2_idx) {
@@ -93,7 +94,7 @@ public class RTMonteCarloAIExperiments {
 
 
                     PhysicalGameState pgs = MapGenerator.basesWorkers8x8();
-                    GameState gs = new GameState(pgs);
+                    GameState gs = new GameState(pgs,UnitTypeTable.utt);
                     JFrame w = null;
                     if (visualize) w = PhysicalGameStatePanel.newVisualizer(gs, 600, 600);
 

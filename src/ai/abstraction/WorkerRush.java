@@ -22,16 +22,25 @@ import util.Pair;
  */
 public class WorkerRush extends AbstractionLayerAI {
     Random r = new Random();
-
+    UnitTypeTable utt;
+    UnitType workerType;
+    UnitType baseType;
+    
     // If we have more than 1 "Worker": send it to attack to the nearest enemy unit
     // If we have a base: train workers non-stop
     // If we have a worker: do this if needed: build base, harvest resources
+    
+    public WorkerRush(UnitTypeTable a_utt) {
+        utt = a_utt;
+        workerType = utt.getUnitType("Worker");
+        baseType = utt.getUnitType("Base");
+    }
     
     public void reset() {
     }
     
     public AI clone() {
-        return new WorkerRush();
+        return new WorkerRush(utt);
     }
     
     public PlayerAction getAction(int player, GameState gs) {
@@ -42,7 +51,7 @@ public class WorkerRush extends AbstractionLayerAI {
                 
         // behavior of bases:
         for(Unit u:pgs.getUnits()) {
-            if ((u instanceof Base) && 
+            if (u.getType()==baseType && 
                 u.getPlayer() == player && 
                 gs.getActionAssignment(u)==null) {
                 baseBehavior(u,p,pgs);
@@ -51,7 +60,7 @@ public class WorkerRush extends AbstractionLayerAI {
 
         // behavior of melee units:
         for(Unit u:pgs.getUnits()) {
-            if (((u instanceof Light) || (u instanceof Heavy)) && 
+            if (u.getType().canAttack && !u.getType().canHarvest && 
                 u.getPlayer() == player && 
                 gs.getActionAssignment(u)==null) {
                 meleeUnitBehavior(u,p,pgs);
@@ -61,7 +70,7 @@ public class WorkerRush extends AbstractionLayerAI {
         // behavior of workers:
         List<Unit> workers = new LinkedList<Unit>();
         for(Unit u:pgs.getUnits()) {
-            if ((u instanceof Worker) && 
+            if (u.getType().canHarvest && 
                 u.getPlayer() == player) {
                 workers.add(u);
             }        
@@ -74,7 +83,7 @@ public class WorkerRush extends AbstractionLayerAI {
     
     
     public void baseBehavior(Unit u,Player p, PhysicalGameState pgs) {
-        if (p.getResources()>Worker.WORKER_COST) train(u, Unit.WORKER);
+        if (p.getResources()>workerType.cost) train(u, workerType);
     }
     
     public void meleeUnitBehavior(Unit u,Player p, PhysicalGameState pgs) {
@@ -104,18 +113,18 @@ public class WorkerRush extends AbstractionLayerAI {
         if (workers.isEmpty()) return;
         
         for(Unit u2:pgs.getUnits()) {
-            if ((u2 instanceof Base) && 
+            if (u2.getType() == baseType && 
                 u2.getPlayer() == p.getID()) nbases++;
         }
         
         List<Integer> reservedPositions = new LinkedList<Integer>();
         if (nbases==0 && !freeWorkers.isEmpty()) {
             // build a base:
-            if (p.getResources()>Base.BASE_COST + resourcesUsed) {
+            if (p.getResources()>baseType.cost + resourcesUsed) {
                 Unit u = freeWorkers.remove(0);
                 int pos = findBuildingPosition(reservedPositions,u,p,pgs);
-                build(u, Unit.BASE, pos%pgs.getWidth(), pos/pgs.getWidth());
-                resourcesUsed+=Base.BASE_COST;
+                build(u, baseType, pos%pgs.getWidth(), pos/pgs.getWidth());
+                resourcesUsed+=baseType.cost;
                 reservedPositions.add(pos);
             }
         }
@@ -128,7 +137,7 @@ public class WorkerRush extends AbstractionLayerAI {
             Unit closestResource = null;
             int closestDistance = 0;
             for(Unit u2:pgs.getUnits()) {
-                if (u2 instanceof Resource) { 
+                if (u2.getType().isResource) { 
                     int d = Math.abs(u2.getX() - harvestWorker.getX()) + Math.abs(u2.getY() - harvestWorker.getY());
                     if (closestResource==null || d<closestDistance) {
                         closestResource = u2;
@@ -138,7 +147,7 @@ public class WorkerRush extends AbstractionLayerAI {
             }
             closestDistance = 0;
             for(Unit u2:pgs.getUnits()) {
-                if (u2 instanceof Base) { 
+                if (u2.getType().isStockpile) { 
                     int d = Math.abs(u2.getX() - harvestWorker.getX()) + Math.abs(u2.getY() - harvestWorker.getY());
                     if (closestBase==null || d<closestDistance) {
                         closestBase = u2;

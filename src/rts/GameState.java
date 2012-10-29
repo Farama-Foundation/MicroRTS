@@ -6,6 +6,7 @@ package rts;
 
 import java.util.*;
 import rts.units.Unit;
+import rts.units.UnitTypeTable;
 import util.Pair;
 
 /**
@@ -15,10 +16,12 @@ import util.Pair;
 public class GameState {
     int time = 0;
     PhysicalGameState pgs = null;
+    UnitTypeTable utt = null;
     HashMap<Unit,UnitActionAssignment> unitActions = new LinkedHashMap<Unit,UnitActionAssignment>();
 
-    public GameState(PhysicalGameState a_pgs) {
+    public GameState(PhysicalGameState a_pgs, UnitTypeTable a_utt) {
         pgs = a_pgs;
+        utt = a_utt;
     }
     
     public int getTime() {
@@ -64,21 +67,25 @@ public class GameState {
     public PhysicalGameState getPhysicalGameState() {
         return pgs;
     }
+
+    public UnitTypeTable getUnitTypeTable() {
+        return utt;
+    }
     
-    // Returns true if there is no unit in the specified position and no unit is executing an action that uses that position
+    
+    // Returns true if there is no unit in the specified position and no unit is executing an action that will use that position
     public boolean free(int x,int y) {
         if (pgs.getTerrain(x, y)!=PhysicalGameState.TERRAIN_NONE) return false;
         for(Unit u:pgs.units) {
             if (u.getX()==x && u.getY()==y) return false;
             UnitActionAssignment ua = unitActions.get(u);
             if (ua!=null) {
-                if (ua.action.type==UnitAction.TYPE_ATTACK ||
-                    ua.action.type==UnitAction.TYPE_MOVE ||
+                if (ua.action.type==UnitAction.TYPE_MOVE ||
                     ua.action.type==UnitAction.TYPE_PRODUCE) {
-                    if (ua.action.param1==UnitAction.DIRECTION_UP && u.getX()==x && u.getY()==y+1) return false;
-                    if (ua.action.param1==UnitAction.DIRECTION_RIGHT && u.getX()==x-1 && u.getY()==y) return false;
-                    if (ua.action.param1==UnitAction.DIRECTION_DOWN && u.getX()==x && u.getY()==y-1) return false;
-                    if (ua.action.param1==UnitAction.DIRECTION_LEFT && u.getX()==x+1 && u.getY()==y) return false;
+                    if (ua.action.direction==UnitAction.DIRECTION_UP && u.getX()==x && u.getY()==y+1) return false;
+                    if (ua.action.direction==UnitAction.DIRECTION_RIGHT && u.getX()==x-1 && u.getY()==y) return false;
+                    if (ua.action.direction==UnitAction.DIRECTION_DOWN && u.getX()==x && u.getY()==y-1) return false;
+                    if (ua.action.direction==UnitAction.DIRECTION_LEFT && u.getX()==x+1 && u.getY()==y) return false;
                 }
             }
         }
@@ -102,8 +109,8 @@ public class GameState {
                         // conflicting actions, cancelling both, and replacing them by "NONE":
                         if (uaa.time==time) {
                             // The actions were issued in the same game cycle, so it's normal
-                            uaa.action = new UnitAction(UnitAction.TYPE_NONE, UnitAction.DIRECTION_NONE, Unit.NONE);
-                            p.m_b = new UnitAction(UnitAction.TYPE_NONE, UnitAction.DIRECTION_NONE, Unit.NONE);
+                            uaa.action = new UnitAction(UnitAction.TYPE_NONE);
+                            p.m_b = new UnitAction(UnitAction.TYPE_NONE);
                         } else {
                             // This is more a problem, since it means there is a bug somewhere...
                             System.err.println("Inconsistent actions were executed!");
@@ -111,7 +118,7 @@ public class GameState {
                             System.err.println(p.m_a + " assigned action " + p.m_b + " at time " + time);
                             
                             // only the newly issued action is cancelled, since it's the problematic one...
-                            p.m_b = new UnitAction(UnitAction.TYPE_NONE, UnitAction.DIRECTION_NONE, Unit.NONE);
+                            p.m_b = new UnitAction(UnitAction.TYPE_NONE);
                         }
                         
                         
@@ -281,7 +288,7 @@ public class GameState {
     }
     
     public GameState clone() {
-        GameState gs = new GameState(pgs.clone());
+        GameState gs = new GameState(pgs.clone(), utt);
         gs.time = time;
         for(UnitActionAssignment uaa:unitActions.values()) {
             Unit u = uaa.unit;
@@ -303,7 +310,7 @@ public class GameState {
     
     // This method does a quick clone, that shares the same PGS, but different unit assignments:
     public GameState cloneIssue(PlayerAction pa) {
-        GameState gs = new GameState(pgs);
+        GameState gs = new GameState(pgs, utt);
         gs.time = time;
         gs.unitActions.putAll(unitActions);
         

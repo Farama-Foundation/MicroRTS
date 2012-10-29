@@ -87,7 +87,7 @@ public class PlayerAction {
                         }
                     }
                     if (!found) {
-                        actions.add(new Pair<Unit,UnitAction>(u, new UnitAction(UnitAction.TYPE_NONE,UnitAction.DIRECTION_NONE,Unit.NONE)));
+                        actions.add(new Pair<Unit,UnitAction>(u, new UnitAction(UnitAction.TYPE_NONE)));
                     }
                 }
             }

@@ -1,0 +1,159 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package rts.units;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ *
+ * @author santi
+ */
+public class UnitTypeTable {
+    List<UnitType> unitTypes = new ArrayList<UnitType>();
+    
+    // This is just a convenience variable, so that it can be used by other classes if the standard 
+    // unitTypeTable is desired:
+    public static UnitTypeTable utt = new UnitTypeTable();
+    
+    public UnitTypeTable() {
+        // Create the unit types:
+        // RESOURCE:
+        UnitType resource = new UnitType();
+        resource.name = "Resource";
+        resource.isResource = true;
+        resource.isStockpile = false;
+        resource.canHarvest = false;
+        resource.canMove = false;
+        resource.canAttack = false;
+        addUnitType(resource);           
+                
+        // BASE:
+        UnitType base = new UnitType();
+        base.name = "Base";
+        base.cost = 10;
+        base.hp = 10;
+        base.produceTime = 250;
+        base.isResource = false;
+        base.isStockpile = true;
+        base.canHarvest = false;
+        base.canMove = false;
+        base.canAttack = false;
+        addUnitType(base);
+
+        // BARRACKS: ID = 1
+        UnitType barracks = new UnitType();
+        barracks.name = "Barracks";
+        barracks.cost = 5;
+        barracks.hp = 4;
+        barracks.produceTime = 200;
+        barracks.isResource = false;
+        barracks.isStockpile = false;
+        barracks.canHarvest = false;
+        barracks.canMove = false;
+        barracks.canAttack = false;
+        addUnitType(barracks);
+        
+        // WORKER: ID = 2
+        UnitType worker = new UnitType();
+        worker.name = "Worker";
+        worker.cost = 1;
+        worker.hp = 1;
+        worker.damage = 1;
+        worker.attackRange = 1;
+        worker.produceTime = 50;
+        worker.moveTime = 10;
+        worker.attackTime = 5;
+        worker.harvestTime = 20;
+        worker.returnTime = 10;
+        worker.isResource = false;
+        worker.isStockpile = false;
+        worker.canHarvest = true;
+        worker.canMove = true;
+        worker.canAttack = true;
+        addUnitType(worker);   
+        
+        // LIGHT: ID = 3
+        UnitType light = new UnitType();
+        light.name = "Light";
+        light.cost = 2;
+        light.hp = 4;
+        light.damage = 2;
+        light.attackRange = 1;
+        light.produceTime = 80;
+        light.moveTime = 8;
+        light.attackTime = 5;
+        light.isResource = false;
+        light.isStockpile = false;
+        light.canHarvest = false;
+        light.canMove = true;
+        light.canAttack = true;
+        addUnitType(light);           
+
+        // HEAVY: ID = 4
+        UnitType heavy = new UnitType();
+        heavy.name = "Heavy";
+        heavy.cost = 2;
+        heavy.hp = 4;
+        heavy.damage = 4;
+        heavy.attackRange = 1;
+        heavy.produceTime = 120;
+        heavy.moveTime = 12;
+        heavy.attackTime = 5;
+        heavy.isResource = false;
+        heavy.isStockpile = false;
+        heavy.canHarvest = false;
+        heavy.canMove = true;
+        heavy.canAttack = true;
+        addUnitType(heavy);           
+
+        // RANGED: ID = 5
+        UnitType ranged = new UnitType();
+        ranged.name = "Ranged";
+        ranged.cost = 2;
+        ranged.hp = 1;
+        ranged.damage = 2;
+        ranged.attackRange = 3;
+        ranged.produceTime = 100;
+        ranged.moveTime = 12;
+        ranged.attackTime = 5;
+        ranged.isResource = false;
+        ranged.isStockpile = false;
+        ranged.canHarvest = false;
+        ranged.canMove = true;
+        ranged.canAttack = true;
+        addUnitType(ranged);     
+        
+
+        base.produces.add(worker);  
+        barracks.produces.add(light);
+        barracks.produces.add(heavy); 
+        barracks.produces.add(ranged);
+        worker.produces.add(base);
+        worker.produces.add(barracks);
+    }
+    
+    public void addUnitType(UnitType ut) {
+        ut.ID = unitTypes.size();
+        unitTypes.add(ut);
+    }
+    
+    public UnitType getUnitType(int ID) {
+        return unitTypes.get(ID);
+    }
+    
+    public UnitType getUnitType(String name) {
+        for(UnitType ut:unitTypes) {
+            if (ut.name.equals(name)) return ut;
+        }
+        return null;
+    }
+
+    public List<UnitType> getUnitTypes() {
+        return unitTypes;
+    }
+    
+    
+}
