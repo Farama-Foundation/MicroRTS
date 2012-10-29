@@ -7,21 +7,21 @@
     </rts.Player>
   </players>
   <units>
-    <rts.units.Light ID="0" player="0" x="1" y="1" resources="0" hitpoints="4">
-    </rts.units.Light>
-    <rts.units.Light ID="1" player="0" x="2" y="1" resources="0" hitpoints="4">
-    </rts.units.Light>
-    <rts.units.Light ID="2" player="0" x="1" y="2" resources="0" hitpoints="4">
-    </rts.units.Light>
-    <rts.units.Light ID="3" player="0" x="2" y="2" resources="0" hitpoints="4">
-    </rts.units.Light>
-    <rts.units.Light ID="4" player="1" x="5" y="5" resources="0" hitpoints="4">
-    </rts.units.Light>
-    <rts.units.Light ID="5" player="1" x="5" y="6" resources="0" hitpoints="4">
-    </rts.units.Light>
-    <rts.units.Light ID="6" player="1" x="6" y="5" resources="0" hitpoints="4">
-    </rts.units.Light>
-    <rts.units.Light ID="7" player="1" x="6" y="6" resources="0" hitpoints="4">
-    </rts.units.Light>
+    <rts.units.Unit type="Light" ID="36" player="0" x="1" y="1" resources="0" hitpoints="4" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Light" ID="37" player="0" x="2" y="1" resources="0" hitpoints="4" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Light" ID="38" player="0" x="1" y="2" resources="0" hitpoints="4" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Light" ID="39" player="0" x="2" y="2" resources="0" hitpoints="4" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Light" ID="40" player="1" x="5" y="5" resources="0" hitpoints="4" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Light" ID="41" player="1" x="5" y="6" resources="0" hitpoints="4" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Light" ID="42" player="1" x="6" y="5" resources="0" hitpoints="4" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Light" ID="43" player="1" x="6" y="6" resources="0" hitpoints="4" >
+    </rts.units.Unit>
   </units>
 </rts.PhysicalGameState>
