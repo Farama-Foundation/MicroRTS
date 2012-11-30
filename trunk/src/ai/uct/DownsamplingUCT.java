@@ -5,6 +5,7 @@
 package ai.uct;
 
 import ai.*;
+import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleEvaluationFunction;
 import java.util.List;
 import java.util.Random;
@@ -17,6 +18,7 @@ import rts.PlayerAction;
  */
 public class DownsamplingUCT extends AI {
     public static final int DEBUG = 0;
+    EvaluationFunction ef = null;
 
     Random r = new Random();
     AI randomAI = new RandomAI();
@@ -26,12 +28,13 @@ public class DownsamplingUCT extends AI {
     int NSIMULATIONS = 1000;
     int MAXSIMULATIONTIME = 500;
 
-    public DownsamplingUCT(int simulations, int time, long maxactions, AI policy) {
+    public DownsamplingUCT(int simulations, int time, long maxactions, AI policy, EvaluationFunction a_ef) {
         super();
         NSIMULATIONS = simulations;
         MAXSIMULATIONTIME = time;        
         MAXACTIONS = maxactions;
         randomAI = policy;
+        ef = a_ef;
     }
     
     
@@ -40,7 +43,7 @@ public class DownsamplingUCT extends AI {
 
     
     public AI clone() {
-        return new DownsamplingUCT(NSIMULATIONS, MAXSIMULATIONTIME, MAXACTIONS, randomAI);
+        return new DownsamplingUCT(NSIMULATIONS, MAXSIMULATIONTIME, MAXACTIONS, randomAI, ef);
     }  
     
     
@@ -70,7 +73,7 @@ public class DownsamplingUCT extends AI {
                 
                 int time = gs2.getTime() - gs.getTime();
                 // Discount factor:
-                double evaluation = SimpleEvaluationFunction.evaluate(maxplayer, minplayer, gs2)*Math.pow(0.99,time/10.0);
+                double evaluation = ef.evaluate(maxplayer, minplayer, gs2)*Math.pow(0.99,time/10.0);
 /*
                 int winner = gs2.winner();
                 if (winner==-1) {

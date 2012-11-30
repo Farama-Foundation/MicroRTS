@@ -6,6 +6,7 @@ package ai.rtminimax;
 
 import ai.evaluation.EvaluationFunctionForwarding;
 import ai.AI;
+import ai.evaluation.EvaluationFunction;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -34,8 +35,8 @@ public class IDContinuingRTMinimax extends IDRTMinimax {
     public static int MAX_CONSECUTIVE_FRAMES_SEARCHING = 0;
     public static long MAX_POTENTIAL_BRANCHING = 0;
     
-    public IDContinuingRTMinimax(int tpc) {
-        super(tpc);
+    public IDContinuingRTMinimax(int tpc, EvaluationFunction a_ef) {
+        super(tpc, a_ef);
     }
 
     
@@ -49,7 +50,7 @@ public class IDContinuingRTMinimax extends IDRTMinimax {
     
     
     public AI clone() {
-        return new IDContinuingRTMinimax(TIME_PER_CYCLE);
+        return new IDContinuingRTMinimax(TIME_PER_CYCLE, ef);
     }  
     
 
@@ -194,7 +195,7 @@ public class IDContinuingRTMinimax extends IDRTMinimax {
                                     if (maxCT==-1 || CT>maxCT) maxCT = CT;
                                 }
                                 nLeaves++;
-                                lastResult = new Pair<PlayerAction,Float>(null,EvaluationFunctionForwarding.evaluate(maxplayer, minplayer, current.gs));
+                                lastResult = new Pair<PlayerAction,Float>(null,ef.evaluate(maxplayer, minplayer, current.gs));
                                 stack.remove(0);    
                             } else if (current.gs.canExecuteAnyAction(maxplayer)) {
                                 current.type = 0;

@@ -4,9 +4,10 @@
  */
 package ai.rtminimax;
 
-import ai.evaluation.EvaluationFunction;
+import ai.evaluation.EvaluationFunctionWithActions;
 import ai.evaluation.EvaluationFunctionForwarding;
 import ai.AI;
+import ai.evaluation.EvaluationFunction;
 import java.util.List;
 import rts.GameState;
 import rts.PlayerAction;
@@ -28,8 +29,11 @@ public class RTMinimax extends AI {
     
     int LOOKAHEAD = 40;
     
-    public RTMinimax(int la) {
+    EvaluationFunction ef = null;
+    
+    public RTMinimax(int la, EvaluationFunction a_ef) {
         LOOKAHEAD = la;
+        ef = a_ef;
     }
             
     
@@ -37,7 +41,7 @@ public class RTMinimax extends AI {
     }
     
     public AI clone() {
-        return new RTMinimax(LOOKAHEAD);
+        return new RTMinimax(LOOKAHEAD, ef);
     }     
     
     public PlayerAction getAction(int player, GameState gs) throws Exception {
@@ -53,7 +57,7 @@ public class RTMinimax extends AI {
     }
     
     
-    public static PlayerAction greedyActionScan(GameState gs, int player, long cutOffTime) throws Exception {        
+    public PlayerAction greedyActionScan(GameState gs, int player, long cutOffTime) throws Exception {        
         PlayerAction best = null;
         float bestScore = 0;
         PlayerActionGenerator pag = new PlayerActionGenerator(gs,player);
@@ -65,7 +69,7 @@ public class RTMinimax extends AI {
             pa = pag.getNextAction(cutOffTime);
             if (pa!=null) {
                 GameState gs2 = gs.cloneIssue(pa);
-                float score = EvaluationFunctionForwarding.evaluate(player, 1 - player, gs2);
+                float score = ef.evaluate(player, 1 - player, gs2);
                 if (best==null || score>bestScore) {
                     best = pa;
                     bestScore = score; 
@@ -79,8 +83,8 @@ public class RTMinimax extends AI {
     
     public PlayerAction realTimeMinimaxAB(int player, GameState gs, int lookAhead) {
         long start = System.currentTimeMillis();
-        float alpha = -EvaluationFunction.VICTORY;
-        float beta = EvaluationFunction.VICTORY;
+        float alpha = -EvaluationFunctionWithActions.VICTORY;
+        float beta = EvaluationFunctionWithActions.VICTORY;
         int maxplayer = player;
         int minplayer = 1 - player;
         System.out.println("Starting realTimeMinimaxAB...");
@@ -105,7 +109,7 @@ public class RTMinimax extends AI {
             nLeaves++;
 //            System.out.println("Eval (at " + gs.getTime() + "): " + EvaluationFunction.evaluate(maxplayer, minplayer, gs));
 //            System.out.println(gs);
-            return new MiniMaxResult(null,EvaluationFunction.evaluate(maxplayer, minplayer, gs), gs);
+            return new MiniMaxResult(null,ef.evaluate(maxplayer, minplayer, gs), gs);
         }
 
         if (gs.canExecuteAnyAction(maxplayer)) {

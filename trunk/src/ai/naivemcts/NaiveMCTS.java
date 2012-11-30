@@ -5,6 +5,7 @@
 package ai.naivemcts;
 
 import ai.*;
+import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleEvaluationFunction;
 import java.util.List;
 import java.util.Random;
@@ -17,6 +18,7 @@ import rts.PlayerAction;
  */
 public class NaiveMCTS extends AI {
     public static final int DEBUG = 0;
+    EvaluationFunction ef = null;
     
     Random r = new Random();
     AI randomAI = new RandomBiasedAI();
@@ -27,12 +29,13 @@ public class NaiveMCTS extends AI {
     
     float epsilon1 = 0.25f;
 
-    public NaiveMCTS(int simulations, float e, int time, AI policy) {
+    public NaiveMCTS(int simulations, float e, int time, AI policy, EvaluationFunction a_ef) {
         super();
         NSIMULATIONS = simulations;
         MAXSIMULATIONTIME = time;     
         randomAI = policy;
         epsilon1 = e;
+        ef = a_ef;
     }
     
     
@@ -41,7 +44,7 @@ public class NaiveMCTS extends AI {
 
     
     public AI clone() {
-        return new NaiveMCTS(NSIMULATIONS, epsilon1, MAXSIMULATIONTIME, randomAI);
+        return new NaiveMCTS(NSIMULATIONS, epsilon1, MAXSIMULATIONTIME, randomAI, ef);
     }    
     
     
@@ -69,7 +72,7 @@ public class NaiveMCTS extends AI {
                 simulate(gs2,cutOffTime);
                 int time = gs2.getTime() - gs.getTime();
                 // Discount factor:
-                double evaluation = SimpleEvaluationFunction.evaluate(maxplayer, minplayer, gs2)*Math.pow(0.99,time/10.0);
+                double evaluation = ef.evaluate(maxplayer, minplayer, gs2)*Math.pow(0.99,time/10.0);
     //            System.out.println("Evaluation: " + evaluation);
 
                 leaf.propagateEvaluation((float)evaluation,null);            

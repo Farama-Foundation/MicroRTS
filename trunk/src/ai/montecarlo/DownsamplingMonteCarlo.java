@@ -6,6 +6,7 @@ package ai.montecarlo;
 
 import ai.AI;
 import ai.RandomBiasedAI;
+import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleEvaluationFunction;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,6 +21,7 @@ import rts.PlayerActionGenerator;
  */
 public class DownsamplingMonteCarlo extends AI {
     public static final int DEBUG = 1;
+    EvaluationFunction ef = null;
     
     Random r = new Random();
     AI randomAI = new RandomBiasedAI();
@@ -29,11 +31,12 @@ public class DownsamplingMonteCarlo extends AI {
     int NSIMULATIONS = 1000;
     int MAXSIMULATIONTIME = 1024;
     
-    public DownsamplingMonteCarlo(long maxactions, int simulations, int lookahead, AI policy) {
+    public DownsamplingMonteCarlo(long maxactions, int simulations, int lookahead, AI policy, EvaluationFunction a_ef) {
         MAXACTIONS = maxactions;
         NSIMULATIONS = simulations;
         MAXSIMULATIONTIME = lookahead;
         randomAI = policy;
+        ef = a_ef;
     }
 
 
@@ -42,7 +45,7 @@ public class DownsamplingMonteCarlo extends AI {
         
     
     public AI clone() {
-        return new DownsamplingMonteCarlo(MAXACTIONS, NSIMULATIONS, MAXSIMULATIONTIME, randomAI);
+        return new DownsamplingMonteCarlo(MAXACTIONS, NSIMULATIONS, MAXSIMULATIONTIME, randomAI, ef);
     }
     
     
@@ -82,7 +85,7 @@ public class DownsamplingMonteCarlo extends AI {
                 simulate(gs3,gs3.getTime() + MAXSIMULATIONTIME);
                 int time = gs3.getTime() - gs2.getTime();
                 // Discount factor:
-                score += SimpleEvaluationFunction.evaluate(player, 1-player, gs3)*Math.pow(0.99,time/10.0);
+                score += ef.evaluate(player, 1-player, gs3)*Math.pow(0.99,time/10.0);
             }
             if (best==null || score>best_score) {
                 best = pa;

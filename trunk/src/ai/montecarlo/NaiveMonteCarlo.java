@@ -6,6 +6,7 @@ package ai.montecarlo;
 
 import ai.AI;
 import ai.RandomBiasedAI;
+import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleEvaluationFunction;
 import java.util.*;
 import rts.*;
@@ -19,6 +20,7 @@ import util.Sampler;
  */
 public class NaiveMonteCarlo extends AI {
     public static final int DEBUG = 0;
+    EvaluationFunction ef = null;
     
     public class UnitActionTableEntry {
         Unit u;
@@ -46,12 +48,13 @@ public class NaiveMonteCarlo extends AI {
     float epsilon2 = 0.2f;
     int minSamples = 10;
     
-    public NaiveMonteCarlo(int simulations, int lookahead, float e1, float e2, AI policy) {
+    public NaiveMonteCarlo(int simulations, int lookahead, float e1, float e2, AI policy, EvaluationFunction a_ef) {
         NSIMULATIONS = simulations;
         MAXSIMULATIONTIME = lookahead;
         randomAI = policy;
         epsilon1 = e1;
         epsilon2 = e2;
+        ef = a_ef;
     }
     
     
@@ -60,7 +63,7 @@ public class NaiveMonteCarlo extends AI {
 
     
     public AI clone() {
-        return new NaiveMonteCarlo(NSIMULATIONS, MAXSIMULATIONTIME, epsilon1, epsilon2, randomAI);
+        return new NaiveMonteCarlo(NSIMULATIONS, MAXSIMULATIONTIME, epsilon1, epsilon2, randomAI, ef);
     }    
 
     
@@ -205,7 +208,7 @@ public class NaiveMonteCarlo extends AI {
             simulate(gs3,gs3.getTime() + MAXSIMULATIONTIME);
             int time = gs3.getTime() - gs2.getTime();
             // Discount factor:
-            double eval = SimpleEvaluationFunction.evaluate(player, 1-player, gs3)*Math.pow(0.99,time/10.0);
+            double eval = ef.evaluate(player, 1-player, gs3)*Math.pow(0.99,time/10.0);
             pate.accum_evaluation += eval;
             pate.visit_count++;
             

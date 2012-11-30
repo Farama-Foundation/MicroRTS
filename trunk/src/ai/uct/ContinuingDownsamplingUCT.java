@@ -7,6 +7,7 @@ package ai.uct;
 import ai.montecarlo.*;
 import ai.AI;
 import ai.RandomBiasedAI;
+import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleEvaluationFunction;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,6 +22,7 @@ import rts.PlayerActionGenerator;
  */
 public class ContinuingDownsamplingUCT extends AI {
     public static final int DEBUG = 0;
+    EvaluationFunction ef = null;
        
     Random r = new Random();
     AI randomAI = new RandomBiasedAI();
@@ -39,11 +41,12 @@ public class ContinuingDownsamplingUCT extends AI {
     int MAXSIMULATIONTIME = 1024;
     
     
-    public ContinuingDownsamplingUCT(int available_time, int lookahead, long maxactions, AI policy) {
+    public ContinuingDownsamplingUCT(int available_time, int lookahead, long maxactions, AI policy, EvaluationFunction a_ef) {
         MAXACTIONS = maxactions;
         MAXSIMULATIONTIME = lookahead;
         randomAI = policy;
         TIME_PER_CYCLE = available_time;
+        ef = a_ef;
     }
     
     
@@ -62,7 +65,7 @@ public class ContinuingDownsamplingUCT extends AI {
         
     
     public AI clone() {
-        return new ContinuingDownsamplingUCT(TIME_PER_CYCLE, MAXSIMULATIONTIME, MAXACTIONS, randomAI);
+        return new ContinuingDownsamplingUCT(TIME_PER_CYCLE, MAXSIMULATIONTIME, MAXACTIONS, randomAI, ef);
     }  
     
     
@@ -163,7 +166,7 @@ public class ContinuingDownsamplingUCT extends AI {
                 simulate(gs2, gs2.getTime() + MAXSIMULATIONTIME);
                 
                 int time = gs2.getTime() - gs_to_start_from.getTime();
-                double evaluation = SimpleEvaluationFunction.evaluate(player, 1-player, gs2)*Math.pow(0.99,time/10.0);
+                double evaluation = ef.evaluate(player, 1-player, gs2)*Math.pow(0.99,time/10.0);
             
                 while(leaf!=null) {
                     leaf.accum_evaluation += evaluation;
