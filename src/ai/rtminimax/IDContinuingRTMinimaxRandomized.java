@@ -6,6 +6,7 @@ package ai.rtminimax;
 
 import ai.evaluation.EvaluationFunctionForwarding;
 import ai.AI;
+import ai.evaluation.EvaluationFunction;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -35,8 +36,8 @@ public class IDContinuingRTMinimaxRandomized extends IDRTMinimax {
     public static int MAX_CONSECUTIVE_FRAMES_SEARCHING = 0;
     public static long MAX_POTENTIAL_BRANCHING = 0;
     
-    public IDContinuingRTMinimaxRandomized(int tpc) {
-        super(tpc);
+    public IDContinuingRTMinimaxRandomized(int tpc, EvaluationFunction a_ef) {
+        super(tpc, a_ef);
     }
     
 
@@ -50,7 +51,7 @@ public class IDContinuingRTMinimaxRandomized extends IDRTMinimax {
     
     
     public AI clone() {
-        return new IDContinuingRTMinimaxRandomized(TIME_PER_CYCLE);
+        return new IDContinuingRTMinimaxRandomized(TIME_PER_CYCLE, ef);
     }     
        
 
@@ -155,7 +156,7 @@ public class IDContinuingRTMinimaxRandomized extends IDRTMinimax {
         RTMiniMaxNode head;
         if (stack==null) {
             stack = new LinkedList<RTMiniMaxNode>();
-            head = new RTMiniMaxNode(0,initial_gs,-EvaluationFunctionForwarding.VICTORY, EvaluationFunctionForwarding.VICTORY);
+            head = new RTMiniMaxNode(0,initial_gs,-EvaluationFunction.VICTORY, EvaluationFunction.VICTORY);
             stack.add(head);
         } else {
             if (stack.isEmpty()) return lastResult.m_a;
@@ -179,7 +180,7 @@ public class IDContinuingRTMinimaxRandomized extends IDRTMinimax {
                                     if (maxCT==-1 || CT>maxCT) maxCT = CT;
                                 }
                                 nLeaves++;
-                                lastResult = new Pair<PlayerAction,Float>(null,EvaluationFunctionForwarding.evaluate(maxplayer, minplayer, current.gs));
+                                lastResult = new Pair<PlayerAction,Float>(null,ef.evaluate(maxplayer, minplayer, current.gs));
                                 stack.remove(0);    
                             } else if (current.gs.canExecuteAnyAction(maxplayer)) {
                                 if (stack.size()==1 ||

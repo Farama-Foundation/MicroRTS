@@ -6,6 +6,7 @@ package ai.montecarlo;
 
 import ai.AI;
 import ai.RandomBiasedAI;
+import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleEvaluationFunction;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,6 +21,7 @@ import rts.PlayerActionGenerator;
  */
 public class ContinuingMC extends AI {
     public static final int DEBUG = 0;
+    EvaluationFunction ef = null;
     
     
     public class PlayerActionTableEntry {
@@ -46,10 +48,11 @@ public class ContinuingMC extends AI {
     int TIME_PER_CYCLE = 100;
     int MAXSIMULATIONTIME = 1024;
     
-    public ContinuingMC(int available_time, int lookahead, AI policy) {
+    public ContinuingMC(int available_time, int lookahead, AI policy, EvaluationFunction a_ef) {
         MAXSIMULATIONTIME = lookahead;
         randomAI = policy;
         TIME_PER_CYCLE = available_time;
+        ef = a_ef;
     }
     
     
@@ -68,7 +71,7 @@ public class ContinuingMC extends AI {
     }    
     
     public AI clone() {
-        return new ContinuingMC(TIME_PER_CYCLE, MAXSIMULATIONTIME, randomAI);
+        return new ContinuingMC(TIME_PER_CYCLE, MAXSIMULATIONTIME, randomAI, ef);
     }
     
     public PlayerAction getAction(int player, GameState gs) throws Exception{
@@ -168,7 +171,7 @@ public class ContinuingMC extends AI {
         simulate(gs3,gs3.getTime() + MAXSIMULATIONTIME);
         int time = gs3.getTime() - gs2.getTime();
 
-        pate.accum_evaluation += SimpleEvaluationFunction.evaluate(player, 1-player, gs3)*Math.pow(0.99,time/10.0);            
+        pate.accum_evaluation += ef.evaluate(player, 1-player, gs3)*Math.pow(0.99,time/10.0);            
         pate.visit_count++;
         run++;
         total_runs++;

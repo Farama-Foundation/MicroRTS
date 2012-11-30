@@ -7,6 +7,7 @@ package tests;
 import ai.abstraction.LightRush;
 import ai.montecarlo.NaiveMonteCarlo;
 import ai.*;
+import ai.evaluation.SimpleEvaluationFunction;
 import ai.montecarlo.DownsamplingMonteCarlo;
 import ai.montecarlo.ContinuingDownsamplingMC;
 import ai.montecarlo.ContinuingNaiveMC;
@@ -62,7 +63,7 @@ public class RTMonteCarloAIExperiments {
                     switch (ai1_idx) {
                         case 0:
 //                            ai1 = new RandomBiasedAI();
-                            ai1 = new ContinuingUCT(100, RTMM_TIME, new RandomBiasedAI());
+                            ai1 = new ContinuingUCT(100, RTMM_TIME, new RandomBiasedAI(), new SimpleEvaluationFunction());
 //                            ai1 = new WorkerRushAI();
                             break;
                         case 1:
@@ -71,24 +72,24 @@ public class RTMonteCarloAIExperiments {
                     }
                     switch (ai2_idx) {
                         case 0:
-                            ai2 = new ContinuingUCTUnitActions(100,RTMM_TIME, new RandomBiasedAI());
+                            ai2 = new ContinuingUCTUnitActions(100,RTMM_TIME, new RandomBiasedAI(), new SimpleEvaluationFunction());
 //                            ai2 = new ContinuingUCT(100, RTMM_TIME, new RandomBiasedAI());
 //                            ai2 = new ContinuingNaiveMCTS(100, RTMM_TIME, new RandomBiasedAI());
                             break;
                         case 1:
-                            ai2 = new ContinuingDownsamplingMC(200, 100, RTMM_TIME, new RandomBiasedAI());
+                            ai2 = new ContinuingDownsamplingMC(200, 100, RTMM_TIME, new RandomBiasedAI(), new SimpleEvaluationFunction());
                             break;
                         case 2:
-                            ai2 = new ContinuingDownsamplingMC(500, 100, RTMM_TIME, new RandomBiasedAI());
+                            ai2 = new ContinuingDownsamplingMC(500, 100, RTMM_TIME, new RandomBiasedAI(), new SimpleEvaluationFunction());
                             break;
                         case 3:
-                            ai2 = new ContinuingDownsamplingMC(1000, 100, RTMM_TIME, new RandomBiasedAI());
+                            ai2 = new ContinuingDownsamplingMC(1000, 100, RTMM_TIME, new RandomBiasedAI(), new SimpleEvaluationFunction());
                             break;
                         case 4:
-                            ai2 = new ContinuingDownsamplingMC(2000, 100, RTMM_TIME, new RandomBiasedAI());
+                            ai2 = new ContinuingDownsamplingMC(2000, 100, RTMM_TIME, new RandomBiasedAI(), new SimpleEvaluationFunction());
                             break;
                         case 5:
-                            ai2 = new ContinuingDownsamplingMC(4000, 100, RTMM_TIME, new RandomBiasedAI());
+                            ai2 = new ContinuingDownsamplingMC(4000, 100, RTMM_TIME, new RandomBiasedAI(), new SimpleEvaluationFunction());
                             break;
                     }
 

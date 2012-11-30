@@ -5,6 +5,7 @@
 package ai.uct;
 
 import ai.*;
+import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleEvaluationFunction;
 import java.util.List;
 import java.util.Random;
@@ -17,6 +18,7 @@ import rts.PlayerAction;
  */
 public class UCTUnitActions extends AI {
     public static int DEBUG = 0;
+    EvaluationFunction ef = null;
 
     Random r = new Random();
     AI randomAI = new RandomAI();
@@ -25,11 +27,12 @@ public class UCTUnitActions extends AI {
     int NSIMULATIONS = 1000;
     int MAXSIMULATIONTIME = 500;
 
-    public UCTUnitActions(int simulations, int time, AI policy) {
+    public UCTUnitActions(int simulations, int time, AI policy, EvaluationFunction a_ef) {
         super();
         NSIMULATIONS = simulations;
         MAXSIMULATIONTIME = time;        
         randomAI = policy;
+        ef = a_ef;
     }
     
     
@@ -38,7 +41,7 @@ public class UCTUnitActions extends AI {
 
     
     public AI clone() {
-        return new UCTUnitActions(NSIMULATIONS, MAXSIMULATIONTIME, randomAI);
+        return new UCTUnitActions(NSIMULATIONS, MAXSIMULATIONTIME, randomAI, ef);
     }  
         
     
@@ -67,7 +70,7 @@ public class UCTUnitActions extends AI {
                 simulate(gs2,cutOffTime);
                 
                 int time = gs2.getTime() - gs.getTime();
-                double evaluation = SimpleEvaluationFunction.evaluate(maxplayer, minplayer, gs2)*Math.pow(0.99,time/10.0);
+                double evaluation = ef.evaluate(maxplayer, minplayer, gs2)*Math.pow(0.99,time/10.0);
             
                 while(leaf!=null) {
                     leaf.accum_evaluation += evaluation;

@@ -8,6 +8,7 @@ import ai.abstraction.LightRush;
 import ai.*;
 import ai.abstraction.RangedRush;
 import ai.abstraction.WorkerRush;
+import ai.evaluation.SimpleEvaluationFunction;
 import ai.montecarlo.ContinuingDownsamplingMC;
 import ai.montecarlo.ContinuingNaiveMC;
 import ai.uct.UCT;
@@ -41,7 +42,7 @@ public class GameVisualSimulationTest {
 //        AI ai1 = new RandomAI();
 //        AI ai1 = new WorkerRush(MapGenerator.utt);
 //        AI ai1 = new RangedRush(MapGenerator.utt);
-        AI ai1 = new ContinuingNaiveMC(PERIOD, 200, 0.33f, 0.2f, new RandomBiasedAI());
+        AI ai1 = new ContinuingNaiveMC(PERIOD, 200, 0.33f, 0.2f, new RandomBiasedAI(), new SimpleEvaluationFunction());
 
         AI ai2 = new RandomBiasedAI();
 //        AI ai2 = new LightRush();

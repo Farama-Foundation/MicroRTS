@@ -4,8 +4,9 @@
  */
 package ai.rtminimax;
 
-import ai.evaluation.EvaluationFunction;
+import ai.evaluation.EvaluationFunctionWithActions;
 import ai.AI;
+import ai.evaluation.EvaluationFunction;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -23,9 +24,9 @@ public class IDRTMinimax extends RTMinimax {
     public static long MAX_POTENTIAL_BRANCHING = 0;
     
     int TIME_PER_CYCLE = 100;
-    
-    public IDRTMinimax(int tpc) {
-        super(1);
+        
+    public IDRTMinimax(int tpc, EvaluationFunction a_ef) {
+        super(1, a_ef);
         TIME_PER_CYCLE = tpc;
     }
     
@@ -35,7 +36,7 @@ public class IDRTMinimax extends RTMinimax {
 
     
     public AI clone() {
-        return new IDRTMinimax(TIME_PER_CYCLE);
+        return new IDRTMinimax(TIME_PER_CYCLE, ef);
     }     
     
     
@@ -84,7 +85,7 @@ public class IDRTMinimax extends RTMinimax {
     
     public PlayerAction timeBoundedRealTimeMinimaxAB(GameState initial_gs, int maxplayer, int minplayer, int lookAhead, long cutOffTime, boolean needAResult) throws Exception {
         List<RTMiniMaxNode> stack = new LinkedList<RTMiniMaxNode>();      
-        RTMiniMaxNode head = new RTMiniMaxNode(0,initial_gs,-EvaluationFunction.VICTORY, EvaluationFunction.VICTORY);
+        RTMiniMaxNode head = new RTMiniMaxNode(0,initial_gs,-EvaluationFunctionWithActions.VICTORY, EvaluationFunctionWithActions.VICTORY);
         stack.add(head);
         Pair<PlayerAction,Float> lastResult = null;
         while(!stack.isEmpty() && System.currentTimeMillis()<cutOffTime){
@@ -105,7 +106,7 @@ public class IDRTMinimax extends RTMinimax {
                                     if (maxCT==-1 || CT>maxCT) maxCT = CT;
                                 }
                                 nLeaves++;
-                                lastResult = new Pair<PlayerAction,Float>(null,EvaluationFunction.evaluate(maxplayer, minplayer, current.gs));
+                                lastResult = new Pair<PlayerAction,Float>(null,ef.evaluate(maxplayer, minplayer, current.gs));
                                 stack.remove(0);    
                             } else if (current.gs.canExecuteAnyAction(maxplayer)) {
                                 current.type = 0;

@@ -5,6 +5,7 @@
 package ai.naivemcts;
 
 import ai.*;
+import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleEvaluationFunction;
 import java.util.List;
 import java.util.Random;
@@ -17,6 +18,7 @@ import rts.PlayerAction;
  */
 public class ContinuingNaiveMCTS extends AI {
     public static final int DEBUG = 0;
+    EvaluationFunction ef = null;
        
     Random r = new Random();
     AI randomAI = new RandomBiasedAI();
@@ -37,12 +39,13 @@ public class ContinuingNaiveMCTS extends AI {
     float epsilon2 = 0.2f;
     
     
-    public ContinuingNaiveMCTS(int available_time, int lookahead, float e1, float e2, AI policy) {
+    public ContinuingNaiveMCTS(int available_time, int lookahead, float e1, float e2, AI policy, EvaluationFunction a_ef) {
         MAXSIMULATIONTIME = lookahead;
         randomAI = policy;
         TIME_PER_CYCLE = available_time;
         epsilon1 = e1;
         epsilon2 = e2;
+        ef = a_ef;
     }
     
     
@@ -61,7 +64,7 @@ public class ContinuingNaiveMCTS extends AI {
     
     
     public AI clone() {
-        return new ContinuingNaiveMCTS(TIME_PER_CYCLE, MAXSIMULATIONTIME, epsilon1, epsilon2, randomAI);
+        return new ContinuingNaiveMCTS(TIME_PER_CYCLE, MAXSIMULATIONTIME, epsilon1, epsilon2, randomAI, ef);
     }    
     
     
@@ -134,7 +137,7 @@ public class ContinuingNaiveMCTS extends AI {
                 simulate(gs2, gs2.getTime() + MAXSIMULATIONTIME);
                 
                 int time = gs2.getTime() - gs_to_start_from.getTime();
-                double evaluation = SimpleEvaluationFunction.evaluate(player, 1-player, gs2)*Math.pow(0.99,time/10.0);
+                double evaluation = ef.evaluate(player, 1-player, gs2)*Math.pow(0.99,time/10.0);
             
                 leaf.propagateEvaluation((float)evaluation,null);            
 

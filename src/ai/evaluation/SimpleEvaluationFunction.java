@@ -14,19 +14,17 @@ import rts.units.*;
  *
  * @author santi
  */
-public class SimpleEvaluationFunction {
-    public static float VICTORY = 10000;
-    
+public class SimpleEvaluationFunction extends EvaluationFunction {    
     public static float RESOURCE = 20;
     public static float RESOURCE_IN_WORKER = 10;
     public static float UNIT_BONUS_MULTIPLIER = 40.0f;
     
     
-    public static float evaluate(int maxplayer, int minplayer, GameState gs) {
+    public float evaluate(int maxplayer, int minplayer, GameState gs) {
         return base_score(maxplayer,gs) - base_score(minplayer,gs);
     }
     
-    public static float base_score(int player, GameState gs) {
+    public float base_score(int player, GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         float score = gs.getPlayer(player).getResources()*RESOURCE;
         for(Unit u:pgs.getUnits()) {
