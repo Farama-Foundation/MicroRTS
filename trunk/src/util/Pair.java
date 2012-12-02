@@ -9,5 +9,9 @@ public class Pair<T1,T2> {
 	public Pair(T1 a,T2 b) {
 		m_a = a;
 		m_b = b;
-	}        
+	}   
+        
+        public String toString() {
+            return "<" + m_a + "," + m_b + ">";
+        }
 }

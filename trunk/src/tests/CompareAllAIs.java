@@ -41,7 +41,7 @@ public class CompareAllAIs {
         bots.add(new LightRush(UnitTypeTable.utt));
         bots.add(new WorkerRush(UnitTypeTable.utt));
         bots.add(new IDContinuingRTMinimax(100, new EvaluationFunctionWithActions()));
-        bots.add(new IDContinuingRTMinimaxRandomized(100, new EvaluationFunctionWithActions()));
+        bots.add(new IDContinuingRTMinimaxRandomized(100, 10, new EvaluationFunctionWithActions()));
         bots.add(new ContinuingMC(100, 100, new RandomBiasedAI(), new SimpleEvaluationFunction()));
         bots.add(new ContinuingDownsamplingMC(100, 100, 100, new RandomBiasedAI(), new SimpleEvaluationFunction()));
         bots.add(new ContinuingNaiveMC(100, 100, 0.33f, 0.2f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
@@ -49,12 +49,13 @@ public class CompareAllAIs {
         bots.add(new ContinuingDownsamplingUCT(100, 100, 100, new RandomBiasedAI(), new SimpleEvaluationFunction()));
         bots.add(new ContinuingUCTUnitActions(100, 100, new RandomBiasedAI(), new SimpleEvaluationFunction()));
         bots.add(new ContinuingNaiveMCTS(100, 100, 0.33f, 0.2f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
-        List<PhysicalGameState> maps = new LinkedList<PhysicalGameState>();
 
+        List<PhysicalGameState> maps = new LinkedList<PhysicalGameState>();
+        maps.add(PhysicalGameState.load("maps/melee4x4light2.xml",UnitTypeTable.utt));
         maps.add(PhysicalGameState.load("maps/melee8x8light4.xml",UnitTypeTable.utt));
         maps.add(PhysicalGameState.load("maps/basesWorkers8x8.xml",UnitTypeTable.utt));
         maps.add(PhysicalGameState.load("maps/basesWorkers16x16.xml",UnitTypeTable.utt));
-        
+      
         Experimenter.runExperiments(bots, maps, 10, 3000, true);
     }
 }

@@ -134,6 +134,7 @@ public class GameState {
     
     
     public void issueSafe(PlayerAction pa) {
+        if (!integrityCheck()) throw new Error("GameState inconsistent before 'issueSafe'");
         for(Pair<Unit,UnitAction> p:pa.actions) {
             if (p.m_a==null) {
                 System.err.println("Issuing an action to a null unit!!!");
@@ -161,6 +162,7 @@ public class GameState {
         }
         
         issue(pa);
+        if (!integrityCheck()) throw new Error("GameState inconsistent after 'issueSafe'");        
     }    
     
         
@@ -298,6 +300,7 @@ public class GameState {
                 System.out.println(this);
                 System.out.println("Problematic action:");
                 System.out.println(uaa);
+                throw new Error("Inconsistent game state during cloning...");
 //                System.exit(1);
             } else {
                 Unit u2 = gs.pgs.getUnits().get(idx);
@@ -312,8 +315,8 @@ public class GameState {
     public GameState cloneIssue(PlayerAction pa) {
         GameState gs = new GameState(pgs, utt);
         gs.time = time;
+//        if (!integrityCheck()) throw new Error("Game State inconsistent before adding action");
         gs.unitActions.putAll(unitActions);
-        
 /*
         for(Pair<Unit,UnitAction> ua:pa.actions) {
             if (pgs.units.indexOf(ua.m_a)==-1) {
@@ -323,15 +326,19 @@ public class GameState {
         }
 */
         gs.issue(pa);
+//        if (!integrityCheck()) throw new Error("Game State inconsistent after adding action");
         return gs;        
     }
     
     
     public boolean integrityCheck() {
+        List<Unit> alreadyUsed = new LinkedList<Unit>();
         for(UnitActionAssignment uaa:unitActions.values()) {
             Unit u = uaa.unit;
             int idx = pgs.getUnits().indexOf(u);
             if (idx==-1) return false;
+            if (alreadyUsed.contains(u)) return false;
+            alreadyUsed.add(u);
         }
         return true;
     }
