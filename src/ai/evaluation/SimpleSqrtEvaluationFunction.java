@@ -14,7 +14,7 @@ import rts.units.*;
  *
  * @author santi
  */
-public class SimpleEvaluationFunction extends EvaluationFunction {    
+public class SimpleSqrtEvaluationFunction extends EvaluationFunction {    
     public static float RESOURCE = 20;
     public static float RESOURCE_IN_WORKER = 10;
     public static float UNIT_BONUS_MULTIPLIER = 40.0f;
@@ -30,7 +30,7 @@ public class SimpleEvaluationFunction extends EvaluationFunction {
         for(Unit u:pgs.getUnits()) {
             if (u.getPlayer()==player) {
                 score += u.getResources() * RESOURCE_IN_WORKER;
-                score += UNIT_BONUS_MULTIPLIER * (u.getCost()*u.getHitPoints())/(float)u.getMaxHitPoints();
+                score += UNIT_BONUS_MULTIPLIER * (u.getCost()*Math.sqrt(u.getHitPoints()))/(float)u.getMaxHitPoints();
             }
         }
         return score;
