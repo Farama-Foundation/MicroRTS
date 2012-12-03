@@ -7,6 +7,7 @@ package tests;
 import ai.abstraction.LightRush;
 import ai.montecarlo.NaiveMonteCarlo;
 import ai.*;
+import ai.abstraction.pathfinding.AStarPathFinding;
 import ai.evaluation.SimpleEvaluationFunction;
 import ai.montecarlo.DownsamplingMonteCarlo;
 import ai.montecarlo.ContinuingDownsamplingMC;
@@ -67,7 +68,7 @@ public class RTMonteCarloAIExperiments {
 //                            ai1 = new WorkerRushAI();
                             break;
                         case 1:
-                            ai1 = new LightRush(UnitTypeTable.utt);
+                            ai1 = new LightRush(UnitTypeTable.utt, new AStarPathFinding());
                             break;
                     }
                     switch (ai2_idx) {

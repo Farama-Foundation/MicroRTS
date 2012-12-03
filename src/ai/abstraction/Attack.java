@@ -4,6 +4,8 @@
  */
 package ai.abstraction;
 
+import ai.abstraction.pathfinding.AStarPathFinding;
+import ai.abstraction.pathfinding.PathFinding;
 import rts.GameState;
 import rts.PhysicalGameState;
 import rts.UnitAction;
@@ -15,10 +17,12 @@ import rts.units.Unit;
  */
 public class Attack extends AbstractAction  {
     Unit target;
+    PathFinding pf;
     
-    public Attack(Unit u, Unit a_target) {
+    public Attack(Unit u, Unit a_target, PathFinding a_pf) {
         super(u);
         target = a_target;
+        pf = a_pf;
     }
     
     public boolean completed(GameState gs) {
@@ -36,7 +40,7 @@ public class Attack extends AbstractAction  {
             return new UnitAction(UnitAction.TYPE_ATTACK_LOCATION,target.getX(),target.getY());
         } else {
             // move towards the unit:
-            UnitAction move = AStar.findPathToAdjacentPosition(unit, target.getX()+target.getY()*gs.getPhysicalGameState().getWidth(), gs);
+            UnitAction move = pf.findPathToAdjacentPosition(unit, target.getX()+target.getY()*gs.getPhysicalGameState().getWidth(), gs);
     //        System.out.println("AStarAttak returns: " + move);
             return move;    
         }        

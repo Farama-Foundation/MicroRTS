@@ -4,6 +4,8 @@
  */
 package ai.abstraction;
 
+import ai.abstraction.pathfinding.AStarPathFinding;
+import ai.abstraction.pathfinding.PathFinding;
 import java.util.LinkedList;
 import java.util.List;
 import rts.GameState;
@@ -18,11 +20,13 @@ import rts.units.Unit;
 public class Harvest extends AbstractAction  {
     Unit target;
     Unit base;
+    PathFinding pf;
     
-    public Harvest(Unit u, Unit a_target, Unit a_base) {
+    public Harvest(Unit u, Unit a_target, Unit a_base, PathFinding a_pf) {
         super(u);
         target = a_target;
         base = a_base;
+        pf = a_pf;
     }
     
     public boolean completed(GameState gs) {
@@ -35,7 +39,7 @@ public class Harvest extends AbstractAction  {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         if (unit.getResources()==0) {
             // go get resources:
-            UnitAction move = AStar.findPathToAdjacentPosition(unit, target.getX()+target.getY()*gs.getPhysicalGameState().getWidth(), gs);
+            UnitAction move = pf.findPathToAdjacentPosition(unit, target.getX()+target.getY()*gs.getPhysicalGameState().getWidth(), gs);
             if (move!=null) return move;
 
             // harvest:
@@ -49,7 +53,7 @@ public class Harvest extends AbstractAction  {
                 target.getY() == unit.getY()) return new UnitAction(UnitAction.TYPE_HARVEST,UnitAction.DIRECTION_LEFT);
         } else {
             // return resources:
-            UnitAction move = AStar.findPathToAdjacentPosition(unit, base.getX()+base.getY()*gs.getPhysicalGameState().getWidth(), gs);
+            UnitAction move = pf.findPathToAdjacentPosition(unit, base.getX()+base.getY()*gs.getPhysicalGameState().getWidth(), gs);
             if (move!=null) return move;
 
             // harvest:
