@@ -5,6 +5,7 @@
 package ai.abstraction;
 
 import ai.AI;
+import ai.abstraction.pathfinding.PathFinding;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -29,7 +30,12 @@ public abstract class AbstractionLayerAI extends AI {
     //      - attack(target)
     
     HashMap<Unit,AbstractAction> actions = new LinkedHashMap<Unit,AbstractAction>();
-    
+    PathFinding pf = null;
+            
+    public AbstractionLayerAI(PathFinding a_pf) {
+        pf = a_pf;
+    }
+            
     public abstract void reset();
 
     public abstract AI clone();
@@ -72,7 +78,7 @@ public abstract class AbstractionLayerAI extends AI {
     }
     
     public void move(Unit u, int x,int y) {
-        actions.put(u,new Move(u,x,y));
+        actions.put(u,new Move(u,x,y, pf));
     }
 
     
@@ -82,16 +88,16 @@ public abstract class AbstractionLayerAI extends AI {
 
 
     public void build(Unit u, UnitType unit_type, int x, int y) {
-        actions.put(u,new Build(u,unit_type,x,y));
+        actions.put(u,new Build(u,unit_type,x,y, pf));
     }
 
 
     public void harvest(Unit u, Unit target, Unit base) {
-        actions.put(u,new Harvest(u,target, base));
+        actions.put(u,new Harvest(u,target, base, pf));
     }
 
     
     public void attack(Unit u, Unit target) {
-        actions.put(u,new Attack(u,target));
+        actions.put(u,new Attack(u,target, pf));
     }
 }   

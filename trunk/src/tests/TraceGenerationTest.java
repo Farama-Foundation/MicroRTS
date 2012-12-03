@@ -6,6 +6,7 @@ package tests;
 
 import ai.abstraction.WorkerRush;
 import ai.*;
+import ai.abstraction.pathfinding.AStarPathFinding;
 import ai.uct.UCT;
 import ai.rtminimax.IDContinuingRTMinimax;
 import java.io.FileWriter;
@@ -21,31 +22,13 @@ import util.XMLWriter;
  */
 public class TraceGenerationTest {
     public static void main(String args[]) throws IOException, Exception {
-//        PhysicalGameState pgs = MapGenerator.bases8x8();        
-//        PhysicalGameState pgs = MapGenerator.basesWorkers8x8();
         PhysicalGameState pgs = MapGenerator.basesWorkers8x8Obstacle();
-//        PhysicalGameState pgs = MapGenerator.basesWorkersBarracks8x8();        
-//        PhysicalGameState pgs = MapGenerator.melee4x4light2();        
-//        PhysicalGameState pgs = MapGenerator.melee4x4Mixed2();        
         GameState gs = new GameState(pgs, UnitTypeTable.utt);
         int MAXCYCLES = 5000;
         boolean gameover = false;
         
-//        AI ai1 = new RandomAI();
         AI ai1 = new RandomBiasedAI();
-//        AI ai1 = new LightRushAI();
-//        AI ai1 = new RTMinimaxAI();
-//        AI ai1 = new IDContinuingRTMinimaxAI(PERIOD/2);
-
-//        AI ai2 = new RandomAI();
-//        AI ai2 = new StochasticBiasedAI();
-        AI ai2 = new WorkerRush(UnitTypeTable.utt);
-//        AI ai2 = new LightRushAI();
-//        AI ai2 = new RTMinimaxAI();
-//        AI ai2 = new MonteCarloAI();
-//        AI ai2 = new RTUCTAI(500,1000);
-//        AI ai2 = new IDRTMinimaxAI(PERIOD/2);
-//        AI ai2 = new IDContinuingRTMinimaxAI(PERIOD/2);
+        AI ai2 = new WorkerRush(UnitTypeTable.utt, new AStarPathFinding());
         
         Trace trace = new Trace();
         TraceEntry te = new TraceEntry(gs.getPhysicalGameState().clone(),gs.getTime());

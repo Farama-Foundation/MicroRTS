@@ -6,6 +6,7 @@ package ai.abstraction;
 
 import ai.AI;
 import ai.abstraction.AbstractionLayerAI;
+import ai.abstraction.pathfinding.PathFinding;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -33,7 +34,8 @@ public class LightRush extends AbstractionLayerAI {
     // If we have a base: train worker until we have 1 workers
     // If we have a barracks: train light
     // If we have a worker: do this if needed: build base, build barracks, harvest resources
-    public LightRush(UnitTypeTable a_utt) {
+    public LightRush(UnitTypeTable a_utt, PathFinding a_pf) {
+        super(a_pf);
         utt = a_utt;
         workerType = utt.getUnitType("Worker");
         baseType = utt.getUnitType("Base");
@@ -45,7 +47,7 @@ public class LightRush extends AbstractionLayerAI {
     }
 
     public AI clone() {
-        return new LightRush(utt);
+        return new LightRush(utt, pf);
     }
 
     public PlayerAction getAction(int player, GameState gs) {

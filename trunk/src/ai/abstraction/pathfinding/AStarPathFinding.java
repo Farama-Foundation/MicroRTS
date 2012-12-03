@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ai.abstraction;
+package ai.abstraction.pathfinding;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -15,11 +15,11 @@ import rts.units.Unit;
  *
  * @author santi
  */
-public class AStar {
+public class AStarPathFinding extends PathFinding {
     
     // This fucntion finds the shortest path from 'start' to 'targetpos' and then returns
     // a UnitAction of the type 'actionType' with the direction of the first step in the shorteet path
-    public static UnitAction findPath(Unit start, int targetpos, GameState gs) {
+    public UnitAction findPath(Unit start, int targetpos, GameState gs) {
         
         PhysicalGameState pgs = gs.getPhysicalGameState();
         boolean free[][] = new boolean[pgs.getWidth()][pgs.getHeight()];        
@@ -86,7 +86,7 @@ public class AStar {
      * This function is like the previous one, but doesn't try to reach 'target', but just to 
      * reach a position adjacent to 'target'
      */
-    public static UnitAction findPathToAdjacentPosition(Unit start, int targetpos, GameState gs) {
+    public UnitAction findPathToAdjacentPosition(Unit start, int targetpos, GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         boolean free[][] = new boolean[pgs.getWidth()][pgs.getHeight()];        
         int closed[] = new int[pgs.getWidth()*pgs.getHeight()];
