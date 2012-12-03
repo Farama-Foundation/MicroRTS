@@ -40,6 +40,7 @@ public class Build extends AbstractAction  {
 
     public UnitAction execute(GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
+//        System.out.println("findPathToAdjacentPosition from Build: (" + x + "," + y + ")");
         UnitAction move = pf.findPathToAdjacentPosition(unit, x+y*pgs.getWidth(), gs);
         if (move!=null) return move;
 

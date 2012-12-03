@@ -8,6 +8,8 @@ import ai.abstraction.LightRush;
 import ai.*;
 import ai.abstraction.RangedRush;
 import ai.abstraction.WorkerRush;
+import ai.abstraction.pathfinding.AStarPathFinding;
+import ai.abstraction.pathfinding.GreedyPathFinding;
 import ai.evaluation.SimpleEvaluationFunction;
 import ai.montecarlo.ContinuingDownsamplingMC;
 import ai.montecarlo.ContinuingNaiveMC;
@@ -40,9 +42,10 @@ public class GameVisualSimulationTest {
         boolean gameover = false;
         
 //        AI ai1 = new RandomAI();
-//        AI ai1 = new WorkerRush(MapGenerator.utt);
-//        AI ai1 = new RangedRush(MapGenerator.utt);
-        AI ai1 = new ContinuingNaiveMC(PERIOD, 200, 0.33f, 0.2f, new RandomBiasedAI(), new SimpleEvaluationFunction());
+//        AI ai1 = new WorkerRush(UnitTypeTable.utt);
+//        AI ai1 = new RangedRush(UnitTypeTable.utt, new AStarPathFinding());
+        AI ai1 = new RangedRush(UnitTypeTable.utt, new GreedyPathFinding());
+//        AI ai1 = new ContinuingNaiveMC(PERIOD, 200, 0.33f, 0.2f, new RandomBiasedAI(), new SimpleEvaluationFunction());
 
         AI ai2 = new RandomBiasedAI();
 //        AI ai2 = new LightRush();

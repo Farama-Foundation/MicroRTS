@@ -6,6 +6,7 @@ package tests;
 
 import ai.*;
 import ai.abstraction.LightRush;
+import ai.abstraction.RangedRush;
 import ai.abstraction.WorkerRush;
 import ai.abstraction.pathfinding.AStarPathFinding;
 import ai.evaluation.EvaluationFunctionWithActions;
@@ -40,6 +41,7 @@ public class CompareAllAIs {
         List<AI> bots = new LinkedList<AI>();
         bots.add(new RandomBiasedAI());
         bots.add(new LightRush(UnitTypeTable.utt, new AStarPathFinding()));
+        bots.add(new RangedRush(UnitTypeTable.utt, new AStarPathFinding()));
         bots.add(new WorkerRush(UnitTypeTable.utt, new AStarPathFinding()));
         bots.add(new IDContinuingRTMinimax(100, new EvaluationFunctionWithActions()));
         bots.add(new IDContinuingRTMinimaxRandomized(100, 10, new EvaluationFunctionWithActions()));
