@@ -26,11 +26,13 @@ public class UCT extends AI {
     
     int NSIMULATIONS = 1000;
     int MAXSIMULATIONTIME = 500;
+    int MAX_TREE_DEPTH = 10;
 
-    public UCT(int simulations, int time, AI policy, EvaluationFunction a_ef) {
+    public UCT(int simulations, int time, int max_depth, AI policy, EvaluationFunction a_ef) {
         super();
         NSIMULATIONS = simulations;
-        MAXSIMULATIONTIME = time;        
+        MAXSIMULATIONTIME = time;   
+        MAX_TREE_DEPTH = max_depth;
         randomAI = policy;
         ef = a_ef;
     }
@@ -41,7 +43,7 @@ public class UCT extends AI {
 
     
     public AI clone() {
-        return new UCT(NSIMULATIONS, MAXSIMULATIONTIME, randomAI, ef);
+        return new UCT(NSIMULATIONS, MAXSIMULATIONTIME, MAX_TREE_DEPTH, randomAI, ef);
     }  
         
     
@@ -63,7 +65,7 @@ public class UCT extends AI {
         if (DEBUG>=1) System.out.println(this.getClass().getSimpleName() + " started...");
 
         for(int i = 0;i<T;i++) {
-            UCTNode leaf = tree.UCTSelectLeaf(maxplayer, minplayer, -1);
+            UCTNode leaf = tree.UCTSelectLeaf(maxplayer, minplayer, -1, MAX_TREE_DEPTH);
             
             if (leaf!=null) {
                 GameState gs2 = leaf.gs.clone();
@@ -99,6 +101,8 @@ public class UCT extends AI {
             }
             System.out.println(this.getClass().getSimpleName() + " selected children " + tree.actions.get(mostVisitedIdx) + " explored " + mostVisited.visit_count + " Avg evaluation: " + (mostVisited.accum_evaluation/((double)mostVisited.visit_count)));
         }
+        
+        if (mostVisitedIdx==-1) return new PlayerAction();
         
         return tree.actions.get(mostVisitedIdx);
     }

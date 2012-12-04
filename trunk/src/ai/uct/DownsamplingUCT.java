@@ -27,12 +27,14 @@ public class DownsamplingUCT extends AI {
     long MAXACTIONS = 100;
     int NSIMULATIONS = 1000;
     int MAXSIMULATIONTIME = 500;
+    int MAX_TREE_DEPTH = 10;
 
-    public DownsamplingUCT(int simulations, int time, long maxactions, AI policy, EvaluationFunction a_ef) {
+    public DownsamplingUCT(int simulations, int time, long maxactions, int max_depth,AI policy, EvaluationFunction a_ef) {
         super();
         NSIMULATIONS = simulations;
         MAXSIMULATIONTIME = time;        
         MAXACTIONS = maxactions;
+        MAX_TREE_DEPTH = max_depth;
         randomAI = policy;
         ef = a_ef;
     }
@@ -43,7 +45,7 @@ public class DownsamplingUCT extends AI {
 
     
     public AI clone() {
-        return new DownsamplingUCT(NSIMULATIONS, MAXSIMULATIONTIME, MAXACTIONS, randomAI, ef);
+        return new DownsamplingUCT(NSIMULATIONS, MAXSIMULATIONTIME, MAXACTIONS, MAX_TREE_DEPTH, randomAI, ef);
     }  
     
     
@@ -65,7 +67,7 @@ public class DownsamplingUCT extends AI {
         if (DEBUG>=1) System.out.println(this.getClass().getSimpleName() + " started...");
 
         for(int i = 0;i<T;i++) {
-            DownsamplingUCTNode leaf = tree.UCTSelectLeaf(maxplayer, minplayer, MAXACTIONS, -1);
+            DownsamplingUCTNode leaf = tree.UCTSelectLeaf(maxplayer, minplayer, MAXACTIONS, -1, MAX_TREE_DEPTH);
             
             if (leaf!=null) {
                 GameState gs2 = leaf.gs.clone();

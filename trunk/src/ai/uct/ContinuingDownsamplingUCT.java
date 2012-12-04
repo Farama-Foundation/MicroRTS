@@ -39,13 +39,15 @@ public class ContinuingDownsamplingUCT extends AI {
     long MAXACTIONS = 100;
     int TIME_PER_CYCLE = 100;
     int MAXSIMULATIONTIME = 1024;
+    int MAX_TREE_DEPTH = 10;
     
     
-    public ContinuingDownsamplingUCT(int available_time, int lookahead, long maxactions, AI policy, EvaluationFunction a_ef) {
+    public ContinuingDownsamplingUCT(int available_time, int lookahead, long maxactions, int max_depth, AI policy, EvaluationFunction a_ef) {
         MAXACTIONS = maxactions;
         MAXSIMULATIONTIME = lookahead;
         randomAI = policy;
         TIME_PER_CYCLE = available_time;
+        MAX_TREE_DEPTH =  max_depth;
         ef = a_ef;
     }
     
@@ -65,7 +67,7 @@ public class ContinuingDownsamplingUCT extends AI {
         
     
     public AI clone() {
-        return new ContinuingDownsamplingUCT(TIME_PER_CYCLE, MAXSIMULATIONTIME, MAXACTIONS, randomAI, ef);
+        return new ContinuingDownsamplingUCT(TIME_PER_CYCLE, MAXSIMULATIONTIME, MAXACTIONS, MAX_TREE_DEPTH, randomAI, ef);
     }  
     
     
@@ -159,7 +161,7 @@ public class ContinuingDownsamplingUCT extends AI {
         long cutOffTime = start + available_time;
         
         while(System.currentTimeMillis() < cutOffTime) {
-            DownsamplingUCTNode leaf = tree.UCTSelectLeaf(player, 1-player, MAXACTIONS, cutOffTime);
+            DownsamplingUCTNode leaf = tree.UCTSelectLeaf(player, 1-player, MAXACTIONS, cutOffTime, MAX_TREE_DEPTH);
             
             if (leaf!=null) {
                 GameState gs2 = leaf.gs.clone();
