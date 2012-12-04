@@ -8,7 +8,7 @@ import ai.abstraction.WorkerRush;
 import ai.*;
 import ai.abstraction.pathfinding.AStarPathFinding;
 import ai.uct.UCT;
-import ai.rtminimax.IDContinuingRTMinimax;
+import ai.minimax.IDContinuingRTMinimax;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;

@@ -6,8 +6,14 @@ package tests;
 
 import ai.AI;
 import ai.RandomBiasedAI;
+import ai.abstraction.LightRush;
+import ai.abstraction.pathfinding.GreedyPathFinding;
+import ai.evaluation.EvaluationFunction;
 import ai.evaluation.EvaluationFunctionWithActions;
 import ai.evaluation.SimpleEvaluationFunction;
+import ai.minimax.ABCD;
+import ai.minimax.IDABCD;
+import ai.minimax.IDContinuingABCD;
 import ai.montecarlo.ContinuingNaiveMC;
 import ai.minimax.IDContinuingRTMinimaxRandomized;
 import gui.PhysicalGameStatePanel;
@@ -23,17 +29,20 @@ import util.XMLWriter;
  *
  * @author santi
  */
-public class RTMinimaxRandomizedTest {
+public class ABCDTest {
  public static void main(String args[]) throws Exception {
-//        PhysicalGameState pgs = PhysicalGameState.load("maps/basesWorkers16x16.xml");
+//        PhysicalGameState pgs = PhysicalGameState.load("maps/basesWorkers8x8.xml",UnitTypeTable.utt);
         PhysicalGameState pgs = MapGenerator.melee4x4light2();
 
         GameState gs = new GameState(pgs, UnitTypeTable.utt);
         int MAXCYCLES = 5000;
-        int PERIOD = 20;
+        int PERIOD = 100;
         boolean gameover = false;
         
-        AI ai1 = new IDContinuingRTMinimaxRandomized(PERIOD, 10, new EvaluationFunctionWithActions());
+//        AI ai1 = new ABCD(3, new RandomBiasedAI(), 100, new SimpleEvaluationFunction());
+//        AI ai1 = new IDABCD(PERIOD, new RandomBiasedAI(), 100, new SimpleEvaluationFunction());
+//        AI ai1 = new IDABCD(PERIOD, new LightRush(UnitTypeTable.utt, new GreedyPathFinding()), 100, new SimpleEvaluationFunction());
+        AI ai1 = new IDContinuingABCD(PERIOD, new RandomBiasedAI(), 100, new SimpleEvaluationFunction());
         AI ai2 = new RandomBiasedAI();
         
         XMLWriter xml = new XMLWriter(new OutputStreamWriter(System.out));
@@ -63,6 +72,6 @@ public class RTMinimaxRandomizedTest {
             }
         }while(!gameover && gs.getTime()<MAXCYCLES);
         
-        System.out.println("Game Over");
+        System.out.println("Game Over! Winner " + gs.winner());
     }      
 }

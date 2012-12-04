@@ -39,6 +39,8 @@ public class RandomBiasedAI extends AI {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         PlayerAction pa = new PlayerAction();
         
+        if (!gs.canExecuteAnyAction(pID)) return pa;
+
         // Generate the reserved resources:
         for(Unit u:pgs.getUnits()) {
 //            if (u.getPlayer()==pID) {
