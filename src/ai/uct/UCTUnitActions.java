@@ -26,11 +26,13 @@ public class UCTUnitActions extends AI {
     
     int NSIMULATIONS = 1000;
     int MAXSIMULATIONTIME = 500;
+    int MAX_TREE_DEPTH = 10;
 
-    public UCTUnitActions(int simulations, int time, AI policy, EvaluationFunction a_ef) {
+    public UCTUnitActions(int simulations, int time, int max_depth, AI policy, EvaluationFunction a_ef) {
         super();
         NSIMULATIONS = simulations;
-        MAXSIMULATIONTIME = time;        
+        MAXSIMULATIONTIME = time;   
+        MAX_TREE_DEPTH = max_depth;
         randomAI = policy;
         ef = a_ef;
     }
@@ -41,7 +43,7 @@ public class UCTUnitActions extends AI {
 
     
     public AI clone() {
-        return new UCTUnitActions(NSIMULATIONS, MAXSIMULATIONTIME, randomAI, ef);
+        return new UCTUnitActions(NSIMULATIONS, MAXSIMULATIONTIME, MAX_TREE_DEPTH, randomAI, ef);
     }  
         
     
@@ -63,7 +65,7 @@ public class UCTUnitActions extends AI {
         if (DEBUG>=1) System.out.println(this.getClass().getSimpleName() + " started...");
 
         for(int i = 0;i<T;i++) {
-            UCTUnitActionsNode leaf = tree.UCTSelectLeaf(maxplayer, minplayer);
+            UCTUnitActionsNode leaf = tree.UCTSelectLeaf(maxplayer, minplayer, MAX_TREE_DEPTH);
             
             if (leaf!=null) {
                 GameState gs2 = leaf.gs.clone();

@@ -17,10 +17,12 @@ import rts.units.Unit;
  */
 public class UCTUnitActionsNode {
     static Random r = new Random();
+    static float C = 50;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
     
     public int type;    // 0 : max, 1 : min, -1: Game-over
     UCTUnitActionsNode parent = null;
     public GameState gs;
+    int depth = 0;
     
     public List<PlayerAction> actions = null;
     public List<UCTUnitActionsNode> children = null;
@@ -30,6 +32,8 @@ public class UCTUnitActionsNode {
     
     public UCTUnitActionsNode(int maxplayer, int minplayer, GameState a_gs, UCTUnitActionsNode a_parent, float bound) {
         parent = a_parent;
+        if (parent==null) depth = 0;
+                     else depth = parent.depth+1;
         gs = a_gs;
         evaluation_bound = bound;
         PhysicalGameState pgs = a_gs.getPhysicalGameState();
@@ -76,7 +80,10 @@ public class UCTUnitActionsNode {
         }     
     }
     
-    public UCTUnitActionsNode UCTSelectLeaf(int maxplayer, int minplayer) {
+    public UCTUnitActionsNode UCTSelectLeaf(int maxplayer, int minplayer, int max_depth) {
+        // Cut the tree policy at a predefined depth
+        if (depth>=max_depth) return this;        
+        
         // if non visited children, visit:     
         if (children==null || actions==null) return null;
         if (children.size()<actions.size()) {
@@ -104,8 +111,7 @@ public class UCTUnitActionsNode {
             }
 //            System.out.println(exploitation + " + " + exploration);
 
-//            double tmp = 140*exploitation + exploration;
-            double tmp = 50*exploitation + exploration;
+            double tmp = C*exploitation + exploration;
             if (best==null || tmp>best_score) {
                 best = child;
                 best_score = tmp;
@@ -113,7 +119,7 @@ public class UCTUnitActionsNode {
         } 
         
         if (best==null) return null;
-        return best.UCTSelectLeaf(maxplayer, minplayer);
+        return best.UCTSelectLeaf(maxplayer, minplayer, max_depth);
 //        return best;
     }    
     

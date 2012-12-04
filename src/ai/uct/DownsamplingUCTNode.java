@@ -17,11 +17,14 @@ import rts.PlayerActionGenerator;
  */
 public class DownsamplingUCTNode {
     public static int DEBUG = 0;
+
     static Random r = new Random();
+    static float C = 50;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
     
     public int type;    // 0 : max, 1 : min, -1: Game-over
     DownsamplingUCTNode parent = null;
     public GameState gs;
+    int depth = 0;  // the depth in the tree
     
     boolean hasMoreActions = true;
     PlayerActionGenerator moveGenerator = null;
@@ -34,6 +37,8 @@ public class DownsamplingUCTNode {
     public DownsamplingUCTNode(int maxplayer, int minplayer, GameState a_gs, DownsamplingUCTNode a_parent, long MAXACTIONS, float bound) throws Exception {
         parent = a_parent;
         gs = a_gs;
+        if (parent==null) depth = 0;
+                     else depth = parent.depth+1;
         evaluation_bound = bound;
 
         while(gs.winner()==-1 && 
@@ -54,9 +59,10 @@ public class DownsamplingUCTNode {
         }             
     }
     
-    public DownsamplingUCTNode UCTSelectLeaf(int maxplayer, int minplayer, long MAXACTIONS, long cutOffTime) throws Exception {
-        // if non visited children, visit:    
-        
+    public DownsamplingUCTNode UCTSelectLeaf(int maxplayer, int minplayer, long MAXACTIONS, long cutOffTime, int max_depth) throws Exception {
+        // Cut the tree policy at a predefined depth
+        if (depth>=max_depth) return this;        
+
         // Downsample the number of actions:
         if (moveGenerator!=null && actions==null) {
             actions = new ArrayList<PlayerAction>();
@@ -101,8 +107,7 @@ public class DownsamplingUCTNode {
             } else {
                 exploitation = - (exploitation - evaluation_bound)/(2*evaluation_bound);                
             }
-//            System.out.println(exploitation + " + " + exploration);
-            double tmp = 50*exploitation + exploration;
+            double tmp = C*exploitation + exploration;
             if (best==null || tmp>best_score) {
                 best = child;
                 best_score = tmp;
@@ -110,7 +115,7 @@ public class DownsamplingUCTNode {
         } 
         
         if (best==null) return null;
-        return best.UCTSelectLeaf(maxplayer, minplayer, MAXACTIONS, cutOffTime);
+        return best.UCTSelectLeaf(maxplayer, minplayer, MAXACTIONS, cutOffTime, max_depth);
 //        return best;
     }    
     

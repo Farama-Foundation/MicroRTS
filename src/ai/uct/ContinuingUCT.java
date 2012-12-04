@@ -38,12 +38,14 @@ public class ContinuingUCT extends AI {
         
     int TIME_PER_CYCLE = 100;
     int MAXSIMULATIONTIME = 1024;
+    int MAX_TREE_DEPTH = 10;
     
     
-    public ContinuingUCT(int available_time, int lookahead, AI policy, EvaluationFunction a_ef) {
+    public ContinuingUCT(int available_time, int lookahead, int max_depth, AI policy, EvaluationFunction a_ef) {
         MAXSIMULATIONTIME = lookahead;
         randomAI = policy;
         TIME_PER_CYCLE = available_time;
+        MAX_TREE_DEPTH = max_depth;
         ef = a_ef;
     }
     
@@ -63,7 +65,7 @@ public class ContinuingUCT extends AI {
     
     
     public AI clone() {
-        return new ContinuingUCT(TIME_PER_CYCLE, MAXSIMULATIONTIME, randomAI, ef);
+        return new ContinuingUCT(TIME_PER_CYCLE, MAXSIMULATIONTIME, MAX_TREE_DEPTH, randomAI, ef);
     }  
     
     
@@ -132,7 +134,7 @@ public class ContinuingUCT extends AI {
         long cutOffTime = start + available_time;
         
         while(System.currentTimeMillis() < cutOffTime) {
-            UCTNode leaf = tree.UCTSelectLeaf(player, 1-player, cutOffTime);
+            UCTNode leaf = tree.UCTSelectLeaf(player, 1-player, cutOffTime, MAX_TREE_DEPTH);
             
             if (leaf!=null) {
                 GameState gs2 = leaf.gs.clone();
@@ -176,7 +178,9 @@ public class ContinuingUCT extends AI {
         if (DEBUG>=2) tree.showNode(0,1);        
         if (DEBUG>=1) System.out.println(this.getClass().getSimpleName() + " selected children " + tree.actions.get(mostVisitedIdx) + " explored " + mostVisited.visit_count + " Avg evaluation: " + (mostVisited.accum_evaluation/((double)mostVisited.visit_count)));
         
-//        printStats();        
+//        printStats();   
+        
+        if (mostVisitedIdx==-1) return new PlayerAction();
         
         return tree.actions.get(mostVisitedIdx);
     }

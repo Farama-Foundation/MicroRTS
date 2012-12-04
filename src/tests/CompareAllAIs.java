@@ -38,20 +38,26 @@ public class CompareAllAIs {
 
     public static void main(String args[]) throws Exception 
     {
+        int TIME = 100;
+        int MAX_ACTIONS = 100;
+        int PLAYOUT_TIME = 100;
+        int MAX_DEPTH = 10;
+        int RANDOMIZED_AB_REPEATS = 10;
+        
         List<AI> bots = new LinkedList<AI>();
         bots.add(new RandomBiasedAI());
         bots.add(new LightRush(UnitTypeTable.utt, new AStarPathFinding()));
         bots.add(new RangedRush(UnitTypeTable.utt, new AStarPathFinding()));
         bots.add(new WorkerRush(UnitTypeTable.utt, new AStarPathFinding()));
-        bots.add(new IDContinuingRTMinimax(100, new EvaluationFunctionWithActions()));
-        bots.add(new IDContinuingRTMinimaxRandomized(100, 10, new EvaluationFunctionWithActions()));
-        bots.add(new ContinuingMC(100, 100, new RandomBiasedAI(), new SimpleEvaluationFunction()));
-        bots.add(new ContinuingDownsamplingMC(100, 100, 100, new RandomBiasedAI(), new SimpleEvaluationFunction()));
-        bots.add(new ContinuingNaiveMC(100, 100, 0.33f, 0.2f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
-        bots.add(new ContinuingUCT(100, 100, new RandomBiasedAI(), new SimpleEvaluationFunction()));
-        bots.add(new ContinuingDownsamplingUCT(100, 100, 100, new RandomBiasedAI(), new SimpleEvaluationFunction()));
-        bots.add(new ContinuingUCTUnitActions(100, 100, new RandomBiasedAI(), new SimpleEvaluationFunction()));
-        bots.add(new ContinuingNaiveMCTS(100, 100, 0.33f, 0.2f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
+        bots.add(new IDContinuingRTMinimax(TIME, new EvaluationFunctionWithActions()));
+        bots.add(new IDContinuingRTMinimaxRandomized(TIME, RANDOMIZED_AB_REPEATS, new EvaluationFunctionWithActions()));
+        bots.add(new ContinuingMC(TIME, PLAYOUT_TIME, new RandomBiasedAI(), new SimpleEvaluationFunction()));
+        bots.add(new ContinuingDownsamplingMC(TIME, PLAYOUT_TIME, MAX_ACTIONS, new RandomBiasedAI(), new SimpleEvaluationFunction()));
+        bots.add(new ContinuingNaiveMC(TIME, PLAYOUT_TIME, 0.33f, 0.2f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
+        bots.add(new ContinuingUCT(TIME, PLAYOUT_TIME, MAX_DEPTH, new RandomBiasedAI(), new SimpleEvaluationFunction()));
+        bots.add(new ContinuingDownsamplingUCT(TIME, PLAYOUT_TIME, MAX_ACTIONS, MAX_DEPTH, new RandomBiasedAI(), new SimpleEvaluationFunction()));
+        bots.add(new ContinuingUCTUnitActions(TIME, PLAYOUT_TIME, MAX_DEPTH, new RandomBiasedAI(), new SimpleEvaluationFunction()));
+        bots.add(new ContinuingNaiveMCTS(TIME, PLAYOUT_TIME, 0.33f, 0.2f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
 
         List<PhysicalGameState> maps = new LinkedList<PhysicalGameState>();
         maps.add(PhysicalGameState.load("maps/melee4x4light2.xml",UnitTypeTable.utt));

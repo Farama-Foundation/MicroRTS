@@ -30,6 +30,7 @@ public class ContinuingUCTUnitActions extends AI {
     
     GameState gs_to_start_from = null;
     UCTUnitActionsNode tree = null;
+    int MAX_TREE_DEPTH = 10;
     
     // statistics:
     public long total_runs = 0;
@@ -40,10 +41,11 @@ public class ContinuingUCTUnitActions extends AI {
     int MAXSIMULATIONTIME = 1024;
     
     
-    public ContinuingUCTUnitActions(int available_time, int lookahead, AI policy, EvaluationFunction a_ef) {
+    public ContinuingUCTUnitActions(int available_time, int lookahead, int max_depth, AI policy, EvaluationFunction a_ef) {
         MAXSIMULATIONTIME = lookahead;
         randomAI = policy;
         TIME_PER_CYCLE = available_time;
+        MAX_TREE_DEPTH = max_depth;
         ef = a_ef;
     }
     
@@ -63,7 +65,7 @@ public class ContinuingUCTUnitActions extends AI {
     
     
     public AI clone() {
-        return new ContinuingUCTUnitActions(TIME_PER_CYCLE, MAXSIMULATIONTIME, randomAI, ef);
+        return new ContinuingUCTUnitActions(TIME_PER_CYCLE, MAXSIMULATIONTIME, MAX_TREE_DEPTH, randomAI, ef);
     }  
     
     
@@ -131,7 +133,7 @@ public class ContinuingUCTUnitActions extends AI {
         long start = System.currentTimeMillis();
         
         while((System.currentTimeMillis() - start)<available_time) {
-            UCTUnitActionsNode leaf = tree.UCTSelectLeaf(player, 1-player);
+            UCTUnitActionsNode leaf = tree.UCTSelectLeaf(player, 1-player, MAX_TREE_DEPTH);
             
             if (leaf!=null) {
                 GameState gs2 = leaf.gs.clone();
