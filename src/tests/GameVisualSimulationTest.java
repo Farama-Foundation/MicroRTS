@@ -14,7 +14,7 @@ import ai.evaluation.SimpleEvaluationFunction;
 import ai.montecarlo.ContinuingDownsamplingMC;
 import ai.montecarlo.ContinuingNaiveMC;
 import ai.uct.UCT;
-import ai.rtminimax.IDContinuingRTMinimax;
+import ai.minimax.IDContinuingRTMinimax;
 import gui.PhysicalGameStatePanel;
 import java.io.OutputStreamWriter;
 import javax.swing.JFrame;

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ai.rtminimax;
+package ai.minimax;
 
 import ai.evaluation.EvaluationFunctionForwarding;
 import ai.AI;
@@ -271,8 +271,7 @@ public class IDContinuingRTMinimax extends IDRTMinimax {
                 case 2: // simulation node:
                         current.gs = current.gs.clone();
                         while(current.gs.winner()==-1 && 
-                              !current.gs.gameover() &&  
-                            //current.gs.getTime()<lookAhead && 
+                            !current.gs.gameover() &&  
                             !current.gs.canExecuteAnyAction(maxplayer) && 
                             !current.gs.canExecuteAnyAction(minplayer)) current.gs.cycle();
                         current.type = -1;
