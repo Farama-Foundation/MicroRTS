@@ -65,6 +65,6 @@ public class CompareAllAIs {
         maps.add(PhysicalGameState.load("maps/basesWorkers8x8.xml",UnitTypeTable.utt));
         maps.add(PhysicalGameState.load("maps/basesWorkers16x16.xml",UnitTypeTable.utt));
       
-        Experimenter.runExperiments(bots, maps, 10, 3000, true);
+        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true);
     }
 }
