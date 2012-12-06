@@ -28,11 +28,11 @@ import rts.units.UnitTypeTable;
 public class Experimenter {
     public static int DEBUG = 0;
     
-    public static void runExperiments(List<AI> bots, List<PhysicalGameState> maps, int iterations, int max_cycles, boolean visualize) throws Exception {
-        runExperiments(bots, maps, iterations, max_cycles, visualize, -1);
+    public static void runExperiments(List<AI> bots, List<PhysicalGameState> maps, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize) throws Exception {
+        runExperiments(bots, maps, iterations, max_cycles, max_inactive_cycles, visualize, -1);
     }
 
-    public static void runExperiments(List<AI> bots, List<PhysicalGameState> maps, int iterations, int max_cycles, boolean visualize, int run_only_those_involving_this_AI) throws Exception {
+    public static void runExperiments(List<AI> bots, List<PhysicalGameState> maps, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize, int run_only_those_involving_this_AI) throws Exception {
         int wins[][] = new int[bots.size()][bots.size()];
         int ties[][] = new int[bots.size()][bots.size()];
         int loses[][] = new int[bots.size()][bots.size()];
@@ -58,6 +58,7 @@ public class Experimenter {
                     for (int i = 0; i < iterations; i++) {
                         AI ai1 = bots.get(ai1_idx);
                         AI ai2 = bots2.get(ai2_idx);
+                        long lastTimeActionIssued = 0;
 
                         ai1.reset();
                         ai2.reset();
@@ -76,6 +77,7 @@ public class Experimenter {
                             if (DEBUG>=1) {System.out.println("AI1 done.");System.out.flush();}
                             PlayerAction pa2 = ai2.getAction(1, gs);
                             if (DEBUG>=1) {System.out.println("AI2 done.");System.out.flush();}
+                            if (!pa1.isEmpty() || !pa2.isEmpty()) lastTimeActionIssued = gs.getTime();
                             gs.issueSafe(pa1);
                             if (DEBUG>=1) {System.out.println("issue action AI1 done.");System.out.flush();}
                             gs.issueSafe(pa2);
@@ -89,7 +91,9 @@ public class Experimenter {
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                        } while (!gameover && gs.getTime() < max_cycles);
+                        } while (!gameover && 
+                                 (gs.getTime() < max_cycles) && 
+                                 (gs.getTime() - lastTimeActionIssued < max_inactive_cycles));
                         if (w!=null) w.dispose();
                         int winner = gs.winner();
                         System.out.println("Winner: " + winner + "  in " + gs.getTime() + " cycles");

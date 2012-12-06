@@ -32,14 +32,10 @@ public class RandomBiasedAI extends AI {
     }
     
     public PlayerAction getAction(int player, GameState gs) {
-        return getRandomPlayerAction(player, gs);
-    }
-    
-    public PlayerAction getRandomPlayerAction(int pID, GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         PlayerAction pa = new PlayerAction();
         
-        if (!gs.canExecuteAnyAction(pID)) return pa;
+        if (!gs.canExecuteAnyAction(player)) return pa;
 
         // Generate the reserved resources:
         for(Unit u:pgs.getUnits()) {
@@ -53,7 +49,7 @@ public class RandomBiasedAI extends AI {
         }
         
         for(Unit u:pgs.getUnits()) {
-            if (u.getPlayer()==pID) {
+            if (u.getPlayer()==player) {
                 if (gs.getActionAssignment(u)==null) {
                     List<UnitAction> l = u.getUnitActions(gs);
                     UnitAction none = null;

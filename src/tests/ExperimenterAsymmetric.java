@@ -26,7 +26,7 @@ import rts.units.UnitTypeTable;
  */
 public class ExperimenterAsymmetric {
 
-    public static void runExperiments(List<AI> bots1, List<AI> bots2, List<PhysicalGameState> maps, int iterations, int max_cycles, boolean visualize) throws Exception {
+    public static void runExperiments(List<AI> bots1, List<AI> bots2, List<PhysicalGameState> maps, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize) throws Exception {
         int wins[][] = new int[bots1.size()][bots2.size()];
         int ties[][] = new int[bots1.size()][bots2.size()];
         int loses[][] = new int[bots1.size()][bots2.size()];
@@ -44,6 +44,7 @@ public class ExperimenterAsymmetric {
                     for (int i = 0; i < iterations; i++) {
                         AI ai1 = bots1.get(ai1_idx);
                         AI ai2 = bots2.get(ai2_idx);
+                        long lastTimeActionIssued = 0;
 
                         ai1.reset();
                         ai2.reset();
@@ -59,6 +60,7 @@ public class ExperimenterAsymmetric {
                         do {
                             PlayerAction pa1 = ai1.getAction(0, gs);
                             PlayerAction pa2 = ai2.getAction(1, gs);
+                            if (!pa1.isEmpty() || !pa2.isEmpty()) lastTimeActionIssued = gs.getTime();
                             gs.issueSafe(pa1);
                             gs.issueSafe(pa2);
                             gameover = gs.cycle();
@@ -68,7 +70,9 @@ public class ExperimenterAsymmetric {
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                        } while (!gameover && gs.getTime() < max_cycles);
+                        } while (!gameover && 
+                                 (gs.getTime() < max_cycles) && 
+                                 (gs.getTime() - lastTimeActionIssued < max_inactive_cycles));
                         if (w!=null) w.dispose();
                         int winner = gs.winner();
                         System.out.println("Winner: " + winner + "  in " + gs.getTime() + " cycles");
