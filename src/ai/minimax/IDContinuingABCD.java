@@ -59,7 +59,7 @@ public class IDContinuingABCD extends IDABCD {
         if (gs.winner()!=-1) return new PlayerAction();
         if (gs.canExecuteAnyAction(player)) {
             if (DEBUG>=1) {
-                System.out.println("IDContinuingABCD... (time  " + gs.getTime() + "): time to produce an action");
+                System.out.println("IDContinuingABCD... (time " + gs.getTime() + ", player " + player + "): time to produce an action");
                 System.out.flush();
             }
             if (gs_to_start_from==null) gs_to_start_from = gs;
@@ -132,7 +132,9 @@ public class IDContinuingABCD extends IDABCD {
         
 //        System.out.println("Starting realTimeMinimaxABIterativeDeepening... (time  " + gs.getTime() + ")");
         do {
-//            System.out.println("next lookahead: " + lookAhead);
+            if (DEBUG>=1) {
+                System.out.println("next depth: " + depth);
+            }
             if (stack==null) {
                 if (nLeaves>MAX_LEAVES) MAX_LEAVES = nLeaves;
                 nLeaves = 0;
@@ -198,8 +200,16 @@ public class IDContinuingABCD extends IDABCD {
 //            System.out.print("Stack: [ ");
 //            for(RTMiniMaxNode n:stack) System.out.print(" " + n.type + "(" + n.gs.getTime() + ") ");
 //            System.out.println("]");
-            
+                        
             ABCDNode current = stack.get(0);
+            
+            /*
+            System.out.println("----- Stack size: " + stack.size() + " -----");
+            System.out.println("Current type: " + current.type);
+            System.out.println(current.gs);
+            System.out.flush();
+            */
+            
             switch(current.type) {
                 case -1: // unknown node:
                         {
@@ -231,11 +241,11 @@ public class IDContinuingABCD extends IDABCD {
                                         current.type = current.nextPlayerInSimultaneousNode;
                                         current.nextPlayerInSimultaneousNode = 1 - current.nextPlayerInSimultaneousNode;
                                     } else {
-                                        current.type = maxplayer;
+                                        current.type = 0;
                                     }
                                 } else {
                                     if (current.gs.canExecuteAnyAction(minplayer)) {
-                                        current.type = minplayer;
+                                        current.type = 1;
                                     }
                                 }
                             }
