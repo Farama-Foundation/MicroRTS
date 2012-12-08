@@ -219,6 +219,7 @@ public class IDContinuingRTMinimax extends IDRTMinimax {
                                 stack.add(0, new RTMiniMaxNode(-1,gs2,current.alpha, current.beta));
                             } else {
                                 // This can only happen if the getNextAction call times out...
+                                break;
                             }
                         } else {                            
                             current.alpha = Math.max(current.alpha,lastResult.m_b);
@@ -250,6 +251,7 @@ public class IDContinuingRTMinimax extends IDRTMinimax {
                                 stack.add(0, new RTMiniMaxNode(-1,gs2,current.alpha, current.beta));
                             } else {
                                 // This can only happen if the getNextAction call times out...
+                                break;
                             }                                
                         } else {                            
                             current.beta = Math.min(current.beta,lastResult.m_b);

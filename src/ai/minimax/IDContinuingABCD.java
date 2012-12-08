@@ -260,8 +260,14 @@ public class IDContinuingABCD extends IDABCD {
                             }
     //                            while(current.actions.size()>MAX_BRANCHING_FACTOR) current.actions.remove(r.nextInt(current.actions.size()));
                             current.best = null;
-                            GameState gs2 = current.gs.cloneIssue(current.actions.getNextAction(cutOffTime));
-                            stack.add(0, new ABCDNode(-1, current.depth + 1, gs2, current.alpha, current.beta, current.nextPlayerInSimultaneousNode));
+                            PlayerAction next = current.actions.getNextAction(cutOffTime);
+                            if (next != null) {
+                                GameState gs2 = current.gs.cloneIssue(next);
+                                stack.add(0, new ABCDNode(-1, current.depth + 1, gs2, current.alpha, current.beta, current.nextPlayerInSimultaneousNode));
+                            } else {
+                                // This can only happen if the getNextAction call times out...
+                                break;
+                            }
                         } else {
                             current.alpha = Math.max(current.alpha, lastResult.m_b);
                             if (current.best == null || lastResult.m_b > current.best.m_b) {
@@ -290,8 +296,14 @@ public class IDContinuingABCD extends IDABCD {
                             }
     //                            while(current.actions.size()>MAX_BRANCHING_FACTOR) current.actions.remove(r.nextInt(current.actions.size()));
                             current.best = null;
-                            GameState gs2 = current.gs.cloneIssue(current.actions.getNextAction(cutOffTime));
-                            stack.add(0, new ABCDNode(-1, current.depth + 1, gs2, current.alpha, current.beta, current.nextPlayerInSimultaneousNode));
+                            PlayerAction next = current.actions.getNextAction(cutOffTime);
+                            if (next != null) {
+                                GameState gs2 = current.gs.cloneIssue(next);
+                                stack.add(0, new ABCDNode(-1, current.depth + 1, gs2, current.alpha, current.beta, current.nextPlayerInSimultaneousNode));
+                            } else {
+                                // This can only happen if the getNextAction call times out...
+                                break;
+                            }
                         } else {
                             current.beta = Math.min(current.beta, lastResult.m_b);
                             if (current.best == null || lastResult.m_b < current.best.m_b) {
