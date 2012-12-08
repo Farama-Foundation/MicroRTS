@@ -46,18 +46,19 @@ public class CompareAllAIs {
         int RANDOMIZED_AB_REPEATS = 10;
         
         List<AI> bots = new LinkedList<AI>();
+
         bots.add(new RandomAI());
         bots.add(new RandomBiasedAI());
         bots.add(new LightRush(UnitTypeTable.utt, new AStarPathFinding()));
         bots.add(new RangedRush(UnitTypeTable.utt, new AStarPathFinding()));
         bots.add(new WorkerRush(UnitTypeTable.utt, new AStarPathFinding()));
-        
+      
         bots.add(new IDContinuingRTMinimax(TIME, new SimpleEvaluationFunction()));
-/*        
         bots.add(new IDContinuingRTMinimaxRandomized(TIME, RANDOMIZED_AB_REPEATS, new SimpleEvaluationFunction()));
+        bots.add(new IDContinuingABCD(TIME, new RandomBiasedAI(), PLAYOUT_TIME, new SimpleEvaluationFunction()));
+/*
         bots.add(new IDContinuingRTMinimax(TIME, new EvaluationFunctionWithActions()));
         bots.add(new IDContinuingRTMinimaxRandomized(TIME, RANDOMIZED_AB_REPEATS, new EvaluationFunctionWithActions()));
-        bots.add(new IDContinuingABCD(TIME, new RandomBiasedAI(), PLAYOUT_TIME, new SimpleEvaluationFunction()));
 
         bots.add(new ContinuingMC(TIME, PLAYOUT_TIME, new RandomBiasedAI(), new SimpleEvaluationFunction()));
         bots.add(new ContinuingDownsamplingMC(TIME, PLAYOUT_TIME, MAX_ACTIONS, new RandomBiasedAI(), new SimpleEvaluationFunction()));
@@ -71,18 +72,18 @@ public class CompareAllAIs {
         // Separate the matchs by map:
         List<PhysicalGameState> maps = new LinkedList<PhysicalGameState>();
         maps.add(PhysicalGameState.load("maps/melee4x4light2.xml",UnitTypeTable.utt));
-        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true);
-//        Experimenter.runExperiments(bots, maps, 10, 3000, true, bots.size()-1);
+//        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true);
+        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true, bots.size()-1);
 
         maps.clear();
         maps.add(PhysicalGameState.load("maps/melee8x8mixed6.xml",UnitTypeTable.utt));
-        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true);
-//        Experimenter.runExperiments(bots, maps, 10, 3000, true, bots.size()-1);
+//        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true);
+        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true, bots.size()-1);
 
         maps.clear();
         maps.add(PhysicalGameState.load("maps/basesWorkers8x8.xml",UnitTypeTable.utt));
-        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true);
-//        Experimenter.runExperiments(bots, maps, 10, 3000, true, bots.size()-1);
+//        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true);
+        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true, bots.size()-1);
       
     }
 }
