@@ -93,7 +93,10 @@ public class GameState {
     }
     
     
-    public void issue(PlayerAction pa) {
+    // returns "true" is any action different from NONE was issued
+    public boolean issue(PlayerAction pa) {
+        boolean returnValue = false;
+        
         for(Pair<Unit,UnitAction> p:pa.actions) {
             if (p.m_a==null) {
                 System.err.println("Issuing an action to a null unit!!!");
@@ -127,13 +130,16 @@ public class GameState {
                 
                 UnitActionAssignment uaa = new UnitActionAssignment(p.m_a, p.m_b, time);
                 unitActions.put(p.m_a,uaa);
+                if (p.m_b.type!=UnitAction.TYPE_NONE) returnValue = true;
 //                System.out.println("Issuing action " + p.m_b + " to " + p.m_a);
             }
         }
+        return returnValue;
     }
     
     
-    public void issueSafe(PlayerAction pa) {
+    // Returns "true" is any action different from NONE was issued
+    public boolean issueSafe(PlayerAction pa) {
         if (!integrityCheck()) throw new Error("GameState inconsistent before 'issueSafe'");
         for(Pair<Unit,UnitAction> p:pa.actions) {
             if (p.m_a==null) {
@@ -161,8 +167,9 @@ public class GameState {
             }
         }
         
-        issue(pa);
+        boolean returnValue = issue(pa);
         if (!integrityCheck()) throw new Error("GameState inconsistent after 'issueSafe'");        
+        return returnValue;
     }    
     
         
