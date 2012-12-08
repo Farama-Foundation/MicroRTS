@@ -239,12 +239,18 @@ public class IDContinuingRTMinimaxRandomized extends IDRTMinimax {
                         } else {
                             // This can only happen if the getNextAction call times out...
 //                            System.err.println("REALLY?");
+                            break;
                         }
                     } else {
                         currentRR.scores[currentRR.iterations_run] = lastResult.m_b;
                         currentRR.iterations_run++;
                         if (currentRR.iterations_run < m_repeats) {
                             PlayerAction next = currentRR.actions.getLastAction();
+                            if (next==null) {
+                                System.out.println("getLastAction returned null!!! time: " + System.currentTimeMillis() + "  cutOff: " + cutOffTime);
+                                System.out.println("Action generator status:");
+                                System.out.println(currentRR.actions);
+                            }
                             GameState gs2 = currentRR.gs.cloneIssue(next);
                             stack.add(0, new RTMiniMaxNode(-1, gs2, -EvaluationFunction.VICTORY, EvaluationFunction.VICTORY));
 //                            System.out.println("  " + currentRR.iterations_run + " cycle: " + gs2.getTime());
