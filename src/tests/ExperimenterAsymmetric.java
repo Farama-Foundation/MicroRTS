@@ -60,9 +60,8 @@ public class ExperimenterAsymmetric {
                         do {
                             PlayerAction pa1 = ai1.getAction(0, gs);
                             PlayerAction pa2 = ai2.getAction(1, gs);
-                            if (pa1.hasNonNoneActions() || pa2.hasNonNoneActions()) lastTimeActionIssued = gs.getTime();
-                            gs.issueSafe(pa1);
-                            gs.issueSafe(pa2);
+                            if (gs.issueSafe(pa1)) lastTimeActionIssued = gs.getTime();
+                            if (gs.issueSafe(pa2)) lastTimeActionIssued = gs.getTime();
                             gameover = gs.cycle();
                             if (w!=null) w.repaint();
                             try {

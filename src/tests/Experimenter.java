@@ -77,10 +77,9 @@ public class Experimenter {
                             if (DEBUG>=1) {System.out.println("AI1 done.");System.out.flush();}
                             PlayerAction pa2 = ai2.getAction(1, gs);
                             if (DEBUG>=1) {System.out.println("AI2 done.");System.out.flush();}
-                            if (pa1.hasNonNoneActions() || pa2.hasNonNoneActions()) lastTimeActionIssued = gs.getTime();
-                            gs.issueSafe(pa1);
+                            if (gs.issueSafe(pa1)) lastTimeActionIssued = gs.getTime();
                             if (DEBUG>=1) {System.out.println("issue action AI1 done.");System.out.flush();}
-                            gs.issueSafe(pa2);
+                            if (gs.issueSafe(pa2)) lastTimeActionIssued = gs.getTime();
                             if (DEBUG>=1) {System.out.println("issue action AI2 done.");System.out.flush();}
                             gameover = gs.cycle();
                             if (DEBUG>=1) {System.out.println("cycle done.");System.out.flush();}
