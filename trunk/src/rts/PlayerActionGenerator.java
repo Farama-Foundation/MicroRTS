@@ -68,7 +68,11 @@ public class PlayerActionGenerator {
             }
         }  
 
-        if (choices.size()==0) throw new Exception("Move generator created with no units that can execute actions!");
+        if (choices.size()==0) {
+            System.err.println("Problematic game state:");
+            System.err.println(a_gs);
+            throw new Exception("Move generator for player " + pID + " created with no units that can execute actions! (status: " + a_gs.canExecuteAnyAction(0) + ", " + a_gs.canExecuteAnyAction(1) + ")");
+        }
 
         choiceSizes = new int[choices.size()];
         currentChoice = new int[choices.size()];
@@ -165,10 +169,15 @@ public class PlayerActionGenerator {
     
     
     public String toString() {
-        String ret = "PlayerActionGenerator ";
+        String ret = "PlayerActionGenerator:\n";
         for(Pair<Unit,List<UnitAction>> choice:choices) {
-            ret = ret + "(" + choice.m_a + "," + choice.m_b.size() + ") ";
+            ret = ret + "  (" + choice.m_a + "," + choice.m_b.size() + ")\n";
         }
+        ret += "currentChoice: ";
+        for(int i = 0;i<currentChoice.length;i++) {
+            ret += currentChoice[i] + " ";
+        }
+        ret += "\nactions generated so far: " + generated;
         return ret;
     }
     

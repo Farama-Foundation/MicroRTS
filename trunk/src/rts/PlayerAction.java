@@ -24,6 +24,13 @@ public class PlayerAction {
     public boolean isEmpty() {
         return actions.isEmpty();
     }
+
+    public boolean hasNonNoneActions() {
+        for(Pair<Unit,UnitAction> ua:actions) {
+            if (ua.m_b.type!=UnitAction.TYPE_NONE) return true;
+        }
+        return false;
+    }
     
     public ResourceUsage getResourceUsage() {
         return r;
