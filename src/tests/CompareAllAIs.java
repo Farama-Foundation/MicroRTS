@@ -56,11 +56,9 @@ public class CompareAllAIs {
         bots.add(new IDContinuingRTMinimax(TIME, new SimpleEvaluationFunction()));
         bots.add(new IDContinuingRTMinimaxRandomized(TIME, RANDOMIZED_AB_REPEATS, new SimpleEvaluationFunction()));
         bots.add(new IDContinuingABCD(TIME, new RandomBiasedAI(), PLAYOUT_TIME, new SimpleEvaluationFunction()));
-/*
-        bots.add(new IDContinuingRTMinimax(TIME, new EvaluationFunctionWithActions()));
-        bots.add(new IDContinuingRTMinimaxRandomized(TIME, RANDOMIZED_AB_REPEATS, new EvaluationFunctionWithActions()));
 
         bots.add(new ContinuingMC(TIME, PLAYOUT_TIME, new RandomBiasedAI(), new SimpleEvaluationFunction()));
+/*
         bots.add(new ContinuingDownsamplingMC(TIME, PLAYOUT_TIME, MAX_ACTIONS, new RandomBiasedAI(), new SimpleEvaluationFunction()));
         bots.add(new ContinuingNaiveMC(TIME, PLAYOUT_TIME, 0.33f, 0.2f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
         bots.add(new ContinuingUCT(TIME, PLAYOUT_TIME, MAX_DEPTH, new RandomBiasedAI(), new SimpleEvaluationFunction()));
