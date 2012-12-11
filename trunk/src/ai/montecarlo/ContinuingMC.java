@@ -99,14 +99,14 @@ public class ContinuingMC extends AI {
                 search(player, TIME_PER_CYCLE);
             } else {
                 // determine who will be the next player:
-                GameState gs2 = gs.clone();
-                while(gs2.winner()==-1 && 
-                      !gs2.gameover() &&  
-                    !gs2.canExecuteAnyAction(0) && 
-                    !gs2.canExecuteAnyAction(1)) gs2.cycle();
-                if (gs2.canExecuteAnyAction(player)) {
+                GameState temporary_gameState = gs.clone();
+                while(temporary_gameState.winner()==-1 && 
+                      !temporary_gameState.gameover() &&  
+                    !temporary_gameState.canExecuteAnyAction(0) && 
+                    !temporary_gameState.canExecuteAnyAction(1)) temporary_gameState.cycle();
+                if (temporary_gameState.canExecuteAnyAction(player)) {
                     // start a new search:
-                    startNewSearch(player,gs2, System.currentTimeMillis() + TIME_PER_CYCLE);
+                    startNewSearch(player,temporary_gameState, System.currentTimeMillis() + TIME_PER_CYCLE);
                     search(player, TIME_PER_CYCLE);
                     return new PlayerAction();
                 } else {
