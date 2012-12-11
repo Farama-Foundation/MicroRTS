@@ -159,6 +159,9 @@ public class NaiveMCTSNode {
                 }
                 if (ate.visit_count[maxIdx]!=0) {
                     if (total>1) dist[maxIdx] = ((total - 1)/epsilon1) * (1 - epsilon1); // the maximum index has "1 - epsilon probability of being chosen
+                } else {
+                    for(int j = 0;j<dist.length;j++) 
+                        if (ate.visit_count[j]>0) dist[j] = 0;
                 }   
 
                 if (DEBUG>=3) {
