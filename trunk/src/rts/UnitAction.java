@@ -20,7 +20,7 @@ public class UnitAction {
     public static final int TYPE_PRODUCE = 4;
     public static final int TYPE_ATTACK_LOCATION = 5;   // direction is "x", unit_Type is "y"
 
-    String actionName[] ={"none","move","attack","harvest","return","produce"};
+    String actionName[] ={"none","move","harvest","return","produce","attack_location"};
     
     public static final int DIRECTION_NONE = -1;
     public static final int DIRECTION_UP = 0;
