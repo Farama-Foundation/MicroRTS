@@ -61,8 +61,8 @@ public class GameVisualSimulationTest {
             if (System.currentTimeMillis()>=nextTimeToUpdate) {
                 PlayerAction pa1 = ai1.getAction(0, gs);
                 PlayerAction pa2 = ai2.getAction(1, gs);
-                gs.issue(pa1);
-                gs.issue(pa2);
+                gs.issueSafe(pa1);
+                gs.issueSafe(pa2);
 
                 // simulate:
                 gameover = gs.cycle();
