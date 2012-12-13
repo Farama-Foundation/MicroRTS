@@ -34,8 +34,6 @@ public class TraceGenerationTest {
         TraceEntry te = new TraceEntry(gs.getPhysicalGameState().clone(),gs.getTime());
         trace.addEntry(te);
         
-        
-
         do{
             PlayerAction pa1 = ai1.getAction(0, gs);
             PlayerAction pa2 = ai2.getAction(1, gs);
