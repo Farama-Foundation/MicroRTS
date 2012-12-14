@@ -32,6 +32,8 @@ public class NaiveMCTSNode {
     int type;    // 0 : max, 1 : min, -1: Game-over
     NaiveMCTSNode parent = null;    
     GameState gs;
+    int depth = 0;  // the depth in the tree    
+    
     boolean hasMoreActions = true;
     PlayerActionGenerator moveGenerator = null;
     List<PlayerAction> actions = null;
@@ -51,7 +53,9 @@ public class NaiveMCTSNode {
     public NaiveMCTSNode(int maxplayer, int minplayer, GameState a_gs, NaiveMCTSNode a_parent) throws Exception {
         parent = a_parent;
         gs = a_gs;
-
+        if (parent==null) depth = 0;
+                     else depth = parent.depth+1;        
+ 
         while (gs.winner() == -1 &&
                !gs.gameover() &&
                !gs.canExecuteAnyAction(maxplayer) &&
@@ -118,8 +122,10 @@ public class NaiveMCTSNode {
 
     
     // Using an epsilon greedy strategy:
-    public NaiveMCTSNode selectLeaf(int maxplayer, int minplayer, float epsilon1, float epsilon2) throws Exception {        
-        if (unitActionTable == null) return null;
+    public NaiveMCTSNode selectLeaf(int maxplayer, int minplayer, float epsilon1, float epsilon2, int max_depth) throws Exception {        
+        if (unitActionTable == null) return this;
+        
+       if (depth>=max_depth) return this;        
         
         PlayerAction pa = null;
         long actionCode = 0;
@@ -134,9 +140,9 @@ public class NaiveMCTSNode {
                 }
             }
 
-            return best.selectLeaf(maxplayer, minplayer, epsilon1, epsilon2);
+            return best.selectLeaf(maxplayer, minplayer, epsilon1, epsilon2, max_depth);
         } else {
-
+ 
             // For each unit, rank the unitActions according to preference:
             List<double []> distributions = new LinkedList<double []>();
             List<Integer> notSampledYet = new LinkedList<Integer>();
@@ -199,11 +205,31 @@ public class NaiveMCTSNode {
                     int code;
                     UnitAction ua;
                     ResourceUsage r2;
-                    do {
-                        code = Sampler.weighted(distributions.get(i));
-                        ua = ate.actions.get(code);
-                        r2 = ua.resourceUsage(ate.u, pgs);
-                    }while(!pa.getResourceUsage().consistentWith(r2, gs));
+                    
+                    // try one at random:
+                    double []distribution = distributions.get(i);
+                    code = Sampler.weighted(distribution);
+                    ua = ate.actions.get(code);
+                    r2 = ua.resourceUsage(ate.u, pgs);
+                    if (!pa.getResourceUsage().consistentWith(r2, gs)) {
+                        // sample at random, eliminating the ones that have not worked so far:
+                        List<Double> dist_l = new ArrayList<Double>();
+                        List<Integer> dist_outputs = new ArrayList<Integer>();
+                        
+                        for(int j = 0;j<distribution.length;j++) {
+                            dist_l.add(distribution[j]);
+                            dist_outputs.add(j);
+                        }
+                        do{
+                            int idx = dist_outputs.indexOf(code);
+                            dist_l.remove(idx);
+                            dist_outputs.remove(idx);
+                            code = (Integer)Sampler.weighted(dist_l, dist_outputs);
+                            ua = ate.actions.get(code);
+                            r2 = ua.resourceUsage(ate.u, pgs);                            
+                        }while(!pa.getResourceUsage().consistentWith(r2, gs));
+                    }
+                    
 
                     pa.getResourceUsage().merge(r2);
                     pa.addUnitAction(ate.u, ua);
@@ -214,20 +240,20 @@ public class NaiveMCTSNode {
                 } catch(Exception e) {
                     e.printStackTrace();
                 }
-            }                
-        }
-        
-        NaiveMCTSNode pate = childrenMap.get(actionCode);
-        if (pate==null) {
-            actions.add(pa);
-            GameState gs2 = gs.cloneIssue(pa);
-            NaiveMCTSNode node = new NaiveMCTSNode(maxplayer, minplayer, gs2.clone(), this);
-            childrenMap.put(actionCode,node);
-            children.add(node);
-            return node;                
-        }
-        
-        return pate.selectLeaf(maxplayer, minplayer, epsilon1, epsilon2);
+            }   
+            
+            NaiveMCTSNode pate = childrenMap.get(actionCode);
+            if (pate==null) {
+                actions.add(pa);
+                GameState gs2 = gs.cloneIssue(pa);
+                NaiveMCTSNode node = new NaiveMCTSNode(maxplayer, minplayer, gs2.clone(), this);
+                childrenMap.put(actionCode,node);
+                children.add(node);
+                return node;                
+            }
+
+            return pate.selectLeaf(maxplayer, minplayer, epsilon1, epsilon2, max_depth);
+        }        
     }
     
     
