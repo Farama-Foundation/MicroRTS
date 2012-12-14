@@ -14,12 +14,12 @@ import java.util.List;
 import java.util.Random;
 
 public class Sampler {
+    static Random generator = new Random();
 
     /*
      * Returns a random element in the distribution
      */
     public static int random(double[] distribution) {
-        Random generator = new Random();
         return generator.nextInt(distribution.length);
     }
 
@@ -44,7 +44,6 @@ public class Sampler {
         }
 
         if (best.size() > 0) {
-            Random generator = new Random();
             return best.get(generator.nextInt(best.size()));
         }
 
@@ -79,12 +78,13 @@ public class Sampler {
      * Returns an element in the distribution, using the weights as their relative probabilities
      */
     public static int weighted(double[] distribution) throws Exception {
-        Random generator = new Random();
         double total = 0, accum = 0, tmp;
 
         for (double f : distribution) {
             total += f;
         }
+        
+        if (total==0) return random(distribution);
 
         tmp = generator.nextDouble() * total;
         for (int i = 0; i < distribution.length; i++) {
@@ -96,6 +96,30 @@ public class Sampler {
 
         throw new Exception("Input distribution empty in Sampler.weighted!");
     }
+    
+    
+    /*
+     * Returns an element in the distribution, using the weights as their relative probabilities
+     */
+    public static Object weighted(List<Double> distribution, List<? extends Object> outputs) throws Exception {
+        double total = 0, accum = 0, tmp;
+
+        for (double f : distribution) {
+            total += f;
+        }
+        
+        if (total==0) return outputs.get(generator.nextInt(outputs.size()));
+
+        tmp = generator.nextDouble() * total;
+        for (int i = 0; i < distribution.size(); i++) {
+            accum += distribution.get(i);
+            if (accum >= tmp) {
+                return outputs.get(i);
+            }
+        }
+
+        throw new Exception("Input distribution empty in Sampler.weighted!");
+    }    
 
     /*
      * Returns an element in the distribution following the probabilities, but using 'e' as the exploration factor.

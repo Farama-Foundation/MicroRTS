@@ -19,7 +19,7 @@ import util.Sampler;
  * @author santi
  */
 public class ContinuingNaiveMC extends AI {
-    public static final int DEBUG = 0;
+    public static int DEBUG = 0;
     EvaluationFunction ef = null;
     
     public class UnitActionTableEntry {

@@ -9,7 +9,6 @@ import ai.montecarlo.*;
 import ai.naivemcts.ContinuingNaiveMCTS;
 import ai.minimax.IDContinuingRTMinimax;
 import ai.minimax.IDContinuingRTMinimax;
-import ai.naivemcts.NaiveMCTS;
 import ai.minimax.IDContinuingRTMinimaxRandomized;
 import ai.uct.UCT;
 import gui.PhysicalGameStatePanel;

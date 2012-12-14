@@ -17,7 +17,7 @@ import rts.PlayerAction;
  * @author santi
  */
 public class ContinuingNaiveMCTS extends AI {
-    public static final int DEBUG = 0;
+    public static int DEBUG = 0;
     EvaluationFunction ef = null;
        
     Random r = new Random();
@@ -34,15 +34,17 @@ public class ContinuingNaiveMCTS extends AI {
         
     int TIME_PER_CYCLE = 100;
     int MAXSIMULATIONTIME = 1024;
+    int MAX_TREE_DEPTH = 10;
     
     float epsilon1 = 0.25f;
     float epsilon2 = 0.2f;
     
     
-    public ContinuingNaiveMCTS(int available_time, int lookahead, float e1, float e2, AI policy, EvaluationFunction a_ef) {
+    public ContinuingNaiveMCTS(int available_time, int lookahead, int max_depth, float e1, float e2, AI policy, EvaluationFunction a_ef) {
         MAXSIMULATIONTIME = lookahead;
         randomAI = policy;
         TIME_PER_CYCLE = available_time;
+        MAX_TREE_DEPTH = max_depth;
         epsilon1 = e1;
         epsilon2 = e2;
         ef = a_ef;
@@ -64,7 +66,7 @@ public class ContinuingNaiveMCTS extends AI {
     
     
     public AI clone() {
-        return new ContinuingNaiveMCTS(TIME_PER_CYCLE, MAXSIMULATIONTIME, epsilon1, epsilon2, randomAI, ef);
+        return new ContinuingNaiveMCTS(TIME_PER_CYCLE, MAXSIMULATIONTIME, MAX_TREE_DEPTH, epsilon1, epsilon2, randomAI, ef);
     }    
     
     
@@ -130,7 +132,7 @@ public class ContinuingNaiveMCTS extends AI {
         long start = System.currentTimeMillis();
         
         while((System.currentTimeMillis() - start)<available_time) {
-            NaiveMCTSNode leaf = tree.selectLeaf(player, 1-player, epsilon1, epsilon2);
+            NaiveMCTSNode leaf = tree.selectLeaf(player, 1-player, epsilon1, epsilon2, MAX_TREE_DEPTH);
             
             if (leaf!=null) {
                 GameState gs2 = leaf.gs.clone();
@@ -144,6 +146,7 @@ public class ContinuingNaiveMCTS extends AI {
                 total_runs++;
             } else {
                 // no actions to choose from :)
+                System.err.println(this.getClass().getSimpleName() + ": claims there are no more leafs to explore...");
                 break;
             }
         }
@@ -166,6 +169,11 @@ public class ContinuingNaiveMCTS extends AI {
                 best = child;
                 bestIdx = i;
             }
+        }
+        
+        if (bestIdx==-1) {
+            if (DEBUG>=1) System.out.println("ContinuingNaiveMCTS no children selected. Weturning an empty asction");
+            return new PlayerAction();
         }
         
         if (DEBUG>=1) System.out.println("ContinuingNaiveMCTS selected children " + tree.actions.get(bestIdx) + " explored " + best.visit_count + " Avg evaluation: " + (best.accum_evaluation/((double)best.visit_count)));
