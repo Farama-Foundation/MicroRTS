@@ -17,7 +17,8 @@ import rts.units.Unit;
  */
 public class UCTUnitActionsNode {
     static Random r = new Random();
-    static float C = 50;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
+//    static float C = 50;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
+    static float C = 5;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
     
     public int type;    // 0 : max, 1 : min, -1: Game-over
     UCTUnitActionsNode parent = null;
@@ -85,7 +86,7 @@ public class UCTUnitActionsNode {
         if (depth>=max_depth) return this;        
         
         // if non visited children, visit:     
-        if (children==null || actions==null) return null;
+        if (children==null || actions==null) return this;
         if (children.size()<actions.size()) {
             PlayerAction a = actions.get(children.size());
             if (a!=null) {
@@ -118,9 +119,8 @@ public class UCTUnitActionsNode {
             }
         } 
         
-        if (best==null) return null;
+        if (best==null) return this;
         return best.UCTSelectLeaf(maxplayer, minplayer, max_depth);
-//        return best;
     }    
     
     

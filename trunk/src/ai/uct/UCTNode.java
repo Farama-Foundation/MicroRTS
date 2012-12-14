@@ -17,7 +17,8 @@ import rts.PlayerActionGenerator;
  */
 public class UCTNode {
     static Random r = new Random();
-    static float C = 50;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
+//    static float C = 50;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
+    static float C = 5;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
     
     public int type;    // 0 : max, 1 : min, -1: Game-over
     UCTNode parent = null;
@@ -71,7 +72,10 @@ public class UCTNode {
         
         // if non visited children, visit:        
         if (hasMoreActions) {
-            if (moveGenerator==null) return null;
+            if (moveGenerator==null) {
+//                System.out.println("No more leafs because moveGenerator = null!");
+                return this;
+            }
             PlayerAction a = moveGenerator.getNextAction(cutOffTime);
             if (a!=null) {
                 actions.add(a);
@@ -106,7 +110,11 @@ public class UCTNode {
             }
         } 
         
-        if (best==null) return null;
+        if (best==null) {
+//            System.out.println("No more leafs because this node has no children!");
+//            return null;
+            return this;
+        }
         return best.UCTSelectLeaf(maxplayer, minplayer, cutOffTime, max_depth);
 //        return best;
     }    
@@ -118,7 +126,7 @@ public class UCTNode {
         for(int i = 0;i<children.size();i++) {
             UCTNode child = children.get(i);
             for(int j = 0;j<depth;j++) System.out.print("    ");
-            System.out.println("child " + actions.get(i) + " explored " + child.visit_count + " Avg evaluation: " + (child.accum_evaluation/((double)child.visit_count)));
+            System.out.println("child explored " + child.visit_count + " Avg evaluation: " + (child.accum_evaluation/((double)child.visit_count)) + " : " + actions.get(i));
             if (depth<maxdepth) child.showNode(depth+1,maxdepth);
         }        
     }
