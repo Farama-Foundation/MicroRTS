@@ -21,7 +21,7 @@ import rts.PlayerActionGenerator;
  * @author santi
  */
 public class ContinuingUCT extends AI {
-    public static final int DEBUG = 0;
+    public static int DEBUG = 0;
     EvaluationFunction ef = null;
        
     Random r = new Random();
@@ -35,6 +35,8 @@ public class ContinuingUCT extends AI {
     public long total_runs = 0;
     public long total_cycles_executed = 0;
     public long total_actions_issued = 0;
+    
+    long total_runs_this_move = 0;
         
     int TIME_PER_CYCLE = 100;
     int MAXSIMULATIONTIME = 1024;
@@ -61,6 +63,7 @@ public class ContinuingUCT extends AI {
     public void reset() {
         gs_to_start_from = null;
         tree = null;
+        total_runs_this_move = 0;
     }
     
     
@@ -117,6 +120,7 @@ public class ContinuingUCT extends AI {
         float evaluation_bound = SimpleEvaluationFunction.upperBound(gs);
         tree = new UCTNode(player, 1-player, gs, null, evaluation_bound);
         gs_to_start_from = gs;
+        total_runs_this_move = 0;
 //        System.out.println(evaluation_bound);
     }    
     
@@ -125,6 +129,7 @@ public class ContinuingUCT extends AI {
         if (DEBUG>=2) System.out.println("Resetting search...");
         tree = null;
         gs_to_start_from = null;
+        total_runs_this_move = 0;
     }
     
 
@@ -132,6 +137,8 @@ public class ContinuingUCT extends AI {
         if (DEBUG>=2) System.out.println("Search...");
         long start = System.currentTimeMillis();
         long cutOffTime = start + available_time;
+
+//        System.out.println(start + " + " + available_time + " = " + cutOffTime);
         
         while(System.currentTimeMillis() < cutOffTime) {
             UCTNode leaf = tree.UCTSelectLeaf(player, 1-player, cutOffTime, MAX_TREE_DEPTH);
@@ -151,8 +158,10 @@ public class ContinuingUCT extends AI {
                     leaf = leaf.parent;
                 }
                 total_runs++;
+                total_runs_this_move++;
             } else {
                 // no actions to choose from :)
+                System.err.println(this.getClass().getSimpleName() + ": claims there are no more leafs to explore...");
                 break;
             }
         }
@@ -175,7 +184,8 @@ public class ContinuingUCT extends AI {
         }
         
 //        tree.showNode(0,0);
-        if (DEBUG>=2) tree.showNode(0,1);        
+        if (DEBUG>=2) tree.showNode(0,1);
+        if (DEBUG>=1) System.out.println(this.getClass().getSimpleName() + " performed " + total_runs_this_move + " playouts.");
         if (DEBUG>=1) System.out.println(this.getClass().getSimpleName() + " selected children " + tree.actions.get(mostVisitedIdx) + " explored " + mostVisited.visit_count + " Avg evaluation: " + (mostVisited.accum_evaluation/((double)mostVisited.visit_count)));
         
 //        printStats();   

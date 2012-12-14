@@ -19,7 +19,8 @@ public class DownsamplingUCTNode {
     public static int DEBUG = 0;
 
     static Random r = new Random();
-    static float C = 50;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
+//    static float C = 50;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
+    static float C = 5;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
     
     public int type;    // 0 : max, 1 : min, -1: Game-over
     DownsamplingUCTNode parent = null;
@@ -82,7 +83,7 @@ public class DownsamplingUCTNode {
         }
         
         if (hasMoreActions) {
-            if (moveGenerator==null) return null;
+            if (moveGenerator==null) return this;
             if (children.size()>=actions.size()) {
                 hasMoreActions = false;
             } else {
@@ -114,9 +115,8 @@ public class DownsamplingUCTNode {
             }
         } 
         
-        if (best==null) return null;
+        if (best==null) return this;
         return best.UCTSelectLeaf(maxplayer, minplayer, MAXACTIONS, cutOffTime, max_depth);
-//        return best;
     }    
     
     

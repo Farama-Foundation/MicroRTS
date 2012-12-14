@@ -178,6 +178,7 @@ public class ContinuingDownsamplingUCT extends AI {
                 total_runs++;
             } else {
                 // no actions to choose from :)
+                System.err.println(this.getClass().getSimpleName() + ": claims there are no more leafs to explore...");
                 break;
             }
         }
