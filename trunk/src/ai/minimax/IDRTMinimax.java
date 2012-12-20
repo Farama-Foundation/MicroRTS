@@ -19,11 +19,11 @@ import util.Pair;
  *
  * @author santi
  */
-public class IDRTMinimax extends RTMinimax {
-    public static int MAX_DEPTH = 0;
-    public static long MAX_POTENTIAL_BRANCHING = 0;
-    
+public class IDRTMinimax extends RTMinimax {    
     int TIME_PER_CYCLE = 100;
+    
+    int max_depth_so_far = 0;
+    long max_potential_branching_so_far = 0;
         
     public IDRTMinimax(int tpc, EvaluationFunction a_ef) {
         super(1, a_ef);
@@ -61,7 +61,7 @@ public class IDRTMinimax extends RTMinimax {
         System.out.println("Starting realTimeMinimaxABIterativeDeepening... ");
         do {
 //            System.out.println("next lookahead: " + lookAhead);
-            if (nLeaves>MAX_LEAVES) MAX_LEAVES = nLeaves;
+            if (nLeaves>max_leaves_so_far) max_leaves_so_far = nLeaves;
             minCT = -1;
             maxCT = -1;
             nLeaves = 0;
@@ -69,7 +69,7 @@ public class IDRTMinimax extends RTMinimax {
             PlayerAction tmp = timeBoundedRealTimeMinimaxAB(gs, maxplayer, minplayer, gs.getTime() + lookAhead, startTime + availableTime, bestMove==null);
             if (tmp!=null) {
                 bestMove = tmp;
-                if (lookAhead>MAX_DEPTH) MAX_DEPTH = lookAhead;
+                if (lookAhead>max_depth_so_far) max_depth_so_far = lookAhead;
             }
             System.out.println("realTimeMinimaxABIterativeDeepening (lookahead = " + lookAhead + "): " + bestMove + " in " + (System.currentTimeMillis()-runStartTime) + " (" + nLeaves + " leaves)");
             int nextLookAhead = Math.max((minCT+1) - gs.getTime(), lookAhead+4);
@@ -121,7 +121,7 @@ public class IDRTMinimax extends RTMinimax {
                         if (current.actions==null) {
                             current.actions = new PlayerActionGenerator(current.gs,maxplayer);
                             long l = current.actions.getSize();
-                            if (l>MAX_POTENTIAL_BRANCHING) MAX_POTENTIAL_BRANCHING = l;
+                            if (l>max_potential_branching_so_far) max_potential_branching_so_far = l;
 //                            while(current.actions.size()>MAX_BRANCHING_FACTOR) current.actions.remove(r.nextInt(current.actions.size()));
                             current.best = null;
                             GameState gs2 = current.gs.cloneIssue(current.actions.getNextAction(cutOffTime));
@@ -136,7 +136,7 @@ public class IDRTMinimax extends RTMinimax {
                             if (current.beta<=current.alpha || next == null) {
                                 lastResult = current.best;
                                 stack.remove(0);
-                                if (current.actions.getGenerated()>MAX_BRANCHING) MAX_BRANCHING = current.actions.getGenerated();
+                                if (current.actions.getGenerated()>max_branching_so_far) max_branching_so_far = current.actions.getGenerated();
                             } else {
                                 GameState gs2 = current.gs.cloneIssue(next);
                                 stack.add(0, new RTMiniMaxNode(-1,gs2,current.alpha, current.beta));
@@ -147,7 +147,7 @@ public class IDRTMinimax extends RTMinimax {
                         if (current.actions==null) {
                             current.actions = new PlayerActionGenerator(current.gs,minplayer);
                             long l = current.actions.getSize();
-                            if (l>MAX_POTENTIAL_BRANCHING) MAX_POTENTIAL_BRANCHING = l;
+                            if (l>max_potential_branching_so_far) max_potential_branching_so_far = l;
 //                            while(current.actions.size()>MAX_BRANCHING_FACTOR) current.actions.remove(r.nextInt(current.actions.size()));
                             current.best = null;
                             GameState gs2 = current.gs.cloneIssue(current.actions.getNextAction(cutOffTime));
@@ -162,7 +162,7 @@ public class IDRTMinimax extends RTMinimax {
                             if (current.beta<=current.alpha || next == null) {
                                 lastResult = current.best;
                                 stack.remove(0);
-                                if (current.actions.getGenerated()>MAX_BRANCHING) MAX_BRANCHING = current.actions.getGenerated();
+                                if (current.actions.getGenerated()>max_branching_so_far) max_branching_so_far = current.actions.getGenerated();
                             } else {
                                 GameState gs2 = current.gs.cloneIssue(next);
                                 stack.add(0, new RTMiniMaxNode(-1,gs2,current.alpha, current.beta));

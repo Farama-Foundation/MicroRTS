@@ -21,9 +21,9 @@ import util.Pair;
  */
 public class IDABCD extends ABCD {
 
-    public static int MAX_DEPTH = 0;
-    public static long MAX_POTENTIAL_BRANCHING = 0;
     int TIME_PER_CYCLE = 100;
+    
+    long max_potential_branching_so_far = 0;
 
     public IDABCD(int tpc, AI a_playoutAI, int a_maxPlayoutTime, EvaluationFunction a_ef) {
         super(1, a_playoutAI, a_maxPlayoutTime, a_ef);
@@ -57,16 +57,16 @@ public class IDABCD extends ABCD {
         System.out.println("Starting IDABCDIterativeDeepening... ");
         do {
 //            System.out.println("next lookahead: " + lookAhead);
-            if (nLeaves > MAX_LEAVES) {
-                MAX_LEAVES = nLeaves;
+            if (nLeaves > max_leaves_so_far) {
+                max_leaves_so_far = nLeaves;
             }
             nLeaves = 0;
             long runStartTime = System.currentTimeMillis();
             PlayerAction tmp = timeBoundedABCD(gs, maxplayer, minplayer, depth, startTime + availableTime, bestMove == null);
             if (tmp != null) {
                 bestMove = tmp;
-                if (depth > MAX_DEPTH) {
-                    MAX_DEPTH = depth;
+                if (depth > max_depth_so_far) {
+                    max_depth_so_far = depth;
                 }
                 System.out.println("IDABCDIterativeDeepening (depth = " + depth + "): " + bestMove + " in " + (System.currentTimeMillis() - runStartTime) + " (" + nLeaves + " leaves)");                
             } else {
@@ -130,8 +130,8 @@ public class IDABCD extends ABCD {
                     if (current.actions == null) {
                         current.actions = new PlayerActionGenerator(current.gs, maxplayer);
                         long l = current.actions.getSize();
-                        if (l > MAX_POTENTIAL_BRANCHING) {
-                            MAX_POTENTIAL_BRANCHING = l;
+                        if (l > max_branching_so_far) {
+                            max_branching_so_far = l;
                         }
 //                            while(current.actions.size()>MAX_BRANCHING_FACTOR) current.actions.remove(r.nextInt(current.actions.size()));
                         current.best = null;
@@ -147,8 +147,8 @@ public class IDABCD extends ABCD {
                         if (current.beta <= current.alpha || next == null) {
                             lastResult = current.best;
                             stack.remove(0);
-                            if (current.actions.getGenerated() > MAX_BRANCHING) {
-                                MAX_BRANCHING = current.actions.getGenerated();
+                            if (current.actions.getGenerated() > max_branching_so_far) {
+                                max_branching_so_far = current.actions.getGenerated();
                             }
                         } else {
                             GameState gs2 = current.gs.cloneIssue(next);
@@ -160,8 +160,8 @@ public class IDABCD extends ABCD {
                     if (current.actions == null) {
                         current.actions = new PlayerActionGenerator(current.gs, minplayer);
                         long l = current.actions.getSize();
-                        if (l > MAX_POTENTIAL_BRANCHING) {
-                            MAX_POTENTIAL_BRANCHING = l;
+                        if (l > max_branching_so_far) {
+                            max_branching_so_far = l;
                         }
 //                            while(current.actions.size()>MAX_BRANCHING_FACTOR) current.actions.remove(r.nextInt(current.actions.size()));
                         current.best = null;
@@ -177,8 +177,8 @@ public class IDABCD extends ABCD {
                         if (current.beta <= current.alpha || next == null) {
                             lastResult = current.best;
                             stack.remove(0);
-                            if (current.actions.getGenerated() > MAX_BRANCHING) {
-                                MAX_BRANCHING = current.actions.getGenerated();
+                            if (current.actions.getGenerated() > max_branching_so_far) {
+                                max_branching_so_far = current.actions.getGenerated();
                             }
                         } else {
                             GameState gs2 = current.gs.cloneIssue(next);

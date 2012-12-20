@@ -25,6 +25,8 @@ import util.Pair;
  */
 public class IDContinuingRTMinimaxRandomized extends IDRTMinimax {
 
+    int max_consecutive_frames_searching_so_far = 0;    
+    
     GameState gs_to_start_from = null;
     int consecutive_frames_searching = 0;
     int last_lookAhead = 1;
@@ -33,8 +35,6 @@ public class IDContinuingRTMinimaxRandomized extends IDRTMinimax {
     Pair<PlayerAction, Float> lastResult = null;
     PlayerAction bestMove = null;
     Random r = new Random();
-    public static int MAX_CONSECUTIVE_FRAMES_SEARCHING = 0;
-    public static long MAX_POTENTIAL_BRANCHING = 0;
 
     public IDContinuingRTMinimaxRandomized(int tpc, int repeats, EvaluationFunction a_ef) {
         super(tpc, a_ef);
@@ -66,8 +66,8 @@ public class IDContinuingRTMinimaxRandomized extends IDRTMinimax {
             }
             PlayerAction pa = realTimeMinimaxABIterativeDeepeningContinuing(player, gs_to_start_from, TIME_PER_CYCLE);
 //            System.out.println("IDContinuingRTMinimaxAI: " + pa);
-            if (consecutive_frames_searching > MAX_CONSECUTIVE_FRAMES_SEARCHING) {
-                MAX_CONSECUTIVE_FRAMES_SEARCHING = consecutive_frames_searching;
+            if (consecutive_frames_searching > max_consecutive_frames_searching_so_far) {
+                max_consecutive_frames_searching_so_far = consecutive_frames_searching;
             }
             consecutive_frames_searching = 0;
             stack = null;
@@ -127,8 +127,8 @@ public class IDContinuingRTMinimaxRandomized extends IDRTMinimax {
         do {
 //            System.out.println("next lookahead: " + lookAhead);
             if (stack == null) {
-                if (nLeaves > MAX_LEAVES) {
-                    MAX_LEAVES = nLeaves;
+                if (nLeaves > max_leaves_so_far) {
+                    max_leaves_so_far = nLeaves;
                 }
                 minCT = -1;
                 maxCT = -1;
@@ -141,8 +141,8 @@ public class IDContinuingRTMinimaxRandomized extends IDRTMinimax {
             PlayerAction tmp = timeBoundedRealTimeMinimaxRandomizedABOutsideStack(gs, maxplayer, minplayer, gs.getTime() + lookAhead, startTime + availableTime, false);
             if (tmp != null) {
                 bestMove = tmp;
-                if (lookAhead > MAX_DEPTH) {
-                    MAX_DEPTH = lookAhead;
+                if (lookAhead > max_depth_so_far) {
+                    max_depth_so_far = lookAhead;
                 }
             }
             if (stack.isEmpty()) {
@@ -225,8 +225,8 @@ public class IDContinuingRTMinimaxRandomized extends IDRTMinimax {
                         currentRR.scores = new float[m_repeats];
                         currentRR.iterations_run = 0;
                         long l = currentRR.actions.getSize();
-                        if (l > MAX_POTENTIAL_BRANCHING) {
-                            MAX_POTENTIAL_BRANCHING = l;
+                        if (l > max_potential_branching_so_far) {
+                            max_potential_branching_so_far = l;
                         }
                         //                            while(current.actions.size()>MAX_BRANCHING_FACTOR) current.actions.remove(r.nextInt(current.actions.size()));
                         currentRR.best = null;
@@ -286,8 +286,8 @@ public class IDContinuingRTMinimaxRandomized extends IDRTMinimax {
                             if (next == null) {
                                 lastResult = currentRR.best;
                                 stack.remove(0);
-                                if (currentRR.actions.getGenerated() > MAX_BRANCHING) {
-                                    MAX_BRANCHING = current.actions.getGenerated();
+                                if (currentRR.actions.getGenerated() > max_branching_so_far) {
+                                    max_branching_so_far = current.actions.getGenerated();
                                 }
                             } else {
 //                                System.out.println("- action: " + next.toString());
@@ -303,8 +303,8 @@ public class IDContinuingRTMinimaxRandomized extends IDRTMinimax {
                     if (current.actions == null) {
                         current.actions = new PlayerActionGenerator(current.gs, maxplayer);
                         long l = current.actions.getSize();
-                        if (l > MAX_POTENTIAL_BRANCHING) {
-                            MAX_POTENTIAL_BRANCHING = l;
+                        if (l > max_potential_branching_so_far) {
+                            max_potential_branching_so_far = l;
                         }
 //                            while(current.actions.size()>MAX_BRANCHING_FACTOR) current.actions.remove(r.nextInt(current.actions.size()));
                         current.best = null;
@@ -326,8 +326,8 @@ public class IDContinuingRTMinimaxRandomized extends IDRTMinimax {
                         if (current.beta <= current.alpha || next == null) {
                             lastResult = current.best;
                             stack.remove(0);
-                            if (current.actions.getGenerated() > MAX_BRANCHING) {
-                                MAX_BRANCHING = current.actions.getGenerated();
+                            if (current.actions.getGenerated() > max_branching_so_far) {
+                                max_branching_so_far = current.actions.getGenerated();
                             }
                         } else {
                             GameState gs2 = current.gs.cloneIssue(next);
@@ -339,8 +339,8 @@ public class IDContinuingRTMinimaxRandomized extends IDRTMinimax {
                     if (current.actions == null) {
                         current.actions = new PlayerActionGenerator(current.gs, minplayer);
                         long l = current.actions.getSize();
-                        if (l > MAX_POTENTIAL_BRANCHING) {
-                            MAX_POTENTIAL_BRANCHING = l;
+                        if (l > max_potential_branching_so_far) {
+                            max_potential_branching_so_far = l;
                         }
 //                            while(current.actions.size()>MAX_BRANCHING_FACTOR) current.actions.remove(r.nextInt(current.actions.size()));
                         current.best = null;
@@ -362,8 +362,8 @@ public class IDContinuingRTMinimaxRandomized extends IDRTMinimax {
                         if (current.beta <= current.alpha || next == null) {
                             lastResult = current.best;
                             stack.remove(0);
-                            if (current.actions.getGenerated() > MAX_BRANCHING) {
-                                MAX_BRANCHING = current.actions.getGenerated();
+                            if (current.actions.getGenerated() > max_branching_so_far) {
+                                max_branching_so_far = current.actions.getGenerated();
                             }
                         } else {
                             GameState gs2 = current.gs.cloneIssue(next);
@@ -396,4 +396,13 @@ public class IDContinuingRTMinimaxRandomized extends IDRTMinimax {
         }
         return null;
     }
+    
+    
+    public String statisticsString() {
+        return "max depth: " + max_depth_so_far + 
+               " , max branching factor (potential): " + max_branching_so_far + "(" + max_potential_branching_so_far + ")" +  
+               " , max leaves: " + max_leaves_so_far + 
+               " , max consecutive frames: " + max_consecutive_frames_searching_so_far;
+    }    
+    
 }

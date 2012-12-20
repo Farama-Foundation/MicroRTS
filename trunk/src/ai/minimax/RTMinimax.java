@@ -24,8 +24,8 @@ public class RTMinimax extends AI {
     static int maxCT = -1;
     static int nLeaves = 0;
     
-    public static long MAX_BRANCHING = 0;
-    public static int MAX_LEAVES = 0;
+    public long max_branching_so_far = 0;
+    public long max_leaves_so_far = 0;
     
     int LOOKAHEAD = 40;
     
@@ -88,7 +88,7 @@ public class RTMinimax extends AI {
         int maxplayer = player;
         int minplayer = 1 - player;
         System.out.println("Starting realTimeMinimaxAB...");
-        if (nLeaves>MAX_LEAVES) MAX_LEAVES = nLeaves;
+        if (nLeaves>max_leaves_so_far) max_leaves_so_far = nLeaves;
         minCT = -1;
         maxCT = -1;
         nLeaves = 0;
@@ -115,7 +115,7 @@ public class RTMinimax extends AI {
         if (gs.canExecuteAnyAction(maxplayer)) {
             List<PlayerAction> actions_max = gs.getPlayerActions(maxplayer);
             int l = actions_max.size();
-            if (l>MAX_BRANCHING) MAX_BRANCHING = l;
+            if (l>max_branching_so_far) max_branching_so_far = l;
             MiniMaxResult best = null;
 //            System.out.println("realTimeMinimaxAB.max: " + actions_max.size());
             for(PlayerAction action_max:actions_max) {
@@ -140,7 +140,7 @@ public class RTMinimax extends AI {
         } else if (gs.canExecuteAnyAction(minplayer)) {
             List<PlayerAction> actions_min = gs.getPlayerActions(minplayer);
             int l = actions_min.size();
-            if (l>MAX_BRANCHING) MAX_BRANCHING = l;
+            if (l>max_branching_so_far) max_branching_so_far = l;
             MiniMaxResult best = null;
 //            System.out.println("realTimeMinimaxAB.min: " + actions_min.size());
             for(PlayerAction action_min:actions_min) {
