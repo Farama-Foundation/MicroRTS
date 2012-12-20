@@ -23,10 +23,11 @@ import rts.PlayerActionGenerator;
  */
 public class ABCD extends AI {
     // reset at each execution of minimax:
-    static int nLeaves = 0;
+    int nLeaves = 0;
     
-    public static long MAX_BRANCHING = 0;
-    public static int MAX_LEAVES = 0;
+    int max_depth_so_far = 0;
+    long max_branching_so_far = 0;
+    long max_leaves_so_far = 0;
     
     int MAXDEPTH = 4;
     AI playoutAI = null;
@@ -68,7 +69,7 @@ public class ABCD extends AI {
         int maxplayer = player;
         int minplayer = 1 - player;
         System.out.println("Starting ABCD...");
-        if (nLeaves>MAX_LEAVES) MAX_LEAVES = nLeaves;
+        if (nLeaves>max_leaves_so_far) max_leaves_so_far = nLeaves;
         nLeaves = 0;
         MiniMaxResult bestMove = ABCD(gs, maxplayer, minplayer, alpha, beta, depthLeft, 0);
         System.out.println("ABCD: " + bestMove + " in " + (System.currentTimeMillis()-start));
@@ -119,7 +120,7 @@ public class ABCD extends AI {
         if (toMove == maxplayer) {
             List<PlayerAction> actions_max = gs.getPlayerActions(maxplayer);
             int l = actions_max.size();
-            if (l>MAX_BRANCHING) MAX_BRANCHING = l;
+            if (l>max_branching_so_far) max_branching_so_far = l;
             MiniMaxResult best = null;
 //            System.out.println("realTimeMinimaxAB.max: " + actions_max.size());
             for(PlayerAction action_max:actions_max) {
@@ -144,7 +145,7 @@ public class ABCD extends AI {
         } else if (toMove == minplayer) {
             List<PlayerAction> actions_min = gs.getPlayerActions(minplayer);
             int l = actions_min.size();
-            if (l>MAX_BRANCHING) MAX_BRANCHING = l;
+            if (l>max_branching_so_far) max_branching_so_far = l;
             MiniMaxResult best = null;
 //            System.out.println("realTimeMinimaxAB.min: " + actions_min.size());
             for(PlayerAction action_min:actions_min) {

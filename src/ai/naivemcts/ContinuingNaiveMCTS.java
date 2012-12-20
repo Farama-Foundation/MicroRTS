@@ -48,16 +48,7 @@ public class ContinuingNaiveMCTS extends AI {
         epsilon1 = e1;
         epsilon2 = e2;
         ef = a_ef;
-    }
-    
-    
-    public void printStats() {
-        if (total_cycles_executed>0 && total_actions_issued>0) {
-            System.out.println("ContinuingNaiveMCTS: Average runs per cycle: " + ((double)total_runs)/total_cycles_executed);
-            System.out.println("ContinuingNaiveMCTS: Average runs per action: " + ((double)total_runs)/total_actions_issued);
-        }
-    }
-    
+    }    
     
     public void reset() {
         tree = null;
@@ -100,7 +91,8 @@ public class ContinuingNaiveMCTS extends AI {
                       !gs2.gameover() &&  
                     !gs2.canExecuteAnyAction(0) && 
                     !gs2.canExecuteAnyAction(1)) gs2.cycle();
-                if (gs2.canExecuteAnyAction(player)) {
+                if ((gs2.winner() == -1 && !gs2.gameover()) && 
+                    gs2.canExecuteAnyAction(player)) {
                     // start a new search:
                     startNewSearch(player,gs2);
                     search(player, TIME_PER_CYCLE);
@@ -116,6 +108,8 @@ public class ContinuingNaiveMCTS extends AI {
     
     public void startNewSearch(int player, GameState gs) throws Exception {
         tree = new NaiveMCTSNode(player, 1-player, gs, null);
+        
+        max_actions_so_far = Math.max(tree.moveGenerator.getSize(),max_actions_so_far);
         gs_to_start_from = gs;
     }    
     
@@ -200,4 +194,12 @@ public class ContinuingNaiveMCTS extends AI {
     public String toString() {
         return "ContinuingNaiveMCTS(" + MAXSIMULATIONTIME + "," + epsilon1 + "," + epsilon2 + ")";
     }
+    
+    public String statisticsString() {
+        return "Total runs: " + total_runs + 
+               " , runs per action: " + (total_runs/(float)total_actions_issued) + 
+               " , runs per cycle: " + (total_runs/(float)total_cycles_executed) + 
+               " , max branching factor: " + max_actions_so_far;
+    }
+    
 }

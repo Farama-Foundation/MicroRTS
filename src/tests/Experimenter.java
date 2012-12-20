@@ -71,7 +71,6 @@ public class Experimenter {
                         boolean gameover = false;
                         do {
                             System.gc();
-                            if (DEBUG>=1) {System.out.println("Garbage collecting done.");System.out.flush();}
                             PlayerAction pa1 = ai1.getAction(0, gs);
                             if (DEBUG>=1) {System.out.println("AI1 done.");System.out.flush();}
                             PlayerAction pa2 = ai2.getAction(1, gs);
@@ -95,6 +94,8 @@ public class Experimenter {
                         if (w!=null) w.dispose();
                         int winner = gs.winner();
                         System.out.println("Winner: " + winner + "  in " + gs.getTime() + " cycles");
+                        System.out.println(ai1 + " : " + ai1.statisticsString());
+                        System.out.println(ai2 + " : " + ai2.statisticsString());
                         if (winner == -1) {
                             ties[ai1_idx][ai2_idx]++;
                             tie_time[ai1_idx][ai2_idx]+=gs.getTime();
@@ -119,9 +120,6 @@ public class Experimenter {
             }
         }
 
-        System.out.println("Notice that the results below are from the perspective of the 'bots1' list.");
-        System.out.println("If, in your case, bots1 and bots2 is the same list, and you want the total results, ");
-        System.out.println("you can extract them manually, by manipulating the tables below.");
         System.out.println("Wins: ");
         for (int ai1_idx = 0; ai1_idx < bots.size(); ai1_idx++) {
             for (int ai2_idx = 0; ai2_idx < bots.size(); ai2_idx++) {

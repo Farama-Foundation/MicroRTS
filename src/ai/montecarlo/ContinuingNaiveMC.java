@@ -68,14 +68,6 @@ public class ContinuingNaiveMC extends AI {
         TIME_PER_CYCLE = available_time;
         ef = a_ef;
     }
-
-    
-    public void printStats() {
-        if (total_cycles_executed>0 && total_actions_issued>0) {
-            System.out.println("Average runs per cycle: " + ((double)total_runs)/total_cycles_executed);
-            System.out.println("Average runs per action: " + ((double)total_runs)/total_actions_issued);
-        }
-    }    
     
     
     public void reset() {        
@@ -151,6 +143,7 @@ public class ContinuingNaiveMC extends AI {
             baseMultiplier*=ae.nactions;
             idx++;
         }
+        max_actions_so_far = Math.max(moveGenerator.getSize(),max_actions_so_far);
         playerActionTable = new LinkedHashMap<Long,PlayerActionTableEntry>();    // associates action codes with children           
         run = 0;
     }
@@ -374,4 +367,12 @@ public class ContinuingNaiveMC extends AI {
     public String toString() {
         return "ContinuingNaiveMC(" + MAXSIMULATIONTIME + "," + epsilon1 + "," + epsilon2 +  ")";
     }
+    
+    public String statisticsString() {
+        return "Total runs: " + total_runs + 
+               " , runs per action: " + (total_runs/(float)total_actions_issued) + 
+               " , runs per cycle: " + (total_runs/(float)total_cycles_executed) + 
+               " , max branching factor: " + max_actions_so_far;
+    }
+    
 }
