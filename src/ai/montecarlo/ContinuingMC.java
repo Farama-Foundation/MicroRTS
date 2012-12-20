@@ -171,7 +171,7 @@ public class ContinuingMC extends AI {
         simulate(gs3,gs3.getTime() + MAXSIMULATIONTIME);
         int time = gs3.getTime() - gs2.getTime();
 
-        pate.accum_evaluation += ef.evaluate(player, 1-player, gs3)*Math.pow(0.99,time/10.0);            
+        pate.accum_evaluation += ef.evaluate(player, 1-player, gs3)*Math.pow(0.99,time/10.0);    
         pate.visit_count++;
         run++;
         total_runs++;

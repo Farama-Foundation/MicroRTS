@@ -144,7 +144,11 @@ public class IDContinuingABCD extends IDABCD {
             PlayerAction tmp = IDContinuingABCDOutsideStack(gs, maxplayer, minplayer, depth, cutOffTime, false);
             if (tmp!=null) {
                 bestMove = tmp;
-                if (depth>max_depth_so_far) max_depth_so_far = depth;
+                // the <200 condition is because sometimes, towards the end of the game, the tree is so
+                // small, that opening it takes no time, and this loop incrases depth very fast, but
+                // we don't want to record that, since it is meanigless. In fact, I should detect
+                // when the tree has been open completely, and cancel this loop.
+                if (depth<200 && depth>max_depth_so_far) max_depth_so_far = depth;
             }
             if (stack.isEmpty()) {
                 // search was completed:
