@@ -62,7 +62,7 @@ public class NaiveMCTSNode {
                !gs.canExecuteAnyAction(minplayer)) {
             gs.cycle();
         }
-        if (gs.winner() != -1) {
+        if (gs.winner() != -1 || gs.gameover()) {
             type = -1;
         } else if (gs.canExecuteAnyAction(maxplayer)) {
             type = 0;
