@@ -12,6 +12,7 @@ import ai.minimax.IDContinuingRTMinimax;
 import ai.minimax.IDContinuingRTMinimaxRandomized;
 import ai.uct.UCT;
 import gui.PhysicalGameStatePanel;
+import java.io.PrintStream;
 import java.util.List;
 import javax.swing.JFrame;
 import rts.GameState;
@@ -25,7 +26,7 @@ import rts.units.UnitTypeTable;
  */
 public class ExperimenterAsymmetric {
 
-    public static void runExperiments(List<AI> bots1, List<AI> bots2, List<PhysicalGameState> maps, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize) throws Exception {
+    public static void runExperiments(List<AI> bots1, List<AI> bots2, List<PhysicalGameState> maps, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize, PrintStream out) throws Exception {
         int wins[][] = new int[bots1.size()][bots2.size()];
         int ties[][] = new int[bots1.size()][bots2.size()];
         int loses[][] = new int[bots1.size()][bots2.size()];
@@ -52,7 +53,7 @@ public class ExperimenterAsymmetric {
                         JFrame w = null;
                         if (visualize) w = PhysicalGameStatePanel.newVisualizer(gs, 600, 600);
 
-                        System.out.println("MATCH UP: " + ai1+ " vs " + ai2);
+                        out.println("MATCH UP: " + ai1+ " vs " + ai2);
                         System.gc();
                         
                         boolean gameover = false;
@@ -73,7 +74,7 @@ public class ExperimenterAsymmetric {
                                  (gs.getTime() - lastTimeActionIssued < max_inactive_cycles));
                         if (w!=null) w.dispose();
                         int winner = gs.winner();
-                        System.out.println("Winner: " + winner + "  in " + gs.getTime() + " cycles");
+                        out.println("Winner: " + winner + "  in " + gs.getTime() + " cycles");
                         if (winner == -1) {
                             ties[ai1_idx][ai2_idx]++;
                             tie_time[ai1_idx][ai2_idx]+=gs.getTime();
@@ -89,62 +90,62 @@ public class ExperimenterAsymmetric {
             }
         }
 
-        System.out.println("Notice that the results below are only from the perspective of the 'bots1' list.");
-        System.out.println("If you want a symmetric experimentation, use the 'Experimenter' class");
-        System.out.println("Wins: ");
+        out.println("Notice that the results below are only from the perspective of the 'bots1' list.");
+        out.println("If you want a symmetric experimentation, use the 'Experimenter' class");
+        out.println("Wins: ");
         for (int ai1_idx = 0; ai1_idx < bots1.size(); ai1_idx++) {
             for (int ai2_idx = 0; ai2_idx < bots2.size(); ai2_idx++) {
-                System.out.print(wins[ai1_idx][ai2_idx] + ", ");
+                out.print(wins[ai1_idx][ai2_idx] + ", ");
             }
-            System.out.println("");
+            out.println("");
         }
-        System.out.println("Ties: ");
+        out.println("Ties: ");
         for (int ai1_idx = 0; ai1_idx < bots1.size(); ai1_idx++) {
             for (int ai2_idx = 0; ai2_idx < bots2.size(); ai2_idx++) {
-                System.out.print(ties[ai1_idx][ai2_idx] + ", ");
+                out.print(ties[ai1_idx][ai2_idx] + ", ");
             }
-            System.out.println("");
+            out.println("");
         }
-        System.out.println("Loses: ");
+        out.println("Loses: ");
         for (int ai1_idx = 0; ai1_idx < bots1.size(); ai1_idx++) {
             for (int ai2_idx = 0; ai2_idx < bots2.size(); ai2_idx++) {
-                System.out.print(loses[ai1_idx][ai2_idx] + ", ");
+                out.print(loses[ai1_idx][ai2_idx] + ", ");
             }
-            System.out.println("");
+            out.println("");
         }        
-       System.out.println("Win average time: ");
+       out.println("Win average time: ");
         for (int ai1_idx = 0; ai1_idx < bots1.size(); ai1_idx++) {
             for (int ai2_idx = 0; ai2_idx < bots2.size(); ai2_idx++) {
                 if (wins[ai1_idx][ai2_idx]>0) {
-                    System.out.print((win_time[ai1_idx][ai2_idx]/wins[ai1_idx][ai2_idx]) + ", ");
+                    out.print((win_time[ai1_idx][ai2_idx]/wins[ai1_idx][ai2_idx]) + ", ");
                 } else {
-                    System.out.print("-, ");
+                    out.print("-, ");
                 }
             }
-            System.out.println("");
+            out.println("");
         }
-        System.out.println("Tie average time: ");
+        out.println("Tie average time: ");
         for (int ai1_idx = 0; ai1_idx < bots1.size(); ai1_idx++) {
             for (int ai2_idx = 0; ai2_idx < bots2.size(); ai2_idx++) {
                 if (ties[ai1_idx][ai2_idx]>0) {
-                    System.out.print((tie_time[ai1_idx][ai2_idx]/ties[ai1_idx][ai2_idx]) + ", ");
+                    out.print((tie_time[ai1_idx][ai2_idx]/ties[ai1_idx][ai2_idx]) + ", ");
                 } else {
-                    System.out.print("-, ");
+                    out.print("-, ");
                 }
             }
-            System.out.println("");
+            out.println("");
         }
-        System.out.println("Lose average time: ");
+        out.println("Lose average time: ");
         for (int ai1_idx = 0; ai1_idx < bots1.size(); ai1_idx++) {
             for (int ai2_idx = 0; ai2_idx < bots2.size(); ai2_idx++) {
                 if (loses[ai1_idx][ai2_idx]>0) {
-                    System.out.print((lose_time[ai1_idx][ai2_idx]/loses[ai1_idx][ai2_idx]) + ", ");
+                    out.print((lose_time[ai1_idx][ai2_idx]/loses[ai1_idx][ai2_idx]) + ", ");
                 } else {
-                    System.out.print("-, ");
+                    out.print("-, ");
                 }
             }
-            System.out.println("");
+            out.println("");
         }              
-        
+        out.flush();
     }
 }

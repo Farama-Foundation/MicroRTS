@@ -23,6 +23,8 @@ import ai.uct.ContinuingUCT;
 import ai.uct.ContinuingUCTUnitActions;
 import ai.uct.UCT;
 import gui.PhysicalGameStatePanel;
+import java.io.File;
+import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JFrame;
@@ -36,7 +38,7 @@ import rts.units.UnitTypeTable;
  * @author santi
  */
 public class CompareAllAIs {
-
+    
     public static void main(String args[]) throws Exception 
     {
         int TIME = 100;
@@ -68,21 +70,22 @@ public class CompareAllAIs {
 
         //        bots.add(new ContinuingNaiveMCTS(TIME, PLAYOUT_TIME, MAX_DEPTH, 0.25f, 0.9f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
         
+        PrintStream out = new PrintStream(new File("results.txt"));
+        
         // Separate the matchs by map:
         List<PhysicalGameState> maps = new LinkedList<PhysicalGameState>();
         maps.add(PhysicalGameState.load("maps/melee4x4light2.xml",UnitTypeTable.utt));
 //        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true);
-        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true, 7);
+        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true, out, 7);
 
         maps.clear();
         maps.add(PhysicalGameState.load("maps/melee8x8mixed6.xml",UnitTypeTable.utt));
 //        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true);
-        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true, 7);
+        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true, out, 7);
 
         maps.clear();
         maps.add(PhysicalGameState.load("maps/basesWorkers8x8.xml",UnitTypeTable.utt));
 //        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true);
-        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true, 7);
-      
+        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true, out, 7);
     }
 }
