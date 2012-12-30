@@ -170,10 +170,9 @@ public class ContinuingNaiveMCTS extends AI {
             return new PlayerAction();
         }
         
+        if (DEBUG>=2) tree.showNode(0,1);
         if (DEBUG>=1) System.out.println("ContinuingNaiveMCTS selected children " + tree.actions.get(bestIdx) + " explored " + best.visit_count + " Avg evaluation: " + (best.accum_evaluation/((double)best.visit_count)));
-        
-//        printStats();
-        
+                
         return tree.actions.get(bestIdx);
     }
     

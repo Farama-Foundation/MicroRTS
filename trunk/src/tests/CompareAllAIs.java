@@ -68,7 +68,7 @@ public class CompareAllAIs {
         bots.add(new ContinuingDownsamplingUCT(TIME, PLAYOUT_TIME, MAX_ACTIONS, MAX_DEPTH, new RandomBiasedAI(), new SimpleEvaluationFunction()));
         bots.add(new ContinuingUCTUnitActions(TIME, PLAYOUT_TIME, MAX_DEPTH, new RandomBiasedAI(), new SimpleEvaluationFunction()));
 
-        //        bots.add(new ContinuingNaiveMCTS(TIME, PLAYOUT_TIME, MAX_DEPTH, 0.25f, 0.9f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
+        bots.add(new ContinuingNaiveMCTS(TIME, PLAYOUT_TIME, MAX_DEPTH, 0.25f, 0.5f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
         
         PrintStream out = new PrintStream(new File("results.txt"));
         
