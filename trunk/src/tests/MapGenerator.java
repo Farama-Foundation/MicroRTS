@@ -378,10 +378,10 @@ public class MapGenerator {
         pgs.addUnit(new Unit(0,heavyType,1,2));
         pgs.addUnit(new Unit(0,heavyType,1,3));
         pgs.addUnit(new Unit(0,heavyType,1,4));
-        pgs.addUnit(new Unit(1,rangedType,0,0));
-        pgs.addUnit(new Unit(1,rangedType,0,1));
-        pgs.addUnit(new Unit(1,rangedType,0,2));
-        pgs.addUnit(new Unit(1,rangedType,0,3));
+        pgs.addUnit(new Unit(0,rangedType,0,0));
+        pgs.addUnit(new Unit(0,rangedType,0,1));
+        pgs.addUnit(new Unit(0,rangedType,0,2));
+        pgs.addUnit(new Unit(0,rangedType,0,3));
 
         pgs.addUnit(new Unit(1,lightType,9,7));
         pgs.addUnit(new Unit(1,lightType,9,8));
@@ -415,10 +415,10 @@ public class MapGenerator {
         pgs.addUnit(new Unit(0,heavyType,1,2));
         pgs.addUnit(new Unit(0,heavyType,1,3));
         pgs.addUnit(new Unit(0,heavyType,1,4));
-        pgs.addUnit(new Unit(1,rangedType,0,0));
-        pgs.addUnit(new Unit(1,rangedType,0,1));
-        pgs.addUnit(new Unit(1,rangedType,0,2));
-        pgs.addUnit(new Unit(1,rangedType,0,3));
+        pgs.addUnit(new Unit(0,rangedType,0,0));
+        pgs.addUnit(new Unit(0,rangedType,0,1));
+        pgs.addUnit(new Unit(0,rangedType,0,2));
+        pgs.addUnit(new Unit(0,rangedType,0,3));
 
         pgs.addUnit(new Unit(1,lightType,13,11));
         pgs.addUnit(new Unit(1,lightType,13,12));
