@@ -71,6 +71,10 @@ public class MapGenerator {
         melee16x16Mixed8().toxml(xml);
         xml.flush();
 
+        xml = new XMLWriter(new FileWriter("maps/melee12x12Mixed12.xml"));
+        melee12x12Mixed12().toxml(xml);
+        xml.flush();
+
         xml = new XMLWriter(new FileWriter("maps/melee16x16Mixed12.xml"));
         melee16x16Mixed12().toxml(xml);
         xml.flush();
@@ -357,6 +361,43 @@ public class MapGenerator {
 
         return pgs;
     }    
+    
+    public static PhysicalGameState melee12x12Mixed12() {
+        PhysicalGameState pgs = new PhysicalGameState(12,12);
+        
+        Player p0 = new Player(0,0);
+        Player p1 = new Player(1,0);
+        pgs.addPlayer(p0);
+        pgs.addPlayer(p1);
+        
+        pgs.addUnit(new Unit(0,lightType,2,1));
+        pgs.addUnit(new Unit(0,lightType,2,2));
+        pgs.addUnit(new Unit(0,lightType,2,3));
+        pgs.addUnit(new Unit(0,lightType,2,4));
+        pgs.addUnit(new Unit(0,heavyType,1,1));
+        pgs.addUnit(new Unit(0,heavyType,1,2));
+        pgs.addUnit(new Unit(0,heavyType,1,3));
+        pgs.addUnit(new Unit(0,heavyType,1,4));
+        pgs.addUnit(new Unit(1,rangedType,0,0));
+        pgs.addUnit(new Unit(1,rangedType,0,1));
+        pgs.addUnit(new Unit(1,rangedType,0,2));
+        pgs.addUnit(new Unit(1,rangedType,0,3));
+
+        pgs.addUnit(new Unit(1,lightType,9,7));
+        pgs.addUnit(new Unit(1,lightType,9,8));
+        pgs.addUnit(new Unit(1,lightType,9,9));
+        pgs.addUnit(new Unit(1,lightType,9,10));
+        pgs.addUnit(new Unit(1,heavyType,10,7));
+        pgs.addUnit(new Unit(1,heavyType,10,8));
+        pgs.addUnit(new Unit(1,heavyType,10,9));
+        pgs.addUnit(new Unit(1,heavyType,10,10));
+        pgs.addUnit(new Unit(1,rangedType,11,7));
+        pgs.addUnit(new Unit(1,rangedType,11,8));
+        pgs.addUnit(new Unit(1,rangedType,11,9));
+        pgs.addUnit(new Unit(1,rangedType,11,10));
+
+        return pgs;
+    }            
     
     public static PhysicalGameState melee16x16Mixed12() {
         PhysicalGameState pgs = new PhysicalGameState(16,16);
