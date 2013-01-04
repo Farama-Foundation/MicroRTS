@@ -23,13 +23,13 @@
     </rts.units.Unit>
     <rts.units.Unit type="Heavy" ID="87" player="0" x="1" y="4" resources="0" hitpoints="4" >
     </rts.units.Unit>
-    <rts.units.Unit type="Ranged" ID="88" player="0" x="0" y="0" resources="0" hitpoints="1" >
+    <rts.units.Unit type="Ranged" ID="88" player="0" x="0" y="1" resources="0" hitpoints="1" >
     </rts.units.Unit>
-    <rts.units.Unit type="Ranged" ID="89" player="0" x="0" y="1" resources="0" hitpoints="1" >
+    <rts.units.Unit type="Ranged" ID="89" player="0" x="0" y="2" resources="0" hitpoints="1" >
     </rts.units.Unit>
-    <rts.units.Unit type="Ranged" ID="90" player="0" x="0" y="2" resources="0" hitpoints="1" >
+    <rts.units.Unit type="Ranged" ID="90" player="0" x="0" y="3" resources="0" hitpoints="1" >
     </rts.units.Unit>
-    <rts.units.Unit type="Ranged" ID="91" player="0" x="0" y="3" resources="0" hitpoints="1" >
+    <rts.units.Unit type="Ranged" ID="91" player="0" x="0" y="4" resources="0" hitpoints="1" >
     </rts.units.Unit>
     <rts.units.Unit type="Light" ID="92" player="1" x="9" y="7" resources="0" hitpoints="4" >
     </rts.units.Unit>
