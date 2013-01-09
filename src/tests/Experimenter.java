@@ -33,6 +33,10 @@ public class Experimenter {
         runExperiments(bots, maps, iterations, max_cycles, max_inactive_cycles, visualize, System.out, -1);
     }
 
+    public static void runExperiments(List<AI> bots, List<PhysicalGameState> maps, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize, PrintStream out) throws Exception {
+        runExperiments(bots, maps, iterations, max_cycles, max_inactive_cycles, visualize, out, -1);
+    }
+
     public static void runExperiments(List<AI> bots, List<PhysicalGameState> maps, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize, PrintStream out, int run_only_those_involving_this_AI) throws Exception {
         int wins[][] = new int[bots.size()][bots.size()];
         int ties[][] = new int[bots.size()][bots.size()];
