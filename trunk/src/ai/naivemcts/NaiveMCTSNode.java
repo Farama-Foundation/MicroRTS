@@ -129,7 +129,7 @@ public class NaiveMCTSNode {
         PlayerAction pa2;
         long actionCode;
 
-        if (children.size()>0 && r.nextFloat()<epsilon2) {
+        if (children.size()>0 && r.nextFloat()>=epsilon2) {
             // explore the player action with the highest value found so far:
             NaiveMCTSNode best = null;
             for(NaiveMCTSNode pate:children) {
@@ -179,15 +179,15 @@ public class NaiveMCTSNode {
                         visits = ate.visit_count[i];
                     }
                 }
-                dist[i] = 1;
+                dist[i] = epsilon1/ate.nactions;
                 total+=dist[i];
             }
             if (ate.visit_count[bestIdx]!=0) {
-                if (total>1) dist[bestIdx] = ((total - 1)/epsilon1) * (1 - epsilon1); // the maximum index has "1 - epsilon probability of being chosen
+                dist[bestIdx] = (1-epsilon1) + (epsilon1/ate.nactions);
             } else {
                 for(int j = 0;j<dist.length;j++) 
                     if (ate.visit_count[j]>0) dist[j] = 0;
-            }   
+            }  
 
             if (DEBUG>=3) {
                 System.out.print("[ ");
