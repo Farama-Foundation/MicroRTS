@@ -100,7 +100,7 @@ public class NaiveMonteCarlo extends AI {
             long actionCode = 0;
             int selectedUnitActions[] = new int[unitActionTable.size()];
             
-            if (run>0 && r.nextFloat()<epsilon2) {
+            if (run>0 && r.nextFloat()>=epsilon2) {
                 // explore the player action with the highest value found so far:
                 PlayerActionTableEntry best = null;
                 for(PlayerActionTableEntry pate:playerActionTable.values()) {
@@ -131,15 +131,16 @@ public class NaiveMonteCarlo extends AI {
                             maxEvaluation = (ate.accum_evaluation[i]/ate.visit_count[i]);
                             visits = ate.visit_count[i];
                         }
-                        dist[i] = 1;
+                        dist[i] = epsilon1/ate.nactions;
                         total+=dist[i];
                     }
                     if (ate.visit_count[maxIdx]!=0) {
-                        if (total>1) dist[maxIdx] = ((total - 1)/epsilon1) * (1 - epsilon1); // the maximum index has "1 - epsilon probability of being chosen
+                        dist[maxIdx] = (1-epsilon1) + (epsilon1/ate.nactions);
                     } else {
                         for(int j = 0;j<dist.length;j++) 
                             if (ate.visit_count[j]>0) dist[j] = 0;
-                    }   
+                    }  
+
 
                     if (DEBUG>=3) {
                         System.out.print("[ ");
