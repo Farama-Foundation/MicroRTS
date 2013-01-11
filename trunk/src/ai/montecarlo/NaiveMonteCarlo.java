@@ -125,10 +125,11 @@ public class NaiveMonteCarlo extends AI {
                     int visits = 0;
                     for(int i = 0;i<ate.nactions;i++) {
                         if (maxIdx==-1 || 
-                            (visits!=0 && (ate.accum_evaluation[i]/ate.visit_count[i])>maxEvaluation) || 
-                            (visits!=0 && ate.visit_count[i]==0)) {
+                            (visits!=0 && ate.visit_count[i]==0) ||
+                            (visits!=0 && (ate.accum_evaluation[i]/ate.visit_count[i])>maxEvaluation)) {
                             maxIdx = i;
-                            maxEvaluation = (ate.accum_evaluation[i]/ate.visit_count[i]);
+                            if (ate.visit_count[i]>0) maxEvaluation = (ate.accum_evaluation[i]/ate.visit_count[i]);
+                                                 else maxEvaluation = 0;
                             visits = ate.visit_count[i];
                         }
                         dist[i] = epsilon1/ate.nactions;

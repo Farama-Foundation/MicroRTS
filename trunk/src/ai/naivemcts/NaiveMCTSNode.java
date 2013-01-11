@@ -163,19 +163,21 @@ public class NaiveMCTSNode {
                 if (type==0) {
                     // max node:
                     if (bestIdx==-1 || 
-                        (visits!=0 && (ate.accum_evaluation[i]/ate.visit_count[i])>bestEvaluation) || 
-                        (visits!=0 && ate.visit_count[i]==0)) {
+                        (visits!=0 && ate.visit_count[i]==0) ||
+                        (visits!=0 && (ate.accum_evaluation[i]/ate.visit_count[i])>bestEvaluation)) {
                         bestIdx = i;
-                        bestEvaluation = (ate.accum_evaluation[i]/ate.visit_count[i]);
+                        if (ate.visit_count[i]>0) bestEvaluation = (ate.accum_evaluation[i]/ate.visit_count[i]);
+                                             else bestEvaluation = 0;
                         visits = ate.visit_count[i];
                     }
                 } else {
                     // min node:
                     if (bestIdx==-1 || 
-                        (visits!=0 && (ate.accum_evaluation[i]/ate.visit_count[i])<bestEvaluation) || 
-                        (visits!=0 && ate.visit_count[i]==0)) {
+                        (visits!=0 && ate.visit_count[i]==0) ||
+                        (visits!=0 && (ate.accum_evaluation[i]/ate.visit_count[i])<bestEvaluation)) {
                         bestIdx = i;
-                        bestEvaluation = (ate.accum_evaluation[i]/ate.visit_count[i]);
+                        if (ate.visit_count[i]>0) bestEvaluation = (ate.accum_evaluation[i]/ate.visit_count[i]);
+                                             else bestEvaluation = 0;
                         visits = ate.visit_count[i];
                     }
                 }
