@@ -41,6 +41,14 @@ public class MapGenerator {
         xml = new XMLWriter(new FileWriter("maps/basesWorkers8x8Obstacle.xml"));
         basesWorkers8x8Obstacle().toxml(xml);
         xml.flush();
+        
+        xml = new XMLWriter(new FileWriter("maps/basesWorkers12x12.xml"));
+        basesWorkers12x12().toxml(xml);
+        xml.flush();
+
+        xml = new XMLWriter(new FileWriter("maps/complexBasesWorkers12x12.xml"));
+        complexBasesWorkers12x12().toxml(xml);
+        xml.flush();        
 
         xml = new XMLWriter(new FileWriter("maps/basesWorkers16x16.xml"));
         basesWorkers16x16().toxml(xml);
@@ -163,6 +171,77 @@ public class MapGenerator {
 
         return pgs;
     }  
+    
+    
+    public static PhysicalGameState basesWorkers12x12() {
+        PhysicalGameState pgs = new PhysicalGameState(12,12);
+        
+        Player p0 = new Player(0,5);
+        Player p1 = new Player(1,5);
+        pgs.addPlayer(p0);
+        pgs.addPlayer(p1);
+        
+        Unit r0 = new Unit(-1,resourceType,0,0, 20);
+        Unit r1 = new Unit(-1,resourceType,1,0, 20);
+        Unit r2 = new Unit(-1,resourceType,11,11, 20);
+        Unit r3 = new Unit(-1,resourceType,10,11, 20);
+        pgs.addUnit(r0);
+        pgs.addUnit(r1);
+        pgs.addUnit(r2);
+        pgs.addUnit(r3);
+
+        Unit u0 = new Unit(0,baseType,1,2,0);
+        Unit u1 = new Unit(1,baseType,10,9,0);
+        pgs.addUnit(u0);
+        pgs.addUnit(u1);
+        
+        Unit w0 = new Unit(0,workerType, 1,1,0);
+        Unit w1 = new Unit(1,workerType,10,10,0);
+        pgs.addUnit(w0);
+        pgs.addUnit(w1);
+
+        return pgs;
+    }     
+    
+    
+    public static PhysicalGameState complexBasesWorkers12x12() {
+        PhysicalGameState pgs = new PhysicalGameState(12,12);
+        
+        Player p0 = new Player(0,5);
+        Player p1 = new Player(1,5);
+        pgs.addPlayer(p0);
+        pgs.addPlayer(p1);
+        
+        Unit r0 = new Unit(-1,resourceType,0,0, 20);
+        Unit r1 = new Unit(-1,resourceType,1,0, 20);
+        Unit r2 = new Unit(-1,resourceType,0,1, 20);
+        Unit r3 = new Unit(-1,resourceType,11,11, 20);
+        Unit r4 = new Unit(-1,resourceType,10,11, 20);
+        Unit r5 = new Unit(-1,resourceType,11,10, 20);
+        pgs.addUnit(r0);
+        pgs.addUnit(r1);
+        pgs.addUnit(r2);
+        pgs.addUnit(r3);
+        pgs.addUnit(r4);
+        pgs.addUnit(r5);
+
+        Unit u0 = new Unit(0,baseType,1,3,0);
+        Unit u1 = new Unit(0,baseType,3,1,0);
+        Unit u2 = new Unit(1,baseType,10,8,0);
+        Unit u3 = new Unit(1,baseType,8,10,0);
+        pgs.addUnit(u0);
+        pgs.addUnit(u1);
+        pgs.addUnit(u2);
+        pgs.addUnit(u3);
+        
+        Unit w0 = new Unit(0,workerType, 2,2,0);
+        Unit w1 = new Unit(1,workerType, 9,9,0);
+        pgs.addUnit(w0);
+        pgs.addUnit(w1);
+
+        return pgs;
+    }     
+    
     
     public static PhysicalGameState basesWorkers16x16() {
         PhysicalGameState pgs = new PhysicalGameState(16,16);
