@@ -86,6 +86,10 @@ public class MapGenerator {
         xml = new XMLWriter(new FileWriter("maps/melee16x16Mixed12.xml"));
         melee16x16Mixed12().toxml(xml);
         xml.flush();
+        
+        xml = new XMLWriter(new FileWriter("maps/melee14x12Mixed18.xml"));
+        melee14x12Mixed18().toxml(xml);
+        xml.flush();
     }
 
     
@@ -514,6 +518,56 @@ public class MapGenerator {
 
         return pgs;
     }        
+    
+
+    public static PhysicalGameState melee14x12Mixed18() {
+        PhysicalGameState pgs = new PhysicalGameState(14,12);
+        
+        Player p0 = new Player(0,0);
+        Player p1 = new Player(1,0);
+        pgs.addPlayer(p0);
+        pgs.addPlayer(p1);
+        
+        pgs.addUnit(new Unit(0,lightType,2,1));
+        pgs.addUnit(new Unit(0,lightType,2,2));
+        pgs.addUnit(new Unit(0,lightType,2,3));
+        pgs.addUnit(new Unit(0,lightType,2,4));
+        pgs.addUnit(new Unit(0,lightType,2,5));
+        pgs.addUnit(new Unit(0,lightType,2,6));
+        pgs.addUnit(new Unit(0,heavyType,1,1));
+        pgs.addUnit(new Unit(0,heavyType,1,2));
+        pgs.addUnit(new Unit(0,heavyType,1,3));
+        pgs.addUnit(new Unit(0,heavyType,1,4));
+        pgs.addUnit(new Unit(0,heavyType,1,5));
+        pgs.addUnit(new Unit(0,heavyType,1,6));
+        pgs.addUnit(new Unit(0,rangedType,0,1));
+        pgs.addUnit(new Unit(0,rangedType,0,2));
+        pgs.addUnit(new Unit(0,rangedType,0,3));
+        pgs.addUnit(new Unit(0,rangedType,0,4));
+        pgs.addUnit(new Unit(0,rangedType,0,5));
+        pgs.addUnit(new Unit(0,rangedType,0,6));
+
+        pgs.addUnit(new Unit(1,lightType,11,5));
+        pgs.addUnit(new Unit(1,lightType,11,6));
+        pgs.addUnit(new Unit(1,lightType,11,7));
+        pgs.addUnit(new Unit(1,lightType,11,8));
+        pgs.addUnit(new Unit(1,lightType,11,9));
+        pgs.addUnit(new Unit(1,lightType,11,10));
+        pgs.addUnit(new Unit(1,heavyType,12,5));
+        pgs.addUnit(new Unit(1,heavyType,12,6));
+        pgs.addUnit(new Unit(1,heavyType,12,7));
+        pgs.addUnit(new Unit(1,heavyType,12,8));
+        pgs.addUnit(new Unit(1,heavyType,12,9));
+        pgs.addUnit(new Unit(1,heavyType,12,10));
+        pgs.addUnit(new Unit(1,rangedType,13,5));
+        pgs.addUnit(new Unit(1,rangedType,13,6));
+        pgs.addUnit(new Unit(1,rangedType,13,7));
+        pgs.addUnit(new Unit(1,rangedType,13,8));
+        pgs.addUnit(new Unit(1,rangedType,13,9));
+        pgs.addUnit(new Unit(1,rangedType,13,10));
+
+        return pgs;
+    }      
       
   
        
