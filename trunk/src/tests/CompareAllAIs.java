@@ -61,12 +61,12 @@ public class CompareAllAIs {
 
         bots.add(new ContinuingMC(TIME, PLAYOUT_TIME, new RandomBiasedAI(), new SimpleEvaluationFunction()));
         bots.add(new ContinuingDownsamplingMC(TIME, PLAYOUT_TIME, MAX_ACTIONS, new RandomBiasedAI(), new SimpleEvaluationFunction()));
-        bots.add(new ContinuingNaiveMC(TIME, PLAYOUT_TIME, 0.25f, 0.75f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
+        bots.add(new ContinuingNaiveMC(TIME, PLAYOUT_TIME, 0.33f, 0.75f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
 
         bots.add(new ContinuingUCT(TIME, PLAYOUT_TIME, MAX_DEPTH, new RandomBiasedAI(), new SimpleEvaluationFunction()));
         bots.add(new ContinuingDownsamplingUCT(TIME, PLAYOUT_TIME, MAX_ACTIONS, MAX_DEPTH, new RandomBiasedAI(), new SimpleEvaluationFunction()));
         bots.add(new ContinuingUCTUnitActions(TIME, PLAYOUT_TIME, MAX_DEPTH*10, new RandomBiasedAI(), new SimpleEvaluationFunction()));
-        bots.add(new ContinuingNaiveMCTS(TIME, PLAYOUT_TIME, MAX_DEPTH, 0.25f, 0.75f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
+        bots.add(new ContinuingNaiveMCTS(TIME, PLAYOUT_TIME, MAX_DEPTH, 0.33f, 0.75f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
 
         PrintStream out = new PrintStream(new File("C:\\Users\\santi\\Dropbox\\papers\\RealTimeMinimax\\results.txt"));
         
@@ -77,6 +77,15 @@ public class CompareAllAIs {
         Experimenter.runExperiments(bots, maps, 10, 3000, 300, true);
 //        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true, out, 10);
         
+        maps.add(PhysicalGameState.load("maps/complexBasesWorkers12x12.xml",UnitTypeTable.utt));
+        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true);
+//        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true, out, 10);
+
+        maps.clear();
+        maps.add(PhysicalGameState.load("maps/melee4x4light2.xml",UnitTypeTable.utt));
+        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true);
+//        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true, out, 10);
+
         maps.clear();
         maps.add(PhysicalGameState.load("maps/melee8x8mixed6.xml",UnitTypeTable.utt));
         Experimenter.runExperiments(bots, maps, 10, 3000, 300, true);
@@ -86,10 +95,10 @@ public class CompareAllAIs {
         maps.add(PhysicalGameState.load("maps/melee12x12mixed12.xml",UnitTypeTable.utt));
         Experimenter.runExperiments(bots, maps, 10, 3000, 300, true, out);
 //        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true, out, 10);
-                
+               
         maps.clear();
-        maps.add(PhysicalGameState.load("maps/melee4x4light2.xml",UnitTypeTable.utt));
-        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true);
+        maps.add(PhysicalGameState.load("maps/melee14x12Mixed18.xml",UnitTypeTable.utt));
+        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true, out);
 //        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true, out, 10);
     }
 }
