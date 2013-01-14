@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ai.naivemcts;
+package ai.mcts;
 
 import ai.evaluation.SimpleEvaluationFunction;
 import ai.montecarlo.NaiveMonteCarlo;

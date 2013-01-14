@@ -14,7 +14,7 @@ import ai.evaluation.EvaluationFunctionWithActions;
 import ai.evaluation.SimpleEvaluationFunction;
 import ai.minimax.IDContinuingABCD;
 import ai.montecarlo.*;
-import ai.naivemcts.ContinuingNaiveMCTS;
+import ai.mcts.ContinuingNaiveMCTS;
 import ai.minimax.IDContinuingRTMinimax;
 import ai.minimax.IDContinuingRTMinimax;
 import ai.minimax.IDContinuingRTMinimaxRandomized;
