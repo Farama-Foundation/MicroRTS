@@ -10,7 +10,7 @@ import ai.mcts.ContinuingNaiveMCTS;
 import ai.minimax.IDContinuingRTMinimax;
 import ai.minimax.IDContinuingRTMinimax;
 import ai.minimax.IDContinuingRTMinimaxRandomized;
-import ai.uct.UCT;
+import ai.mcts.uct.UCT;
 import gui.PhysicalGameStatePanel;
 import java.io.OutputStream;
 import java.io.PrintStream;

@@ -13,7 +13,7 @@ import ai.abstraction.pathfinding.GreedyPathFinding;
 import ai.evaluation.SimpleEvaluationFunction;
 import ai.montecarlo.ContinuingDownsamplingMC;
 import ai.montecarlo.ContinuingNaiveMC;
-import ai.uct.UCT;
+import ai.mcts.uct.UCT;
 import ai.minimax.IDContinuingRTMinimax;
 import gui.PhysicalGameStatePanel;
 import java.io.OutputStreamWriter;

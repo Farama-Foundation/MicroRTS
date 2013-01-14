@@ -7,7 +7,7 @@ package tests;
 import ai.abstraction.WorkerRush;
 import ai.*;
 import ai.abstraction.pathfinding.AStarPathFinding;
-import ai.uct.UCT;
+import ai.mcts.uct.UCT;
 import ai.minimax.IDContinuingRTMinimax;
 import java.io.FileWriter;
 import java.io.IOException;
