@@ -115,7 +115,7 @@ public class NaiveMCTSNode {
            }
         } else {
             type = -1;
-            System.err.println("RTMCTSNode: This should not have happened...");
+            System.err.println("NaiveMCTSNode: This should not have happened...");
         }
     }
 

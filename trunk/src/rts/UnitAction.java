@@ -55,6 +55,19 @@ public class UnitAction {
         y = a_y;
     }
     
+    public boolean equals(Object o) {
+        if (!(o instanceof UnitAction)) return false;
+        UnitAction a = (UnitAction)o;
+        
+        if (a.type!=type ||
+            a.direction!=direction ||
+            a.x!=x ||
+            a.y!=y ||
+            a.unitType!=unitType) return false;
+        
+        return true;
+    }
+    
    
     public int getType() {
         return type;
