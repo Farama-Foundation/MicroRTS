@@ -21,6 +21,20 @@ public class PlayerAction {
         
     }
     
+    public boolean equals(Object o) {
+        if (!(o instanceof PlayerAction)) return false;
+        PlayerAction a = (PlayerAction)o;
+
+        for(Pair<Unit,UnitAction> p:actions) {
+            for(Pair<Unit,UnitAction> p2:a.actions) {
+                if (p.m_a.getID()==p2.m_a.getID() &&
+                    !p.m_b.equals(p2.m_b)) return false;
+            }
+        }
+        return true;
+    }    
+    
+    
     public boolean isEmpty() {
         return actions.isEmpty();
     }
