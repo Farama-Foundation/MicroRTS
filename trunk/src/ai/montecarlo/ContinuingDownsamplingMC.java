@@ -172,7 +172,7 @@ public class ContinuingDownsamplingMC extends AI {
     }
     
 
-    public void monteCarloRun(int player, GameState gs) throws Exception {
+    public float monteCarloRun(int player, GameState gs) throws Exception {
         int idx = run%actions.size();
         PlayerActionTableEntry pate = actions.get(idx);
 
@@ -181,10 +181,12 @@ public class ContinuingDownsamplingMC extends AI {
         simulate(gs3,gs3.getTime() + MAXSIMULATIONTIME);
         int time = gs3.getTime() - gs2.getTime();
 
-        pate.accum_evaluation += ef.evaluate(player, 1-player, gs3)*Math.pow(0.99,time/10.0);            
+        float evaluation = (float)(ef.evaluate(player, 1-player, gs3)*Math.pow(0.99,time/10.0));
+        pate.accum_evaluation += evaluation;
         pate.visit_count++;
         run++;
         total_runs++;
+        return evaluation;
     }
     
     

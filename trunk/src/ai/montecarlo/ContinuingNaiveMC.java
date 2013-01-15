@@ -171,12 +171,12 @@ public class ContinuingNaiveMC extends AI {
     }
     
     
-    public void monteCarloRun(int player, GameState gs) throws Exception {
+    public float monteCarloRun(int player, GameState gs) throws Exception {
         PlayerAction pa = null;
         long actionCode = 0;
         int selectedUnitActions[] = new int[unitActionTable.size()];
 
-        if (run>0 && r.nextFloat()<epsilon2) {
+        if (run>0 && r.nextFloat()>=epsilon2) {
             // explore the player action with the highest value found so far:
             PlayerActionTableEntry best = null;
             for(PlayerActionTableEntry pate:playerActionTable.values()) {
@@ -282,7 +282,7 @@ public class ContinuingNaiveMC extends AI {
         simulate(gs3,gs3.getTime() + MAXSIMULATIONTIME);
         int time = gs3.getTime() - gs2.getTime();
         // Discount factor:
-        double eval = ef.evaluate(player, 1-player, gs3)*Math.pow(0.99,time/10.0);
+        float eval = (float)(ef.evaluate(player, 1-player, gs3)*Math.pow(0.99,time/10.0));
         pate.accum_evaluation += eval;
         pate.visit_count++;
 
@@ -299,6 +299,7 @@ public class ContinuingNaiveMC extends AI {
         
         run++;
         total_runs++;
+        return eval;
     }
     
         
@@ -332,6 +333,18 @@ public class ContinuingNaiveMC extends AI {
         return best.pa;        
     }
     
+
+    public void printState() {
+        System.out.println("Unit actions table:");
+        for(UnitActionTableEntry uat : unitActionTable) {
+            System.out.println("Actions for unit " + uat.u);
+            for (int i = 0; i < uat.nactions; i++) {
+                System.out.println("   " + uat.actions.get(i) + " visited " + uat.visit_count[i] + " with average evaluation " + (uat.accum_evaluation[i] / uat.visit_count[i]));
+            }
+        }        
+        System.out.println("Player actions:" + playerActionTable.size() + " actions evaluated.");
+    }
+
     
     public void printState(List<UnitActionTableEntry> unitActionTable,
                            HashMap<Long,PlayerActionTableEntry> playerActionTable) {
