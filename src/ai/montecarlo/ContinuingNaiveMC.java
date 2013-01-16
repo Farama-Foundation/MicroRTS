@@ -206,12 +206,17 @@ public class ContinuingNaiveMC extends AI {
                         maxEvaluation = (ate.accum_evaluation[i]/ate.visit_count[i]);
                         visits = ate.visit_count[i];
                     }
-                    dist[i] = 1;
+                    dist[i] = epsilon1/ate.nactions;
                     total+=dist[i];
                 }
                 if (ate.visit_count[maxIdx]!=0) {
                     dist[maxIdx] = (1-epsilon1) + (epsilon1/ate.nactions);
-//                    System.out.println("Num: " + ate.nactions + " total: " + total + " max: " + dist[maxIdx]);
+//                    System.out.println("(epsilon = " + epsilon1 + ") Num: " + ate.nactions + " total: " + total + " max: " + dist[maxIdx]);
+                } else {
+ //                   System.out.println("maxIdx: " + maxIdx + " count: " + ate.visit_count[maxIdx]);
+                    for(int j = 0;j<dist.length;j++) {
+                        if (ate.visit_count[j]>0) dist[j] = 0;
+                    }
                 }   // the maximum index has "1 - epsilon probability of being chosen
 
                 if (DEBUG>=3) {
@@ -240,33 +245,53 @@ public class ContinuingNaiveMC extends AI {
             
             pa = new PlayerAction();
             actionCode = 0;
-            pa.setResourceUsage(base_ru.clone());            
+            pa.setResourceUsage(base_ru.clone());     
             while(!notSampledYet.isEmpty()) {
                 int i = notSampledYet.remove(r.nextInt(notSampledYet.size()));
-                
+
                 try {
                     UnitActionTableEntry ate = unitActionTable.get(i);
                     int code;
                     UnitAction ua;
                     ResourceUsage r2;
-                    do {
-                        code = Sampler.weighted(distributions.get(i));
-                        ua = ate.actions.get(code);
-                        r2 = ua.resourceUsage(ate.u, pgs);
-                    }while(!pa.getResourceUsage().consistentWith(r2, gs));
-                    
+
+                    // try one at random:
+                    double []distribution = distributions.get(i);
+                    code = Sampler.weighted(distribution);
+                    ua = ate.actions.get(code);
+                    r2 = ua.resourceUsage(ate.u, pgs);
+                    if (!pa.getResourceUsage().consistentWith(r2, gs)) {
+                        // sample at random, eliminating the ones that have not worked so far:
+                        List<Double> dist_l = new ArrayList<Double>();
+                        List<Integer> dist_outputs = new ArrayList<Integer>();
+
+                        for(int j = 0;j<distribution.length;j++) {
+                            dist_l.add(distribution[j]);
+                            dist_outputs.add(j);
+                        }
+                        do{
+                            int idx = dist_outputs.indexOf(code);
+                            dist_l.remove(idx);
+                            dist_outputs.remove(idx);
+                            code = (Integer)Sampler.weighted(dist_l, dist_outputs);
+                            ua = ate.actions.get(code);
+                            r2 = ua.resourceUsage(ate.u, pgs);                            
+                        }while(!pa.getResourceUsage().consistentWith(r2, gs));
+                    }
+
                     pa.getResourceUsage().merge(r2);
                     pa.addUnitAction(ate.u, ua);
 
                     selectedUnitActions[i] = code;
                     actionCode+= ((long)code)*multipliers[i];
-                    
+
                 } catch(Exception e) {
                     e.printStackTrace();
                 }
-            }
+            }              
         }
 
+        
         PlayerActionTableEntry pate = playerActionTable.get(actionCode);
         if (pate==null) {
             pate = new PlayerActionTableEntry();
