@@ -358,6 +358,26 @@ public class ContinuingNaiveMC extends AI {
         return best.pa;        
     }
     
+    
+    // gets the best action, evaluates it for 'N' times using a simulation, and returns the average obtained value:
+    public float getBestActionEvaluation(GameState gs, int player, int N) throws Exception {
+        PlayerAction pa = getBestAction();
+        
+        if (pa==null) return 0;
+
+        float accum = 0;
+        for(int i = 0;i<N;i++) {
+            GameState gs2 = gs.cloneIssue(pa);
+            GameState gs3 = gs2.clone();
+            simulate(gs3,gs3.getTime() + MAXSIMULATIONTIME);
+            int time = gs3.getTime() - gs2.getTime();
+            // Discount factor:
+            accum += (float)(ef.evaluate(player, 1-player, gs3)*Math.pow(0.99,time/10.0));
+        }
+            
+        return accum/N;
+    }    
+    
 
     public void printState() {
         System.out.println("Unit actions table:");

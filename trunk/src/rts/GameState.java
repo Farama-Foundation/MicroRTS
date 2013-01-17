@@ -245,7 +245,7 @@ public class GameState {
         
         return l;
     }
-     
+        
        
     public int getNextChangeTime() {
         int nct = -1;
