@@ -155,19 +155,28 @@ public class Unit {
         Unit uleft = pgs.getUnitAt(x-1,y);
         
         if (type.canAttack) {
-            int sqrange = type.attackRange*type.attackRange;
-            for(int dy = -type.attackRange;dy<=type.attackRange;dy++) {
-                if (y+dy>=0 && y+dy<pgs.getHeight()) {
-                    for(int dx = -type.attackRange;dx<=type.attackRange;dx++) {
-                        if (x+dx>=0 && x+dx<pgs.getWidth()) {
-                            if (dx*dx + dy*dy <= sqrange) {
-                                Unit tgt = pgs.getUnitAt(x+dx,y+dy);
-                                if (tgt!=null && tgt.player!=player && tgt.player>=0) {
-                                    l.add(new UnitAction(UnitAction.TYPE_ATTACK_LOCATION,tgt.x,tgt.y));
+            if (type.attackRange==1) {
+                if (y>0 && uup!=null && uup.player!=player && uup.player>=0) l.add(new UnitAction(UnitAction.TYPE_ATTACK_LOCATION,uup.x,uup.y));                
+                if (x<pgs.getWidth()-1 && uright!=null && uright.player!=player && uright.player>=0) l.add(new UnitAction(UnitAction.TYPE_ATTACK_LOCATION,uright.x,uright.y));                
+                if (y<pgs.getHeight()-1 && udown!=null && udown.player!=player && udown.player>=0) l.add(new UnitAction(UnitAction.TYPE_ATTACK_LOCATION,udown.x,udown.y));
+                if (x>0 && uleft!=null && uleft.player!=player && uleft.player>=0) l.add(new UnitAction(UnitAction.TYPE_ATTACK_LOCATION,uleft.x,uleft.y));                
+            } else {
+                int sqrange = type.attackRange*type.attackRange;
+                int sq_dy;
+                for(int dy = -type.attackRange;dy<=type.attackRange;dy++) {
+                    if (y+dy>=0 && y+dy<pgs.getHeight()) {
+                        sq_dy = dy*dy;
+                        for(int dx = -type.attackRange;dx<=type.attackRange;dx++) {
+                            if (x+dx>=0 && x+dx<pgs.getWidth()) {
+                                if (dx*dx + sq_dy <= sqrange) {
+                                    Unit tgt = pgs.getUnitAt(x+dx,y+dy);
+                                    if (tgt!=null && tgt.player!=player && tgt.player>=0) {
+                                        l.add(new UnitAction(UnitAction.TYPE_ATTACK_LOCATION,tgt.x,tgt.y));
+                                    }
                                 }
                             }
-                        }
-                    }            
+                        }            
+                    }
                 }
             }
         }
