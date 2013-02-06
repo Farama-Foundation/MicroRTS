@@ -96,10 +96,6 @@ public class UnitAction {
                     r_cache.positionsUsed.add(pos);
                 }
                 break;
-            case TYPE_HARVEST:
-                break;
-            case TYPE_RETURN:
-                break;
             case TYPE_PRODUCE:
                 {
                     r_cache.resourcesUsed[u.getPlayer()] += unitType.cost;
@@ -112,8 +108,6 @@ public class UnitAction {
                     }
                     r_cache.positionsUsed.add(pos);
                 }
-                break;
-            case TYPE_ATTACK_LOCATION:
                 break;
         }
         
