@@ -53,6 +53,9 @@ public class ContinuingNaiveMCTS extends AI {
     public void reset() {
         tree = null;
         gs_to_start_from = null;
+        total_runs = 0;
+        total_cycles_executed = 0;
+        total_actions_issued = 0;
     }    
     
     
