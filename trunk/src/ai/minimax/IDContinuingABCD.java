@@ -24,6 +24,8 @@ public class IDContinuingABCD extends IDABCD {
     
     public static int DEBUG = 0;
     
+    int max_consecutive_frames_searching_so_far = 0;
+
     GameState gs_to_start_from = null;
     int consecutive_frames_searching = 0;
     int last_depth = 1;
@@ -62,6 +64,7 @@ public class IDContinuingABCD extends IDABCD {
             if (gs_to_start_from==null) gs_to_start_from = gs;
             PlayerAction pa = IDContinuingABCD(player, gs_to_start_from, TIME_PER_CYCLE); 
 //            System.out.println("IDContinuingRTMinimaxAI: " + pa);
+            int max_consecutive_frames_searching_so_far = 0;
             consecutive_frames_searching = 0;
             stack = null;
             last_depth = 1;
@@ -204,14 +207,6 @@ public class IDContinuingABCD extends IDABCD {
 //            System.out.println("]");
                         
             ABCDNode current = stack.get(0);
-            
-            /*
-            System.out.println("----- Stack size: " + stack.size() + " -----");
-            System.out.println("Current type: " + current.type);
-            System.out.println(current.gs);
-            System.out.flush();
-            */
-            
             switch(current.type) {
                 case -1: // unknown node:
                         {
@@ -224,18 +219,17 @@ public class IDContinuingABCD extends IDABCD {
                                 AI playoutAI2 = playoutAI.clone();
                                 int timeOut = gs2.getTime() + maxPlayoutTime;
                                 boolean gameover = false;
-                                while (!gameover && gs2.getTime() < timeOut) {
-                                    PlayerAction pa1 = playoutAI1.getAction(0, gs2);
-                                    PlayerAction pa2 = playoutAI2.getAction(1, gs2);
-                                    gs2.issue(pa1);
-                                    gs2.issue(pa2);
-
-                                    // simulate:
-                                    gameover = gs2.cycle();
+                                while(!gameover && gs2.getTime()<timeOut) {
+                                    if (gs2.isComplete()) {
+                                        gameover = gs2.cycle();
+                                    } else {
+                                        gs2.issue(playoutAI1.getAction(0, gs2));
+                                        gs2.issue(playoutAI2.getAction(1, gs2));
+                                    }
                                 }
 
                                 lastResult = new Pair<PlayerAction,Float>(null,ef.evaluate(maxplayer,minplayer, gs2)); 
-                                stack.remove(0);                 
+                                stack.remove(0);
                             } else {    
                                 current.type = 2;
                                 if (current.gs.canExecuteAnyAction(maxplayer)) {
@@ -257,9 +251,7 @@ public class IDContinuingABCD extends IDABCD {
                         if (current.actions == null) {
                             current.actions = new PlayerActionGenerator(current.gs, maxplayer);
                             long l = current.actions.getSize();
-                            if (l > max_potential_branching_so_far) {
-                                max_potential_branching_so_far = l;
-                            }
+                            if (l > max_potential_branching_so_far) max_potential_branching_so_far = l;
     //                            while(current.actions.size()>MAX_BRANCHING_FACTOR) current.actions.remove(r.nextInt(current.actions.size()));
                             current.best = null;
                             PlayerAction next = current.actions.getNextAction(cutOffTime);
@@ -293,9 +285,7 @@ public class IDContinuingABCD extends IDABCD {
                         if (current.actions == null) {
                             current.actions = new PlayerActionGenerator(current.gs, minplayer);
                             long l = current.actions.getSize();
-                            if (l > max_potential_branching_so_far) {
-                                max_potential_branching_so_far = l;
-                            }
+                            if (l > max_potential_branching_so_far) max_potential_branching_so_far = l;
     //                            while(current.actions.size()>MAX_BRANCHING_FACTOR) current.actions.remove(r.nextInt(current.actions.size()));
                             current.best = null;
                             PlayerAction next = current.actions.getNextAction(cutOffTime);
