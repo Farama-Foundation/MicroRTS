@@ -89,7 +89,9 @@ public class IDContinuingRTMinimax extends IDRTMinimax {
                       !gs_to_start_from.gameover() &&  
                     !gs_to_start_from.canExecuteAnyAction(0) && 
                     !gs_to_start_from.canExecuteAnyAction(1)) gs_to_start_from.cycle();
-                if (gs_to_start_from.canExecuteAnyAction(player)) {
+                if (gs_to_start_from.winner()==-1 &&
+                    !gs_to_start_from.gameover() &&
+                    gs_to_start_from.canExecuteAnyAction(player)) {
                     if (DEBUG>=1) {
                         System.out.println("IDContinuingRTMinimaxAI... (time  " + gs.getTime() + "): no action needed but I will be the next one to play, start a new search");
                         System.out.flush();

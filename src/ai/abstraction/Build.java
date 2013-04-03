@@ -54,7 +54,7 @@ public class Build extends AbstractAction  {
         if (x == unit.getX()-1 &&
             y == unit.getY()) return new UnitAction(UnitAction.TYPE_PRODUCE,UnitAction.DIRECTION_LEFT,type);
 
-        System.err.println("Harvest.execute: something weird just happened " + unit + " builds at " + x + "," + y);
+        System.err.println("Build.execute: something weird just happened " + unit + " builds at " + x + "," + y);
         return null;
     } 
 }

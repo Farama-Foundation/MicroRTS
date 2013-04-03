@@ -108,7 +108,7 @@ public class GameState {
                 // check for conflicts:
                 ResourceUsage ru = p.m_b.resourceUsage(p.m_a, pgs);
                 for(UnitActionAssignment uaa:unitActions.values()) {
-                    if (!uaa.action.resourceUsage(uaa.unit, pgs).consistentWith(ru, this)) {                        
+                    if (!uaa.action.resourceUsage(uaa.unit, pgs).consistentWith(ru, this)) {
                         // conflicting actions, cancelling both, and replacing them by "NONE":
                         if (uaa.time==time) {
                             // The actions were issued in the same game cycle, so it's normal
