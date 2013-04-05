@@ -39,7 +39,7 @@ public class Move extends AbstractAction {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         UnitAction move = pf.findPath(unit, x+y*pgs.getWidth(), gs);
 //        System.out.println("AStarAttak returns: " + move);
-        if (move!=null) return move;
+        if (move!=null && gs.isUnitActionAllowed(unit, move)) return move;
         return null;
     }
 }

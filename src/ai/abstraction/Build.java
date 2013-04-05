@@ -42,19 +42,24 @@ public class Build extends AbstractAction  {
         PhysicalGameState pgs = gs.getPhysicalGameState();
 //        System.out.println("findPathToAdjacentPosition from Build: (" + x + "," + y + ")");
         UnitAction move = pf.findPathToAdjacentPosition(unit, x+y*pgs.getWidth(), gs);
-        if (move!=null) return move;
-
+        if (move!=null) {
+            if (gs.isUnitActionAllowed(unit, move)) return move;
+            return null;
+        }
+       
         // build:
+        UnitAction ua = null;
         if (x == unit.getX() &&
-            y == unit.getY()-1) return new UnitAction(UnitAction.TYPE_PRODUCE,UnitAction.DIRECTION_UP,type);
+            y == unit.getY()-1) ua = new UnitAction(UnitAction.TYPE_PRODUCE,UnitAction.DIRECTION_UP,type);
         if (x == unit.getX()+1 &&
-            y == unit.getY()) return new UnitAction(UnitAction.TYPE_PRODUCE,UnitAction.DIRECTION_RIGHT,type);
+            y == unit.getY()) ua = new UnitAction(UnitAction.TYPE_PRODUCE,UnitAction.DIRECTION_RIGHT,type);
         if (x == unit.getX() &&
-            y == unit.getY()+1) return new UnitAction(UnitAction.TYPE_PRODUCE,UnitAction.DIRECTION_DOWN,type);
+            y == unit.getY()+1) ua = new UnitAction(UnitAction.TYPE_PRODUCE,UnitAction.DIRECTION_DOWN,type);
         if (x == unit.getX()-1 &&
-            y == unit.getY()) return new UnitAction(UnitAction.TYPE_PRODUCE,UnitAction.DIRECTION_LEFT,type);
-
-        System.err.println("Build.execute: something weird just happened " + unit + " builds at " + x + "," + y);
+            y == unit.getY()) ua = new UnitAction(UnitAction.TYPE_PRODUCE,UnitAction.DIRECTION_LEFT,type);
+        if (ua!=null && gs.isUnitActionAllowed(unit, ua)) return ua;        
+        
+//        System.err.println("Build.execute: something weird just happened " + unit + " builds at " + x + "," + y);
         return null;
     } 
 }

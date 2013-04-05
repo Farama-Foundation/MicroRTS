@@ -183,6 +183,24 @@ public class GameState {
     }
     
     
+    public boolean isUnitActionAllowed(Unit u, UnitAction ua) {
+        PlayerAction empty = new PlayerAction();
+
+        // Generate the reserved resources:
+        for(Unit u2:pgs.getUnits()) {
+                UnitActionAssignment uaa = unitActions.get(u2);
+                if (uaa!=null) {
+                    ResourceUsage ru = uaa.action.resourceUsage(u2, pgs);
+                    empty.r.merge(ru);
+                }
+        }
+        
+        if (ua.resourceUsage(u, pgs).consistentWith(empty.getResourceUsage(), this)) return true;
+        
+        return false;
+    }
+    
+    
     public List<PlayerAction> getPlayerActionsSingleUnit(int pID, Unit unit) {
         List<PlayerAction> l = new LinkedList<PlayerAction>();
         
