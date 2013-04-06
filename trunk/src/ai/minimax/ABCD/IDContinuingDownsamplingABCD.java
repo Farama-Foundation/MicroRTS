@@ -2,8 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ai.minimax;
+package ai.minimax.ABCD;
 
+import ai.minimax.ABCD.ABCDNode;
 import ai.evaluation.EvaluationFunctionForwarding;
 import ai.AI;
 import ai.evaluation.EvaluationFunction;
@@ -20,10 +21,16 @@ import util.Pair;
  *
  * @author santi
  */
-public class IDContinuingABCD extends IDABCD {
+
+/*
+ * This is the same AI as IDContinuingABCD, but it only considers a fraction of the possible 
+ * moves at each node.
+ */
+
+public class IDContinuingDownsamplingABCD extends IDDownsamplingABCD {
     
     public static int DEBUG = 0;
-    
+                
     int max_consecutive_frames_searching_so_far = 0;
 
     GameState gs_to_start_from = null;
@@ -33,12 +40,10 @@ public class IDContinuingABCD extends IDABCD {
     Pair<PlayerAction,Float> lastResult = null;
     PlayerAction bestMove = null;
     
-    Random r = new Random();
-        
-    public IDContinuingABCD(int tpc, AI a_playoutAI, int a_maxPlayoutTime, EvaluationFunction a_ef) {
-        super(tpc, a_playoutAI, a_maxPlayoutTime, a_ef);
+    public IDContinuingDownsamplingABCD(int tpc, double a_downsampling, AI a_playoutAI, int a_maxPlayoutTime, EvaluationFunction a_ef) {
+        super(tpc, a_downsampling, a_playoutAI, a_maxPlayoutTime, a_ef);
     }
-
+    
     
     public void reset() {
         gs_to_start_from = null;
@@ -47,22 +52,21 @@ public class IDContinuingABCD extends IDABCD {
         lastResult = null;
         bestMove = null;
     }    
-    
-    
+
+        
     public AI clone() {
-        return new IDContinuingABCD(TIME_PER_CYCLE, playoutAI, maxPlayoutTime, ef);
+        return new IDContinuingDownsamplingABCD(TIME_PER_CYCLE, downsampling, playoutAI, maxPlayoutTime, ef);
     }  
     
-
     public PlayerAction getAction(int player, GameState gs) throws Exception {
         if (gs.winner()!=-1) return new PlayerAction();
         if (gs.canExecuteAnyAction(player)) {
             if (DEBUG>=1) {
-                System.out.println("IDContinuingABCD... (time " + gs.getTime() + ", player " + player + "): time to produce an action");
+                System.out.println("IDContinuingDownsamplingABCD... (time " + gs.getTime() + ", player " + player + "): time to produce an action");
                 System.out.flush();
             }
             if (gs_to_start_from==null) gs_to_start_from = gs;
-            PlayerAction pa = IDContinuingABCD(player, gs_to_start_from, TIME_PER_CYCLE); 
+            PlayerAction pa = IDContinuingDownsamplingABCD(player, gs_to_start_from, TIME_PER_CYCLE); 
 //            System.out.println("IDContinuingRTMinimaxAI: " + pa);
             int max_consecutive_frames_searching_so_far = 0;
             consecutive_frames_searching = 0;
@@ -74,14 +78,14 @@ public class IDContinuingABCD extends IDABCD {
         } else {
             if (stack!=null) {
                 if (DEBUG>=1) {
-                    System.out.println("IDContinuingABCD... (time  " + gs.getTime() + "): no action needed but I can continue the search");
+                    System.out.println("IDContinuingDownsamplingABCD... (time  " + gs.getTime() + "): no action needed but I can continue the search");
                     System.out.flush();
                 }
-                IDContinuingABCD(player, gs_to_start_from, TIME_PER_CYCLE);
+                IDContinuingDownsamplingABCD(player, gs_to_start_from, TIME_PER_CYCLE);
                 return new PlayerAction();
             } else {
                 if (DEBUG>=1) {
-                    System.out.println("IDContinuingABCD... (time  " + gs.getTime() + "): no action needed fast forwarding state...");
+                    System.out.println("IDContinuingDownsamplingABCD... (time  " + gs.getTime() + "): no action needed fast forwarding state...");
                     System.out.flush();
                 }
                 // determine whether to create a new stack or not:
@@ -94,15 +98,15 @@ public class IDContinuingABCD extends IDABCD {
                     !gs_to_start_from.gameover() &&
                     gs_to_start_from.canExecuteAnyAction(player)) {
                     if (DEBUG>=1) {
-                        System.out.println("IDContinuingABCD... (time  " + gs.getTime() + "): no action needed but I will be the next one to play, start a new search");
+                        System.out.println("IDContinuingDownsamplingABCD... (time  " + gs.getTime() + "): no action needed but I will be the next one to play, start a new search");
                         System.out.flush();
                     }
                     // we will be the next one to act: start search!
-                    IDContinuingABCD(player, gs_to_start_from, TIME_PER_CYCLE);
+                    IDContinuingDownsamplingABCD(player, gs_to_start_from, TIME_PER_CYCLE);
                     return new PlayerAction();
                 } else {
                     if (DEBUG>=1) {
-                        System.out.println("IDContinuingABCD... (time  " + gs.getTime() + "): no action needed and the opponent is next, doing nothing");
+                        System.out.println("IDContinuingDownsamplingABCD... (time  " + gs.getTime() + "): no action needed and the opponent is next, doing nothing");
                         System.out.flush();
                     }
                     // we are NOT the next one to act. Do nothing...
@@ -114,7 +118,7 @@ public class IDContinuingABCD extends IDABCD {
     }
     
     
-    public PlayerAction IDContinuingABCD(int player, GameState gs, int availableTime) throws Exception {
+    public PlayerAction IDContinuingDownsamplingABCD(int player, GameState gs, int availableTime) throws Exception {
         int maxplayer = player;
         int minplayer = 1 - player;
         int depth = 1;
@@ -123,8 +127,8 @@ public class IDContinuingABCD extends IDABCD {
                 
         if (bestMove==null) {
             // The first time, we just want to do a quick evaluation of all actions, to have a first idea of what is best:
-            bestMove = greedyActionScan(gs,player, cutOffTime);
-//            System.out.println("greedyActionScan suggested action: " + bestMove);
+            bestMove = greedyDownsamplingActionScan(gs,player, cutOffTime);
+//            System.out.println("greedyDownsamplingActionScan suggested action: " + bestMove);
         }
         
         if (System.currentTimeMillis() >= cutOffTime) return bestMove;
@@ -144,7 +148,7 @@ public class IDContinuingABCD extends IDABCD {
             }
              
             long runStartTime = System.currentTimeMillis();
-            PlayerAction tmp = IDContinuingABCDOutsideStack(gs, maxplayer, minplayer, depth, cutOffTime, false);
+            PlayerAction tmp = IDContinuingDownsamplingABCDOutsideStack(gs, maxplayer, minplayer, depth, cutOffTime, false);
             if (tmp!=null) {
                 bestMove = tmp;
                 // the <200 condition is because sometimes, towards the end of the game, the tree is so
@@ -166,7 +170,7 @@ public class IDContinuingABCD extends IDABCD {
     }
     
     
-    public PlayerAction greedyActionScan(GameState gs, int player, long cutOffTime) throws Exception {        
+    public PlayerAction greedyDownsamplingActionScan(GameState gs, int player, long cutOffTime) throws Exception {        
         PlayerAction best = null;
         float bestScore = 0;
         PlayerActionGenerator pag = new PlayerActionGenerator(gs,player);
@@ -176,13 +180,15 @@ public class IDContinuingABCD extends IDABCD {
 //        System.out.println(pag);
         do{
             pa = pag.getNextAction(cutOffTime);
-            if (pa!=null) {
-                GameState gs2 = gs.cloneIssue(pa);
-                float score = ef.evaluate(player, 1 - player, gs2);
-                if (best==null || score>bestScore) {
-                    best = pa;
-                    bestScore = score; 
-                }                
+            if (best==null || r.nextDouble()<=downsampling) {
+                if (pa!=null) {
+                    GameState gs2 = gs.cloneIssue(pa);
+                    float score = ef.evaluate(player, 1 - player, gs2);
+                    if (best==null || score>bestScore) {
+                        best = pa;
+                        bestScore = score; 
+                    }                
+                }
             }
             if (System.currentTimeMillis()>cutOffTime) return best;
         }while(pa!=null);
@@ -190,11 +196,11 @@ public class IDContinuingABCD extends IDABCD {
     }
     
     
-    public PlayerAction IDContinuingABCDOutsideStack(GameState initial_gs, int maxplayer, int minplayer, int depth, long cutOffTime, boolean needAResult) throws Exception {
+    public PlayerAction IDContinuingDownsamplingABCDOutsideStack(GameState initial_gs, int maxplayer, int minplayer, int depth, long cutOffTime, boolean needAResult) throws Exception {
         ABCDNode head;
         if (stack==null) {
             stack = new LinkedList<ABCDNode>();
-            head = new ABCDNode(-1, 0, initial_gs, -EvaluationFunctionWithActions.VICTORY, EvaluationFunctionWithActions.VICTORY, 0);
+            head = new ABCDNode(-1, 0, initial_gs, -EvaluationFunctionWithActions.VICTORY, EvaluationFunctionWithActions.VICTORY, maxplayer);
             stack.add(head);
         } else {
             if (stack.isEmpty()) return lastResult.m_a;
@@ -254,6 +260,7 @@ public class IDContinuingABCD extends IDABCD {
                             if (l > max_potential_branching_so_far) max_potential_branching_so_far = l;
     //                            while(current.actions.size()>MAX_BRANCHING_FACTOR) current.actions.remove(r.nextInt(current.actions.size()));
                             current.best = null;
+                            // the first action (noop) cannot be skipped:
                             PlayerAction next = current.actions.getNextAction(cutOffTime);
                             if (next != null) {
                                 GameState gs2 = current.gs.cloneIssue(next);
@@ -268,7 +275,11 @@ public class IDContinuingABCD extends IDABCD {
                                 current.best = lastResult;
                                 current.best.m_a = current.actions.getLastAction();
                             }
-                            PlayerAction next = current.actions.getNextAction(cutOffTime);
+                            PlayerAction next = null;
+                            // skip an action with probability "1 - downsampling"
+                            do {
+                                next = current.actions.getNextAction(cutOffTime);
+                            }while(next!=null && r.nextDouble()>downsampling);                            
                             if (current.beta <= current.alpha || next == null) {
                                 lastResult = current.best;
                                 stack.remove(0);
@@ -288,6 +299,7 @@ public class IDContinuingABCD extends IDABCD {
                             if (l > max_potential_branching_so_far) max_potential_branching_so_far = l;
     //                            while(current.actions.size()>MAX_BRANCHING_FACTOR) current.actions.remove(r.nextInt(current.actions.size()));
                             current.best = null;
+                            // the first action (noop) cannot be skipped:
                             PlayerAction next = current.actions.getNextAction(cutOffTime);
                             if (next != null) {
                                 GameState gs2 = current.gs.cloneIssue(next);
@@ -302,7 +314,11 @@ public class IDContinuingABCD extends IDABCD {
                                 current.best = lastResult;
                                 current.best.m_a = current.actions.getLastAction();
                             }
-                            PlayerAction next = current.actions.getNextAction(cutOffTime);
+                            PlayerAction next = null;
+                            // skip an action with probability "1 - downsampling"
+                            do {
+                                next = current.actions.getNextAction(cutOffTime);
+                            }while(next!=null && r.nextDouble()>downsampling);                            
                             if (current.beta <= current.alpha || next == null) {
                                 lastResult = current.best;
                                 stack.remove(0);
@@ -337,11 +353,10 @@ public class IDContinuingABCD extends IDABCD {
         return null;
     }    
     
-    
     public String statisticsString() {
         return "max depth: " + max_depth_so_far + 
                " , max branching factor (potential): " + max_branching_so_far + "(" + max_potential_branching_so_far + ")" +  
                " , max leaves: " + max_leaves_so_far;
     }        
-
+    
 }

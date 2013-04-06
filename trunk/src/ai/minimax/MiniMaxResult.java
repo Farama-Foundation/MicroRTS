@@ -20,6 +20,9 @@ public class MiniMaxResult {
         action = a;
         evaluation = e;
         gs = a_gs;
-        
+    }
+    
+    public String toString() {
+        return evaluation + " : " + action;
     }
 }

@@ -2,11 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ai.minimax;
+package ai.minimax.ABCD;
 
 import ai.AI;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.EvaluationFunctionWithActions;
+import ai.minimax.MiniMaxResult;
 import java.util.List;
 import rts.GameState;
 import rts.PlayerAction;
@@ -22,6 +23,8 @@ import rts.PlayerActionGenerator;
  *   estimation of the alphabeta values when there are simultaneous moves.
  */
 public class ABCD extends AI {
+    public static int DEBUG = 0;
+    
     // reset at each execution of minimax:
     int nLeaves = 0;
     
@@ -68,11 +71,11 @@ public class ABCD extends AI {
         float beta = EvaluationFunctionWithActions.VICTORY;
         int maxplayer = player;
         int minplayer = 1 - player;
-        System.out.println("Starting ABCD...");
+        if (DEBUG>=1) System.out.println("Starting ABCD... " + player);
         if (nLeaves>max_leaves_so_far) max_leaves_so_far = nLeaves;
         nLeaves = 0;
-        MiniMaxResult bestMove = ABCD(gs, maxplayer, minplayer, alpha, beta, depthLeft, 0);
-        System.out.println("ABCD: " + bestMove + " in " + (System.currentTimeMillis()-start));
+        MiniMaxResult bestMove = ABCD(gs, maxplayer, minplayer, alpha, beta, depthLeft, maxplayer);
+        if (DEBUG>=1) System.out.println("ABCD: " + bestMove + " in " + (System.currentTimeMillis()-start));
         return bestMove.action;
     }
     
@@ -91,14 +94,13 @@ public class ABCD extends AI {
             int timeOut = gs2.getTime() + maxPlayoutTime;
             boolean gameover = false;
             while(!gameover && gs2.getTime()<timeOut) {
-                PlayerAction pa1 = playoutAI1.getAction(0, gs2);
-                PlayerAction pa2 = playoutAI2.getAction(1, gs2);
-                gs2.issue(pa1);
-                gs2.issue(pa2);
-
-                // simulate:
-                gameover = gs2.cycle();
-            }
+                if (gs2.isComplete()) {
+                    gameover = gs2.cycle();
+                } else {
+                    gs2.issue(playoutAI1.getAction(0, gs2));
+                    gs2.issue(playoutAI2.getAction(1, gs2));
+                }
+            }            
             
 //            System.out.println("Eval (at " + gs.getTime() + "): " + EvaluationFunction.evaluate(maxplayer, minplayer, gs));
 //            System.out.println(gs);
@@ -118,47 +120,44 @@ public class ABCD extends AI {
         }
 
         if (toMove == maxplayer) {
-            List<PlayerAction> actions_max = gs.getPlayerActions(maxplayer);
-            int l = actions_max.size();
+            PlayerActionGenerator actions = new PlayerActionGenerator(gs, maxplayer);
+            long l = actions.getSize();
             if (l>max_branching_so_far) max_branching_so_far = l;
             MiniMaxResult best = null;
-//            System.out.println("realTimeMinimaxAB.max: " + actions_max.size());
-            for(PlayerAction action_max:actions_max) {
-                GameState gs2 = gs.cloneIssue(action_max);
-//                System.out.println("action_max: " + action_max);
-                MiniMaxResult tmp = ABCD(gs2, maxplayer, minplayer, alpha, beta, depthLeft-1, nextPlayerInSimultaneousNode);
-//                System.out.println(action_max + " -> " + tmp.evaluation);
-                alpha = Math.max(alpha,tmp.evaluation);
-                if (best==null || tmp.evaluation>best.evaluation) {
-                    best = tmp;
-                    best.action = action_max;
+            PlayerAction next = null;
+            do{
+                next = actions.getNextAction(-1);
+                if (next!=null) {
+                    GameState gs2 = gs.cloneIssue(next);
+                    MiniMaxResult tmp = ABCD(gs2, maxplayer, minplayer, alpha, beta, depthLeft-1, nextPlayerInSimultaneousNode);
+                    alpha = Math.max(alpha,tmp.evaluation);
+                    if (best==null || tmp.evaluation>best.evaluation) {
+                        best = tmp;
+                        best.action = next;
+                    }
+                    if (beta<=alpha) return best;                
                 }
-                
-//                if (depth==0) {
-//                    System.out.println(action_max + " -> " + tmp.evaluation);
-//                    System.out.println(tmp.gs);
-//                }
-                
-                if (beta<=alpha) return best;
-            }
+            }while(next!=null);
             return best;
         } else if (toMove == minplayer) {
-            List<PlayerAction> actions_min = gs.getPlayerActions(minplayer);
-            int l = actions_min.size();
+            PlayerActionGenerator actions = new PlayerActionGenerator(gs, minplayer);
+            long l = actions.getSize();
             if (l>max_branching_so_far) max_branching_so_far = l;
             MiniMaxResult best = null;
-//            System.out.println("realTimeMinimaxAB.min: " + actions_min.size());
-            for(PlayerAction action_min:actions_min) {
-                GameState gs2 = gs.cloneIssue(action_min);
-//                System.out.println("action_min: " + action_min);
-                MiniMaxResult tmp = ABCD(gs2, maxplayer, minplayer, alpha, beta, depthLeft-1, nextPlayerInSimultaneousNode);
-                beta = Math.min(beta,tmp.evaluation);
-                if (best==null || tmp.evaluation<best.evaluation) {
-                    best = tmp;
-                    best.action = action_min;
+            PlayerAction next = null;
+            do{
+                next = actions.getNextAction(-1);
+                if (next!=null) {
+                    GameState gs2 = gs.cloneIssue(next);
+                    MiniMaxResult tmp = ABCD(gs2, maxplayer, minplayer, alpha, beta, depthLeft-1, nextPlayerInSimultaneousNode);
+                    beta = Math.min(beta,tmp.evaluation);
+                    if (best==null || tmp.evaluation<best.evaluation) {
+                        best = tmp;
+                        best.action = next;
+                    }
+                    if (beta<=alpha) return best;
                 }
-                if (beta<=alpha) return best;
-            }
+            }while(next!=null);
             return best;
         } else {
             GameState gs2 = gs.clone();

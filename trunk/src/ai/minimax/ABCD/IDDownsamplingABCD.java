@@ -2,8 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ai.minimax;
+package ai.minimax.ABCD;
 
+import ai.minimax.ABCD.ABCD;
+import ai.minimax.ABCD.ABCDNode;
 import ai.evaluation.EvaluationFunctionWithActions;
 import ai.AI;
 import ai.evaluation.EvaluationFunction;
@@ -19,14 +21,20 @@ import util.Pair;
  *
  * @author santi
  */
-public class IDABCD extends ABCD {
+
+/*
+ * This is the same AI as IDABCD, but it only considers a fraction of the possible 
+ * moves at each node.
+ */
+
+public class IDDownsamplingABCD extends DownsamplingABCD {
 
     int TIME_PER_CYCLE = 100;
     
-    long max_potential_branching_so_far = 0;
-
-    public IDABCD(int tpc, AI a_playoutAI, int a_maxPlayoutTime, EvaluationFunction a_ef) {
-        super(1, a_playoutAI, a_maxPlayoutTime, a_ef);
+    long max_potential_branching_so_far = 0; 
+    
+    public IDDownsamplingABCD(int tpc, double a_downsampling, AI a_playoutAI, int a_maxPlayoutTime, EvaluationFunction a_ef) {
+        super(1, a_downsampling, a_playoutAI, a_maxPlayoutTime, a_ef);
         TIME_PER_CYCLE = tpc;
     }
 
@@ -34,7 +42,7 @@ public class IDABCD extends ABCD {
     }
 
     public AI clone() {
-        return new IDABCD(TIME_PER_CYCLE, playoutAI, maxPlayoutTime, ef);
+        return new IDDownsamplingABCD(TIME_PER_CYCLE, downsampling, playoutAI, maxPlayoutTime, ef);
     }
 
     public PlayerAction getAction(int player, GameState gs) throws Exception {
@@ -54,7 +62,7 @@ public class IDABCD extends ABCD {
         int depth = 1;
         long startTime = System.currentTimeMillis();
         PlayerAction bestMove = null;
-        System.out.println("Starting IDABCDIterativeDeepening... ");
+        System.out.println("Starting IDDownsamplingABCD... ");
         do {
 //            System.out.println("next lookahead: " + lookAhead);
             if (nLeaves > max_leaves_so_far) {
@@ -68,9 +76,9 @@ public class IDABCD extends ABCD {
                 if (depth > max_depth_so_far) {
                     max_depth_so_far = depth;
                 }
-                System.out.println("IDABCDIterativeDeepening (depth = " + depth + "): " + bestMove + " in " + (System.currentTimeMillis() - runStartTime) + " (" + nLeaves + " leaves)");                
+                System.out.println("IDDownsamplingABCD (depth = " + depth + "): " + bestMove + " in " + (System.currentTimeMillis() - runStartTime) + " (" + nLeaves + " leaves)");                
             } else {
-                System.out.println("IDABCDIterativeDeepening (depth = " + depth + "): " + bestMove + " in " + (System.currentTimeMillis() - runStartTime) + " interrupted! (" + nLeaves + " leaves)");
+                System.out.println("IDDownsamplingABCD (depth = " + depth + "): " + bestMove + " in " + (System.currentTimeMillis() - runStartTime) + " interrupted! (" + nLeaves + " leaves)");
             }
             depth++;
         } while (System.currentTimeMillis() - startTime < availableTime);
@@ -143,7 +151,11 @@ public class IDABCD extends ABCD {
                             current.best = lastResult;
                             current.best.m_a = current.actions.getLastAction();
                         }
-                        PlayerAction next = current.actions.getNextAction(cutOffTime);
+                        PlayerAction next = null;
+                        // skip an action with probability "1 - downsampling"
+                        do {
+                            next = current.actions.getNextAction(cutOffTime);
+                        }while(next!=null && r.nextDouble()>downsampling);                            
                         if (current.beta <= current.alpha || next == null) {
                             lastResult = current.best;
                             stack.remove(0);
@@ -173,7 +185,11 @@ public class IDABCD extends ABCD {
                             current.best = lastResult;
                             current.best.m_a = current.actions.getLastAction();
                         }
-                        PlayerAction next = current.actions.getNextAction(cutOffTime);
+                        PlayerAction next = null;
+                        // skip an action with probability "1 - downsampling"
+                        do {
+                            next = current.actions.getNextAction(cutOffTime);
+                        }while(next!=null && r.nextDouble()>downsampling);                            
                         if (current.beta <= current.alpha || next == null) {
                             lastResult = current.best;
                             stack.remove(0);
