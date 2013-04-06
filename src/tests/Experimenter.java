@@ -7,9 +7,9 @@ package tests;
 import ai.*;
 import ai.montecarlo.*;
 import ai.mcts.ContinuingNaiveMCTS;
-import ai.minimax.IDContinuingRTMinimax;
-import ai.minimax.IDContinuingRTMinimax;
-import ai.minimax.IDContinuingRTMinimaxRandomized;
+import ai.minimax.RMMiniMax.IDContinuingRTMinimax;
+import ai.minimax.RMMiniMax.IDContinuingRTMinimax;
+import ai.minimax.RMMiniMax.IDContinuingRTMinimaxRandomized;
 import ai.mcts.uct.UCT;
 import gui.PhysicalGameStatePanel;
 import java.io.OutputStream;
@@ -82,9 +82,9 @@ public class Experimenter {
                             PlayerAction pa2 = ai2.getAction(1, gs);
                             if (DEBUG>=1) {out.println("AI2 done.");out.flush();}
                             if (gs.issueSafe(pa1)) lastTimeActionIssued = gs.getTime();
-                            if (DEBUG>=1) {out.println("issue action AI1 done.");out.flush();}
+                            if (DEBUG>=1) {out.println("issue action AI1 done: " + pa1);out.flush();}
                             if (gs.issueSafe(pa2)) lastTimeActionIssued = gs.getTime();
-                            if (DEBUG>=1) {out.println("issue action AI2 done.");out.flush();}
+                            if (DEBUG>=1) {out.println("issue action AI2 done:" + pa2);out.flush();}
                             gameover = gs.cycle();
                             if (DEBUG>=1) {out.println("cycle done.");out.flush();}
                             if (w!=null) w.repaint();

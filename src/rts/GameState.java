@@ -140,6 +140,7 @@ public class GameState {
     
     // Returns "true" is any action different from NONE was issued
     public boolean issueSafe(PlayerAction pa) {
+        if (!pa.integrityCheck()) throw new Error("PlayerAction inconsistent before 'issueSafe'");
         if (!integrityCheck()) throw new Error("GameState inconsistent before 'issueSafe'");
         for(Pair<Unit,UnitAction> p:pa.actions) {
             if (p.m_a==null) {
@@ -168,7 +169,7 @@ public class GameState {
         }
         
         boolean returnValue = issue(pa);
-        if (!integrityCheck()) throw new Error("GameState inconsistent after 'issueSafe'");        
+        if (!integrityCheck()) throw new Error("GameState inconsistent after 'issueSafe': " + pa);        
         return returnValue;
     }    
     
@@ -361,8 +362,14 @@ public class GameState {
         for(UnitActionAssignment uaa:unitActions.values()) {
             Unit u = uaa.unit;
             int idx = pgs.getUnits().indexOf(u);
-            if (idx==-1) return false;
-            if (alreadyUsed.contains(u)) return false;
+            if (idx==-1) {
+                System.err.println("integrityCheck: unit does not exist!");
+                return false;
+            }            
+            if (alreadyUsed.contains(u)) {
+                System.err.println("integrityCheck: two actions to the same unit!");
+                return false;
+            }
             alreadyUsed.add(u);
         }
         return true;

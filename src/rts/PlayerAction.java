@@ -116,6 +116,25 @@ public class PlayerAction {
     }
     
     
+    public boolean integrityCheck() {
+        int player = -1;
+        List<Unit> alreadyUsed = new LinkedList<Unit>();
+        for(Pair<Unit,UnitAction> uaa:actions) {
+            Unit u = uaa.m_a;
+            if (player==-1) {
+                player = u.getPlayer();
+            } else {
+                if (player != u.getPlayer()) {
+                    System.err.println("integrityCheck: units from more than one player!");
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    
+    
     public String toString() {
         String tmp = "{ ";
         for(Pair<Unit,UnitAction> ua:actions) {

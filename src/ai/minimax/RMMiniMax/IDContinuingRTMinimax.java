@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ai.minimax;
+package ai.minimax.RMMiniMax;
 
 import ai.evaluation.EvaluationFunctionForwarding;
 import ai.AI;

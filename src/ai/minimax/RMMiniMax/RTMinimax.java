@@ -2,12 +2,13 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ai.minimax;
+package ai.minimax.RMMiniMax;
 
 import ai.evaluation.EvaluationFunctionWithActions;
 import ai.evaluation.EvaluationFunctionForwarding;
 import ai.AI;
 import ai.evaluation.EvaluationFunction;
+import ai.minimax.MiniMaxResult;
 import java.util.List;
 import rts.GameState;
 import rts.PlayerAction;
