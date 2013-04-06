@@ -129,7 +129,7 @@ public class DownsamplingABCD extends AI {
             PlayerActionGenerator actions = new PlayerActionGenerator(gs, maxplayer);
             long l = actions.getSize();
             if (l>max_branching_so_far) max_branching_so_far = l;
-            if (depthLeft==2) System.out.println("l: " + l);
+            // if (depthLeft==2) System.out.println("l: " + l);
             MiniMaxResult best = null;
             PlayerAction next = null;
             do{
