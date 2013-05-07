@@ -34,17 +34,17 @@ import util.XMLWriter;
 public class GameVisualSimulationTest {
     public static void main(String args[]) throws Exception {
 //        PhysicalGameState pgs = PhysicalGameState.load("maps/basesWorkers16x16.xml");
-        PhysicalGameState pgs = MapGenerator.basesWorkers16x16();
+        PhysicalGameState pgs = MapGenerator.basesWorkers8x8Obstacle();
 
         GameState gs = new GameState(pgs, UnitTypeTable.utt);
         int MAXCYCLES = 5000;
         int PERIOD = 20;
         boolean gameover = false;
         
-//        AI ai1 = new RandomAI();
+        AI ai1 = new RandomAI();
 //        AI ai1 = new WorkerRush(UnitTypeTable.utt);
 //        AI ai1 = new RangedRush(UnitTypeTable.utt, new AStarPathFinding());
-        AI ai1 = new RangedRush(UnitTypeTable.utt, new GreedyPathFinding());
+//        AI ai1 = new RangedRush(UnitTypeTable.utt, new GreedyPathFinding());
 //        AI ai1 = new ContinuingNaiveMC(PERIOD, 200, 0.33f, 0.2f, new RandomBiasedAI(), new SimpleEvaluationFunction());
 
         AI ai2 = new RandomBiasedAI();
