@@ -5,6 +5,8 @@
 package ai.mcts.uct;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Random;
 import rts.GameState;
@@ -15,31 +17,34 @@ import rts.PlayerActionGenerator;
  *
  * @author santi
  */
-public class UCTNode {
+public class UCTNodeFirstPlayUrgency {
     static Random r = new Random();
 //    static float C = 50;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
     static float C = 5;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
     
     public int type;    // 0 : max, 1 : min, -1: Game-over
-    UCTNode parent = null;
+    UCTNodeFirstPlayUrgency parent = null;
     public GameState gs;
     int depth = 0;  // the depth in the tree
     
     boolean hasMoreActions = true;
     PlayerActionGenerator moveGenerator = null;
     public List<PlayerAction> actions = null;
-    public List<UCTNode> children = null;
+    HashMap<Long,UCTNodeFirstPlayUrgency> childrenMap = new LinkedHashMap<Long,UCTNodeFirstPlayUrgency>();    // associates action codes with children
+    public List<UCTNodeFirstPlayUrgency> children = null;
     float evaluation_bound = 0;
     float accum_evaluation = 0;
     int visit_count = 0;
+    double FPUvalue = 0;
     
     
-    public UCTNode(int maxplayer, int minplayer, GameState a_gs, UCTNode a_parent, float bound) throws Exception {
+    public UCTNodeFirstPlayUrgency(int maxplayer, int minplayer, GameState a_gs, UCTNodeFirstPlayUrgency a_parent, float bound, double a_FPUValue) throws Exception {
         parent = a_parent;
         gs = a_gs;
         if (parent==null) depth = 0;
                      else depth = parent.depth+1;        
         evaluation_bound = bound;
+        FPUvalue = a_FPUValue;
 
         while(gs.winner()==-1 && 
               !gs.gameover() &&
@@ -52,65 +57,68 @@ public class UCTNode {
 //            actions = gs.getPlayerActions(maxplayer);
             moveGenerator = new PlayerActionGenerator(a_gs, maxplayer);
             actions = new ArrayList<PlayerAction>();
-            children = new ArrayList<UCTNode>();
+            children = new ArrayList<UCTNodeFirstPlayUrgency>();
         } else if (gs.canExecuteAnyAction(minplayer)) {
             type = 1;
 //            actions = gs.getPlayerActions(minplayer);
             moveGenerator = new PlayerActionGenerator(a_gs, minplayer);
             actions = new ArrayList<PlayerAction>();
-            children = new ArrayList<UCTNode>();
+            children = new ArrayList<UCTNodeFirstPlayUrgency>();
         } else {
             type = -1;
             System.err.println("RTMCTSNode: This should not have happened...");
         }     
     }
     
-    public UCTNode UCTSelectLeaf(int maxplayer, int minplayer, long cutOffTime, int max_depth) throws Exception {
+    public UCTNodeFirstPlayUrgency UCTSelectLeaf(int maxplayer, int minplayer, long cutOffTime, int max_depth) throws Exception {
         
         // Cut the tree policy at a predefined depth
         if (depth>=max_depth) return this;        
         
-        // if non visited children, visit:        
-        if (hasMoreActions) {
-            if (moveGenerator==null) {
-//                System.out.println("No more leafs because moveGenerator = null!");
-                return this;
-            }
-            PlayerAction a = moveGenerator.getNextAction(cutOffTime);
-            if (a!=null) {
-                actions.add(a);
-                GameState gs2 = gs.cloneIssue(a);                
-                UCTNode node = new UCTNode(maxplayer, minplayer, gs2.clone(), this, evaluation_bound);
-                children.add(node);
-                return node;                
-            } else {
-                hasMoreActions = false;
-            }
-        }
-        
         // Bandit policy:
         double best_score = 0;
-        UCTNode best = null;
+        UCTNodeFirstPlayUrgency best = null;
         for(int i = 0;i<children.size();i++) {
-            UCTNode child = children.get(i);
+            UCTNodeFirstPlayUrgency child = children.get(i);
             double tmp = childValue(child);
             if (best==null || tmp>best_score) {
                 best = child;
                 best_score = tmp;
             }
         } 
+
+        // First Play Urgency:
+        if (best!=null && best_score>FPUvalue) return best.UCTSelectLeaf(maxplayer, minplayer, cutOffTime, max_depth);
         
-        if (best==null) {
-//            System.out.println("No more leafs because this node has no children!");
-//            return null;
-            return this;
+        // if none of the already visited children have an urgency above the threshold, 
+        // choose one at random:
+        // TODO: here I should try not to repeat previously selected nodes. But this should work for now
+        if (moveGenerator!=null) {
+            PlayerAction a = moveGenerator.getRandom();
+            long index = moveGenerator.getActionIndex(a);
+            int attemptsLeft = 50;
+            while(childrenMap.containsKey(index) && attemptsLeft>0) {
+                a = moveGenerator.getRandom();
+                index = moveGenerator.getActionIndex(a);
+                attemptsLeft--;
+            }
+
+            if (attemptsLeft>0) {
+                actions.add(a);
+                GameState gs2 = gs.cloneIssue(a);                
+                UCTNodeFirstPlayUrgency node = new UCTNodeFirstPlayUrgency(maxplayer, minplayer, gs2.clone(), this, evaluation_bound, FPUvalue);
+                children.add(node);
+                childrenMap.put(index, node);
+                return node;                
+            }
         }
+            
+        if (best==null) return this;
         return best.UCTSelectLeaf(maxplayer, minplayer, cutOffTime, max_depth);
-//        return best;
     }    
     
         
-    public double childValue(UCTNode child) {
+    public double childValue(UCTNodeFirstPlayUrgency child) {
         double exploitation = ((double)child.accum_evaluation) / child.visit_count;
         double exploration = Math.sqrt(Math.log(((double)visit_count)/child.visit_count));
         if (type==0) {
@@ -128,9 +136,9 @@ public class UCTNode {
     
     public void showNode(int depth, int maxdepth) {
         int mostVisitedIdx = -1;
-        UCTNode mostVisited = null;
+        UCTNodeFirstPlayUrgency mostVisited = null;
         for(int i = 0;i<children.size();i++) {
-            UCTNode child = children.get(i);
+            UCTNodeFirstPlayUrgency child = children.get(i);
             for(int j = 0;j<depth;j++) System.out.print("    ");
             System.out.println("child explored " + child.visit_count + " Avg evaluation: " + (child.accum_evaluation/((double)child.visit_count)) + " : " + actions.get(i));
             if (depth<maxdepth) child.showNode(depth+1,maxdepth);
