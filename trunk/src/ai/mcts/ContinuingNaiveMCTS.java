@@ -36,17 +36,19 @@ public class ContinuingNaiveMCTS extends AI {
     int MAXSIMULATIONTIME = 1024;
     int MAX_TREE_DEPTH = 10;
     
-    float epsilon1 = 0.25f;
-    float epsilon2 = 0.2f;
+    float epsilon_0 = 0.2f;
+    float epsilon_l = 0.25f;
+    float epsilon_g = 0.0f;
     
     
-    public ContinuingNaiveMCTS(int available_time, int lookahead, int max_depth, float e1, float e2, AI policy, EvaluationFunction a_ef) {
+    public ContinuingNaiveMCTS(int available_time, int lookahead, int max_depth, float e1, float e2, float e3, AI policy, EvaluationFunction a_ef) {
         MAXSIMULATIONTIME = lookahead;
         randomAI = policy;
         TIME_PER_CYCLE = available_time;
         MAX_TREE_DEPTH = max_depth;
-        epsilon1 = e1;
-        epsilon2 = e2;
+        epsilon_l = e1;
+        epsilon_g = e2;
+        epsilon_0 = e3;
         ef = a_ef;
     }    
     
@@ -60,7 +62,7 @@ public class ContinuingNaiveMCTS extends AI {
     
     
     public AI clone() {
-        return new ContinuingNaiveMCTS(TIME_PER_CYCLE, MAXSIMULATIONTIME, MAX_TREE_DEPTH, epsilon1, epsilon2, randomAI, ef);
+        return new ContinuingNaiveMCTS(TIME_PER_CYCLE, MAXSIMULATIONTIME, MAX_TREE_DEPTH, epsilon_l, epsilon_g, epsilon_0, randomAI, ef);
     }    
     
     
@@ -129,7 +131,7 @@ public class ContinuingNaiveMCTS extends AI {
         long start = System.currentTimeMillis();
         
         while((System.currentTimeMillis() - start)<available_time) {
-            NaiveMCTSNode leaf = tree.selectLeaf(player, 1-player, epsilon1, epsilon2, MAX_TREE_DEPTH);
+            NaiveMCTSNode leaf = tree.selectLeaf(player, 1-player, epsilon_l, epsilon_g, epsilon_0, MAX_TREE_DEPTH);
             
             if (leaf!=null) {
                 GameState gs2 = leaf.gs.clone();
@@ -194,7 +196,7 @@ public class ContinuingNaiveMCTS extends AI {
     }
     
     public String toString() {
-        return "ContinuingNaiveMCTS(" + MAXSIMULATIONTIME + "," + epsilon1 + "," + epsilon2 + ")";
+        return "ContinuingNaiveMCTS(" + MAXSIMULATIONTIME + "," + epsilon_l + "," + epsilon_g + "," + epsilon_0 + ")";
     }
     
     public String statisticsString() {
