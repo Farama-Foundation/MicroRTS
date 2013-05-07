@@ -121,7 +121,7 @@ public class NaiveMCTSNode {
 
     
     // Using an epsilon greedy strategy:
-    public NaiveMCTSNode selectLeaf(int maxplayer, int minplayer, float epsilon1, float epsilon2, int max_depth) throws Exception {        
+    public NaiveMCTSNode selectLeaf(int maxplayer, int minplayer, float epsilon_l, float epsilon_g, float epsilon_0, int max_depth) throws Exception {        
         if (unitActionTable == null) return this;
         
        if (depth>=max_depth) return this;        
@@ -129,24 +129,30 @@ public class NaiveMCTSNode {
         PlayerAction pa2;
         long actionCode;
 
-        if (children.size()>0 && r.nextFloat()>=epsilon2) {
-            // explore the player action with the highest value found so far:
-            NaiveMCTSNode best = null;
-            for(NaiveMCTSNode pate:children) {
-                if (type==0) {
-                    // max node:
-                    if (best==null || (pate.accum_evaluation/pate.visit_count)>(best.accum_evaluation/best.visit_count)) {
-                        best = pate;
-                    }                    
-                } else {
-                    // min node:
-                    if (best==null || (pate.accum_evaluation/pate.visit_count)<(best.accum_evaluation/best.visit_count)) {
-                        best = pate;
-                    }                                        
+        if (children.size()>0 && r.nextFloat()>=epsilon_0) {
+            // select the player action with the highest value found so far:
+            if (r.nextFloat()>=epsilon_g) {
+                NaiveMCTSNode best = null;
+                for(NaiveMCTSNode pate:children) {
+                    if (type==0) {
+                        // max node:
+                        if (best==null || (pate.accum_evaluation/pate.visit_count)>(best.accum_evaluation/best.visit_count)) {
+                            best = pate;
+                        }                    
+                    } else {
+                        // min node:
+                        if (best==null || (pate.accum_evaluation/pate.visit_count)<(best.accum_evaluation/best.visit_count)) {
+                            best = pate;
+                        }                                        
+                    }
                 }
-            }
 
-            return best.selectLeaf(maxplayer, minplayer, epsilon1, epsilon2, max_depth);
+                return best.selectLeaf(maxplayer, minplayer, epsilon_l, epsilon_g, epsilon_0, max_depth);
+            } else {
+                // cohose one at random from the ones seen so far:
+                NaiveMCTSNode best = children.get(r.nextInt(children.size()));
+                return best.selectLeaf(maxplayer, minplayer, epsilon_l, epsilon_g, epsilon_0, max_depth);
+            }
         }
         
  
@@ -181,11 +187,11 @@ public class NaiveMCTSNode {
                         visits = ate.visit_count[i];
                     }
                 }
-                dist[i] = epsilon1/ate.nactions;
+                dist[i] = epsilon_l/ate.nactions;
                 total+=dist[i];
             }
             if (ate.visit_count[bestIdx]!=0) {
-                dist[bestIdx] = (1-epsilon1) + (epsilon1/ate.nactions);
+                dist[bestIdx] = (1-epsilon_l) + (epsilon_l/ate.nactions);
             } else {
                 for(int j = 0;j<dist.length;j++) 
                     if (ate.visit_count[j]>0) dist[j] = 0;
@@ -272,7 +278,7 @@ public class NaiveMCTSNode {
             return node;                
         }
 
-        return pate.selectLeaf(maxplayer, minplayer, epsilon1, epsilon2, max_depth);
+        return pate.selectLeaf(maxplayer, minplayer, epsilon_l, epsilon_g, epsilon_0, max_depth);
     }
     
     

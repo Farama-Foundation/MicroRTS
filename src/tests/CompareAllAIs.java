@@ -67,8 +67,8 @@ public class CompareAllAIs {
         bots.add(new ContinuingUCT(TIME, PLAYOUT_TIME, MAX_DEPTH, new RandomBiasedAI(), new SimpleEvaluationFunction()));
         bots.add(new ContinuingDownsamplingUCT(TIME, PLAYOUT_TIME, MAX_ACTIONS, MAX_DEPTH, new RandomBiasedAI(), new SimpleEvaluationFunction()));
         bots.add(new ContinuingUCTUnitActions(TIME, PLAYOUT_TIME, MAX_DEPTH*10, new RandomBiasedAI(), new SimpleEvaluationFunction()));
-        bots.add(new ContinuingNaiveMCTS(TIME, PLAYOUT_TIME, MAX_DEPTH, 0.33f, 0.75f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
-        bots.add(new ContinuingNaiveMCTS(TIME, PLAYOUT_TIME, MAX_DEPTH, 1.00f, 0.25f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
+        bots.add(new ContinuingNaiveMCTS(TIME, PLAYOUT_TIME, MAX_DEPTH, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
+        bots.add(new ContinuingNaiveMCTS(TIME, PLAYOUT_TIME, MAX_DEPTH, 1.00f, 0.0f, 0.25f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
 
         PrintStream out = new PrintStream(new File("C:\\Users\\santi\\Dropbox\\papers\\RealTimeMinimax\\results.txt"));
         
