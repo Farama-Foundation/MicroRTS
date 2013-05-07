@@ -152,16 +152,16 @@ public class PhysicalGameStatePanel extends JPanel {
                 if (u.getType().name.equals("Barracks")) g.setColor(Color.lightGray);
                 if (u.getType().name.equals("Worker")) {
                     g.setColor(Color.gray);
-                    reduction = 8;
+                    reduction = grid/4;
                 }
                 if (u.getType().name.equals("Light")) {
                     g.setColor(Color.orange);
-                    reduction = 4;
+                    reduction = grid/8;
                 }
                 if (u.getType().name.equals("Heavy")) g.setColor(Color.yellow);
                 if (u.getType().name.equals("Ranged")) {
                     g.setColor(Color.cyan);
-                    reduction = 4;
+                    reduction = grid/8;
                 }
                 
                 if (!u.getType().canMove) {

@@ -4,26 +4,13 @@
  */
 package tests;
 
-import ai.abstraction.LightRush;
 import ai.*;
-import ai.abstraction.RangedRush;
-import ai.abstraction.WorkerRush;
-import ai.abstraction.pathfinding.AStarPathFinding;
-import ai.abstraction.pathfinding.GreedyPathFinding;
-import ai.evaluation.SimpleEvaluationFunction;
-import ai.montecarlo.ContinuingDownsamplingMC;
-import ai.montecarlo.ContinuingNaiveMC;
-import ai.mcts.uct.UCT;
-import ai.minimax.RMMiniMax.IDContinuingRTMinimax;
 import gui.PhysicalGameStatePanel;
 import java.io.OutputStreamWriter;
 import javax.swing.JFrame;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
 import rts.GameState;
 import rts.PhysicalGameState;
 import rts.PlayerAction;
-import rts.Trace;
 import rts.units.UnitTypeTable;
 import util.XMLWriter;
 
@@ -33,7 +20,8 @@ import util.XMLWriter;
  */
 public class GameVisualSimulationTest {
     public static void main(String args[]) throws Exception {
-//        PhysicalGameState pgs = PhysicalGameState.load("maps/basesWorkers16x16.xml");
+//        PhysicalGameState pgs = PhysicalGameState.load("maps/basesWorkers16x16.xml", UnitTypeTable.utt);
+//        PhysicalGameState pgs = PhysicalGameState.load("maps/steven/WorkerRushSmallMap.xml", UnitTypeTable.utt);
         PhysicalGameState pgs = MapGenerator.basesWorkers8x8Obstacle();
 
         GameState gs = new GameState(pgs, UnitTypeTable.utt);
