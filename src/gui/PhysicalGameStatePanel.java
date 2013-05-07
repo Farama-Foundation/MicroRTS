@@ -69,7 +69,9 @@ public class PhysicalGameStatePanel extends JPanel {
     public void paint(Graphics g) {
         super.paint(g);
         Graphics2D g2d = (Graphics2D)g;
-        int grid = 32;
+        int gridx = (this.getWidth()-64)/pgs.getWidth();
+        int gridy = (this.getHeight()-64)/pgs.getHeight();
+        int grid = Math.min(gridx,gridy);
         int sizex = grid*pgs.getWidth();
         int sizey = grid*pgs.getHeight();
         

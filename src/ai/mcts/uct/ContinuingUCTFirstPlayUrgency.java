@@ -20,7 +20,7 @@ import rts.PlayerActionGenerator;
  *
  * @author santi
  */
-public class ContinuingUCT extends AI {
+public class ContinuingUCTFirstPlayUrgency extends AI {
     public static int DEBUG = 0;
     EvaluationFunction ef = null;
        
@@ -29,7 +29,7 @@ public class ContinuingUCT extends AI {
     long max_actions_so_far = 0;
     
     GameState gs_to_start_from = null;
-    public UCTNode tree = null;
+    public UCTNodeFirstPlayUrgency tree = null;
     
     // statistics:
     public long total_runs = 0;
@@ -42,13 +42,16 @@ public class ContinuingUCT extends AI {
     int MAXSIMULATIONTIME = 1024;
     int MAX_TREE_DEPTH = 10;
     
+    double FPUvalue = 0;
     
-    public ContinuingUCT(int available_time, int lookahead, int max_depth, AI policy, EvaluationFunction a_ef) {
+    
+    public ContinuingUCTFirstPlayUrgency(int available_time, int lookahead, int max_depth, AI policy, EvaluationFunction a_ef, double a_FPUvalue) {
         MAXSIMULATIONTIME = lookahead;
         randomAI = policy;
         TIME_PER_CYCLE = available_time;
         MAX_TREE_DEPTH = max_depth;
         ef = a_ef;
+        FPUvalue = a_FPUvalue;
     }
     
     
@@ -68,7 +71,7 @@ public class ContinuingUCT extends AI {
     
     
     public AI clone() {
-        return new ContinuingUCT(TIME_PER_CYCLE, MAXSIMULATIONTIME, MAX_TREE_DEPTH, randomAI, ef);
+        return new ContinuingUCTFirstPlayUrgency(TIME_PER_CYCLE, MAXSIMULATIONTIME, MAX_TREE_DEPTH, randomAI, ef, FPUvalue);
     }  
     
     
@@ -118,7 +121,7 @@ public class ContinuingUCT extends AI {
     
     public void startNewSearch(int player, GameState gs) throws Exception {
         float evaluation_bound = SimpleEvaluationFunction.upperBound(gs);
-        tree = new UCTNode(player, 1-player, gs, null, evaluation_bound);
+        tree = new UCTNodeFirstPlayUrgency(player, 1-player, gs, null, evaluation_bound, FPUvalue);
         gs_to_start_from = gs;
         total_runs_this_move = 0;
 //        System.out.println(evaluation_bound);
@@ -149,7 +152,7 @@ public class ContinuingUCT extends AI {
     
 
     public double monteCarloRun(int player, long cutOffTime) throws Exception {
-        UCTNode leaf = tree.UCTSelectLeaf(player, 1-player, cutOffTime, MAX_TREE_DEPTH);
+        UCTNodeFirstPlayUrgency leaf = tree.UCTSelectLeaf(player, 1-player, cutOffTime, MAX_TREE_DEPTH);
 
         if (leaf!=null) {
             GameState gs2 = leaf.gs.clone();
@@ -180,9 +183,9 @@ public class ContinuingUCT extends AI {
         total_actions_issued++;
                 
         int mostVisitedIdx = -1;
-        UCTNode mostVisited = null;
+        UCTNodeFirstPlayUrgency mostVisited = null;
         for(int i = 0;i<tree.children.size();i++) {
-            UCTNode child = tree.children.get(i);
+            UCTNodeFirstPlayUrgency child = tree.children.get(i);
             if (mostVisited == null || child.visit_count>mostVisited.visit_count) {
                 mostVisited = child;
                 mostVisitedIdx = i;

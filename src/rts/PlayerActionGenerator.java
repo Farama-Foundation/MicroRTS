@@ -163,8 +163,34 @@ public class PlayerActionGenerator {
                     consistent = true;
                 }
             }while(!consistent);
-        }      
+        }
         return pa;
+    }
+    
+    
+    public long getActionIndex(PlayerAction a) {
+        int choice[] = new int[choices.size()];
+        for(Pair<Unit,UnitAction> ua:a.actions) {
+            int idx = 0;
+            Pair<Unit,List<UnitAction>> ua_choice = null;
+            for(Pair<Unit,List<UnitAction>> c:choices) {
+                if (ua.m_a == c.m_a) {
+                    ua_choice = c;
+                    break;
+                }
+                idx++;
+            }
+            if (ua_choice==null) return -1;
+            choice[idx] = ua_choice.m_b.indexOf(ua.m_b);
+            
+        }
+        long index = 0;
+        long multiplier = 1;
+        for(int i = 0;i<choice.length;i++) {
+            index += choice[i]*multiplier;
+            multiplier*=choiceSizes[i];
+        }            
+        return index;
     }
     
     
