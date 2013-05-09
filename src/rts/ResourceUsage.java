@@ -51,4 +51,9 @@ public class ResourceUsage {
         return ru;
     }
 
+    
+    public String toString() {
+        return "ResourceUsage: " + resourcesUsed[0] + "," + resourcesUsed[1] + " positions: " + positionsUsed;
+    }
+    
 }

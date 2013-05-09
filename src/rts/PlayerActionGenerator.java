@@ -42,6 +42,7 @@ public class PlayerActionGenerator {
     public List<Pair<Unit,List<UnitAction>>> getChoices() {
         return choices;
     }
+        
 
     public PlayerActionGenerator(GameState a_gs, int pID) throws Exception {
         // Generate the reserved resources:
