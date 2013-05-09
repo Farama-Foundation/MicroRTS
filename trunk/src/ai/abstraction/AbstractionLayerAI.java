@@ -66,10 +66,15 @@ public abstract class AbstractionLayerAI extends AI {
         for(Unit u:toDelete) actions.remove(u);
         
         // compose desires:
+        ResourceUsage r = gs.getResourceUsage();
         for(Pair<Unit,UnitAction> desire:desires) {
-            ResourceUsage r = desire.m_b.resourceUsage(desire.m_a, pgs);
-            if (pa.consistentEith(r, gs)) {
-                pa.addUnitAction(desire.m_a, desire.m_b);
+            pa.addUnitAction(desire.m_a, desire.m_b);
+            ResourceUsage r2 = desire.m_b.resourceUsage(desire.m_a, pgs);
+            ResourceUsage r_merged = r.mergeIntoNew(r2);
+            if (!pa.consistentWith(r_merged, gs)) {
+                pa.removeUnitAction(desire.m_a, desire.m_b);
+            } else {
+                r = r_merged;
             }
         }
         

@@ -58,6 +58,19 @@ public class PlayerAction {
         actions.add(new Pair<Unit,UnitAction>(u,a));
     }
     
+    
+    public void removeUnitAction(Unit u, UnitAction a) {
+        Pair<Unit,UnitAction> found = null;
+        for(Pair<Unit,UnitAction> tmp:actions) {
+            if (tmp.m_a == u && tmp.m_b == a) {
+                found = tmp;
+                break;
+            }
+        }
+        if (found!=null) actions.remove(found);
+    }
+    
+    
     public PlayerAction merge(PlayerAction a) {
         PlayerAction merge = new PlayerAction();
         for(Pair<Unit,UnitAction> ua:actions) merge.actions.add(ua);
@@ -89,7 +102,7 @@ public class PlayerAction {
     }
     
     
-    public boolean consistentEith(ResourceUsage u, GameState gs) {
+    public boolean consistentWith(ResourceUsage u, GameState gs) {
         return r.consistentWith(u, gs);
     }
     

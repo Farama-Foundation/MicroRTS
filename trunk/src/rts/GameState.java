@@ -357,6 +357,21 @@ public class GameState {
     }
     
     
+    public ResourceUsage getResourceUsage() {
+        ResourceUsage base_ru = new ResourceUsage();
+        
+        for(Unit u:pgs.getUnits()) {
+            UnitActionAssignment uaa = unitActions.get(u);
+            if (uaa!=null) {
+                ResourceUsage ru = uaa.action.resourceUsage(u, pgs);
+                base_ru.merge(ru);
+            }
+        }
+        
+        return base_ru;
+    }
+    
+    
     public boolean integrityCheck() {
         List<Unit> alreadyUsed = new LinkedList<Unit>();
         for(UnitActionAssignment uaa:unitActions.values()) {
