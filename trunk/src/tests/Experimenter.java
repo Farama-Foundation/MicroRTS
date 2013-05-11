@@ -5,19 +5,14 @@
 package tests;
 
 import ai.*;
-import ai.montecarlo.*;
-import ai.mcts.ContinuingNaiveMCTS;
-import ai.minimax.RMMiniMax.IDContinuingRTMinimax;
-import ai.minimax.RMMiniMax.IDContinuingRTMinimax;
-import ai.minimax.RMMiniMax.IDContinuingRTMinimaxRandomized;
-import ai.mcts.uct.UCT;
+import gui.PhysicalGameStateJFrame;
 import gui.PhysicalGameStatePanel;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JFrame;
 import rts.GameState;
+import rts.PartiallyObservableGameState;
 import rts.PhysicalGameState;
 import rts.PlayerAction;
 import rts.units.UnitTypeTable;
@@ -30,14 +25,24 @@ public class Experimenter {
     public static int DEBUG = 0;
     
     public static void runExperiments(List<AI> bots, List<PhysicalGameState> maps, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize) throws Exception {
-        runExperiments(bots, maps, iterations, max_cycles, max_inactive_cycles, visualize, System.out, -1);
+        runExperiments(bots, maps, iterations, max_cycles, max_inactive_cycles, visualize, System.out, -1, false);
+    }
+
+    public static void runExperimentsPartiallyObservable(List<AI> bots, List<PhysicalGameState> maps, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize) throws Exception {
+        runExperiments(bots, maps, iterations, max_cycles, max_inactive_cycles, visualize, System.out, -1, true);
     }
 
     public static void runExperiments(List<AI> bots, List<PhysicalGameState> maps, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize, PrintStream out) throws Exception {
-        runExperiments(bots, maps, iterations, max_cycles, max_inactive_cycles, visualize, out, -1);
+        runExperiments(bots, maps, iterations, max_cycles, max_inactive_cycles, visualize, out, -1, false);
     }
 
-    public static void runExperiments(List<AI> bots, List<PhysicalGameState> maps, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize, PrintStream out, int run_only_those_involving_this_AI) throws Exception {
+    public static void runExperimentsPartiallyObservable(List<AI> bots, List<PhysicalGameState> maps, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize, PrintStream out) throws Exception {
+        runExperiments(bots, maps, iterations, max_cycles, max_inactive_cycles, visualize, out, -1, true);
+    }
+
+    
+    public static void runExperiments(List<AI> bots, List<PhysicalGameState> maps, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize, PrintStream out, 
+                                      int run_only_those_involving_this_AI, boolean partiallyObservable) throws Exception {
         int wins[][] = new int[bots.size()][bots.size()];
         int ties[][] = new int[bots.size()][bots.size()];
         int loses[][] = new int[bots.size()][bots.size()];
@@ -69,25 +74,36 @@ public class Experimenter {
                         ai2.reset();
 
                         GameState gs = new GameState(pgs.clone(),UnitTypeTable.utt);
-                        JFrame w = null;
-                        if (visualize) w = PhysicalGameStatePanel.newVisualizer(gs, 600, 600);
+                        PhysicalGameStateJFrame w = null;
+                        if (visualize) w = PhysicalGameStatePanel.newVisualizer(gs, 600, 600, partiallyObservable);
 
                         out.println("MATCH UP: " + ai1+ " vs " + ai2);
                         
                         boolean gameover = false;
                         do {
                             System.gc();
-                            PlayerAction pa1 = ai1.getAction(0, gs);
-                            if (DEBUG>=1) {out.println("AI1 done.");out.flush();}
-                            PlayerAction pa2 = ai2.getAction(1, gs);
-                            if (DEBUG>=1) {out.println("AI2 done.");out.flush();}
+                            PlayerAction pa1 = null, pa2 = null;
+                            if (partiallyObservable) {
+                                pa1 = ai1.getAction(0, new PartiallyObservableGameState(gs,0));
+                                if (DEBUG>=1) {out.println("AI1 done.");out.flush();}
+                                pa2 = ai2.getAction(1, new PartiallyObservableGameState(gs,1));
+                                if (DEBUG>=1) {out.println("AI2 done.");out.flush();}
+                            } else {
+                                pa1 = ai1.getAction(0, gs);
+                                if (DEBUG>=1) {out.println("AI1 done.");out.flush();}
+                                pa2 = ai2.getAction(1, gs);
+                                if (DEBUG>=1) {out.println("AI2 done.");out.flush();}
+                            }
                             if (gs.issueSafe(pa1)) lastTimeActionIssued = gs.getTime();
                             if (DEBUG>=1) {out.println("issue action AI1 done: " + pa1);out.flush();}
                             if (gs.issueSafe(pa2)) lastTimeActionIssued = gs.getTime();
                             if (DEBUG>=1) {out.println("issue action AI2 done:" + pa2);out.flush();}
                             gameover = gs.cycle();
                             if (DEBUG>=1) {out.println("cycle done.");out.flush();}
-                            if (w!=null) w.repaint();
+                            if (w!=null) {
+                                w.setState(gs.clone());
+                                w.repaint();
+                            }
                             if (DEBUG>=1) {out.println("repaint done.");out.flush();}
                             try {
                                 Thread.sleep(1);    // give time to the window to repaint

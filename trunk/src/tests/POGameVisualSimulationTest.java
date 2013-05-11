@@ -12,6 +12,7 @@ import gui.PhysicalGameStatePanel;
 import java.io.OutputStreamWriter;
 import javax.swing.JFrame;
 import rts.GameState;
+import rts.PartiallyObservableGameState;
 import rts.PhysicalGameState;
 import rts.PlayerAction;
 import rts.units.UnitTypeTable;
@@ -21,7 +22,7 @@ import util.XMLWriter;
  *
  * @author santi
  */
-public class GameVisualSimulationTest {
+public class POGameVisualSimulationTest {
     public static void main(String args[]) throws Exception {
         PhysicalGameState pgs = PhysicalGameState.load("maps/basesWorkers16x16.xml", UnitTypeTable.utt);
 //        PhysicalGameState pgs = PhysicalGameState.load("maps/steven/RandomBiasedAIMediumMap.xml", UnitTypeTable.utt);
@@ -45,13 +46,13 @@ public class GameVisualSimulationTest {
         pgs.toxml(xml);
         xml.flush();
 
-        JFrame w = PhysicalGameStatePanel.newVisualizer(gs,640,640);
+        JFrame w = PhysicalGameStatePanel.newVisualizer(gs,640,640, true);
 
         long nextTimeToUpdate = System.currentTimeMillis() + PERIOD;
         do{
             if (System.currentTimeMillis()>=nextTimeToUpdate) {
-                PlayerAction pa1 = ai1.getAction(0, gs);
-                PlayerAction pa2 = ai2.getAction(1, gs);
+                PlayerAction pa1 = ai1.getAction(0, new PartiallyObservableGameState(gs,0));
+                PlayerAction pa2 = ai2.getAction(1, new PartiallyObservableGameState(gs,1));
                 gs.issueSafe(pa1);
                 gs.issueSafe(pa2);
 

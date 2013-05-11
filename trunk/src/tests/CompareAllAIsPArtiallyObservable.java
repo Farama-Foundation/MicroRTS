@@ -37,7 +37,7 @@ import rts.units.UnitTypeTable;
  *
  * @author santi
  */
-public class CompareAllAIs {
+public class CompareAllAIsPArtiallyObservable {
     
     public static void main(String args[]) throws Exception 
     {
@@ -70,25 +70,17 @@ public class CompareAllAIs {
         bots.add(new ContinuingNaiveMCTS(TIME, PLAYOUT_TIME, MAX_DEPTH, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
         bots.add(new ContinuingNaiveMCTS(TIME, PLAYOUT_TIME, MAX_DEPTH, 1.00f, 0.0f, 0.25f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
 
-        PrintStream out = new PrintStream(new File("C:\\Users\\santi\\Dropbox\\papers\\RealTimeMinimax\\results.txt"));
+        PrintStream out = new PrintStream(new File("results-PO.txt"));
         
         // Separate the matchs by map:
         List<PhysicalGameState> maps = new LinkedList<PhysicalGameState>();        
 
         maps.clear();
         maps.add(PhysicalGameState.load("maps/basesWorkers8x8.xml",UnitTypeTable.utt));
-        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true, out);
+        Experimenter.runExperimentsPartiallyObservable(bots, maps, 10, 3000, 300, true, out);
       
         maps.clear();
-        maps.add(PhysicalGameState.load("maps/melee12x12mixed12.xml",UnitTypeTable.utt));
-        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true, out);
-
-        maps.clear();
-        maps.add(PhysicalGameState.load("maps/melee8x8mixed6.xml",UnitTypeTable.utt));
-        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true, out);
-
-        maps.clear();
-        maps.add(PhysicalGameState.load("maps/melee4x4light2.xml",UnitTypeTable.utt));
-        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true, out);
+        maps.add(PhysicalGameState.load("maps/basesWorkers16x16.xml",UnitTypeTable.utt));
+        Experimenter.runExperimentsPartiallyObservable(bots, maps, 10, 3000, 300, true, out);
     }
 }

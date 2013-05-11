@@ -28,6 +28,7 @@ public class UnitTypeTable {
         resource.canHarvest = false;
         resource.canMove = false;
         resource.canAttack = false;
+        resource.sightRadius = 0;
         addUnitType(resource);           
                 
         // BASE:
@@ -41,6 +42,7 @@ public class UnitTypeTable {
         base.canHarvest = false;
         base.canMove = false;
         base.canAttack = false;
+        base.sightRadius = 5;
         addUnitType(base);
 
         // BARRACKS: ID = 1
@@ -54,6 +56,7 @@ public class UnitTypeTable {
         barracks.canHarvest = false;
         barracks.canMove = false;
         barracks.canAttack = false;
+        barracks.sightRadius = 3;
         addUnitType(barracks);
         
         // WORKER: ID = 2
@@ -73,6 +76,7 @@ public class UnitTypeTable {
         worker.canHarvest = true;
         worker.canMove = true;
         worker.canAttack = true;
+        worker.sightRadius = 3;
         addUnitType(worker);   
         
         // LIGHT: ID = 3
@@ -90,6 +94,7 @@ public class UnitTypeTable {
         light.canHarvest = false;
         light.canMove = true;
         light.canAttack = true;
+        light.sightRadius = 2;
         addUnitType(light);           
 
         // HEAVY: ID = 4
@@ -107,6 +112,7 @@ public class UnitTypeTable {
         heavy.canHarvest = false;
         heavy.canMove = true;
         heavy.canAttack = true;
+        heavy.sightRadius = 2;
         addUnitType(heavy);           
 
         // RANGED: ID = 5
@@ -124,6 +130,7 @@ public class UnitTypeTable {
         ranged.canHarvest = false;
         ranged.canMove = true;
         ranged.canAttack = true;
+        ranged.sightRadius = 3;
         addUnitType(ranged);     
         
 

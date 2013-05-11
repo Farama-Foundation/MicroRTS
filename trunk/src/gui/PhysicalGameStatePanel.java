@@ -13,6 +13,7 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import rts.GameState;
+import rts.PartiallyObservableGameState;
 import rts.PhysicalGameState;
 import rts.UnitAction;
 import rts.UnitActionAssignment;
@@ -27,43 +28,50 @@ public class PhysicalGameStatePanel extends JPanel {
     GameState gs = null;
     PhysicalGameState pgs = null;
     
+    // the state observed by each player:
+    PartiallyObservableGameState pogs[] = new PartiallyObservableGameState[2];
+    
     public PhysicalGameStatePanel(GameState a_gs) {
         gs = a_gs;
         pgs = gs.getPhysicalGameState();
         setBackground(Color.BLACK);
     } 
     
-    public static JFrame newVisualizer(GameState a_gs) {
-        PhysicalGameStatePanel w = new PhysicalGameStatePanel(a_gs);
+    public static PhysicalGameStateJFrame newVisualizer(GameState a_gs) {
+        return newVisualizer(a_gs, 320, 320, false);
+    }
 
-        PhysicalGameStatePanel ad = new PhysicalGameStatePanel(a_gs);
-        JFrame frame = new JFrame("Game State Visuakizer");
-        frame.getContentPane().add(ad);
-        frame.pack();
-        frame.setResizable(false);
-        frame.setSize(320,320);
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        return frame;
+    public static PhysicalGameStateJFrame newVisualizer(GameState a_gs, boolean a_showVisibility) {
+        return newVisualizer(a_gs, 320, 320, a_showVisibility);
     }
         
-    public static JFrame newVisualizer(GameState a_gs, int dx, int dy) {
-        PhysicalGameStatePanel w = new PhysicalGameStatePanel(a_gs);
-
+    public static PhysicalGameStateJFrame newVisualizer(GameState a_gs, int dx, int dy) {
+        return newVisualizer(a_gs, dx, dy, false);
+    }
+        
+    public static PhysicalGameStateJFrame newVisualizer(GameState a_gs, int dx, int dy, boolean a_showVisibility) {
         PhysicalGameStatePanel ad = new PhysicalGameStatePanel(a_gs);
-        JFrame frame = new JFrame("Game State Visuakizer");
-        frame.getContentPane().add(ad);
-        frame.pack();
-        frame.setResizable(false);
-        frame.setSize(dx,dy);
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        if (a_showVisibility) {
+            ad.pogs[0] = new PartiallyObservableGameState(a_gs, 0);
+            ad.pogs[1] = new PartiallyObservableGameState(a_gs, 1);
+        }
+        
+        PhysicalGameStateJFrame frame = null;
+        if (a_showVisibility) {
+            frame = new PhysicalGameStateJFrame("Partially Observable Game State Visuakizer", dx, dy, ad);
+        } else {
+            frame = new PhysicalGameStateJFrame("Game State Visuakizer", dx, dy, ad);
+        }
         return frame;
     }
     
     public void setState(GameState a_gs) {
         gs = a_gs;
         pgs = gs.getPhysicalGameState();
+        if (pogs[0]!=null) {
+            pogs[0] = new PartiallyObservableGameState(a_gs, 0);
+            pogs[1] = new PartiallyObservableGameState(a_gs, 1);
+        }        
     }
 
     public void paint(Graphics g) {
@@ -75,17 +83,49 @@ public class PhysicalGameStatePanel extends JPanel {
         int sizex = grid*pgs.getWidth();
         int sizey = grid*pgs.getHeight();
         
+        if (pogs[0]!=null && pogs[1]!=null) {
+            if (pogs[0].getTime() != gs.getTime()) {
+                // update 
+                pogs[0] = new PartiallyObservableGameState(gs, 0);
+                pogs[1] = new PartiallyObservableGameState(gs, 1);
+            }
+        }
+        
+        
         g.setColor(Color.WHITE);
         g.drawString(gs.getTime() + "", 10, getHeight()-15);
         
         g2d.translate(getWidth()/2 - sizex/2, getHeight()/2 - sizey/2);
         
         Color playerColor = null;
+        Color wallColor = new Color(0, 0.33f, 0);
+        Color po0color = new Color(0, 0, 0.25f);
+        Color po1color = new Color(0.25f, 0, 0);
+        Color pobothcolor = new Color(0.25f, 0, 0.25f);
 
         for(int j = 0;j<pgs.getWidth();j++) {
             for(int i = 0;i<pgs.getHeight();i++) {
+                if (pogs[0]!=null && pogs[1]!=null) {
+                    // show partial observability:
+                    if (pogs[0].observable(j, i)) {
+                        if (pogs[1].observable(j, i)) {
+                            g.setColor(pobothcolor);
+                            g.fillRect(j*grid, i*grid, grid, grid);
+                        } else {
+                            g.setColor(po0color);
+                            g.fillRect(j*grid, i*grid, grid, grid);
+                        }
+                    } else {
+                        if (pogs[1].observable(j, i)) {
+                            g.setColor(po1color);
+                            g.fillRect(j*grid, i*grid, grid, grid);
+                        } else {
+                        }
+                    }
+                }
+
                 if (pgs.getTerrain(j,i)==PhysicalGameState.TERRAIN_WALL) {
-                    g.setColor(Color.darkGray);
+                    g.setColor(wallColor);
                     g.fillRect(j*grid, i*grid, grid, grid);
                 }
             }            
