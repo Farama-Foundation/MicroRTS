@@ -27,6 +27,8 @@ public class UnitType {
                    harvestTime = 10, 
                    returnTime = 10;
         public int harvestAmount = 1;      // each time the harvest action is executed, how many resources does the unit get
+        
+        public int sightRadius = 4; // the radius a unit can see for partially observable game states.
 	
         public boolean isResource = false;  // other units can harvet this unit
 	public boolean isStockpile = false; // other units can return resources to this unit

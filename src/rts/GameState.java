@@ -92,6 +92,12 @@ public class GameState {
         return true;
     }
     
+
+    // for fully observable game states, all the cells are observable:
+    public boolean observable(int x, int y) {
+        return true;
+    }
+    
     
     // returns "true" is any action different from NONE was issued
     public boolean issue(PlayerAction pa) {
@@ -327,12 +333,10 @@ public class GameState {
                 System.out.println("Problematic action:");
                 System.out.println(uaa);
                 throw new Error("Inconsistent game state during cloning...");
-//                System.exit(1);
             } else {
                 Unit u2 = gs.pgs.getUnits().get(idx);
                 gs.unitActions.put(u2,new UnitActionAssignment(u2, uaa.action, uaa.time));
-            }
-                
+            }                
         }
         return gs;
     }
@@ -406,7 +410,7 @@ public class GameState {
     }
     
     public String toString() {
-        String tmp = "GameState: " + time + "\n";
+        String tmp = "ObservableGameState: " + time + "\n";
         for(Player p:pgs.getPlayers()) tmp += "player " + p.ID + ": " + p.getResources() + "\n";
         for(Unit u:unitActions.keySet()) tmp += "    " + u + " -> " + unitActions.get(u).time + " " + unitActions.get(u).action + "\n";
         tmp += pgs;

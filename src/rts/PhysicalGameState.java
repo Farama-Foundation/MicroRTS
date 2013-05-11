@@ -149,9 +149,21 @@ public class PhysicalGameState {
         
     
     public PhysicalGameState clone() {
-//    List<Player> players = new LinkedList<Player>();
-//    List<Unit> units = new LinkedList<Unit>();
         PhysicalGameState pgs = new PhysicalGameState(width, height, terrain);  // The terrain is shared amongst all instances, since it never changes
+        for(Player p:players) {
+            pgs.players.add(p.clone());
+        }
+        for(Unit u:units) {
+            pgs.units.add(u.clone());
+        }
+        return pgs;
+    }
+
+    
+    public PhysicalGameState cloneIncludingTerrain() {
+        int new_terrain[] = new int[terrain.length];
+        for(int i = 0;i<terrain.length;i++) new_terrain[i] = terrain[i];
+        PhysicalGameState pgs = new PhysicalGameState(width, height, new_terrain);
         for(Player p:players) {
             pgs.players.add(p.clone());
         }
