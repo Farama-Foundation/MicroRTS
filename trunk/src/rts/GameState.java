@@ -16,8 +16,9 @@ import util.Pair;
 public class GameState {
     int time = 0;
     PhysicalGameState pgs = null;
-    UnitTypeTable utt = null;
     HashMap<Unit,UnitActionAssignment> unitActions = new LinkedHashMap<Unit,UnitActionAssignment>();
+
+    UnitTypeTable utt = null;
 
     public GameState(PhysicalGameState a_pgs, UnitTypeTable a_utt) {
         pgs = a_pgs;
