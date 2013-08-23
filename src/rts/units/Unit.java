@@ -231,7 +231,7 @@ public class Unit {
     }
     
     public String toString() {
-        return getClass().getSimpleName() + "(" + ID + ")" + 
+        return type.name + "(" + ID + ")" + 
                "(" + player + ", (" + x + "," + y + "), " + hitpoints + ", " + resources + ")";
     }
     
