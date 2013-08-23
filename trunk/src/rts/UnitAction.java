@@ -18,7 +18,7 @@ public class UnitAction {
     public static final int TYPE_HARVEST = 2;
     public static final int TYPE_RETURN = 3;
     public static final int TYPE_PRODUCE = 4;
-    public static final int TYPE_ATTACK_LOCATION = 5;   // direction is "x", unit_Type is "y"
+    public static final int TYPE_ATTACK_LOCATION = 5;
 
     String actionName[] ={"none","move","harvest","return","produce","attack_location"};
     
