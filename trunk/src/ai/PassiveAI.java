@@ -17,7 +17,7 @@ public class PassiveAI extends AI {
     }
     
     public AI clone() {
-        return new RandomAI();
+        return new PassiveAI();
     }
    
     public PlayerAction getAction(int player, GameState gs) {
