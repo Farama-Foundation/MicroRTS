@@ -165,6 +165,7 @@ public class GameState {
                         u.getY()==p.m_a.getY()) {
                         p.m_a = u;
                         found = true;
+                        break;
                     }
                 }
                 if (!found) {
