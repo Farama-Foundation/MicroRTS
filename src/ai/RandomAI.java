@@ -45,8 +45,8 @@ public class RandomAI extends AI {
                 if (gs.getActionAssignment(u)==null) {
                     List<UnitAction> l = u.getUnitActions(gs);
                     UnitAction ua = l.get(r.nextInt(l.size()));
-                    if (ua.resourceUsage(u, pgs).consistentWith(pa.getResourceUsage(), gs)) {
-                        ResourceUsage ru = ua.resourceUsage(u, pgs);
+                    ResourceUsage ru = ua.resourceUsage(u, pgs);
+                    if (ru.consistentWith(pa.getResourceUsage(), gs)) {
                         pa.getResourceUsage().merge(ru);                        
                         pa.addUnitAction(u, ua);
                     } else {
