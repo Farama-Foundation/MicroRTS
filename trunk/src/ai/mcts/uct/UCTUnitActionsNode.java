@@ -50,9 +50,9 @@ public class UCTUnitActionsNode {
             actions = null;
             for(Unit u:pgs.getUnits()) {
                 if (u.getPlayer()==maxplayer) {
-                    if (a_gs.getTime()==1) {
-                        System.out.println(u + " -> " + a_gs.getActionAssignment(u));
-                    }
+//                    if (a_gs.getTime()==1) {
+//                        System.out.println(u + " -> " + a_gs.getActionAssignment(u));
+//                    }
                     if (a_gs.getActionAssignment(u)==null) {
 //                        System.out.println(u);;
                         actions = a_gs.getPlayerActionsSingleUnit(maxplayer, u);
