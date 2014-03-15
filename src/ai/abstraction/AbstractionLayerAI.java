@@ -29,7 +29,7 @@ public abstract class AbstractionLayerAI extends AI {
     //      - harvest(target)
     //      - attack(target)
     
-    HashMap<Unit,AbstractAction> actions = new LinkedHashMap<Unit,AbstractAction>();
+    protected HashMap<Unit,AbstractAction> actions = new LinkedHashMap<Unit,AbstractAction>();
     PathFinding pf = null;
             
     public AbstractionLayerAI(PathFinding a_pf) {
@@ -104,5 +104,9 @@ public abstract class AbstractionLayerAI extends AI {
     
     public void attack(Unit u, Unit target) {
         actions.put(u,new Attack(u,target, pf));
+    }
+
+    public void idle(Unit u) {
+        actions.put(u,new Idle(u));
     }
 }   

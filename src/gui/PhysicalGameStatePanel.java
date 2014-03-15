@@ -10,7 +10,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.LinkedList;
 import java.util.List;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import rts.GameState;
 import rts.PartiallyObservableGameState;
@@ -18,7 +17,7 @@ import rts.PhysicalGameState;
 import rts.UnitAction;
 import rts.UnitActionAssignment;
 import rts.units.Unit;
-import tests.TraceVisualizationTest;
+import util.Pair;
 
 /**
  *
@@ -28,8 +27,17 @@ public class PhysicalGameStatePanel extends JPanel {
     GameState gs = null;
     PhysicalGameState pgs = null;
     
+    // Units to be highlighted (this is used, for example, by the MouseController, 
+    // to give feedback to the human, on which units are selectable.
+    List<Unit> toHighLight = new LinkedList<Unit>();
+    
     // the state observed by each player:
     PartiallyObservableGameState pogs[] = new PartiallyObservableGameState[2];
+    
+    // Coordinates where things were drawn the last time this was redrawn:
+    int last_start_x = 0;
+    int last_start_y = 0;
+    int last_grid = 0;
     
     public PhysicalGameStatePanel(GameState a_gs) {
         gs = a_gs;
@@ -73,6 +81,32 @@ public class PhysicalGameStatePanel extends JPanel {
             pogs[1] = new PartiallyObservableGameState(a_gs, 1);
         }        
     }
+    
+    
+    public void clearHighlights() {
+        toHighLight.clear();
+    }
+    
+    
+    public void highlight(Unit u) {
+        toHighLight.add(u);
+    }
+    
+    
+    public Pair<Integer,Integer> getContentAtCoordinates(int x, int y) {
+        // return the map coordiantes over which the coordinates are:
+        if (x<last_start_x) return null;
+        if (y<last_start_y) return null;
+        
+        int cellx = (x - last_start_x)/last_grid;
+        int celly = (y - last_start_y)/last_grid;
+        
+        if (cellx>=pgs.getWidth()) return null;
+        if (celly>=pgs.getHeight()) return null;
+        
+        return new Pair<Integer,Integer>(cellx,celly);
+    }
+    
 
     public void paint(Graphics g) {
         super.paint(g);
@@ -95,7 +129,11 @@ public class PhysicalGameStatePanel extends JPanel {
         g.setColor(Color.WHITE);
         g.drawString(gs.getTime() + "", 10, getHeight()-15);
         
-        g2d.translate(getWidth()/2 - sizex/2, getHeight()/2 - sizey/2);
+        last_start_x = getWidth()/2 - sizex/2;
+        last_start_y = getHeight()/2 - sizey/2;
+        last_grid = grid;
+
+        g2d.translate(last_start_x, last_start_y);
         
         Color playerColor = null;
         Color wallColor = new Color(0, 0.33f, 0);
@@ -207,10 +245,12 @@ public class PhysicalGameStatePanel extends JPanel {
                 if (!u.getType().canMove) {
                     g.fillRect(u.getX()*grid+reduction, u.getY()*grid+reduction, grid-reduction*2, grid-reduction*2);
                     g.setColor(playerColor);
+                    if (toHighLight.contains(u)) g.setColor(Color.green);
                     g.drawRect(u.getX()*grid+reduction, u.getY()*grid+reduction, grid-reduction*2, grid-reduction*2);        
                 } else {
                     g.fillOval(u.getX()*grid+reduction, u.getY()*grid+reduction, grid-reduction*2, grid-reduction*2);
                     g.setColor(playerColor);
+                    if (toHighLight.contains(u)) g.setColor(Color.green);
                     g.drawOval(u.getX()*grid+reduction, u.getY()*grid+reduction, grid-reduction*2, grid-reduction*2);        
                 }
 

@@ -51,7 +51,7 @@ public class GreedyPathFinding extends PathFinding {
     }    
     
 
-    // In this greedy algorithm, both functions are implemented equally:
+    // In this greedy algorithm, both functions are implemented identically:
     public UnitAction findPathToAdjacentPosition(Unit start, int targetpos, GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();        
         int dx[] = { 0, 1, 0,-1};
