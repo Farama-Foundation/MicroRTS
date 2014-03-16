@@ -37,7 +37,7 @@ import rts.units.UnitTypeTable;
  *
  * @author santi
  */
-public class CompareAllAIsPArtiallyObservable {
+public class CompareAllAIsPartiallyObservable {
     
     public static void main(String args[]) throws Exception 
     {
