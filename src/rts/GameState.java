@@ -38,9 +38,19 @@ public class GameState {
         return pgs.getPlayer(ID);
     }
     
+    public List<Unit> getUnits() {
+        return pgs.getUnits();
+    }
+    
     public HashMap<Unit,UnitActionAssignment> getUnitActions() {
         return unitActions;
     }
+    
+    public UnitAction getUnitAction(Unit u) {
+        UnitActionAssignment uaa = unitActions.get(u);
+        if (uaa==null) return null;
+        return uaa.action;
+    }    
     
     public UnitActionAssignment getActionAssignment(Unit u) {
         return unitActions.get(u);
