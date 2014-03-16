@@ -14,7 +14,7 @@ import ai.evaluation.EvaluationFunctionWithActions;
 import ai.evaluation.SimpleEvaluationFunction;
 import ai.minimax.ABCD.IDContinuingABCD;
 import ai.montecarlo.*;
-import ai.mcts.ContinuingNaiveMCTS;
+import ai.mcts.naivemcts.ContinuingNaiveMCTS;
 import ai.minimax.RMMiniMax.IDContinuingRTMinimax;
 import ai.minimax.RMMiniMax.IDContinuingRTMinimax;
 import ai.minimax.RMMiniMax.IDContinuingRTMinimaxRandomized;
@@ -43,6 +43,7 @@ public class CompareAllAIsPArtiallyObservable {
     {
         int TIME = 100;
         int MAX_ACTIONS = 100;
+        int MAX_PLAYOUTS = -1;
         int PLAYOUT_TIME = 100;
         int MAX_DEPTH = 10;
         int RANDOMIZED_AB_REPEATS = 10;
@@ -67,8 +68,8 @@ public class CompareAllAIsPArtiallyObservable {
         bots.add(new ContinuingUCT(TIME, PLAYOUT_TIME, MAX_DEPTH, new RandomBiasedAI(), new SimpleEvaluationFunction()));
         bots.add(new ContinuingDownsamplingUCT(TIME, PLAYOUT_TIME, MAX_ACTIONS, MAX_DEPTH, new RandomBiasedAI(), new SimpleEvaluationFunction()));
         bots.add(new ContinuingUCTUnitActions(TIME, PLAYOUT_TIME, MAX_DEPTH*10, new RandomBiasedAI(), new SimpleEvaluationFunction()));
-        bots.add(new ContinuingNaiveMCTS(TIME, PLAYOUT_TIME, MAX_DEPTH, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
-        bots.add(new ContinuingNaiveMCTS(TIME, PLAYOUT_TIME, MAX_DEPTH, 1.00f, 0.0f, 0.25f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
+        bots.add(new ContinuingNaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
+        bots.add(new ContinuingNaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, 1.00f, 0.0f, 0.25f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
 
         PrintStream out = new PrintStream(new File("results-PO.txt"));
         

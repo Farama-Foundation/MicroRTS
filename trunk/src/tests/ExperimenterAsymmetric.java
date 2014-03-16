@@ -6,7 +6,7 @@ package tests;
 
 import ai.*;
 import ai.montecarlo.*;
-import ai.mcts.ContinuingNaiveMCTS;
+import ai.mcts.naivemcts.ContinuingNaiveMCTS;
 import ai.minimax.RMMiniMax.IDContinuingRTMinimax;
 import ai.minimax.RMMiniMax.IDContinuingRTMinimax;
 import ai.minimax.RMMiniMax.IDContinuingRTMinimaxRandomized;

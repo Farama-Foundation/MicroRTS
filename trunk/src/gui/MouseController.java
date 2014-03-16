@@ -18,6 +18,17 @@ import rts.units.Unit;
 /**
  *
  * @author santi
+ * 
+ * To play the game with mouse:
+ * - Left-click on units to select them
+ * - Left click on the unit type names at the bottom of the screen (once you have selected
+ *   a unit that can train/build units) to select a unit type
+ * - Right click to send actions, for example:
+ *      - right-clicking on an empty space makes the selected unit move
+ *      - right-clicking on an enemy makes the selected unit go to attack
+ *      - right-clicking on a resource makes the selected worker start harvesting
+ *      - if you have a unit type selected (bottom of the screen) and right-click in an empty 
+ *        space, the selected worker will go and build a building in the desired place.
  */
 public class MouseController extends AbstractionLayerAI {
     PhysicalGameStateMouseJFrame m_frame = null;
