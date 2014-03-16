@@ -6,8 +6,9 @@ package tests;
 
 import ai.*;
 import ai.abstraction.LightRush;
-import ai.abstraction.WorkerRush;
 import ai.abstraction.pathfinding.AStarPathFinding;
+import ai.evaluation.SimpleEvaluationFunction;
+import ai.mcts.naivemcts.ContinuingNaiveMCTS;
 import gui.PhysicalGameStatePanel;
 import java.io.OutputStreamWriter;
 import javax.swing.JFrame;
@@ -28,6 +29,10 @@ public class GameVisualSimulationTest {
 //        PhysicalGameState pgs = MapGenerator.basesWorkers8x8Obstacle();
 
         GameState gs = new GameState(pgs, UnitTypeTable.utt);
+        int TIME = 100;
+        int MAX_PLAYOUTS = 1000;
+        int PLAYOUT_TIME = -1;
+        int MAX_DEPTH = 10;
         int MAXCYCLES = 5000;
         int PERIOD = 20;
         boolean gameover = false;
@@ -37,7 +42,14 @@ public class GameVisualSimulationTest {
         AI ai1 = new LightRush(UnitTypeTable.utt, new AStarPathFinding());
 //        AI ai1 = new RangedRush(UnitTypeTable.utt, new GreedyPathFinding());
 //        AI ai1 = new ContinuingNaiveMC(PERIOD, 200, 0.33f, 0.2f, new RandomBiasedAI(), new SimpleEvaluationFunction());
-
+/*
+        AI ai1 = new ContinuingNaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, 
+                                         1.00f, 1.00f,
+                                         0.00f, 1.00f,
+                                         0.25f, 0.9975f,
+                                         new RandomBiasedAI(), new SimpleEvaluationFunction());
+*/
+        
         AI ai2 = new RandomBiasedAI();
 //        AI ai2 = new LightRush();
         
