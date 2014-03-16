@@ -184,7 +184,7 @@ public class ContinuingNaiveMCTS extends AI {
     public boolean iteration(int player) throws Exception {
         NaiveMCTSNode leaf = tree.selectLeaf(player, 1-player, epsilon_l, epsilon_g, epsilon_0, MAX_TREE_DEPTH, current_iteration++);
 
-        if (leaf!=null) {
+        if (leaf!=null) {            
             GameState gs2 = leaf.gs.clone();
             simulate(gs2, gs2.getTime() + MAXSIMULATIONTIME);
 
@@ -197,8 +197,10 @@ public class ContinuingNaiveMCTS extends AI {
             epsilon_0*=discount_0;
             epsilon_l*=discount_l;
             epsilon_g*=discount_g;
-            
             total_runs++;
+            
+//            System.out.println(total_runs + " - " + epsilon_0 + ", " + epsilon_l + ", " + epsilon_g);
+            
         } else {
             // no actions to choose from :)
             System.err.println(this.getClass().getSimpleName() + ": claims there are no more leafs to explore...");
