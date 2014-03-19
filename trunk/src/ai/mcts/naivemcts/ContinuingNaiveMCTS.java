@@ -94,7 +94,7 @@ public class ContinuingNaiveMCTS extends AI {
         
     
     public AI clone() {
-        return new ContinuingNaiveMCTS(AVAILABLE_TIME, MAX_PLAYOUTS, MAXSIMULATIONTIME, MAX_TREE_DEPTH, epsilon_l, epsilon_g, epsilon_0, randomAI, ef);
+        return new ContinuingNaiveMCTS(AVAILABLE_TIME, MAX_PLAYOUTS, MAXSIMULATIONTIME, MAX_TREE_DEPTH, epsilon_l, discount_l, epsilon_g, discount_g, epsilon_0, discount_0, randomAI, ef);
     }    
     
     
