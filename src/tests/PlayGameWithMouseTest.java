@@ -5,6 +5,8 @@
 package tests;
 
 import ai.*;
+import ai.evaluation.SimpleEvaluationFunction;
+import ai.mcts.naivemcts.ContinuingNaiveMCTS;
 import gui.MouseController;
 import gui.PhysicalGameStateMouseJFrame;
 import gui.PhysicalGameStatePanel;
@@ -22,16 +24,18 @@ public class PlayGameWithMouseTest {
         PhysicalGameState pgs = PhysicalGameState.load("maps/basesWorkers16x16.xml", UnitTypeTable.utt);
 
         GameState gs = new GameState(pgs, UnitTypeTable.utt);
-        int MAXCYCLES = 5000;
-        int PERIOD = 40;
+        int MAXCYCLES = 10000;
+        int PERIOD = 100;
         boolean gameover = false;
                 
         PhysicalGameStatePanel pgsp = new PhysicalGameStatePanel(gs);
         PhysicalGameStateMouseJFrame w = new PhysicalGameStateMouseJFrame("Game State Visuakizer (Mouse)",640,640,pgsp);
 
         AI ai1 = new MouseController(w);
-        AI ai2 = new RandomBiasedAI();
-        
+//        AI ai2 = new PassiveAI();
+//        AI ai2 = new RandomBiasedAI();
+        AI ai2 = new ContinuingNaiveMCTS(PERIOD, -1, 100, 20, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), new SimpleEvaluationFunction());
+
         long nextTimeToUpdate = System.currentTimeMillis() + PERIOD;
         do{
             if (System.currentTimeMillis()>=nextTimeToUpdate) {
