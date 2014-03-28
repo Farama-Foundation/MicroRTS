@@ -29,6 +29,8 @@ public class RTMinimax extends AI {
     public long max_leaves_so_far = 0;
     
     int LOOKAHEAD = 40;
+
+    protected int defaultNONEduration = 8;
     
     EvaluationFunction ef = null;
     
@@ -49,7 +51,7 @@ public class RTMinimax extends AI {
         
         if (gs.canExecuteAnyAction(player) && gs.winner()==-1) {
             PlayerAction pa = realTimeMinimaxAB(player, gs, LOOKAHEAD); 
-            pa.fillWithNones(gs, player);
+            pa.fillWithNones(gs, player, defaultNONEduration);
             return pa;
         } else {
             return new PlayerAction();

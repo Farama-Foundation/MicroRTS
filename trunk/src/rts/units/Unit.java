@@ -134,8 +134,13 @@ public class Unit {
     public int getHarvestAmount() {
         return type.harvestAmount;
     }
-    
+
     public List<UnitAction> getUnitActions(GameState s) {
+        // Unless specified, generate "NONE" actions with duration 8 cycles
+        return getUnitActions(s, 8);
+    }
+
+    public List<UnitAction> getUnitActions(GameState s, int duration) {
         List<UnitAction> l = new LinkedList<UnitAction>();
 /*        
     public static final int TYPE_MOVE = 1;
@@ -225,7 +230,7 @@ public class Unit {
         }
         
        // units can always stay idle:
-        l.add(new UnitAction(UnitAction.TYPE_NONE));
+        l.add(new UnitAction(UnitAction.TYPE_NONE, duration));
                         
         return l;
     }

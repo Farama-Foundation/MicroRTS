@@ -19,7 +19,10 @@ public abstract class AbstractAction {
     public AbstractAction(Unit a_unit) {
         unit = a_unit;
     }
-    
+
+    public Unit getUnit() {
+        return unit;
+    }
     public abstract boolean completed(GameState pgs);
     public abstract UnitAction execute(GameState pgs);
 }

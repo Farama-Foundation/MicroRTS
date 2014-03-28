@@ -36,6 +36,7 @@ public class ABCD extends AI {
     AI playoutAI = null;
     int maxPlayoutTime = 100;
     EvaluationFunction ef = null;
+    protected int defaultNONEduration = 8;
     
     public ABCD(int md, AI a_playoutAI, int a_maxPlayoutTime, EvaluationFunction a_ef) {
         MAXDEPTH = md;
@@ -56,7 +57,7 @@ public class ABCD extends AI {
         
         if (gs.canExecuteAnyAction(player) && gs.winner()==-1) {
             PlayerAction pa = ABCD(player, gs, MAXDEPTH); 
-            pa.fillWithNones(gs, player);
+            pa.fillWithNones(gs, player, defaultNONEduration);
             return pa;
         } else {
             return new PlayerAction();
