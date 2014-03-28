@@ -40,7 +40,7 @@ public class IDABCD extends ABCD {
     public PlayerAction getAction(int player, GameState gs) throws Exception {
         if (gs.canExecuteAnyAction(player) && gs.winner() == -1) {
             PlayerAction pa = IDABCDIterativeDeepening(player, gs, TIME_PER_CYCLE);
-            pa.fillWithNones(gs, player);
+            pa.fillWithNones(gs, player, defaultNONEduration);
             return pa;
         } else {
             return new PlayerAction();

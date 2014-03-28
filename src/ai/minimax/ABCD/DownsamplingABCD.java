@@ -37,6 +37,7 @@ public class DownsamplingABCD extends AI {
     AI playoutAI = null;
     int maxPlayoutTime = 100;
     EvaluationFunction ef = null;
+    protected int defaultNONEduration = 8;
     
     Random r = new Random();
     double downsampling = 1.0;  // at each node, each action is explored with "downsampling" probability
@@ -62,7 +63,7 @@ public class DownsamplingABCD extends AI {
         
         if (gs.canExecuteAnyAction(player) && gs.winner()==-1) {
             PlayerAction pa = ABCD(player, gs, MAXDEPTH); 
-            pa.fillWithNones(gs, player);
+            pa.fillWithNones(gs, player, defaultNONEduration);
             return pa;
         } else {
             return new PlayerAction();

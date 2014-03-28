@@ -29,7 +29,7 @@ public class UnitAction {
     public static final int DIRECTION_LEFT = 3;
  
     int type = TYPE_NONE;
-    int direction = DIRECTION_NONE;
+    int parameter = DIRECTION_NONE; // used for both "direction" and "duration"
     int x = 0, y = 0;
     UnitType unitType = null;
     ResourceUsage r_cache = null;
@@ -40,12 +40,12 @@ public class UnitAction {
     
     public UnitAction(int a_type, int a_direction) {
         type = a_type;
-        direction = a_direction;
+        parameter = a_direction;
     }
 
     public UnitAction(int a_type, int a_direction, UnitType a_unit_type) {
         type = a_type;
-        direction = a_direction;
+        parameter = a_direction;
         unitType = a_unit_type;
     }
 
@@ -60,7 +60,7 @@ public class UnitAction {
         UnitAction a = (UnitAction)o;
         
         if (a.type!=type ||
-            a.direction!=direction ||
+            a.parameter!=parameter ||
             a.x!=x ||
             a.y!=y ||
             a.unitType!=unitType) return false;
@@ -87,7 +87,7 @@ public class UnitAction {
             case TYPE_MOVE:
                 {
                     int pos = u.getX() + u.getY()*pgs.getWidth();
-                    switch(direction) {
+                    switch(parameter) {
                         case DIRECTION_UP: pos -= pgs.getWidth(); break;
                         case DIRECTION_RIGHT: pos ++; break;
                         case DIRECTION_DOWN: pos += pgs.getWidth(); break;
@@ -100,7 +100,7 @@ public class UnitAction {
                 {
                     r_cache.resourcesUsed[u.getPlayer()] += unitType.cost;
                     int pos = u.getX() + u.getY()*pgs.getWidth();
-                    switch(direction) {
+                    switch(parameter) {
                         case DIRECTION_UP: pos -= pgs.getWidth(); break;
                         case DIRECTION_RIGHT: pos ++; break;
                         case DIRECTION_DOWN: pos += pgs.getWidth(); break;
@@ -118,7 +118,7 @@ public class UnitAction {
     public int ETA(Unit u) {
         switch(type) {
             case TYPE_NONE:
-                return u.getMoveTime();
+                return parameter;
             case TYPE_MOVE:
                 return u.getMoveTime();
             case TYPE_ATTACK_LOCATION:
@@ -141,7 +141,7 @@ public class UnitAction {
             case TYPE_NONE:
                 break;
             case TYPE_MOVE:
-                switch(direction) {
+                switch(parameter) {
                     case DIRECTION_UP:      u.setY(u.getY()-1); break;
                     case DIRECTION_RIGHT:   u.setX(u.getX()+1); break;
                     case DIRECTION_DOWN:    u.setY(u.getY()+1); break;
@@ -162,7 +162,7 @@ public class UnitAction {
             case TYPE_HARVEST:
                 {
                     Unit u2 = null;
-                    switch(direction) {
+                    switch(parameter) {
                         case DIRECTION_UP:      u2 = pgs.getUnitAt(u.getX(), u.getY()-1); break;
                         case DIRECTION_RIGHT:   u2 = pgs.getUnitAt(u.getX()+1, u.getY()); break;
                         case DIRECTION_DOWN:    u2 = pgs.getUnitAt(u.getX(), u.getY()+1); break;
@@ -189,7 +189,7 @@ public class UnitAction {
                     Unit newUnit = null;
                     int targetx = u.getX();
                     int targety = u.getY();
-                    switch(direction) {
+                    switch(parameter) {
                         case DIRECTION_UP:      targety--; break;
                         case DIRECTION_RIGHT:   targetx++; break;
                         case DIRECTION_DOWN:    targety++; break;
@@ -211,13 +211,13 @@ public class UnitAction {
         if (type==TYPE_ATTACK_LOCATION) {
             tmp+=x + "," + y;
         } else {
-            if (direction != DIRECTION_NONE) {
-                if (direction == DIRECTION_UP) tmp += "up";
-                if (direction == DIRECTION_RIGHT) tmp += "right";
-                if (direction == DIRECTION_DOWN) tmp += "down";
-                if (direction == DIRECTION_LEFT) tmp += "left";
+            if (parameter != DIRECTION_NONE) {
+                if (parameter == DIRECTION_UP) tmp += "up";
+                if (parameter == DIRECTION_RIGHT) tmp += "right";
+                if (parameter == DIRECTION_DOWN) tmp += "down";
+                if (parameter == DIRECTION_LEFT) tmp += "left";
             }
-            if (direction!=DIRECTION_NONE && unitType!=null) tmp += ",";
+            if (parameter!=DIRECTION_NONE && unitType!=null) tmp += ",";
 
             if (unitType!=null) tmp += unitType.name;
         }
@@ -230,7 +230,7 @@ public class UnitAction {
     }
 
     public int getDirection() {
-        return direction;
+        return parameter;
     }
 
     public int getLocationX() {
@@ -246,8 +246,8 @@ public class UnitAction {
         if (type==TYPE_ATTACK_LOCATION) {
             attributes += "x=\"" + x + "\" y=\"" + y + "\"";
         } else {
-            if (direction != DIRECTION_NONE) {
-                attributes += "direction=\"" + direction + "\"";
+            if (parameter != DIRECTION_NONE) {
+                attributes += "parameter=\"" + parameter + "\"";
                 if (unitType!=null) attributes += " ";
             }
             if (unitType!=null) attributes += "unitType=\"" + unitType.name + "\"";
@@ -264,7 +264,7 @@ public class UnitAction {
         String unitTypeStr = e.getAttributeValue("unitType");
 
         type = Integer.parseInt(typeStr);
-        if (directionStr!=null) direction = Integer.parseInt(directionStr);
+        if (directionStr!=null) parameter = Integer.parseInt(directionStr);
         if (xStr!=null) x = Integer.parseInt(xStr);
         if (yStr!=null) y = Integer.parseInt(yStr);
         if (unitTypeStr!=null) unitType = utt.getUnitType(unitTypeStr);

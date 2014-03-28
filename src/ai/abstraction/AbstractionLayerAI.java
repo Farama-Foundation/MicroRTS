@@ -78,7 +78,7 @@ public abstract class AbstractionLayerAI extends AI {
             }
         }
         
-        pa.fillWithNones(gs,player);
+        pa.fillWithNones(gs,player, 1);
         return pa;        
     }
     

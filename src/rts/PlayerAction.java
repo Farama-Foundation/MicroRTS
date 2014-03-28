@@ -107,7 +107,7 @@ public class PlayerAction {
     }
     
     
-    public void fillWithNones(GameState s, int pID) {
+    public void fillWithNones(GameState s, int pID, int duration) {
         // assign "none" to all the units that need an action and do not have one:
         PhysicalGameState pgs = s.getPhysicalGameState();
         for(Unit u:pgs.getUnits()) {
@@ -121,7 +121,7 @@ public class PlayerAction {
                         }
                     }
                     if (!found) {
-                        actions.add(new Pair<Unit,UnitAction>(u, new UnitAction(UnitAction.TYPE_NONE)));
+                        actions.add(new Pair<Unit,UnitAction>(u, new UnitAction(UnitAction.TYPE_NONE, duration)));
                     }
                 }
             }

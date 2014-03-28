@@ -7,13 +7,16 @@
 package gui;
 
 import ai.AI;
+import ai.abstraction.AbstractAction;
 import ai.abstraction.AbstractionLayerAI;
 import ai.abstraction.pathfinding.AStarPathFinding;
 import java.awt.event.MouseListener;
-import rts.GameState;
-import rts.PhysicalGameState;
-import rts.PlayerAction;
+import java.util.LinkedList;
+import java.util.List;
+
+import rts.*;
 import rts.units.Unit;
+import util.Pair;
 
 /**
  *
@@ -66,7 +69,46 @@ public class MouseController extends AbstractionLayerAI {
         for(Unit u:pgs.getUnits()) {
             if (u.getPlayer()==player && actions.get(u)==null) idle(u); 
         }
-        
+
         return translateActions(player, gs);
-    }    
+    }
+
+
+    public PlayerAction translateActions(int player, GameState gs) {
+        PhysicalGameState pgs = gs.getPhysicalGameState();
+        PlayerAction pa = new PlayerAction();
+
+        // Execute abstract actions:
+        ResourceUsage r = gs.getResourceUsage();
+        List<Unit> toDelete = new LinkedList<Unit>();
+        for(AbstractAction aa:actions.values()) {
+            if (!pgs.getUnits().contains(aa.getUnit())) {
+                // The unit is dead:
+                toDelete.add(aa.getUnit());
+            } else {
+                if (aa.completed(gs)) {
+                    // the action is compelte:
+                    toDelete.add(aa.getUnit());
+                } else {
+                    if (gs.getActionAssignment(aa.getUnit())==null) {
+                        UnitAction ua = aa.execute(gs);
+                        if (ua!=null) {
+                            pa.addUnitAction(aa.getUnit(), ua);
+                            ResourceUsage r2 = ua.resourceUsage(aa.getUnit(), pgs);
+                            ResourceUsage r_merged = r.mergeIntoNew(r2);
+                            if (!pa.consistentWith(r_merged, gs)) {
+                                pa.removeUnitAction(aa.getUnit(), ua);
+                            } else {
+                                r = r_merged;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        for(Unit u:toDelete) actions.remove(u);
+
+        pa.fillWithNones(gs,player, 1);
+        return pa;
+    }
 }
