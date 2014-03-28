@@ -26,8 +26,9 @@ public class WorkerRush extends AbstractionLayerAI {
     UnitTypeTable utt;
     UnitType workerType;
     UnitType baseType;
-    
-    // If we have more than 1 "Worker": send it to attack to the nearest enemy unit
+
+    // Strategy implemented by this class:
+    // If we have more than 1 "Worker": send the extra workers to attack to the nearest enemy unit
     // If we have a base: train workers non-stop
     // If we have a worker: do this if needed: build base, harvest resources
     
