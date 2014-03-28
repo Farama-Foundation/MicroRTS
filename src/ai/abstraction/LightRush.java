@@ -30,10 +30,12 @@ public class LightRush extends AbstractionLayerAI {
     UnitType barracksType;
     UnitType lightType;
 
+    // Strategy implemented by this class:
     // If we have any "light": send it to attack to the nearest enemy unit
     // If we have a base: train worker until we have 1 workers
     // If we have a barracks: train light
     // If we have a worker: do this if needed: build base, build barracks, harvest resources
+
     public LightRush(UnitTypeTable a_utt, PathFinding a_pf) {
         super(a_pf);
         utt = a_utt;
@@ -50,6 +52,15 @@ public class LightRush extends AbstractionLayerAI {
         return new LightRush(utt, pf);
     }
 
+    /*
+        This is the main function of the AI. It is called at each game cycle with the most up to date game state and
+        returns which actions the AI wants to execute in this cycle.
+        The input parameters are:
+        - player: the player that the AI controls (0 or 1)
+        - gs: the current game state
+        This method returns the actions to be sent to each of the units in the gamestate controlled by the player,
+        packaged as a PlayerAction.
+     */
     public PlayerAction getAction(int player, GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         Player p = gs.getPlayer(player);
@@ -93,7 +104,7 @@ public class LightRush extends AbstractionLayerAI {
         }
         workersBehavior(workers, p, pgs);
 
-
+        // This method simply takes all the unit actions executed so far, and packages them into a PlayerAction
         return translateActions(player, gs);
     }
 
@@ -210,6 +221,7 @@ public class LightRush extends AbstractionLayerAI {
         }
     }
 
+    // Finds the nearest available location at which a building can be placed:
     public int findBuildingPosition(List<Integer> reserved, Unit u, Player p, PhysicalGameState pgs) {
         int bestPos = -1;
         int bestScore = 0;
