@@ -5,6 +5,8 @@
 package tests;
 
 import ai.*;
+import ai.abstraction.LightRush;
+import ai.abstraction.pathfinding.AStarPathFinding;
 import ai.evaluation.SimpleEvaluationFunction;
 import ai.mcts.naivemcts.ContinuingNaiveMCTS;
 import gui.MouseController;
@@ -36,6 +38,7 @@ public class PlayGameWithMouseTest {
         AI ai1 = new MouseController(w);
 //        AI ai2 = new PassiveAI();
 //        AI ai2 = new RandomBiasedAI();
+//        AI ai2 = new LightRush(UnitTypeTable.utt, new AStarPathFinding());
         AI ai2 = new ContinuingNaiveMCTS(PERIOD, -1, 100, 20, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), new SimpleEvaluationFunction());
 
         long nextTimeToUpdate = System.currentTimeMillis() + PERIOD;
