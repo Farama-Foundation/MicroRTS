@@ -24,38 +24,15 @@ public class RandomAI extends AI {
     }
    
     public PlayerAction getAction(int player, GameState gs) {
-        PhysicalGameState pgs = gs.getPhysicalGameState();
-        PlayerAction pa = new PlayerAction();
-        
-        if (!gs.canExecuteAnyAction(player)) return pa;
-        
-        // Generate the reserved resources:
-        for(Unit u:pgs.getUnits()) {
-//            if (u.getPlayer()==pID) {
-                UnitActionAssignment uaa = gs.getActionAssignment(u);
-                if (uaa!=null) {
-                    ResourceUsage ru = uaa.action.resourceUsage(u, pgs);
-                    pa.getResourceUsage().merge(ru);
-                }
-//            }
+        try {
+            if (!gs.canExecuteAnyAction(player)) return new PlayerAction();
+            PlayerActionGenerator pag = new PlayerActionGenerator(gs, player);
+            return pag.getRandom();
+        }catch(Exception e) {
+            // The only way the player action generator returns an exception is if there are no units that
+            // can execute actions, in this case, just return an empty action:
+            // However, this should never happen, since we are checking for this at the beginning
+            return new PlayerAction();
         }
-        
-        for(Unit u:pgs.getUnits()) {
-            if (u.getPlayer()==player) {
-                if (gs.getActionAssignment(u)==null) {
-                    List<UnitAction> l = u.getUnitActions(gs);
-                    UnitAction ua = l.get(r.nextInt(l.size()));
-                    ResourceUsage ru = ua.resourceUsage(u, pgs);
-                    if (ru.consistentWith(pa.getResourceUsage(), gs)) {
-                        pa.getResourceUsage().merge(ru);                        
-                        pa.addUnitAction(u, ua);
-                    } else {
-                        pa.addUnitAction(u, new UnitAction(UnitAction.TYPE_NONE));
-                    }
-                }
-            }
-        }
-        
-        return pa;
     }
 }

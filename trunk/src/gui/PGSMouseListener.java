@@ -6,9 +6,9 @@
 
 package gui;
 
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
+import java.util.HashMap;
+
 import rts.GameState;
 import rts.UnitAction;
 import rts.units.Unit;
@@ -20,7 +20,7 @@ import util.Pair;
  *
  * @author santi
  */
-public class PGSMouseListener implements MouseListener, MouseMotionListener {
+public class PGSMouseListener implements MouseListener, MouseMotionListener, KeyListener {
     MouseController AI = null;
     PhysicalGameStateMouseJFrame frame = null;
     GameState gs = null;
@@ -28,6 +28,8 @@ public class PGSMouseListener implements MouseListener, MouseMotionListener {
     
     Unit selectedUnit = null;
     String selectedButton = null;
+
+    HashMap<Character,String> unitTypeQuickKeys = new HashMap<Character,String>();
     
     public PGSMouseListener(MouseController a_AI, PhysicalGameStateMouseJFrame a_frame, GameState a_gs, int a_playerID) {
         AI = a_AI;
@@ -43,7 +45,30 @@ public class PGSMouseListener implements MouseListener, MouseMotionListener {
     public void setPlayer(int a_playerID) {
         playerID = a_playerID;
     }
-    
+
+    public void clearQuickKeys() {
+        unitTypeQuickKeys.clear();
+    }
+
+    public Character addQuickKey(String unitTypeName) {
+        for(int i = 0;i<unitTypeName.length();i++) {
+            Character c = unitTypeName.charAt(i);
+            c = Character.toLowerCase(c);
+            boolean found = false;
+            for(Character qk:unitTypeQuickKeys.keySet()) {
+                if (qk.equals(c)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                unitTypeQuickKeys.put(c, unitTypeName);
+                return c;
+            }
+        }
+        return null;
+    }
+
     
     public void mouseClicked(MouseEvent e) {
         int x = e.getX();
@@ -79,8 +104,11 @@ public class PGSMouseListener implements MouseListener, MouseMotionListener {
                 selectedButton = null;
                 if (selectedUnit!=null) {
                     mousePanel.clearButtons();
+                    clearQuickKeys();
                     for(UnitType ut:selectedUnit.getType().produces) {
-                        mousePanel.addButton(ut.name);
+                        // Add a quick Key:
+                        Character qk = addQuickKey(ut.name);
+                        mousePanel.addButton(ut.name, qk);
                     }
                 }
             } else if (button!=null) {
@@ -95,7 +123,8 @@ public class PGSMouseListener implements MouseListener, MouseMotionListener {
             } else {
                 selectedUnit = null;
                 selectedButton = null;
-                mousePanel.clearButtons();                
+                mousePanel.clearButtons();
+                clearQuickKeys();
             }
         } else if (e.getButton()==MouseEvent.BUTTON3) {
             // right click (execute actions):
@@ -196,5 +225,38 @@ public class PGSMouseListener implements MouseListener, MouseMotionListener {
             }
         }
     }
-    
+
+    public void keyTyped(KeyEvent keyEvent) {
+
+    }
+
+    public void keyPressed(KeyEvent keyEvent) {
+
+    }
+
+    public void keyReleased(KeyEvent keyEvent) {
+        char kc = keyEvent.getKeyChar();
+        String button = unitTypeQuickKeys.get(kc);
+
+//        System.out.println("key pressed: '" + kc + "', corresponding to button: " + button);
+
+        if (button!=null) {
+            // some unit type selected:
+            selectedButton = button;
+            if (!selectedUnit.getType().canMove) {
+                UnitType ut = UnitTypeTable.utt.getUnitType(selectedButton);
+                if (ut!=null) {
+                    AI.train(selectedUnit, ut);
+                    selectedButton = null;
+                }
+            }
+        }
+
+        MouseControllerPanel mousePanel = frame.getMousePanel();
+        mousePanel.clearHighlight();
+        if (selectedButton!=null) mousePanel.highlight(selectedButton);
+        if (button!=null) mousePanel.highlight(button);
+        mousePanel.repaint();
+
+    }
 }
