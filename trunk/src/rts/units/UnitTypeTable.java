@@ -124,7 +124,7 @@ public class UnitTypeTable {
         ranged.attackRange = 3;
         ranged.produceTime = 100;
         ranged.moveTime = 12;
-        ranged.attackTime = 5;
+        ranged.attackTime = 8;
         ranged.isResource = false;
         ranged.isStockpile = false;
         ranged.canHarvest = false;
