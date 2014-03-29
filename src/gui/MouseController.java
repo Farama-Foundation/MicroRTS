@@ -53,6 +53,7 @@ public class MouseController extends AbstractionLayerAI {
             m_mouseListener = new PGSMouseListener(this, m_frame, null, -1);
             m_frame.addMouseListener(m_mouseListener);
             m_frame.addMouseMotionListener(m_mouseListener);
+            m_frame.addKeyListener(m_mouseListener);
         }
     }
     
@@ -67,7 +68,13 @@ public class MouseController extends AbstractionLayerAI {
         
         PhysicalGameState pgs = gs.getPhysicalGameState();
         for(Unit u:pgs.getUnits()) {
-            if (u.getPlayer()==player && actions.get(u)==null) idle(u); 
+            if (u.getPlayer()==player) {
+                AbstractAction aa = actions.get(u);
+                if (aa == null) {
+                    idle(u);
+                } else if (aa.completed(gs)) idle(u);
+            }
+
         }
 
         return translateActions(player, gs);
@@ -77,6 +84,7 @@ public class MouseController extends AbstractionLayerAI {
     public PlayerAction translateActions(int player, GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         PlayerAction pa = new PlayerAction();
+        List<Integer> usedCells = new LinkedList<Integer>();
 
         // Execute abstract actions:
         ResourceUsage r = gs.getResourceUsage();
@@ -85,28 +93,39 @@ public class MouseController extends AbstractionLayerAI {
             if (!pgs.getUnits().contains(aa.getUnit())) {
                 // The unit is dead:
                 toDelete.add(aa.getUnit());
-            } else {
-                if (aa.completed(gs)) {
-                    // the action is compelte:
-                    toDelete.add(aa.getUnit());
-                } else {
-                    if (gs.getActionAssignment(aa.getUnit())==null) {
-                        UnitAction ua = aa.execute(gs);
-                        if (ua!=null) {
-                            pa.addUnitAction(aa.getUnit(), ua);
-                            ResourceUsage r2 = ua.resourceUsage(aa.getUnit(), pgs);
-                            ResourceUsage r_merged = r.mergeIntoNew(r2);
-                            if (!pa.consistentWith(r_merged, gs)) {
-                                pa.removeUnitAction(aa.getUnit(), ua);
-                            } else {
-                                r = r_merged;
-                            }
+            } else if (gs.getActionAssignment(aa.getUnit())==null) {
+                UnitAction ua = aa.execute(gs);
+                if (ua!=null) {
+                    pa.addUnitAction(aa.getUnit(), ua);
+                    ResourceUsage r2 = ua.resourceUsage(aa.getUnit(), pgs);
+
+                    // We set the terrain to the positions where units are going to move as temporary walls,
+                    // to prevent other units from the player to want to move there and avoid conflicts
+                    for(Integer cell:r2.getPositionsUsed()) {
+                        int cellx = cell%pgs.getWidth();
+                        int celly = cell/pgs.getWidth();
+                        if (pgs.getTerrain(cellx,celly)==PhysicalGameState.TERRAIN_NONE) {
+                            usedCells.add(cell);
+                            pgs.setTerrain(cellx,celly,PhysicalGameState.TERRAIN_WALL);
                         }
+                    }
+                    ResourceUsage r_merged = r.mergeIntoNew(r2);
+                    if (!pa.consistentWith(r_merged, gs)) {
+                        pa.removeUnitAction(aa.getUnit(), ua);
+                    } else {
+                        r = r_merged;
                     }
                 }
             }
         }
         for(Unit u:toDelete) actions.remove(u);
+
+        // Remove all the temporary walls added above:
+        for(Integer cell:usedCells) {
+            int cellx = cell%pgs.getWidth();
+            int celly = cell/pgs.getWidth();
+            pgs.setTerrain(cellx,celly,PhysicalGameState.TERRAIN_NONE);
+        }
 
         pa.fillWithNones(gs,player, 1);
         return pa;

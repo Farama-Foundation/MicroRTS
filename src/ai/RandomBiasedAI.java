@@ -32,6 +32,10 @@ public class RandomBiasedAI extends AI {
     }
     
     public PlayerAction getAction(int player, GameState gs) {
+        // attack, harvest and return have 5 times the probability of other actions
+        double regularActionWeight = 1;
+        double biasedActionWeight = 5;
+
         PhysicalGameState pgs = gs.getPhysicalGameState();
         PlayerAction pa = new PlayerAction();
         
@@ -63,9 +67,9 @@ public class RandomBiasedAI extends AI {
                         if (a.getType()==UnitAction.TYPE_ATTACK_LOCATION ||
                             a.getType()==UnitAction.TYPE_HARVEST ||
                             a.getType()==UnitAction.TYPE_RETURN) {
-                            distribution[i]=5;
+                            distribution[i]=biasedActionWeight;
                         } else {
-                            distribution[i]=1;  // attack, harvest and return have 5 times the probability
+                            distribution[i]=regularActionWeight;
                         }
                         i++;
                     }

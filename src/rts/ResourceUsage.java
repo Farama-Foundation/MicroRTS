@@ -25,6 +25,14 @@ public class ResourceUsage {
         
         return true;
     }
+
+    public List<Integer> getPositionsUsed() {
+        return positionsUsed;
+    }
+
+    public int getResourcesUsed(int player) {
+        return resourcesUsed[player];
+    }
     
     public ResourceUsage mergeIntoNew(ResourceUsage u) {
         ResourceUsage u2 = new ResourceUsage();

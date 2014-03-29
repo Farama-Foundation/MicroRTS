@@ -37,9 +37,9 @@ public class GameVisualSimulationTest {
         int PERIOD = 20;
         boolean gameover = false;
         
-//        AI ai1 = new RandomAI();
+        AI ai1 = new RandomAI();
 //        AI ai1 = new WorkerRush(UnitTypeTable.utt, new AStarPathFinding());
-        AI ai1 = new LightRush(UnitTypeTable.utt, new AStarPathFinding());
+//        AI ai1 = new LightRush(UnitTypeTable.utt, new AStarPathFinding());
 //        AI ai1 = new RangedRush(UnitTypeTable.utt, new GreedyPathFinding());
 //        AI ai1 = new ContinuingNaiveMC(PERIOD, 200, 0.33f, 0.2f, new RandomBiasedAI(), new SimpleEvaluationFunction());
 /*

@@ -137,7 +137,7 @@ public class Unit {
 
     public List<UnitAction> getUnitActions(GameState s) {
         // Unless specified, generate "NONE" actions with duration 8 cycles
-        return getUnitActions(s, 8);
+        return getUnitActions(s, 10);
     }
 
     public List<UnitAction> getUnitActions(GameState s, int duration) {
