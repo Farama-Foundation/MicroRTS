@@ -22,6 +22,7 @@ import rts.units.UnitTypeTable;
 public class PlayGameWithMouseTest {
     public static void main(String args[]) throws Exception {
         PhysicalGameState pgs = PhysicalGameState.load("maps/basesWorkers16x16.xml", UnitTypeTable.utt);
+//        PhysicalGameState pgs = PhysicalGameState.load("maps/basesWorkers8x8.xml", UnitTypeTable.utt);
 
         GameState gs = new GameState(pgs, UnitTypeTable.utt);
         int MAXCYCLES = 10000;
@@ -30,6 +31,7 @@ public class PlayGameWithMouseTest {
                 
         PhysicalGameStatePanel pgsp = new PhysicalGameStatePanel(gs);
         PhysicalGameStateMouseJFrame w = new PhysicalGameStateMouseJFrame("Game State Visuakizer (Mouse)",640,640,pgsp);
+//        PhysicalGameStateMouseJFrame w = new PhysicalGameStateMouseJFrame("Game State Visuakizer (Mouse)",400,400,pgsp);
 
         AI ai1 = new MouseController(w);
 //        AI ai2 = new PassiveAI();
