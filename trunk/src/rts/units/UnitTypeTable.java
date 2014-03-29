@@ -120,7 +120,7 @@ public class UnitTypeTable {
         ranged.name = "Ranged";
         ranged.cost = 2;
         ranged.hp = 1;
-        ranged.damage = 2;
+        ranged.damage = 1;
         ranged.attackRange = 3;
         ranged.produceTime = 100;
         ranged.moveTime = 12;
