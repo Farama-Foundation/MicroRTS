@@ -30,7 +30,7 @@ public abstract class AbstractionLayerAI extends AI {
     //      - attack(target)
     
     protected HashMap<Unit,AbstractAction> actions = new LinkedHashMap<Unit,AbstractAction>();
-    PathFinding pf = null;
+    protected PathFinding pf = null;
             
     public AbstractionLayerAI(PathFinding a_pf) {
         pf = a_pf;
@@ -80,6 +80,10 @@ public abstract class AbstractionLayerAI extends AI {
         
         pa.fillWithNones(gs,player, 1);
         return pa;        
+    }
+    
+    public AbstractAction getAbstractAction(Unit u) {
+        return actions.get(u);
     }
     
     public void move(Unit u, int x,int y) {
