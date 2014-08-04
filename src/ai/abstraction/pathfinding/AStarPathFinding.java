@@ -88,29 +88,33 @@ public class AStarPathFinding extends PathFinding {
      */
     public UnitAction findPathToAdjacentPosition(Unit start, int targetpos, GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
-        boolean free[][] = new boolean[pgs.getWidth()][pgs.getHeight()];        
-        int closed[] = new int[pgs.getWidth()*pgs.getHeight()];
+        int w = pgs.getWidth();
+        boolean free[][] = new boolean[w][pgs.getHeight()];        
+        int closed[] = new int[w*pgs.getHeight()];
         List<Integer> open = new LinkedList<Integer>();
         List<Integer> parents = new LinkedList<Integer>();
         for(int y = 0, i = 0;y<pgs.getHeight();y++) {
-            for(int x = 0;x<pgs.getWidth();x++,i++) {
+            for(int x = 0;x<w;x++,i++) {
                 free[x][y] = gs.free(x,y);
                 closed[i] = -1;           
             }
         }
         
-        open.add(start.getY()*pgs.getWidth() + start.getX());
-        parents.add(start.getY()*pgs.getWidth() + start.getX());
+        open.add(start.getY()*w + start.getX());
+        parents.add(start.getY()*w + start.getX());
         while(!open.isEmpty()) {
             int pos = open.remove(0);
             int parent = parents.remove(0);
             if (closed[pos]!=-1) continue;            
             closed[pos] = parent;
 
-            if (pos == targetpos-1 || 
-                pos == targetpos+1 || 
-                pos == targetpos+pgs.getWidth() || 
-                pos == targetpos-pgs.getWidth()) {
+            int x = pos%w;
+            int y = pos/w;
+
+            if ((x<w-1 && pos == targetpos-1) || 
+                (x>0 && pos == targetpos+1) || 
+                (y<pgs.getHeight()-1 && pos == targetpos-pgs.getWidth()) ||
+                (y>0 && pos == targetpos+pgs.getWidth())) { 
                 // path found, backtrack:
                 int last = pos;
                 while(parent!=pos) {
@@ -125,8 +129,6 @@ public class AStarPathFinding extends PathFinding {
                 return null;
             }
             
-            int x = pos%pgs.getWidth();
-            int y = pos/pgs.getWidth();
             
             if (y>0 && closed[pos-pgs.getWidth()] == -1 && free[x][y-1] && !open.contains(pos-pgs.getWidth())) {
                 open.add(pos-pgs.getWidth());

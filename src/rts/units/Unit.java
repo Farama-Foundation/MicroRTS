@@ -75,6 +75,10 @@ public class Unit {
         return ID;
     }
     
+    public int getPosition(PhysicalGameState pgs) {
+        return x + pgs.getWidth()*y;
+    }
+    
     public int getX() {
         return x;
     }
