@@ -7,6 +7,7 @@ package tests;
 import ai.*;
 import ai.abstraction.LightRush;
 import ai.abstraction.RangedRush;
+import ai.abstraction.WorkerRush;
 import ai.abstraction.pathfinding.AStarPathFinding;
 import ai.abstraction.pathfinding.GreedyPathFinding;
 import ai.evaluation.SimpleEvaluationFunction;
@@ -40,8 +41,8 @@ public class GameVisualSimulationTest {
         boolean gameover = false;
         
 //        AI ai1 = new RandomAI();
-//        AI ai1 = new WorkerRush(UnitTypeTable.utt, new AStarPathFinding());
-        AI ai1 = new LightRush(UnitTypeTable.utt, new AStarPathFinding());
+        AI ai1 = new WorkerRush(UnitTypeTable.utt, new AStarPathFinding());
+//        AI ai1 = new LightRush(UnitTypeTable.utt, new AStarPathFinding());
 //        AI ai1 = new RangedRush(UnitTypeTable.utt, new GreedyPathFinding());
 //        AI ai1 = new ContinuingNaiveMC(PERIOD, 200, 0.33f, 0.2f, new RandomBiasedAI(), new SimpleEvaluationFunction());
 /*
@@ -53,7 +54,7 @@ public class GameVisualSimulationTest {
 */
         
         AI ai2 = new RandomBiasedAI();
-//        AI ai2 = new LightRush();
+//        AI ai2 = new LightRush(UnitTypeTable.utt, new AStarPathFinding());
 //        AI ai2 = new RangedRush(UnitTypeTable.utt, new AStarPathFinding());
 
         XMLWriter xml = new XMLWriter(new OutputStreamWriter(System.out));

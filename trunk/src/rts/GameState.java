@@ -38,6 +38,10 @@ public class GameState {
         return pgs.getPlayer(ID);
     }
     
+    public Unit getUnit(long ID) {
+        return pgs.getUnit(ID);
+    }    
+    
     public List<Unit> getUnits() {
         return pgs.getUnits();
     }
