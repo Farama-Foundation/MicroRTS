@@ -52,7 +52,7 @@ public class GreedyPathFinding extends PathFinding {
     
 
     // In this greedy algorithm, both functions are implemented identically:
-    public UnitAction findPathToAdjacentPosition(Unit start, int targetpos, GameState gs) {
+    public UnitAction findPathToPositionInRange(Unit start, int targetpos, int range, GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();        
         int dx[] = { 0, 1, 0,-1};
         int dy[] = {-1, 0, 1, 0};
@@ -65,7 +65,7 @@ public class GreedyPathFinding extends PathFinding {
         int min_d = (x2 - x1)*(x2 - x1) + (y2 - y1)*(y2 - y1);
         int direction = -1;
         
-        if (min_d == 1) return null;    // we are already in an adjacent position!
+        if (min_d <= range) return null;    // we are already in range!
         
         for(int i = 0;i<dx.length;i++) {
             int x = x1 + dx[i];
@@ -86,5 +86,10 @@ public class GreedyPathFinding extends PathFinding {
                 
         return new UnitAction(UnitAction.TYPE_MOVE, direction);
     }      
+    
+    
+    public UnitAction findPathToAdjacentPosition(Unit start, int targetpos, GameState gs) {
+        return findPathToPositionInRange(start, targetpos, 1, gs);
+    }          
         
 }

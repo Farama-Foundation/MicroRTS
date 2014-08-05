@@ -17,14 +17,24 @@ import rts.units.Unit;
  */
 public class AStarPathFinding extends PathFinding {
     
+    boolean free[][] = null;
+    int closed[] = null;
+    
+    /*
+    
+    to-do: this is not A*, for now it's just Dijkstra...
+    
+    */
+    
     // This fucntion finds the shortest path from 'start' to 'targetpos' and then returns
     // a UnitAction of the type 'actionType' with the direction of the first step in the shorteet path
     public UnitAction findPath(Unit start, int targetpos, GameState gs) {
         
         PhysicalGameState pgs = gs.getPhysicalGameState();
-        boolean free[][] = new boolean[pgs.getWidth()][pgs.getHeight()];        
-        int closed[] = new int[pgs.getWidth()*pgs.getHeight()];
-        
+        if (free==null) {
+            free = new boolean[pgs.getWidth()][pgs.getHeight()];        
+            closed= new int[pgs.getWidth()*pgs.getHeight()];
+        }        
         List<Integer> open = new LinkedList<Integer>();
         List<Integer> parents = new LinkedList<Integer>();
         
@@ -82,15 +92,18 @@ public class AStarPathFinding extends PathFinding {
         return null;
     }    
     
+    
     /*
      * This function is like the previous one, but doesn't try to reach 'target', but just to 
-     * reach a position adjacent to 'target'
+     * reach a position that is at most 'range' far away from 'target'
      */
-    public UnitAction findPathToAdjacentPosition(Unit start, int targetpos, GameState gs) {
+    public UnitAction findPathToPositionInRange(Unit start, int targetpos, int range, GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         int w = pgs.getWidth();
-        boolean free[][] = new boolean[w][pgs.getHeight()];        
-        int closed[] = new int[w*pgs.getHeight()];
+        if (free==null) {
+            free = new boolean[pgs.getWidth()][pgs.getHeight()];        
+            closed= new int[pgs.getWidth()*pgs.getHeight()];
+        }
         List<Integer> open = new LinkedList<Integer>();
         List<Integer> parents = new LinkedList<Integer>();
         for(int y = 0, i = 0;y<pgs.getHeight();y++) {
@@ -99,6 +112,9 @@ public class AStarPathFinding extends PathFinding {
                 closed[i] = -1;           
             }
         }
+        int targetx = targetpos%w;
+        int targety = targetpos/w;
+        int sq_range = range*range;
         
         open.add(start.getY()*w + start.getX());
         parents.add(start.getY()*w + start.getX());
@@ -111,10 +127,7 @@ public class AStarPathFinding extends PathFinding {
             int x = pos%w;
             int y = pos/w;
 
-            if ((x<w-1 && pos == targetpos-1) || 
-                (x>0 && pos == targetpos+1) || 
-                (y<pgs.getHeight()-1 && pos == targetpos-pgs.getWidth()) ||
-                (y>0 && pos == targetpos+pgs.getWidth())) { 
+            if (((x-targetx)*(x-targetx)+(y-targety)*(y-targety))<=sq_range) {
                 // path found, backtrack:
                 int last = pos;
                 while(parent!=pos) {
@@ -148,6 +161,14 @@ public class AStarPathFinding extends PathFinding {
             }              
         }
         return null;
+    }          
+    
+    /*
+     * This function is like the previous one, but doesn't try to reach 'target', but just to 
+     * reach a position adjacent to 'target'
+     */
+    public UnitAction findPathToAdjacentPosition(Unit start, int targetpos, GameState gs) {
+        return findPathToPositionInRange(start, targetpos, 1, gs);
     }      
         
 }
