@@ -14,5 +14,6 @@ import rts.units.Unit;
  */
 public abstract class PathFinding {
     public abstract UnitAction findPath(Unit start, int targetpos, GameState gs);
+    public abstract UnitAction findPathToPositionInRange(Unit start, int targetpos, int range, GameState gs);
     public abstract UnitAction findPathToAdjacentPosition(Unit start, int targetpos, GameState gs);
 }
