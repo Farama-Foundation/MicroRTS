@@ -27,6 +27,9 @@ public class UnitAction {
     public static final int DIRECTION_RIGHT = 1;
     public static final int DIRECTION_DOWN = 2;
     public static final int DIRECTION_LEFT = 3;
+    
+    public static final int DIRECTION_OFFSET_X[] = {0,1,0,-1};
+    public static final int DIRECTION_OFFSET_Y[] = {-1,0,1,0};
  
     int type = TYPE_NONE;
     int parameter = DIRECTION_NONE; // used for both "direction" and "duration"
