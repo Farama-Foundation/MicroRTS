@@ -23,7 +23,7 @@ import util.XMLWriter;
 public class Unit {
     UnitType type;
     
-    public static int next_ID = 0;
+    public static long next_ID = 0;
     
     long ID;
     int player;
@@ -276,6 +276,7 @@ public class Unit {
         
         type = utt.getUnitType(typeName);
         ID = Integer.parseInt(IDStr);
+        if (ID>=next_ID) next_ID = ID+1;
         player = Integer.parseInt(playerStr);
         x = Integer.parseInt(xStr);
         y = Integer.parseInt(yStr);
