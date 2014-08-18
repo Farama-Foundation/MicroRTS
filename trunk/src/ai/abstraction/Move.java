@@ -4,10 +4,7 @@
  */
 package ai.abstraction;
 
-import ai.abstraction.pathfinding.AStarPathFinding;
 import ai.abstraction.pathfinding.PathFinding;
-import java.util.LinkedList;
-import java.util.List;
 import rts.GameState;
 import rts.PhysicalGameState;
 import rts.UnitAction;

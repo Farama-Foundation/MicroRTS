@@ -4,17 +4,12 @@
  */
 package tests;
 
-import ai.*;
-import ai.abstraction.LightRush;
-import ai.abstraction.WorkerRush;
-import ai.abstraction.pathfinding.AStarPathFinding;
 import gui.PhysicalGameStatePanel;
 import java.io.OutputStreamWriter;
 import javax.swing.JFrame;
 import rts.GameState;
 import rts.PartiallyObservableGameState;
 import rts.PhysicalGameState;
-import rts.PlayerAction;
 import rts.units.UnitTypeTable;
 import util.XMLWriter;
 
