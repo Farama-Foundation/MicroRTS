@@ -6,12 +6,9 @@ package tests;
 
 import ai.abstraction.WorkerRush;
 import ai.*;
-import ai.abstraction.pathfinding.AStarPathFinding;
-import ai.mcts.uct.UCT;
-import ai.minimax.RMMiniMax.IDContinuingRTMinimax;
+import ai.abstraction.pathfinding.BFSPathFinding;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import rts.*;
 import rts.units.UnitTypeTable;
 import util.XMLWriter;
@@ -28,7 +25,7 @@ public class TraceGenerationTest {
         boolean gameover = false;
         
         AI ai1 = new RandomBiasedAI();
-        AI ai2 = new WorkerRush(UnitTypeTable.utt, new AStarPathFinding());
+        AI ai2 = new WorkerRush(UnitTypeTable.utt, new BFSPathFinding());
         
         Trace trace = new Trace();
         TraceEntry te = new TraceEntry(gs.getPhysicalGameState().clone(),gs.getTime());

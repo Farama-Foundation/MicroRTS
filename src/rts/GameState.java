@@ -141,6 +141,12 @@ public class GameState {
                             System.err.println(uaa);
                             System.err.println(p.m_a + " assigned action " + p.m_b + " at time " + time);
                             
+                            try {
+                                throw new Exception("dummy");
+                            }catch(Exception e) {
+                                e.printStackTrace();
+                            }
+                            
                             // only the newly issued action is cancelled, since it's the problematic one...
                             p.m_b = new UnitAction(UnitAction.TYPE_NONE);
                         }

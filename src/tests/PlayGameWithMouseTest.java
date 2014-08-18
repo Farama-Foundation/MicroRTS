@@ -5,8 +5,6 @@
 package tests;
 
 import ai.*;
-import ai.abstraction.LightRush;
-import ai.abstraction.pathfinding.AStarPathFinding;
 import ai.evaluation.SimpleEvaluationFunction;
 import ai.mcts.naivemcts.ContinuingNaiveMCTS;
 import gui.MouseController;

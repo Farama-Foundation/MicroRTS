@@ -21,6 +21,7 @@ public class SimpleEvaluationFunction extends EvaluationFunction {
     
     
     public float evaluate(int maxplayer, int minplayer, GameState gs) {
+        //System.out.println("SimpleEvaluationFunction: " + base_score(maxplayer,gs) + " - " + base_score(minplayer,gs));
         return base_score(maxplayer,gs) - base_score(minplayer,gs);
     }
     

@@ -6,8 +6,7 @@ package tests;
 
 import ai.*;
 import ai.abstraction.LightRush;
-import ai.abstraction.WorkerRush;
-import ai.abstraction.pathfinding.AStarPathFinding;
+import ai.abstraction.pathfinding.BFSPathFinding;
 import gui.PhysicalGameStatePanel;
 import java.io.OutputStreamWriter;
 import javax.swing.JFrame;
@@ -34,8 +33,8 @@ public class POGameVisualSimulationTest {
         boolean gameover = false;
         
 //        AI ai1 = new RandomAI();
-//        AI ai1 = new WorkerRush(UnitTypeTable.utt, new AStarPathFinding());
-        AI ai1 = new LightRush(UnitTypeTable.utt, new AStarPathFinding());
+//        AI ai1 = new WorkerRush(UnitTypeTable.utt, new BFSPathFinding());
+        AI ai1 = new LightRush(UnitTypeTable.utt, new BFSPathFinding());
 //        AI ai1 = new RangedRush(UnitTypeTable.utt, new GreedyPathFinding());
 //        AI ai1 = new ContinuingNaiveMC(PERIOD, 200, 0.33f, 0.2f, new RandomBiasedAI(), new SimpleEvaluationFunction());
 

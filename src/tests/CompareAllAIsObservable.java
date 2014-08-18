@@ -8,17 +8,17 @@ import ai.*;
 import ai.abstraction.LightRush;
 import ai.abstraction.RangedRush;
 import ai.abstraction.WorkerRush;
-import ai.abstraction.pathfinding.AStarPathFinding;
+import ai.abstraction.pathfinding.BFSPathFinding;
 import ai.abstraction.pathfinding.GreedyPathFinding;
 import ai.evaluation.SimpleEvaluationFunction;
-import ai.minimax.ABCD.IDContinuingABCD;
-import ai.montecarlo.*;
 import ai.mcts.naivemcts.ContinuingNaiveMCTS;
-import ai.minimax.RMMiniMax.IDContinuingRTMinimax;
-import ai.minimax.RMMiniMax.IDContinuingRTMinimaxRandomized;
 import ai.mcts.uct.ContinuingDownsamplingUCT;
 import ai.mcts.uct.ContinuingUCT;
 import ai.mcts.uct.ContinuingUCTUnitActions;
+import ai.minimax.ABCD.IDContinuingABCD;
+import ai.minimax.RMMiniMax.IDContinuingRTMinimax;
+import ai.minimax.RMMiniMax.IDContinuingRTMinimaxRandomized;
+import ai.montecarlo.*;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.LinkedList;
@@ -45,9 +45,9 @@ public class CompareAllAIsObservable {
 
         bots.add(new RandomAI());
         bots.add(new RandomBiasedAI());
-        bots.add(new LightRush(UnitTypeTable.utt, new AStarPathFinding()));
-        bots.add(new RangedRush(UnitTypeTable.utt, new AStarPathFinding()));
-        bots.add(new WorkerRush(UnitTypeTable.utt, new AStarPathFinding()));
+        bots.add(new LightRush(UnitTypeTable.utt, new BFSPathFinding()));
+        bots.add(new RangedRush(UnitTypeTable.utt, new BFSPathFinding()));
+        bots.add(new WorkerRush(UnitTypeTable.utt, new BFSPathFinding()));
       
         bots.add(new IDContinuingRTMinimax(TIME, new SimpleEvaluationFunction()));
         bots.add(new IDContinuingRTMinimaxRandomized(TIME, RANDOMIZED_AB_REPEATS, new SimpleEvaluationFunction()));

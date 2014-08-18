@@ -4,7 +4,6 @@
  */
 package ai.abstraction;
 
-import ai.abstraction.pathfinding.AStarPathFinding;
 import ai.abstraction.pathfinding.PathFinding;
 import rts.GameState;
 import rts.PhysicalGameState;
