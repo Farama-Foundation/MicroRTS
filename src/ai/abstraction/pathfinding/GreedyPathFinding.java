@@ -91,5 +91,22 @@ public class GreedyPathFinding extends PathFinding {
     public UnitAction findPathToAdjacentPosition(Unit start, int targetpos, GameState gs) {
         return findPathToPositionInRange(start, targetpos, 1, gs);
     }          
+    
+    
+    public boolean pathExists(Unit start, int targetpos, GameState gs) {
+        if (start.getPosition(gs.getPhysicalGameState())==targetpos) return true;
+        if (findPath(start,targetpos,gs)!=null) return true;
+        return false;
+    }
+    
+
+    public boolean pathToPositionInRangeExists(Unit start, int targetpos, int range, GameState gs) {
+        int x = targetpos%gs.getPhysicalGameState().getWidth();
+        int y = targetpos/gs.getPhysicalGameState().getWidth();
+        int d = (x-start.getX())*(x-start.getX()) + (y-start.getY())*(y-start.getY());
+        if (d<=range*range) return true;
+        if (findPathToPositionInRange(start,targetpos,range,gs)!=null) return true;
+        return false;
+    }
         
 }
