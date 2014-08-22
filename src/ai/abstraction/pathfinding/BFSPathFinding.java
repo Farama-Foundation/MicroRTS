@@ -29,7 +29,8 @@ public class BFSPathFinding extends PathFinding {
     public UnitAction findPath(Unit start, int targetpos, GameState gs) {        
         PhysicalGameState pgs = gs.getPhysicalGameState();
         int w = pgs.getWidth();
-        if (free==null) {
+        int h = pgs.getHeight();
+        if (free==null || free.length<w*h) {
             free = new boolean[pgs.getWidth()][pgs.getHeight()];        
             closed = new int[pgs.getWidth()*pgs.getHeight()];
             open = new int[pgs.getWidth()*pgs.getHeight()];
@@ -120,7 +121,8 @@ public class BFSPathFinding extends PathFinding {
     public UnitAction findPathToPositionInRange(Unit start, int targetpos, int range, GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         int w = pgs.getWidth();
-        if (free==null) {
+        int h = pgs.getHeight();
+        if (free==null || free.length<w*h) {
             free = new boolean[pgs.getWidth()][pgs.getHeight()];        
             closed = new int[pgs.getWidth()*pgs.getHeight()];
             open = new int[pgs.getWidth()*pgs.getHeight()];
