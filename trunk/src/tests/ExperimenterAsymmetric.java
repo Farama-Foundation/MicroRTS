@@ -75,6 +75,9 @@ public class ExperimenterAsymmetric {
                         if (w!=null) w.dispose();
                         int winner = gs.winner();
                         out.println("Winner: " + winner + "  in " + gs.getTime() + " cycles");
+                        out.println(ai1 + " : " + ai1.statisticsString());
+                        out.println(ai2 + " : " + ai2.statisticsString());
+                        out.flush();
                         if (winner == -1) {
                             ties[ai1_idx][ai2_idx]++;
                             tie_time[ai1_idx][ai2_idx]+=gs.getTime();
