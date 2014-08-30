@@ -39,7 +39,7 @@ public class Attack extends AbstractAction  {
             return new UnitAction(UnitAction.TYPE_ATTACK_LOCATION,target.getX(),target.getY());
         } else {
             // move towards the unit:
-            UnitAction move = pf.findPathToAdjacentPosition(unit, target.getX()+target.getY()*gs.getPhysicalGameState().getWidth(), gs);
+            UnitAction move = pf.findPathToAdjacentPosition(unit, target.getX()+target.getY()*gs.getPhysicalGameState().getWidth(), gs, null);
     //        System.out.println("AStarAttak returns: " + move);
             if (move!=null && gs.isUnitActionAllowed(unit, move)) return move;
             return null;

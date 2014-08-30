@@ -132,9 +132,11 @@ public class GameState {
                     if (!uaa.action.resourceUsage(uaa.unit, pgs).consistentWith(ru, this)) {
                         // conflicting actions, cancelling both, and replacing them by "NONE":
                         if (uaa.time==time) {
+                            int duration1 = uaa.action.ETA(uaa.unit);
+                            int duration2 = p.m_b.ETA(p.m_a);
                             // The actions were issued in the same game cycle, so it's normal
-                            uaa.action = new UnitAction(UnitAction.TYPE_NONE);
-                            p.m_b = new UnitAction(UnitAction.TYPE_NONE);
+                            uaa.action = new UnitAction(UnitAction.TYPE_NONE,Math.min(duration1,duration2));
+                            p.m_b = new UnitAction(UnitAction.TYPE_NONE,Math.min(duration1,duration2));
                         } else {
                             // This is more a problem, since it means there is a bug somewhere...
                             System.err.println("Inconsistent actions were executed!");

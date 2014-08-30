@@ -58,7 +58,6 @@ public class PlayerAction {
         actions.add(new Pair<Unit,UnitAction>(u,a));
     }
     
-    
     public void removeUnitAction(Unit u, UnitAction a) {
         Pair<Unit,UnitAction> found = null;
         for(Pair<Unit,UnitAction> tmp:actions) {

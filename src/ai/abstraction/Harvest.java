@@ -37,7 +37,7 @@ public class Harvest extends AbstractAction  {
         if (unit.getResources()==0) {
             // go get resources:
 //            System.out.println("findPathToAdjacentPosition from Harvest: (" + target.getX() + "," + target.getY() + ")");
-            UnitAction move = pf.findPathToAdjacentPosition(unit, target.getX()+target.getY()*gs.getPhysicalGameState().getWidth(), gs);
+            UnitAction move = pf.findPathToAdjacentPosition(unit, target.getX()+target.getY()*gs.getPhysicalGameState().getWidth(), gs, null);
             if (move!=null) {
                 if (gs.isUnitActionAllowed(unit, move)) return move;
                 return null;
@@ -55,7 +55,7 @@ public class Harvest extends AbstractAction  {
         } else {
             // return resources:
 //            System.out.println("findPathToAdjacentPosition from Return: (" + target.getX() + "," + target.getY() + ")");
-            UnitAction move = pf.findPathToAdjacentPosition(unit, base.getX()+base.getY()*gs.getPhysicalGameState().getWidth(), gs);
+            UnitAction move = pf.findPathToAdjacentPosition(unit, base.getX()+base.getY()*gs.getPhysicalGameState().getWidth(), gs, null);
             if (move!=null) return move;
 
             // harvest:

@@ -6,6 +6,7 @@ package ai.abstraction.pathfinding;
 
 import rts.GameState;
 import rts.PhysicalGameState;
+import rts.ResourceUsage;
 import rts.UnitAction;
 import rts.units.Unit;
 
@@ -26,7 +27,7 @@ public class BFSPathFinding extends PathFinding {
     
     // This fucntion finds the shortest path from 'start' to 'targetpos' and then returns
     // a UnitAction of the type 'actionType' with the direction of the first step in the shorteet path
-    public UnitAction findPath(Unit start, int targetpos, GameState gs) {        
+    public UnitAction findPath(Unit start, int targetpos, GameState gs, ResourceUsage ru) {        
         PhysicalGameState pgs = gs.getPhysicalGameState();
         int w = pgs.getWidth();
         int h = pgs.getHeight();
@@ -44,6 +45,11 @@ public class BFSPathFinding extends PathFinding {
                 free[x][y] = gs.free(x,y);
                 closed[i] = -1;    
                 inOpenOrClosed[i] = -1;
+            }
+        }
+        if (ru!=null) {
+            for(int pos:ru.getPositionsUsed()) {
+                free[pos%w][pos/w] = false;
             }
         }
                 
@@ -118,7 +124,7 @@ public class BFSPathFinding extends PathFinding {
      * This function is like the previous one, but doesn't try to reach 'target', but just to 
      * reach a position that is at most 'range' far away from 'target'
      */
-    public UnitAction findPathToPositionInRange(Unit start, int targetpos, int range, GameState gs) {
+    public UnitAction findPathToPositionInRange(Unit start, int targetpos, int range, GameState gs, ResourceUsage ru) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         int w = pgs.getWidth();
         int h = pgs.getHeight();
@@ -134,6 +140,11 @@ public class BFSPathFinding extends PathFinding {
                 free[x][y] = gs.free(x,y);
                 closed[i] = -1;           
                 inOpenOrClosed[i] = 0;
+            }
+        }
+        if (ru!=null) {
+            for(int pos:ru.getPositionsUsed()) {
+                free[pos%w][pos/w] = false;
             }
         }
         int targetx = targetpos%w;
@@ -211,23 +222,23 @@ public class BFSPathFinding extends PathFinding {
      * This function is like the previous one, but doesn't try to reach 'target', but just to 
      * reach a position adjacent to 'target'
      */
-    public UnitAction findPathToAdjacentPosition(Unit start, int targetpos, GameState gs) {
-        return findPathToPositionInRange(start, targetpos, 1, gs);
+    public UnitAction findPathToAdjacentPosition(Unit start, int targetpos, GameState gs, ResourceUsage ru) {
+        return findPathToPositionInRange(start, targetpos, 1, gs, ru);
     }      
 
-    public boolean pathExists(Unit start, int targetpos, GameState gs) {
+    public boolean pathExists(Unit start, int targetpos, GameState gs, ResourceUsage ru) {
         if (start.getPosition(gs.getPhysicalGameState())==targetpos) return true;
-        if (findPath(start,targetpos,gs)!=null) return true;
+        if (findPath(start,targetpos,gs,ru)!=null) return true;
         return false;
     }
     
 
-    public boolean pathToPositionInRangeExists(Unit start, int targetpos, int range, GameState gs) {
+    public boolean pathToPositionInRangeExists(Unit start, int targetpos, int range, GameState gs, ResourceUsage ru) {
         int x = targetpos%gs.getPhysicalGameState().getWidth();
         int y = targetpos/gs.getPhysicalGameState().getWidth();
         int d = (x-start.getX())*(x-start.getX()) + (y-start.getY())*(y-start.getY());
         if (d<=range*range) return true;
-        if (findPathToPositionInRange(start,targetpos,range,gs)!=null) return true;
+        if (findPathToPositionInRange(start,targetpos,range,gs,ru)!=null) return true;
         return false;
     }
         
