@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import rts.GameState;
 import rts.PhysicalGameState;
+import rts.ResourceUsage;
 import rts.UnitAction;
 import rts.units.Unit;
 
@@ -17,9 +18,9 @@ import rts.units.Unit;
  */
 public class GreedyPathFinding extends PathFinding {
     
-    public UnitAction findPath(Unit start, int targetpos, GameState gs) {
-        
+    public UnitAction findPath(Unit start, int targetpos, GameState gs, ResourceUsage ru) {
         PhysicalGameState pgs = gs.getPhysicalGameState();        
+        int w = pgs.getWidth();
         int dx[] = { 0, 1, 0,-1};
         int dy[] = {-1, 0, 1, 0};
         
@@ -35,6 +36,7 @@ public class GreedyPathFinding extends PathFinding {
             int y = y1 + dy[i];
             if (x>=0 && x<pgs.getWidth() &&
                 y>=0 && y<pgs.getHeight() && gs.free(x,y)) {
+                if (ru!=null && ru.getPositionsUsed().contains(x+y*w)) continue;
                 int d = (x2 - x)*(x2 - x) + (y2 - y)*(y2 - y);
                 if (direction==-1 || d<min_d) {
                     min_d = d;
@@ -52,8 +54,9 @@ public class GreedyPathFinding extends PathFinding {
     
 
     // In this greedy algorithm, both functions are implemented identically:
-    public UnitAction findPathToPositionInRange(Unit start, int targetpos, int range, GameState gs) {
+    public UnitAction findPathToPositionInRange(Unit start, int targetpos, int range, GameState gs, ResourceUsage ru) {
         PhysicalGameState pgs = gs.getPhysicalGameState();        
+        int w = pgs.getWidth();
         int dx[] = { 0, 1, 0,-1};
         int dy[] = {-1, 0, 1, 0};
         
@@ -72,6 +75,7 @@ public class GreedyPathFinding extends PathFinding {
             int y = y1 + dy[i];
             if (x>=0 && x<pgs.getWidth() &&
                 y>=0 && y<pgs.getHeight() && gs.free(x,y)) {
+                if (ru!=null && ru.getPositionsUsed().contains(x+y*w)) continue;
                 int d = (x2 - x)*(x2 - x) + (y2 - y)*(y2 - y);
                 if (direction==-1 || d<min_d) {
                     min_d = d;
@@ -88,24 +92,24 @@ public class GreedyPathFinding extends PathFinding {
     }      
     
     
-    public UnitAction findPathToAdjacentPosition(Unit start, int targetpos, GameState gs) {
-        return findPathToPositionInRange(start, targetpos, 1, gs);
+    public UnitAction findPathToAdjacentPosition(Unit start, int targetpos, GameState gs, ResourceUsage ru) {
+        return findPathToPositionInRange(start, targetpos, 1, gs, ru);
     }          
     
     
-    public boolean pathExists(Unit start, int targetpos, GameState gs) {
+    public boolean pathExists(Unit start, int targetpos, GameState gs, ResourceUsage ru) {
         if (start.getPosition(gs.getPhysicalGameState())==targetpos) return true;
-        if (findPath(start,targetpos,gs)!=null) return true;
+        if (findPath(start,targetpos,gs,ru)!=null) return true;
         return false;
     }
     
 
-    public boolean pathToPositionInRangeExists(Unit start, int targetpos, int range, GameState gs) {
+    public boolean pathToPositionInRangeExists(Unit start, int targetpos, int range, GameState gs, ResourceUsage ru) {
         int x = targetpos%gs.getPhysicalGameState().getWidth();
         int y = targetpos/gs.getPhysicalGameState().getWidth();
         int d = (x-start.getX())*(x-start.getX()) + (y-start.getY())*(y-start.getY());
         if (d<=range*range) return true;
-        if (findPathToPositionInRange(start,targetpos,range,gs)!=null) return true;
+        if (findPathToPositionInRange(start,targetpos,range,gs,ru)!=null) return true;
         return false;
     }
         
