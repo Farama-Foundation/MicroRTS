@@ -45,6 +45,15 @@ public class PlayerAction {
         }
         return false;
     }
+        
+    public int hasNamNoneActions() {
+    	int j = 0;
+        for(Pair<Unit,UnitAction> ua:actions) {
+            if (ua.m_b.type!=UnitAction.TYPE_NONE) j++;
+        }
+        return j;
+    }
+    
     
     public ResourceUsage getResourceUsage() {
         return r;
@@ -145,13 +154,23 @@ public class PlayerAction {
         return true;
     }
     
-    
-    
+    public PlayerAction clone() throws CloneNotSupportedException {
+        PlayerAction clone = (PlayerAction) super.clone();
+        clone.actions = (LinkedList<Pair<Unit,UnitAction>>) ((LinkedList<Pair<Unit,UnitAction>>) actions).clone();
+        clone.r = r.clone();
+        return clone;
+    }
+        
+    public void clear() {
+        actions.clear();
+        r = new ResourceUsage();
+    }
+
     public String toString() {
         String tmp = "{ ";
         for(Pair<Unit,UnitAction> ua:actions) {
             tmp += "(" + ua.m_a + "," + ua.m_b + ")";
         }
         return tmp + " }";
-    }
+    }    
 }
