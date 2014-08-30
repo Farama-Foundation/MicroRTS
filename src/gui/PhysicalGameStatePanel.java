@@ -4,6 +4,8 @@
  */
 package gui;
 
+import ai.evaluation.EvaluationFunction;
+import ai.evaluation.SimpleEvaluationFunction;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -30,6 +32,7 @@ public class PhysicalGameStatePanel extends JPanel {
     // Units to be highlighted (this is used, for example, by the MouseController, 
     // to give feedback to the human, on which units are selectable.
     List<Unit> toHighLight = new LinkedList<Unit>();
+    EvaluationFunction evalFunction = null;
     
     // the state observed by each player:
     PartiallyObservableGameState pogs[] = new PartiallyObservableGameState[2];
@@ -40,24 +43,38 @@ public class PhysicalGameStatePanel extends JPanel {
     int last_grid = 0;
     
     public PhysicalGameStatePanel(GameState a_gs) {
+        this(a_gs, new SimpleEvaluationFunction());
+    }
+
+    public PhysicalGameStatePanel(GameState a_gs, EvaluationFunction evalFunction) {
         gs = a_gs;
+        this.evalFunction = evalFunction;
+
         pgs = gs.getPhysicalGameState();
         setBackground(Color.BLACK);
-    } 
+    }
     
     public static PhysicalGameStateJFrame newVisualizer(GameState a_gs) {
-        return newVisualizer(a_gs, 320, 320, false);
+        return newVisualizer(a_gs, 320, 320, false, new SimpleEvaluationFunction());
     }
 
     public static PhysicalGameStateJFrame newVisualizer(GameState a_gs, boolean a_showVisibility) {
-        return newVisualizer(a_gs, 320, 320, a_showVisibility);
+        return newVisualizer(a_gs, 320, 320, a_showVisibility, new SimpleEvaluationFunction());
     }
         
     public static PhysicalGameStateJFrame newVisualizer(GameState a_gs, int dx, int dy) {
-        return newVisualizer(a_gs, dx, dy, false);
+        return newVisualizer(a_gs, dx, dy, false, new SimpleEvaluationFunction());
     }
-        
+    
     public static PhysicalGameStateJFrame newVisualizer(GameState a_gs, int dx, int dy, boolean a_showVisibility) {
+        return newVisualizer(a_gs, dx, dy, a_showVisibility, new SimpleEvaluationFunction());
+    }
+    
+    public static PhysicalGameStateJFrame newVisualizer(GameState a_gs, int dx, int dy, EvaluationFunction evalFunction) {
+        return newVisualizer(a_gs, dx, dy, false, evalFunction);
+    }
+
+    public static PhysicalGameStateJFrame newVisualizer(GameState a_gs, int dx, int dy, boolean a_showVisibility, EvaluationFunction evalFunction) {
         PhysicalGameStatePanel ad = new PhysicalGameStatePanel(a_gs);
         if (a_showVisibility) {
             ad.pogs[0] = new PartiallyObservableGameState(a_gs, 0);
@@ -127,7 +144,28 @@ public class PhysicalGameStatePanel extends JPanel {
         
         
         g.setColor(Color.WHITE);
-        g.drawString(gs.getTime() + "", 10, getHeight()-15);
+        
+        int unitCount0 = 0;
+        for (Unit unit : gs.getPhysicalGameState().getUnits()) {
+            if (unit.getPlayer() == 0) {
+                unitCount0++;
+            }
+        }
+        int unitCount1 = 0;
+        for (Unit unit : gs.getPhysicalGameState().getUnits()) {
+            if (unit.getPlayer() == 1) {
+                unitCount1++;
+            }
+        }
+
+        float eval0 = evalFunction.evaluate(0, 1, gs);
+        float eval1 = evalFunction.evaluate(1, 0, gs);
+
+        String info = "T: " + gs.getTime() + ", P₀: " + unitCount0 + " (" + eval0 + "), P₁: " + unitCount1 + " (" + eval1 + ")";
+        g.drawString(info, 10, getHeight()-15);
+        
+        
+//        g.drawString(gs.getTime() + "", 10, getHeight()-15);
         
         last_start_x = getWidth()/2 - sizex/2;
         last_start_y = getHeight()/2 - sizey/2;

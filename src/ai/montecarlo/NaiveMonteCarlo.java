@@ -96,137 +96,7 @@ public class NaiveMonteCarlo extends AI {
         HashMap<Long,PlayerActionTableEntry> playerActionTable = new LinkedHashMap<Long,PlayerActionTableEntry>();    // associates action codes with children
         
         for(int run = 0;run<NSIMULATIONS;run++) {
-            PlayerAction pa = null;
-            long actionCode = 0;
-            int selectedUnitActions[] = new int[unitActionTable.size()];
-            
-            if (run>0 && r.nextFloat()>=epsilon2) {
-                // explore the player action with the highest value found so far:
-                PlayerActionTableEntry best = null;
-                for(PlayerActionTableEntry pate:playerActionTable.values()) {
-                    if (best==null || (pate.accum_evaluation/pate.visit_count)>(best.accum_evaluation/best.visit_count)) {
-                        best = pate;
-                    }
-                }
-
-                pa = best.pa;
-                actionCode = best.code;
-                selectedUnitActions = best.selectedUnitActions;
-                
-            } else {
-                // For each unit, rank the unitActions according to preference:
-                List<double []> distributions = new LinkedList<double []>();
-                List<Integer> notSampledYet = new LinkedList<Integer>();
-                for(UnitActionTableEntry ate:unitActionTable) {
-                    double []dist = new double[ate.nactions];
-                    double total = 0;
-                    int maxIdx = -1;
-                    float maxEvaluation = 0;
-                    int visits = 0;
-                    for(int i = 0;i<ate.nactions;i++) {
-                        if (maxIdx==-1 || 
-                            (visits!=0 && ate.visit_count[i]==0) ||
-                            (visits!=0 && (ate.accum_evaluation[i]/ate.visit_count[i])>maxEvaluation)) {
-                            maxIdx = i;
-                            if (ate.visit_count[i]>0) maxEvaluation = (ate.accum_evaluation[i]/ate.visit_count[i]);
-                                                 else maxEvaluation = 0;
-                            visits = ate.visit_count[i];
-                        }
-                        dist[i] = epsilon1/ate.nactions;
-                        total+=dist[i];
-                    }
-                    if (ate.visit_count[maxIdx]!=0) {
-                        dist[maxIdx] = (1-epsilon1) + (epsilon1/ate.nactions);
-                    } else {
-                        for(int j = 0;j<dist.length;j++) 
-                            if (ate.visit_count[j]>0) dist[j] = 0;
-                    }  
-
-
-                    if (DEBUG>=3) {
-                        System.out.print("[ ");
-                        for(int i = 0;i<ate.nactions;i++) System.out.print("(" + ate.visit_count[i] + "," + ate.accum_evaluation[i]/ate.visit_count[i] + ")");
-                        System.out.println("]");
-                        System.out.print("[ ");
-                        for(int i = 0;i<dist.length;i++) System.out.print(dist[i] + " ");
-                        System.out.println("]");
-                    }
-
-                    notSampledYet.add(distributions.size());
-                    distributions.add(dist);
-                }
-
-                // Select the best combination that results in a valid playeraction by epsilon-greedy sampling:
-                ResourceUsage base_ru = new ResourceUsage();
-                PhysicalGameState pgs = gs.getPhysicalGameState();
-                for(Unit u:pgs.getUnits()) {
-                    UnitActionAssignment uaa = gs.getUnitActions().get(u);
-                    if (uaa!=null) {
-                        ResourceUsage ru = uaa.action.resourceUsage(u, pgs);
-                        base_ru.merge(ru);
-                    }
-                }
-                
-                pa = new PlayerAction();
-                actionCode = 0;
-                pa.setResourceUsage(base_ru.clone());            
-                while(!notSampledYet.isEmpty()) {
-                    int i = notSampledYet.remove(r.nextInt(notSampledYet.size()));
-
-                    try {
-                        UnitActionTableEntry ate = unitActionTable.get(i);
-                        int code;
-                        UnitAction ua;
-                        ResourceUsage r2;
-                        do {
-                            code = Sampler.weighted(distributions.get(i));
-                            ua = ate.actions.get(code);
-                            r2 = ua.resourceUsage(ate.u, pgs);
-                        }while(!pa.getResourceUsage().consistentWith(r2, gs));
-
-                        pa.getResourceUsage().merge(r2);
-                        pa.addUnitAction(ate.u, ua);
-
-                        selectedUnitActions[i] = code;
-                        actionCode+= ((long)code)*multipliers[i];
-
-                    } catch(Exception e) {
-                        e.printStackTrace();
-                    }
-                }                
-            }
-
-            PlayerActionTableEntry pate = playerActionTable.get(actionCode);
-            if (pate==null) {
-                pate = new PlayerActionTableEntry();
-                pate.code = actionCode;
-                pate.selectedUnitActions = selectedUnitActions;
-                pate.pa = pa;
-                pate.accum_evaluation = 0;
-                pate.visit_count = 0;
-                playerActionTable.put(actionCode,pate);
-            }
-            
-            // do the run!
-            GameState gs2 = gs.cloneIssue(pa);
-            GameState gs3 = gs2.clone();
-            simulate(gs3,gs3.getTime() + MAXSIMULATIONTIME);
-            int time = gs3.getTime() - gs2.getTime();
-            // Discount factor:
-            double eval = ef.evaluate(player, 1-player, gs3)*Math.pow(0.99,time/10.0);
-            pate.accum_evaluation += eval;
-            pate.visit_count++;
-            
-//            if (eval<-300) {
-//                System.err.println(eval);
-//                PhysicalGameStateVisualizer w = PhysicalGameStateVisualizer.newVisualizer(gs3);
-//            }
-            
-            for(int i = 0;i<unitActionTable.size();i++) {
-                int uaIdx = selectedUnitActions[i];
-                unitActionTable.get(i).accum_evaluation[uaIdx]+= eval;
-                unitActionTable.get(i).visit_count[uaIdx]++;
-            }
+            monteCarloRun(player,gs,run,unitActionTable,playerActionTable,multipliers);
         }
         
         // find the best:
@@ -253,6 +123,164 @@ public class NaiveMonteCarlo extends AI {
         
         return best.pa;
     }
+    
+    
+    public float monteCarloRun(int player, GameState gs, int run, 
+                               List<UnitActionTableEntry> unitActionTable,
+                               HashMap<Long,PlayerActionTableEntry> playerActionTable,
+                               long multipliers[]) throws Exception {
+        PlayerAction pa = null;
+        long actionCode = 0;
+        int selectedUnitActions[] = new int[unitActionTable.size()];
+
+        if (run>0 && r.nextFloat()>=epsilon2) {
+            // explore the player action with the highest value found so far:
+            PlayerActionTableEntry best = null;
+            for(PlayerActionTableEntry pate:playerActionTable.values()) {
+                if (best==null || (pate.accum_evaluation/pate.visit_count)>(best.accum_evaluation/best.visit_count)) {
+                    best = pate;
+                }
+            }
+
+            pa = best.pa;
+            actionCode = best.code;
+            selectedUnitActions = best.selectedUnitActions;
+        } else {
+            // For each unit, rank the unitActions according to preference:
+            List<double []> distributions = new LinkedList<double []>();
+            List<Integer> notSampledYet = new LinkedList<Integer>();
+            for(UnitActionTableEntry ate:unitActionTable) {
+                double []dist = new double[ate.nactions];
+                double total = 0;
+                int maxIdx = -1;
+                float maxEvaluation = 0;
+                int visits = 0;
+                for(int i = 0;i<ate.nactions;i++) {
+                    if (maxIdx==-1 || 
+                        (visits!=0 && (ate.accum_evaluation[i]/ate.visit_count[i])>maxEvaluation) || 
+                        (visits!=0 && ate.visit_count[i]==0)) {
+                        maxIdx = i;
+                        maxEvaluation = (ate.accum_evaluation[i]/ate.visit_count[i]);
+                        visits = ate.visit_count[i];
+                    }
+                    dist[i] = epsilon1/ate.nactions;
+                    total+=dist[i];
+                }
+                if (ate.visit_count[maxIdx]!=0) {
+                    dist[maxIdx] = (1-epsilon1) + (epsilon1/ate.nactions);
+//                    System.out.println("(epsilon = " + epsilon1 + ") Num: " + ate.nactions + " total: " + total + " max: " + dist[maxIdx]);
+                } else {
+ //                   System.out.println("maxIdx: " + maxIdx + " count: " + ate.visit_count[maxIdx]);
+                    for(int j = 0;j<dist.length;j++) {
+                        if (ate.visit_count[j]>0) dist[j] = 0;
+                    }
+                }   // the maximum index has "1 - epsilon probability of being chosen
+
+                if (DEBUG>=3) {
+                    System.out.print("[ ");
+                    for(int i = 0;i<ate.nactions;i++) System.out.print("(" + ate.visit_count[i] + "," + ate.accum_evaluation[i]/ate.visit_count[i] + ")");
+                    System.out.println("]");
+                    System.out.print("[ ");
+                    for(int i = 0;i<dist.length;i++) System.out.print(dist[i] + " ");
+                    System.out.println("]");
+                }
+
+                notSampledYet.add(distributions.size());
+                distributions.add(dist);
+            }
+
+            // Select the best combination that results in a valid playeraction by epsilon-greedy sampling:
+            ResourceUsage base_ru = new ResourceUsage();
+            PhysicalGameState pgs = gs.getPhysicalGameState();
+            for(Unit u:pgs.getUnits()) {
+                UnitActionAssignment uaa = gs.getUnitActions().get(u);
+                if (uaa!=null) {
+                    ResourceUsage ru = uaa.action.resourceUsage(u, pgs);
+                    base_ru.merge(ru);
+                }
+            }
+            
+            pa = new PlayerAction();
+            actionCode = 0;
+            pa.setResourceUsage(base_ru.clone());     
+            while(!notSampledYet.isEmpty()) {
+                int i = notSampledYet.remove(r.nextInt(notSampledYet.size()));
+
+                try {
+                    UnitActionTableEntry ate = unitActionTable.get(i);
+                    int code;
+                    UnitAction ua;
+                    ResourceUsage r2;
+
+                    // try one at random:
+                    double []distribution = distributions.get(i);
+                    code = Sampler.weighted(distribution);
+                    ua = ate.actions.get(code);
+                    r2 = ua.resourceUsage(ate.u, pgs);
+                    if (!pa.getResourceUsage().consistentWith(r2, gs)) {
+                        // sample at random, eliminating the ones that have not worked so far:
+                        List<Double> dist_l = new ArrayList<Double>();
+                        List<Integer> dist_outputs = new ArrayList<Integer>();
+
+                        for(int j = 0;j<distribution.length;j++) {
+                            dist_l.add(distribution[j]);
+                            dist_outputs.add(j);
+                        }
+                        do{
+                            int idx = dist_outputs.indexOf(code);
+                            dist_l.remove(idx);
+                            dist_outputs.remove(idx);
+                            code = (Integer)Sampler.weighted(dist_l, dist_outputs);
+                            ua = ate.actions.get(code);
+                            r2 = ua.resourceUsage(ate.u, pgs);                            
+                        }while(!pa.getResourceUsage().consistentWith(r2, gs));
+                    }
+
+                    pa.getResourceUsage().merge(r2);
+                    pa.addUnitAction(ate.u, ua);
+
+                    selectedUnitActions[i] = code;
+                    actionCode+= ((long)code)*multipliers[i];
+
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+            }              
+        }
+
+        
+        PlayerActionTableEntry pate = playerActionTable.get(actionCode);
+        if (pate==null) {
+            pate = new PlayerActionTableEntry();
+            pate.code = actionCode;
+            pate.selectedUnitActions = selectedUnitActions;
+            pate.pa = pa;
+            playerActionTable.put(actionCode,pate);
+        }
+
+        // do the run!
+        GameState gs2 = gs.cloneIssue(pa);
+        GameState gs3 = gs2.clone();
+        simulate(gs3,gs3.getTime() + MAXSIMULATIONTIME);
+        int time = gs3.getTime() - gs2.getTime();
+        // Discount factor:
+        float eval = (float)(ef.evaluate(player, 1-player, gs3)*Math.pow(0.99,time/10.0));
+        pate.accum_evaluation += eval;
+        pate.visit_count++;
+
+//            if (eval<-300) {
+//                System.err.println(eval);
+//                PhysicalGameStateVisualizer w = PhysicalGameStateVisualizer.newVisualizer(gs3);
+//            }
+
+        for(int i = 0;i<unitActionTable.size();i++) {
+            int uaIdx = selectedUnitActions[i];
+            unitActionTable.get(i).accum_evaluation[uaIdx]+= eval;
+            unitActionTable.get(i).visit_count[uaIdx]++;
+        }    
+        
+        return eval;
+    }    
     
     
     public void printState(List<UnitActionTableEntry> unitActionTable,
