@@ -11,6 +11,7 @@ import ai.abstraction.WorkerRush;
 import ai.abstraction.pathfinding.BFSPathFinding;
 import ai.abstraction.pathfinding.GreedyPathFinding;
 import ai.evaluation.SimpleEvaluationFunction;
+import ai.evaluation.SimpleSqrtEvaluationFunction2;
 import ai.mcts.naivemcts.ContinuingNaiveMCTS;
 import ai.mcts.uct.ContinuingDownsamplingUCT;
 import ai.mcts.uct.ContinuingUCT;
@@ -48,21 +49,27 @@ public class CompareAllAIsObservable {
         bots.add(new LightRush(UnitTypeTable.utt, new BFSPathFinding()));
         bots.add(new RangedRush(UnitTypeTable.utt, new BFSPathFinding()));
         bots.add(new WorkerRush(UnitTypeTable.utt, new BFSPathFinding()));
-      
+        bots.add(new PortfolioAI(new AI[]{new WorkerRush(UnitTypeTable.utt, new BFSPathFinding()),
+                                          new LightRush(UnitTypeTable.utt, new BFSPathFinding()),
+                                          new RangedRush(UnitTypeTable.utt, new BFSPathFinding()),
+                                          new RandomBiasedAI()}, 
+                                 new boolean[]{true,true,true,false}, 
+                                 TIME, PLAYOUT_TIME*4, new SimpleSqrtEvaluationFunction2()));
+        
         bots.add(new IDContinuingRTMinimax(TIME, new SimpleEvaluationFunction()));
         bots.add(new IDContinuingRTMinimaxRandomized(TIME, RANDOMIZED_AB_REPEATS, new SimpleEvaluationFunction()));
-        bots.add(new IDContinuingABCD(TIME, new LightRush(UnitTypeTable.utt, new GreedyPathFinding()), PLAYOUT_TIME, new SimpleEvaluationFunction()));
+        bots.add(new IDContinuingABCD(TIME, new LightRush(UnitTypeTable.utt, new GreedyPathFinding()), PLAYOUT_TIME, new SimpleSqrtEvaluationFunction2()));
 
-        bots.add(new ContinuingMC(TIME, PLAYOUT_TIME, new RandomBiasedAI(), new SimpleEvaluationFunction()));
-        bots.add(new ContinuingDownsamplingMC(TIME, PLAYOUT_TIME, MAX_ACTIONS, new RandomBiasedAI(), new SimpleEvaluationFunction()));
-        bots.add(new ContinuingNaiveMC(TIME, PLAYOUT_TIME, 0.33f, 0.25f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
-        bots.add(new ContinuingNaiveMC(TIME, PLAYOUT_TIME, 1.00f, 0.25f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
+        bots.add(new ContinuingMC(TIME, PLAYOUT_TIME, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction2()));
+        bots.add(new ContinuingDownsamplingMC(TIME, PLAYOUT_TIME, MAX_ACTIONS, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction2()));
+        bots.add(new ContinuingNaiveMC(TIME, PLAYOUT_TIME, 0.33f, 0.25f, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction2()));
+        bots.add(new ContinuingNaiveMC(TIME, PLAYOUT_TIME, 1.00f, 0.25f, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction2()));
 
-        bots.add(new ContinuingUCT(TIME, PLAYOUT_TIME, MAX_DEPTH, new RandomBiasedAI(), new SimpleEvaluationFunction()));
-        bots.add(new ContinuingDownsamplingUCT(TIME, PLAYOUT_TIME, MAX_ACTIONS, MAX_DEPTH, new RandomBiasedAI(), new SimpleEvaluationFunction()));
-        bots.add(new ContinuingUCTUnitActions(TIME, PLAYOUT_TIME, MAX_DEPTH*10, new RandomBiasedAI(), new SimpleEvaluationFunction()));
-        bots.add(new ContinuingNaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
-        bots.add(new ContinuingNaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, 1.00f, 0.0f, 0.25f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
+        bots.add(new ContinuingUCT(TIME, PLAYOUT_TIME, MAX_DEPTH, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction2()));
+        bots.add(new ContinuingDownsamplingUCT(TIME, PLAYOUT_TIME, MAX_ACTIONS, MAX_DEPTH, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction2()));
+        bots.add(new ContinuingUCTUnitActions(TIME, PLAYOUT_TIME, MAX_DEPTH*10, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction2()));
+        bots.add(new ContinuingNaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction2()));
+        bots.add(new ContinuingNaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, 1.00f, 0.0f, 0.25f, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction2()));
 
         PrintStream out = new PrintStream(new File("results.txt"));
         
