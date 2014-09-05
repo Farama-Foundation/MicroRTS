@@ -169,7 +169,7 @@ public class RangedRush extends AbstractionLayerAI {
             }
         }
 
-        if (nbarracks == 0) {
+        if (nbarracks == 0 && !freeWorkers.isEmpty()) {
             // build a barracks:
             if (p.getResources() > barracksType.cost + resourcesUsed) {
                 Unit u = freeWorkers.remove(0);
