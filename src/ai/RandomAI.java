@@ -4,10 +4,8 @@
  */
 package ai;
 
-import java.util.List;
 import java.util.Random;
 import rts.*;
-import rts.units.Unit;
 
 /**
  *
