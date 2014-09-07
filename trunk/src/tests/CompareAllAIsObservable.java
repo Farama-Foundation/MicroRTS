@@ -49,7 +49,7 @@ public class CompareAllAIsObservable {
         bots.add(new LightRush(UnitTypeTable.utt, new BFSPathFinding()));
         bots.add(new RangedRush(UnitTypeTable.utt, new BFSPathFinding()));
         bots.add(new WorkerRush(UnitTypeTable.utt, new BFSPathFinding()));
-        bots.add(new PortfolioAI(new AI[]{new WorkerRush(UnitTypeTable.utt, new BFSPathFinding()),
+        bots.add(new ContinuingPortfolioAI(new AI[]{new WorkerRush(UnitTypeTable.utt, new BFSPathFinding()),
                                           new LightRush(UnitTypeTable.utt, new BFSPathFinding()),
                                           new RangedRush(UnitTypeTable.utt, new BFSPathFinding()),
                                           new RandomBiasedAI()}, 
