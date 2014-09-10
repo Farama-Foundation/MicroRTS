@@ -13,19 +13,27 @@ import rts.units.Unit;
 /**
  *
  * @author santi
+ * 
+ * A* pathfinding. 
+ * 
+ * The code looks a bit weird, since this version of A* uses static data structures to avoid any
+ * memory allocation penalty. It only reallocates memory when asked to path-find for first time,
+ * or in a map that is bigger than the previous time. 
+ * 
  */
-public class BFSPathFinding extends PathFinding {
+public class AStarPathFinding extends PathFinding {
     
     public static int iterations = 0;   // this is a debugging variable    
     public static int accumlength = 0;   // this is a debugging variable    
     
     Boolean free[][] = null;
     int closed[] = null;
-    int open[] = null;
-    int inOpenOrClosed[] = null;
+    int open[] = null;  // open list
+    int heuristic[] = null;     // heuristic value of the elements in 'open'
     int parents[] = null;
+    int cost[] = null;     // cost of reaching a given position so far
+    int inOpenOrClosed[] = null;
     int openinsert = 0;
-    int openremove = 0;
     
     
     // This fucntion finds the shortest path from 'start' to 'targetpos' and then returns
@@ -33,6 +41,7 @@ public class BFSPathFinding extends PathFinding {
     public UnitAction findPath(Unit start, int targetpos, GameState gs, ResourceUsage ru) {        
         return findPathToPositionInRange(start,targetpos,0,gs,ru);
     }    
+    
     
     /*
      * This function is like the previous one, but doesn't try to reach 'target', but just to 
@@ -46,8 +55,10 @@ public class BFSPathFinding extends PathFinding {
             free = new Boolean[pgs.getWidth()][pgs.getHeight()];        
             closed = new int[pgs.getWidth()*pgs.getHeight()];
             open = new int[pgs.getWidth()*pgs.getHeight()];
-            inOpenOrClosed = new int[pgs.getWidth()*pgs.getHeight()];
+            heuristic = new int[pgs.getWidth()*pgs.getHeight()];
             parents = new int[pgs.getWidth()*pgs.getHeight()];
+            inOpenOrClosed = new int[pgs.getWidth()*pgs.getHeight()];
+            cost = new int[pgs.getWidth()*pgs.getHeight()];
         }
         for(int y = 0, i = 0;y<pgs.getHeight();y++) {
             for(int x = 0;x<w;x++,i++) {
@@ -67,17 +78,45 @@ public class BFSPathFinding extends PathFinding {
         int startPos = start.getY()*w + start.getX();
         
         openinsert = 0;
-        openremove = 0;
         open[openinsert] = startPos;
+        heuristic[openinsert] = manhattanDistance(start.getX(), start.getY(), targetx, targety);
         parents[openinsert] = startPos;
         inOpenOrClosed[startPos] = 1;
+        cost[startPos] = 0;
         openinsert++;
-        while(openinsert!=openremove) {
+//        System.out.println("Looking for path from: " + start.getX() + "," + start.getY() + " to " + targetx + "," + targety);
+        while(openinsert>0) {
+            
+            // debugging code:
+            /*
+            System.out.println("open: ");
+            for(int i = 0;i<openinsert;i++) {
+                System.out.print(" [" + (open[i]%w) + "," + (open[i]/w) + " -> "+ cost[open[i]] + "+" + heuristic[i] + "]");
+            }
+            System.out.println("");
+            for(int i = 0;i<h;i++) {
+                for(int j = 0;j<w;j++) {
+                    if (j==start.getX() && i==start.getY()) {
+                        System.out.print("s");
+                    } else if (j==targetx && i==targety) {
+                        System.out.print("t");
+                    } else if (!free[j][i]) {
+                        System.out.print("X");
+                    } else {
+                        if (inOpenOrClosed[j+i*w]==0) { 
+                            System.out.print(".");
+                        } else {
+                            System.out.print("o");
+                        }
+                    }
+                }
+                System.out.println("");
+            }
+            */
             iterations++;
-            int pos = open[openremove];
-            int parent = parents[openremove];
-            openremove++;
-            if (openremove>=open.length) openremove = 0;
+            openinsert--;
+            int pos = open[openinsert];
+            int parent = parents[openinsert];
             if (closed[pos]!=-1) continue;            
             closed[pos] = parent;
 
@@ -87,7 +126,7 @@ public class BFSPathFinding extends PathFinding {
             if (((x-targetx)*(x-targetx)+(y-targety)*(y-targety))<=sq_range) {
                 // path found, backtrack:
                 int last = pos;
-//                System.out.println("- Path from " + start.getX() + "," + start.getY() + " to " + targetpos%w + "," + targetpos/w + " (range " + range + ")");
+//                System.out.println("- Path from " + start.getX() + "," + start.getY() + " to " + targetpos%w + "," + targetpos/w + " (range " + range + ") in " + iterations + " iterations");
                 while(parent!=pos) {
                     last = pos;
                     pos = parent;
@@ -101,45 +140,28 @@ public class BFSPathFinding extends PathFinding {
                 if (last == pos+1) return new UnitAction(UnitAction.TYPE_MOVE, UnitAction.DIRECTION_RIGHT);
                 return null;
             }
-            
             if (y>0 && inOpenOrClosed[pos-w] == 0) {
                 if (free[x][y-1]==null) free[x][y-1]=gs.free(x, y-1);
                 if (free[x][y-1]) {
-                    open[openinsert] = (pos-w);
-                    parents[openinsert] = (pos);
-                    openinsert++;
-                    if (openinsert>=open.length) openinsert = 0;
-                    inOpenOrClosed[pos-w] = 1;
+                    addToOpen(x,y-1,pos-w,pos,manhattanDistance(x, y-1, targetx, targety));
                 }
             }
             if (x<pgs.getWidth()-1 && inOpenOrClosed[pos+1] == 0) {
                 if (free[x+1][y]==null) free[x+1][y]=gs.free(x+1, y);
                 if (free[x+1][y]) {
-                    open[openinsert] = (pos+1);
-                    parents[openinsert] = (pos);
-                    openinsert++;
-                    if (openinsert>=open.length) openinsert = 0;
-                    inOpenOrClosed[pos+1] = 1;
+                    addToOpen(x+1,y,pos+1,pos,manhattanDistance(x+1, y, targetx, targety));
                 }
             }
             if (y<pgs.getHeight()-1 && inOpenOrClosed[pos+w] == 0) {
                 if (free[x][y+1]==null) free[x][y+1]=gs.free(x, y+1);
                 if (free[x][y+1]) {
-                    open[openinsert] = (pos+w);
-                    parents[openinsert] = (pos);
-                    openinsert++;
-                    if (openinsert>=open.length) openinsert = 0;
-                    inOpenOrClosed[pos+w] = 1;
+                    addToOpen(x,y+1,pos+w,pos,manhattanDistance(x, y+1, targetx, targety));
                 }
             }
-           if (x>0 && inOpenOrClosed[pos-1] == 0) {
+            if (x>0 && inOpenOrClosed[pos-1] == 0) {
                 if (free[x-1][y]==null) free[x-1][y]=gs.free(x-1, y);
                 if (free[x-1][y]) {
-                    open[openinsert] = (pos-1);
-                    parents[openinsert] = (pos);
-                    openinsert++;
-                    if (openinsert>=open.length) openinsert = 0;
-                    inOpenOrClosed[pos-1] = 1;
+                    addToOpen(x-1,y,pos-1,pos,manhattanDistance(x-1, y, targetx, targety));
                 }
             }              
         }
@@ -168,6 +190,52 @@ public class BFSPathFinding extends PathFinding {
         if (d<=range*range) return true;
         if (findPathToPositionInRange(start,targetpos,range,gs,ru)!=null) return true;
         return false;
+    }
+    
+    // and keep the "open" list sorted:
+    void addToOpen(int x, int y, int newPos, int oldPos, int h) {
+        cost[newPos] = cost[oldPos]+1;
+        
+        // find the right position for the insert:
+        for(int i = openinsert-1;i>=0;i--) {
+            if (heuristic[i]+cost[open[i]]>=h+cost[newPos]) {
+//                System.out.println("Inserting at " + (i+1) + " / " + openinsert);
+                // shift all the elements:
+                for(int j = openinsert;j>=i+1;j--) {
+                    open[j] = open[j-1];
+                    heuristic[j] = heuristic[j-1];
+                    parents[j] = parents[j-1];
+                }
+                
+                // insert at i+1:
+                open[i+1] = newPos;
+                heuristic[i+1] = h;
+                parents[i+1] = oldPos;
+                openinsert++;
+                inOpenOrClosed[newPos] = 1;
+                return;
+            }
+        }        
+        // i = -1;
+//        System.out.println("Inserting at " + 0 + " / " + openinsert);
+        // shift all the elements:
+        for(int j = openinsert;j>=1;j--) {
+            open[j] = open[j-1];
+            heuristic[j] = heuristic[j-1];
+            parents[j] = parents[j-1];
+        }
+
+        // insert at i+1:
+        open[0] = newPos;
+        heuristic[0] = h;
+        parents[0] = oldPos;
+        openinsert++;
+        inOpenOrClosed[newPos] = 1;
+    }
+    
+    
+    int manhattanDistance(int x, int y, int x2, int y2) {
+        return Math.abs(x-x2) + Math.abs(y-y2);
     }
         
 }
