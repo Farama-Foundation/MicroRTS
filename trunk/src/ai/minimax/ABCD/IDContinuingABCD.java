@@ -141,7 +141,6 @@ public class IDContinuingABCD extends IDABCD {
                depth = last_depth;
             }
              
-            long runStartTime = System.currentTimeMillis();
             PlayerAction tmp = IDContinuingABCDOutsideStack(gs, maxplayer, minplayer, depth, cutOffTime, false);
             if (tmp!=null) {
                 bestMove = tmp;

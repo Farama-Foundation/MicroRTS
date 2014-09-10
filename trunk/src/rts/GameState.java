@@ -93,6 +93,20 @@ public class GameState {
         if (pgs.getTerrain(x, y)!=PhysicalGameState.TERRAIN_NONE) return false;
         for(Unit u:pgs.units) {
             if (u.getX()==x && u.getY()==y) return false;
+        }
+        for(UnitActionAssignment ua:unitActions.values()) {
+            if (ua.action.type==UnitAction.TYPE_MOVE ||
+                ua.action.type==UnitAction.TYPE_PRODUCE) {
+                Unit u = ua.unit;
+                if (ua.action.getDirection()==UnitAction.DIRECTION_UP && u.getX()==x && u.getY()==y+1) return false;
+                if (ua.action.getDirection()==UnitAction.DIRECTION_RIGHT && u.getX()==x-1 && u.getY()==y) return false;
+                if (ua.action.getDirection()==UnitAction.DIRECTION_DOWN && u.getX()==x && u.getY()==y-1) return false;
+                if (ua.action.getDirection()==UnitAction.DIRECTION_LEFT && u.getX()==x+1 && u.getY()==y) return false;
+            }
+        }
+        /*        
+        for(Unit u:pgs.units) {
+            if (u.getX()==x && u.getY()==y) return false;
             UnitActionAssignment ua = unitActions.get(u);
             if (ua!=null) {
                 if (ua.action.type==UnitAction.TYPE_MOVE ||
@@ -104,6 +118,7 @@ public class GameState {
                 }
             }
         }
+        */
         return true;
     }
     
