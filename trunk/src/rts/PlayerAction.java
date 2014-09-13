@@ -92,6 +92,13 @@ public class PlayerAction {
         return actions;
     }
     
+    public UnitAction getAction(Unit u) {
+        for(Pair<Unit,UnitAction> tmp:actions) {
+            if (tmp.m_a==u) return tmp.m_b;
+        }
+        return null;
+    }
+    
     public List<PlayerAction> cartesianProduct(List<UnitAction> lu, Unit u, GameState s) {
         List<PlayerAction> l = new LinkedList<PlayerAction>();
         
