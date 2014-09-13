@@ -4,8 +4,9 @@
  * and open the template in the editor.
  */
 
-package ai;
+package ai.portfolio;
 
+import ai.AI;
 import ai.evaluation.EvaluationFunction;
 import rts.GameState;
 import rts.PlayerAction;
@@ -14,18 +15,23 @@ import rts.PlayerAction;
  *
  * @author santi
  */
-public class PortfolioAI extends AI {
+public class ContinuingPortfolioAI extends AI {
     
     public static int DEBUG = 0;
 
-    int MAX_TIME = 100;
+    int AVAILABLE_TIME = 100;
     int LOOKAHEAD = 500;
     AI strategies[] = null;
     boolean deterministic[] = null;
     EvaluationFunction evaluation = null;
     
-    public PortfolioAI(AI s[], boolean d[], int time, int la, EvaluationFunction e) {
-        MAX_TIME = time;
+    GameState gs_to_start_from = null;
+    double scores[][] = null;
+    int counts[][] = null;
+    
+    
+    public ContinuingPortfolioAI(AI s[], boolean d[], int time, int la, EvaluationFunction e) {
+        AVAILABLE_TIME = time;
         LOOKAHEAD = la;
         strategies = s;
         deterministic = d;
@@ -37,11 +43,65 @@ public class PortfolioAI extends AI {
 
     public PlayerAction getAction(int player, GameState gs) throws Exception {
         if (gs.winner()!=-1) return new PlayerAction();
-        if (!gs.canExecuteAnyAction(player)) return new PlayerAction();
+        if (gs.canExecuteAnyAction(player)) {
+            // continue or start a search:
+            if (scores==null) {
+                startNewSearch(player,gs);
+            } else {
+                if (!gs.getPhysicalGameState().equivalents(gs_to_start_from.getPhysicalGameState())) {
+                    System.err.println("Game state used for search NOT equivalent to the actual one!!!");
+                    System.err.println("gs:");
+                    System.err.println(gs);
+                    System.err.println("gs_to_start_from:");
+                    System.err.println(gs_to_start_from);
+                }
+            }
+            search(player, AVAILABLE_TIME);
+            PlayerAction best = getBestAction(player);
+            resetSearch();
+            return best;
+        } else {
+            if (scores!=null) {
+                // continue previous search:
+                search(player, AVAILABLE_TIME);
+            } else {
+                // determine who will be the next player:
+                GameState gs2 = gs.clone();
+                while(gs2.winner()==-1 && 
+                      !gs2.gameover() &&  
+                    !gs2.canExecuteAnyAction(0) && 
+                    !gs2.canExecuteAnyAction(1)) gs2.cycle();
+                if ((gs2.winner() == -1 && !gs2.gameover()) && 
+                    gs2.canExecuteAnyAction(player)) {
+                    // start a new search:
+                    startNewSearch(player,gs2);
+                    search(player, AVAILABLE_TIME);
+                    return new PlayerAction();
+                } else {
+                    return new PlayerAction();
+                }
+            }
+        }
         
+        return new PlayerAction();
+    }       
+    
+    
+    public void startNewSearch(int player, GameState gs) {
         int n = strategies.length;
-        double scores[][] = new double[n][n];
-        int counts[][] = new int[n][n];
+        scores = new double[n][n];
+        counts = new int[n][n];
+        gs_to_start_from = gs;
+    }
+    
+    public void resetSearch() {
+        scores = null;
+        counts = null;
+        gs_to_start_from = null;
+    }
+    
+    public void search(int player, long available_time) throws Exception {        
+        int n = strategies.length;
         boolean timeout = false;
         long start = System.currentTimeMillis();
         
@@ -55,7 +115,7 @@ public class PortfolioAI extends AI {
                         anyChange = true;
                         AI ai1 = strategies[i].clone();
                         AI ai2 = strategies[j].clone();
-                        GameState gs2 = gs.clone();
+                        GameState gs2 = gs_to_start_from.clone();
                         ai1.reset();
                         ai2.reset();
                         int timeLimit = gs2.getTime() + LOOKAHEAD;
@@ -71,15 +131,19 @@ public class PortfolioAI extends AI {
                         scores[i][j] += evaluation.evaluate(player, 1-player, gs2);
                         counts[i][j]++;
                     }
-                    if (System.currentTimeMillis()>start+MAX_TIME) timeout = true;
+                    if (System.currentTimeMillis()>start+available_time) timeout = true;
                 }
             }
             // when all the AIs are deterministic, as soon as we have done one play out with each, we are done
             if (!anyChange) break;
         }while(!timeout);
-        
+    }
+     
+    
+    public PlayerAction getBestAction(int player) throws Exception {
+        int n = strategies.length;
         if (DEBUG>=1) {
-            System.out.println("PortfolioAI, game cycle: " + gs.getTime());
+            System.out.println("PortfolioAI, game cycle: " + gs_to_start_from.getTime());
             System.out.println("  counts:");
             for(int i = 0;i<n;i++) {
                 System.out.print("    ");
@@ -124,11 +188,11 @@ public class PortfolioAI extends AI {
         // use the AI that obtained best results:
         AI ai = strategies[bestMax].clone();
         ai.reset();
-        return ai.getAction(player, gs);
+        return ai.getAction(player, gs_to_start_from);
     }
 
     public AI clone() {
-        return new PortfolioAI(strategies, deterministic, MAX_TIME, LOOKAHEAD, evaluation);
+        return new ContinuingPortfolioAI(strategies, deterministic, AVAILABLE_TIME, LOOKAHEAD, evaluation);
     }
     
 }
