@@ -21,6 +21,8 @@ public class PassiveAI extends AI {
     }
    
     public PlayerAction getAction(int player, GameState gs) {
-        return new PlayerAction();
+        PlayerAction pa = new PlayerAction();
+        pa.fillWithNones(gs, player, 10);
+        return pa;
     }    
 }

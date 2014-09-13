@@ -29,6 +29,8 @@ public class IDContinuingABCD extends IDABCD {
     GameState gs_to_start_from = null;
     int consecutive_frames_searching = 0;
     int last_depth = 1;
+    int last_nleaves = 0;
+    boolean treeIsComplete = true;
     List<ABCDNode> stack = null;
     Pair<PlayerAction,Float> lastResult = null;
     PlayerAction bestMove = null;
@@ -44,6 +46,7 @@ public class IDContinuingABCD extends IDABCD {
         stack = null;
         lastResult = null;
         bestMove = null;
+        treeIsComplete = true;
     }    
     
     
@@ -62,12 +65,21 @@ public class IDContinuingABCD extends IDABCD {
             if (gs_to_start_from==null) gs_to_start_from = gs;
             PlayerAction pa = IDContinuingABCD(player, gs_to_start_from, TIME_PER_CYCLE); 
 //            System.out.println("IDContinuingRTMinimaxAI: " + pa);
-            int max_consecutive_frames_searching_so_far = 0;
+            
+            // statistics:
+            avg_depth_so_far+=last_depth;
+            count_depth_so_far++;
+            
+            avg_leaves_so_far += last_nleaves;
+            count_leaves_so_far++;
+            
             consecutive_frames_searching = 0;
             stack = null;
             last_depth = 1;
+            last_nleaves = 0;
             gs_to_start_from = null;
             bestMove = null;
+                        
             return pa;            
         } else {
             if (stack!=null) {
@@ -134,10 +146,7 @@ public class IDContinuingABCD extends IDABCD {
             if (DEBUG>=1) {
                 System.out.println("next depth: " + depth);
             }
-            if (stack==null) {
-                if (nLeaves>max_leaves_so_far) max_leaves_so_far = nLeaves;
-                nLeaves = 0;
-            } else {
+            if (stack!=null) {
                depth = last_depth;
             }
              
@@ -152,11 +161,18 @@ public class IDContinuingABCD extends IDABCD {
             }
             if (stack.isEmpty()) {
                 // search was completed:
+                if (nLeaves>max_leaves_so_far) max_leaves_so_far = nLeaves;
+                last_nleaves = nLeaves;
                 stack = null;
                 depth++;
+                if (treeIsComplete) {
+                    System.out.println("Tree is complete!");
+                    break;
+                }
             } else {
 //                System.out.println("realTimeMinimaxABIterativeDeepening (lookahead = " + lookAhead + "): " + tmp + " interrupted after " + (System.currentTimeMillis()-runStartTime) + " (" + nLeaves + " leaves)"); System.out.flush();                
             }
+            nLeaves = 0;
         }while(System.currentTimeMillis() - startTime < availableTime);
         last_depth = depth;
         return bestMove;
@@ -190,9 +206,11 @@ public class IDContinuingABCD extends IDABCD {
     public PlayerAction IDContinuingABCDOutsideStack(GameState initial_gs, int maxplayer, int minplayer, int depth, long cutOffTime, boolean needAResult) throws Exception {
         ABCDNode head;
         if (stack==null) {
+            nLeaves = 0;
             stack = new LinkedList<ABCDNode>();
             head = new ABCDNode(-1, 0, initial_gs, -EvaluationFunctionWithActions.VICTORY, EvaluationFunctionWithActions.VICTORY, maxplayer);
             stack.add(head);
+            treeIsComplete = true;
         } else {
             if (stack.isEmpty()) return lastResult.m_a;
             head = stack.get(stack.size()-1);
@@ -207,8 +225,11 @@ public class IDContinuingABCD extends IDABCD {
             switch(current.type) {
                 case -1: // unknown node:
                         {
-                            if (current.depth>=depth || current.gs.winner() != -1) {
+                            int winner = current.gs.winner();
+                            if (current.depth>=depth || winner != -1) {
                                 nLeaves++;
+                                
+                                if (winner==-1) treeIsComplete = false;
 
                                 // Run the play out:
                                 GameState gs2 = current.gs.clone();
@@ -249,6 +270,8 @@ public class IDContinuingABCD extends IDABCD {
                             current.actions = new PlayerActionGenerator(current.gs, maxplayer);
                             long l = current.actions.getSize();
                             if (l > max_potential_branching_so_far) max_potential_branching_so_far = l;
+                            avg_potential_branching_so_far+=l;
+                            count_potential_branching_so_far++;
     //                            while(current.actions.size()>MAX_BRANCHING_FACTOR) current.actions.remove(r.nextInt(current.actions.size()));
                             current.best = null;
                             PlayerAction next = current.actions.getNextAction(cutOffTime);
@@ -272,6 +295,8 @@ public class IDContinuingABCD extends IDABCD {
                                 if (current.actions.getGenerated() > max_branching_so_far) {
                                     max_branching_so_far = current.actions.getGenerated();
                                 }
+                                avg_branching_so_far += current.actions.getGenerated();
+                                count_branching_so_far++;
                             } else {
                                 GameState gs2 = current.gs.cloneIssue(next);
                                 stack.add(0, new ABCDNode(-1, current.depth + 1, gs2, current.alpha, current.beta, current.nextPlayerInSimultaneousNode));
@@ -284,6 +309,8 @@ public class IDContinuingABCD extends IDABCD {
                             long l = current.actions.getSize();
                             if (l > max_potential_branching_so_far) max_potential_branching_so_far = l;
     //                            while(current.actions.size()>MAX_BRANCHING_FACTOR) current.actions.remove(r.nextInt(current.actions.size()));
+                            avg_potential_branching_so_far+=l;
+                            count_potential_branching_so_far++;
                             current.best = null;
                             PlayerAction next = current.actions.getNextAction(cutOffTime);
                             if (next != null) {
@@ -306,6 +333,8 @@ public class IDContinuingABCD extends IDABCD {
                                 if (current.actions.getGenerated() > max_branching_so_far) {
                                     max_branching_so_far = current.actions.getGenerated();
                                 }
+                                avg_branching_so_far += current.actions.getGenerated();
+                                count_branching_so_far++;
                             } else {
                                 GameState gs2 = current.gs.cloneIssue(next);
                                 stack.add(0, new ABCDNode(-1, current.depth + 1, gs2, current.alpha, current.beta, current.nextPlayerInSimultaneousNode));
@@ -336,8 +365,14 @@ public class IDContinuingABCD extends IDABCD {
     
     
     public String statisticsString() {
-        return "max depth: " + max_depth_so_far + 
-               " , max branching factor (potential): " + max_branching_so_far + "(" + max_potential_branching_so_far + ")" +  
+        return 
+               "avg depth: " + (avg_depth_so_far/(double)count_depth_so_far) + 
+               " , max depth: " + max_depth_so_far + 
+               " , avg branching factor: " + (avg_branching_so_far/(double)count_branching_so_far) +  
+               " , max branching factor: " + max_branching_so_far +  
+               " , avg potential branching factor: " + (avg_potential_branching_so_far/(double)count_potential_branching_so_far) +   
+               " , max potential branching factor: " + max_potential_branching_so_far +   
+               " , avg leaves: " + (avg_leaves_so_far/(double)count_leaves_so_far) + 
                " , max leaves: " + max_leaves_so_far;
     }        
 

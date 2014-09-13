@@ -47,6 +47,9 @@ public class ABCD extends AI {
             
     
     public void reset() {
+        max_depth_so_far = 0;
+        max_branching_so_far = 0;
+        max_leaves_so_far = 0;
     }
     
     public AI clone() {

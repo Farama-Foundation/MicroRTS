@@ -23,7 +23,15 @@ public class IDABCD extends ABCD {
 
     int TIME_PER_CYCLE = 100;
     
+    int avg_depth_so_far = 0;
+    int count_depth_so_far = 0;
+    long avg_branching_so_far = 0;
+    int count_branching_so_far = 0;
+    long avg_leaves_so_far = 0;
+    int count_leaves_so_far = 0;
     long max_potential_branching_so_far = 0;
+    long avg_potential_branching_so_far = 0;
+    int count_potential_branching_so_far = 0;
 
     public IDABCD(int tpc, AI a_playoutAI, int a_maxPlayoutTime, EvaluationFunction a_ef) {
         super(1, a_playoutAI, a_maxPlayoutTime, a_ef);
@@ -31,6 +39,20 @@ public class IDABCD extends ABCD {
     }
 
     public void reset() {
+        max_depth_so_far = 0;
+        max_branching_so_far = 0;
+        max_leaves_so_far = 0;
+
+        avg_depth_so_far = 0;
+        count_depth_so_far = 0;
+        avg_branching_so_far = 0;
+        count_branching_so_far = 0;
+        avg_leaves_so_far = 0;
+        count_leaves_so_far = 0;
+        
+        max_potential_branching_so_far = 0;
+        avg_potential_branching_so_far = 0;
+        count_potential_branching_so_far = 0;
     }
 
     public AI clone() {
