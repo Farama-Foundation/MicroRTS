@@ -27,10 +27,12 @@ public class ABCD extends AI {
     
     // reset at each execution of minimax:
     int nLeaves = 0;
+    int nNodes = 0;
     
     int max_depth_so_far = 0;
     long max_branching_so_far = 0;
     long max_leaves_so_far = 0;
+    long max_nodes_so_far = 0;
     
     int MAXDEPTH = 4;
     AI playoutAI = null;
@@ -50,6 +52,7 @@ public class ABCD extends AI {
         max_depth_so_far = 0;
         max_branching_so_far = 0;
         max_leaves_so_far = 0;
+        max_nodes_so_far = 0;
     }
     
     public AI clone() {
@@ -77,7 +80,9 @@ public class ABCD extends AI {
         int minplayer = 1 - player;
         if (DEBUG>=1) System.out.println("Starting ABCD... " + player);
         if (nLeaves>max_leaves_so_far) max_leaves_so_far = nLeaves;
+        if (nNodes>max_nodes_so_far) max_nodes_so_far = nNodes;
         nLeaves = 0;
+        nNodes = 0;
         MiniMaxResult bestMove = ABCD(gs, maxplayer, minplayer, alpha, beta, depthLeft, maxplayer);
         if (DEBUG>=1) System.out.println("ABCD: " + bestMove + " in " + (System.currentTimeMillis()-start));
         return bestMove.action;
@@ -87,6 +92,8 @@ public class ABCD extends AI {
     public MiniMaxResult ABCD(GameState gs, int maxplayer, int minplayer, float alpha, float beta, int depthLeft, int nextPlayerInSimultaneousNode) throws Exception {
 //        System.out.println("realTimeMinimaxAB(" + alpha + "," + beta + ") at " + gs.getTime());
 //        gs.dumpActionAssignments();
+        
+        nNodes++;
         
         if (depthLeft<=0 || gs.winner()!=-1) {
             nLeaves++;

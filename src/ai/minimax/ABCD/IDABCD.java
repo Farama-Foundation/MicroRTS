@@ -22,13 +22,19 @@ import util.Pair;
 public class IDABCD extends ABCD {
 
     int TIME_PER_CYCLE = 100;
-    
+
     int avg_depth_so_far = 0;
     int count_depth_so_far = 0;
+
     long avg_branching_so_far = 0;
     int count_branching_so_far = 0;
+
     long avg_leaves_so_far = 0;
     int count_leaves_so_far = 0;
+
+    long avg_nodes_so_far = 0;
+    int count_nodes_so_far = 0;
+
     long max_potential_branching_so_far = 0;
     long avg_potential_branching_so_far = 0;
     int count_potential_branching_so_far = 0;
@@ -42,6 +48,7 @@ public class IDABCD extends ABCD {
         max_depth_so_far = 0;
         max_branching_so_far = 0;
         max_leaves_so_far = 0;
+        max_nodes_so_far = 0;
 
         avg_depth_so_far = 0;
         count_depth_so_far = 0;
@@ -49,7 +56,9 @@ public class IDABCD extends ABCD {
         count_branching_so_far = 0;
         avg_leaves_so_far = 0;
         count_leaves_so_far = 0;
-        
+        avg_nodes_so_far = 0;
+        count_nodes_so_far = 0;
+
         max_potential_branching_so_far = 0;
         avg_potential_branching_so_far = 0;
         count_potential_branching_so_far = 0;
@@ -79,10 +88,10 @@ public class IDABCD extends ABCD {
         System.out.println("Starting IDABCDIterativeDeepening... ");
         do {
 //            System.out.println("next lookahead: " + lookAhead);
-            if (nLeaves > max_leaves_so_far) {
-                max_leaves_so_far = nLeaves;
-            }
+            if (nLeaves > max_leaves_so_far) max_leaves_so_far = nLeaves;
+            if (nNodes > max_nodes_so_far) max_nodes_so_far = nNodes;
             nLeaves = 0;
+            nNodes = 0;
             long runStartTime = System.currentTimeMillis();
             PlayerAction tmp = timeBoundedABCD(gs, maxplayer, minplayer, depth, startTime + availableTime, bestMove == null);
             if (tmp != null) {
@@ -90,9 +99,9 @@ public class IDABCD extends ABCD {
                 if (depth > max_depth_so_far) {
                     max_depth_so_far = depth;
                 }
-                System.out.println("IDABCDIterativeDeepening (depth = " + depth + "): " + bestMove + " in " + (System.currentTimeMillis() - runStartTime) + " (" + nLeaves + " leaves)");                
+                System.out.println("IDABCDIterativeDeepening (depth = " + depth + "): " + bestMove + " in " + (System.currentTimeMillis() - runStartTime) + " (" + nLeaves + " leaves, "+nNodes+" nodes)");
             } else {
-                System.out.println("IDABCDIterativeDeepening (depth = " + depth + "): " + bestMove + " in " + (System.currentTimeMillis() - runStartTime) + " interrupted! (" + nLeaves + " leaves)");
+                System.out.println("IDABCDIterativeDeepening (depth = " + depth + "): " + bestMove + " in " + (System.currentTimeMillis() - runStartTime) + " interrupted! (" + nLeaves + " leaves, "+nNodes+" nodes)");
             }
             depth++;
         } while (System.currentTimeMillis() - startTime < availableTime);
@@ -111,6 +120,7 @@ public class IDABCD extends ABCD {
                 case -1: // unknown node:
                 {
                     if (current.depth>=depth || current.gs.winner() != -1) {
+                        nNodes++;
                         nLeaves++;
 
                         // Run the play out:
@@ -128,10 +138,10 @@ public class IDABCD extends ABCD {
                             // simulate:
                             gameover = gs2.cycle();
                         }
-                        
-                        lastResult = new Pair<PlayerAction,Float>(null,ef.evaluate(maxplayer,minplayer, gs2)); 
-                        stack.remove(0);                 
-                    } else {    
+
+                        lastResult = new Pair<PlayerAction,Float>(null,ef.evaluate(maxplayer,minplayer, gs2));
+                        stack.remove(0);
+                    } else {
                         current.type = 2;
                         if (current.gs.canExecuteAnyAction(maxplayer)) {
                             if (current.gs.canExecuteAnyAction(minplayer)) {
@@ -149,6 +159,7 @@ public class IDABCD extends ABCD {
                 }
                 break;
                 case 0: // max node:
+                    nNodes++;
                     if (current.actions == null) {
                         current.actions = new PlayerActionGenerator(current.gs, maxplayer);
                         long l = current.actions.getSize();
@@ -179,6 +190,7 @@ public class IDABCD extends ABCD {
                     }
                     break;
                 case 1: // min node:
+                    nNodes++;
                     if (current.actions == null) {
                         current.actions = new PlayerActionGenerator(current.gs, minplayer);
                         long l = current.actions.getSize();
@@ -209,8 +221,9 @@ public class IDABCD extends ABCD {
                     }
                     break;
                 case 2: // simulation node:
+                    nNodes++;
                     current.gs = current.gs.clone();
-        
+
                     while (current.gs.winner() == -1 &&
                             !current.gs.gameover() &&
                             !current.gs.canExecuteAnyAction(maxplayer) &&
