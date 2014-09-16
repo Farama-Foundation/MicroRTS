@@ -28,7 +28,7 @@ public class IDABCD extends ABCD {
 
     long avg_branching_so_far = 0;
     int count_branching_so_far = 0;
-
+    
     long avg_leaves_so_far = 0;
     int count_leaves_so_far = 0;
 
@@ -58,7 +58,7 @@ public class IDABCD extends ABCD {
         count_leaves_so_far = 0;
         avg_nodes_so_far = 0;
         count_nodes_so_far = 0;
-
+        
         max_potential_branching_so_far = 0;
         avg_potential_branching_so_far = 0;
         count_potential_branching_so_far = 0;

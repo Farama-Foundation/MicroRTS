@@ -31,6 +31,14 @@ public class IDContinuingABCD extends IDABCD {
     int last_depth = 1;
     int last_nleaves = 0;
     int last_nnodes = 0;
+
+    int last_time_depth = 0;
+    int time_depth = 0;
+
+    int max_time_depth_so_far = 0;
+    long avg_time_depth_so_far = 0;
+    double count_time_depth_so_far = 0;
+        
     boolean treeIsComplete = true;
     List<ABCDNode> stack = null;
     Pair<PlayerAction,Float> lastResult = null;
@@ -62,6 +70,11 @@ public class IDContinuingABCD extends IDABCD {
         count_leaves_so_far = 0;
         avg_nodes_so_far = 0;
         count_nodes_so_far = 0;
+        
+        avg_time_depth_so_far = 0;
+        count_time_depth_so_far = 0;
+        max_time_depth_so_far = 0;
+        
 
         max_potential_branching_so_far = 0;
         avg_potential_branching_so_far = 0;
@@ -94,12 +107,18 @@ public class IDContinuingABCD extends IDABCD {
 
             avg_nodes_so_far += last_nnodes;
             count_nodes_so_far++;
+            
+            avg_time_depth_so_far += last_time_depth;
+            count_time_depth_so_far++;
+            
+            if (last_time_depth>max_time_depth_so_far) max_time_depth_so_far = last_time_depth;
 
             consecutive_frames_searching = 0;
             stack = null;
             last_depth = 1;
             last_nleaves = 0;
             last_nnodes = 0;
+            last_time_depth = 0;
             gs_to_start_from = null;
             bestMove = null;
 
@@ -184,7 +203,8 @@ public class IDContinuingABCD extends IDABCD {
                 // small, that opening it takes no time, and this loop incrases depth very fast, but
                 // we don't want to record that, since it is meanigless. In fact, I should detect
                 // when the tree has been open completely, and cancel this loop.
-                if (depth<200 && depth>max_depth_so_far) max_depth_so_far = depth;
+                if (//depth<200 && 
+                        depth>max_depth_so_far) max_depth_so_far = depth;
             }
             if (stack.isEmpty()) {
                 // search was completed:
@@ -192,10 +212,11 @@ public class IDContinuingABCD extends IDABCD {
                 if (nNodes>max_nodes_so_far) max_nodes_so_far = nNodes;
                 last_nleaves = nLeaves;
                 last_nnodes = nNodes;
+                last_time_depth = time_depth;
                 stack = null;
                 depth++;
                 if (treeIsComplete) {
-                    System.out.println("Tree is complete!");
+//                    System.out.println("Tree is complete!");
                     break;
                 }
             } else {
@@ -203,6 +224,7 @@ public class IDContinuingABCD extends IDABCD {
             }
             nLeaves = 0;
             nNodes = 0;
+            time_depth = 0;
         }while(System.currentTimeMillis() - startTime < availableTime);
         last_depth = depth;
         return bestMove;
@@ -237,6 +259,7 @@ public class IDContinuingABCD extends IDABCD {
         ABCDNode head;
         if (stack==null) {
             nLeaves = 0;
+            time_depth = 0;
             stack = new LinkedList<ABCDNode>();
             head = new ABCDNode(-1, 0, initial_gs, -EvaluationFunctionWithActions.VICTORY, EvaluationFunctionWithActions.VICTORY, maxplayer);
             stack.add(head);
@@ -257,16 +280,18 @@ public class IDContinuingABCD extends IDABCD {
                         {
                             int winner = current.gs.winner();
                             if (current.depth>=depth || winner != -1) {
+                                if (current.gs.getTime() - initial_gs.getTime() > time_depth) {
+                                    time_depth = current.gs.getTime() - initial_gs.getTime();
+                                }
                                 nLeaves++;
                                 nNodes++;
-
-                                if (winner==-1) treeIsComplete = false;
 
                                 // Run the play out:
                                 GameState gs2 = current.gs.clone();
                                 AI playoutAI1 = playoutAI.clone();
                                 AI playoutAI2 = playoutAI.clone();
                                 int timeOut = gs2.getTime() + maxPlayoutTime;
+                                if (!gs2.gameover()) treeIsComplete = false;
                                 boolean gameover = false;
                                 while(!gameover && gs2.getTime()<timeOut) {
                                     if (gs2.isComplete()) {
@@ -409,7 +434,9 @@ public class IDContinuingABCD extends IDABCD {
                " , avg leaves: " + (avg_leaves_so_far/(double)count_leaves_so_far) +
                " , max leaves: " + max_leaves_so_far +
                " , avg nodes: " + (avg_nodes_so_far/(double)count_nodes_so_far) +
-               " , max nodes: " + max_nodes_so_far;
+               " , max nodes: " + max_nodes_so_far + 
+               " , avg time depth: " + (avg_time_depth_so_far/(double)count_time_depth_so_far) +
+               " , max time depth: " + max_time_depth_so_far;
     }
 
 }
