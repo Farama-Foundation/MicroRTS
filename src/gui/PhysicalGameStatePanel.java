@@ -26,6 +26,9 @@ import util.Pair;
  * @author santi
  */
 public class PhysicalGameStatePanel extends JPanel {
+    public static int COLORSCHEME_BLACK = 1;
+    public static int COLORSCHEME_WHITE = 2;
+    
     GameState gs = null;
     PhysicalGameState pgs = null;
     
@@ -42,6 +45,8 @@ public class PhysicalGameStatePanel extends JPanel {
     int last_start_y = 0;
     int last_grid = 0;
     
+    int colorScheme = COLORSCHEME_BLACK;
+    
     public PhysicalGameStatePanel(GameState a_gs) {
         this(a_gs, new SimpleEvaluationFunction());
     }
@@ -50,32 +55,48 @@ public class PhysicalGameStatePanel extends JPanel {
         gs = a_gs;
         this.evalFunction = evalFunction;
 
-        pgs = gs.getPhysicalGameState();
-        setBackground(Color.BLACK);
+        if (gs!=null) pgs = gs.getPhysicalGameState();
+        if (colorScheme==COLORSCHEME_BLACK) setBackground(Color.BLACK);
+        if (colorScheme==COLORSCHEME_WHITE) setBackground(Color.WHITE);
+    }
+
+    
+    public PhysicalGameStatePanel(GameState a_gs, EvaluationFunction evalFunction, int cs) {
+        gs = a_gs;
+        this.evalFunction = evalFunction;
+        colorScheme = cs;
+
+        if (gs!=null) pgs = gs.getPhysicalGameState();
+        if (colorScheme==COLORSCHEME_BLACK) setBackground(Color.BLACK);
+        if (colorScheme==COLORSCHEME_WHITE) setBackground(Color.WHITE);
     }
     
     public static PhysicalGameStateJFrame newVisualizer(GameState a_gs) {
-        return newVisualizer(a_gs, 320, 320, false, new SimpleEvaluationFunction());
+        return newVisualizer(a_gs, 320, 320, false, new SimpleEvaluationFunction(), COLORSCHEME_BLACK);
     }
 
     public static PhysicalGameStateJFrame newVisualizer(GameState a_gs, boolean a_showVisibility) {
-        return newVisualizer(a_gs, 320, 320, a_showVisibility, new SimpleEvaluationFunction());
+        return newVisualizer(a_gs, 320, 320, a_showVisibility, new SimpleEvaluationFunction(), COLORSCHEME_BLACK);
     }
         
     public static PhysicalGameStateJFrame newVisualizer(GameState a_gs, int dx, int dy) {
-        return newVisualizer(a_gs, dx, dy, false, new SimpleEvaluationFunction());
+        return newVisualizer(a_gs, dx, dy, false, new SimpleEvaluationFunction(), COLORSCHEME_BLACK);
     }
     
     public static PhysicalGameStateJFrame newVisualizer(GameState a_gs, int dx, int dy, boolean a_showVisibility) {
-        return newVisualizer(a_gs, dx, dy, a_showVisibility, new SimpleEvaluationFunction());
+        return newVisualizer(a_gs, dx, dy, a_showVisibility, new SimpleEvaluationFunction(), COLORSCHEME_BLACK);
     }
     
-    public static PhysicalGameStateJFrame newVisualizer(GameState a_gs, int dx, int dy, EvaluationFunction evalFunction) {
-        return newVisualizer(a_gs, dx, dy, false, evalFunction);
+    public static PhysicalGameStateJFrame newVisualizer(GameState a_gs, int dx, int dy, boolean a_showVisibility, int cs) {
+        return newVisualizer(a_gs, dx, dy, a_showVisibility, new SimpleEvaluationFunction(), cs);
     }
 
-    public static PhysicalGameStateJFrame newVisualizer(GameState a_gs, int dx, int dy, boolean a_showVisibility, EvaluationFunction evalFunction) {
-        PhysicalGameStatePanel ad = new PhysicalGameStatePanel(a_gs);
+    public static PhysicalGameStateJFrame newVisualizer(GameState a_gs, int dx, int dy, EvaluationFunction evalFunction) {
+        return newVisualizer(a_gs, dx, dy, false, evalFunction, COLORSCHEME_BLACK);
+    }
+
+    public static PhysicalGameStateJFrame newVisualizer(GameState a_gs, int dx, int dy, boolean a_showVisibility, EvaluationFunction evalFunction, int cs) {
+        PhysicalGameStatePanel ad = new PhysicalGameStatePanel(a_gs, evalFunction, cs);
         if (a_showVisibility) {
             ad.pogs[0] = new PartiallyObservableGameState(a_gs, 0);
             ad.pogs[1] = new PartiallyObservableGameState(a_gs, 1);
@@ -85,9 +106,19 @@ public class PhysicalGameStatePanel extends JPanel {
         if (a_showVisibility) {
             frame = new PhysicalGameStateJFrame("Partially Observable Game State Visuakizer", dx, dy, ad);
         } else {
-            frame = new PhysicalGameStateJFrame("Game State Visuakizer", dx, dy, ad);
+            frame = new PhysicalGameStateJFrame("Game State Visualizer", dx, dy, ad);
         }
         return frame;
+    }
+    
+    public void setColorScheme(int cs) {
+        colorScheme = cs;
+        if (colorScheme==COLORSCHEME_BLACK) setBackground(Color.BLACK);
+        if (colorScheme==COLORSCHEME_WHITE) setBackground(Color.WHITE);
+    }
+    
+    public int getColorScheme() {
+        return colorScheme;
     }
     
     public void setState(GameState a_gs) {
@@ -99,6 +130,9 @@ public class PhysicalGameStatePanel extends JPanel {
         }        
     }
     
+    public GameState getState() {
+        return gs;
+    }
     
     public void clearHighlights() {
         toHighLight.clear();
@@ -112,6 +146,7 @@ public class PhysicalGameStatePanel extends JPanel {
     
     public Pair<Integer,Integer> getContentAtCoordinates(int x, int y) {
         // return the map coordiantes over which the coordinates are:
+        // System.out.println(x + ", " + y + " -> last start: " + last_start_x + ", " + last_start_y);
         if (x<last_start_x) return null;
         if (y<last_start_y) return null;
         
@@ -128,6 +163,8 @@ public class PhysicalGameStatePanel extends JPanel {
     public void paint(Graphics g) {
         super.paint(g);
         Graphics2D g2d = (Graphics2D)g;
+        
+        if (pgs==null) return;
         int gridx = (this.getWidth()-64)/pgs.getWidth();
         int gridy = (this.getHeight()-64)/pgs.getHeight();
         int grid = Math.min(gridx,gridy);
@@ -142,8 +179,8 @@ public class PhysicalGameStatePanel extends JPanel {
             }
         }
         
-        
-        g.setColor(Color.WHITE);
+        if (colorScheme==COLORSCHEME_BLACK) g.setColor(Color.WHITE);
+        if (colorScheme==COLORSCHEME_WHITE) g.setColor(Color.BLACK);
         
         int unitCount0 = 0;
         for (Unit unit : gs.getPhysicalGameState().getUnits()) {
@@ -208,7 +245,8 @@ public class PhysicalGameStatePanel extends JPanel {
         }
         
         // draw grid:
-        g.setColor(Color.GRAY);
+        if (colorScheme==COLORSCHEME_BLACK) g.setColor(Color.GRAY);
+        if (colorScheme==COLORSCHEME_WHITE) g.setColor(Color.BLACK);
         for(int i = 0;i<=pgs.getWidth();i++) 
             g.drawLine(i*grid, 0, i*grid, pgs.getHeight()*grid);
         for(int i = 0;i<=pgs.getHeight();i++) 
@@ -251,7 +289,8 @@ public class PhysicalGameStatePanel extends JPanel {
                             break;
                         case UnitAction.TYPE_HARVEST:
                         case UnitAction.TYPE_RETURN:
-                            g.setColor(Color.WHITE);
+                            if (colorScheme==COLORSCHEME_BLACK) g.setColor(Color.WHITE);
+                            if (colorScheme==COLORSCHEME_WHITE) g.setColor(Color.GREEN);
                             g.drawLine(u.getX()*grid+grid/2, u.getY()*grid+grid/2, u.getX()*grid+grid/2 + offsx, u.getY()*grid+grid/2 + offsy);
                             break;
                     }
@@ -261,11 +300,21 @@ public class PhysicalGameStatePanel extends JPanel {
                     playerColor = Color.blue;
                 } else if (u.getPlayer()==1) {
                     playerColor = Color.red;
+                } else if (u.getPlayer()==-1) {
+                    playerColor = null;
                 }
 
-                if (u.getType().name.equals("Resource")) g.setColor(Color.green);
-                if (u.getType().name.equals("Base")) g.setColor(Color.white);
-                if (u.getType().name.equals("Barracks")) g.setColor(Color.lightGray);
+                if (u.getType().name.equals("Resource")) {
+                    g.setColor(Color.green);
+                }
+                if (u.getType().name.equals("Base")) {
+                    if (colorScheme==COLORSCHEME_BLACK) g.setColor(Color.white);
+                    if (colorScheme==COLORSCHEME_WHITE) g.setColor(Color.lightGray);
+                }
+                if (u.getType().name.equals("Barracks")) {
+                    if (colorScheme==COLORSCHEME_BLACK) g.setColor(Color.lightGray);
+                    if (colorScheme==COLORSCHEME_WHITE) g.setColor(Color.gray);
+                }
                 if (u.getType().name.equals("Worker")) {
                     g.setColor(Color.gray);
                     reduction = grid/4;

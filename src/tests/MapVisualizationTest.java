@@ -29,6 +29,7 @@ public class MapVisualizationTest {
 
         JFrame w = PhysicalGameStatePanel.newVisualizer(gs,640,640);
         JFrame w2 = PhysicalGameStatePanel.newVisualizer(new PartiallyObservableGameState(gs,0),640,640, true);
+        JFrame w3 = PhysicalGameStatePanel.newVisualizer(gs,640,640,false,PhysicalGameStatePanel.COLORSCHEME_WHITE);
         
     }    
 }

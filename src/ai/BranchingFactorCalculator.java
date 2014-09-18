@@ -168,6 +168,8 @@ public class BranchingFactorCalculator {
             branchingOfSeparatedAreas.add(n);
         }
         
+        if (branchingOfSeparatedAreas.isEmpty()) return 1;
+                
         // accumulate:
         long n[] = branchingOfSeparatedAreas.remove(0);
         for(long n2[]:branchingOfSeparatedAreas) {

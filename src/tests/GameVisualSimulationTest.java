@@ -61,7 +61,8 @@ public class GameVisualSimulationTest {
         pgs.toxml(xml);
         xml.flush();
 
-        JFrame w = PhysicalGameStatePanel.newVisualizer(gs,640,640);
+        JFrame w = PhysicalGameStatePanel.newVisualizer(gs,640,640,false,PhysicalGameStatePanel.COLORSCHEME_BLACK);
+//        JFrame w = PhysicalGameStatePanel.newVisualizer(gs,640,640,false,PhysicalGameStatePanel.COLORSCHEME_WHITE);
 
         long nextTimeToUpdate = System.currentTimeMillis() + PERIOD;
         do{

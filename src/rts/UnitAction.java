@@ -261,13 +261,13 @@ public class UnitAction {
     
     public UnitAction(Element e, UnitTypeTable utt) {
         String typeStr = e.getAttributeValue("type");
-        String directionStr = e.getAttributeValue("direction");
+        String parameterStr = e.getAttributeValue("parameter");
         String xStr = e.getAttributeValue("x");
         String yStr = e.getAttributeValue("y");
         String unitTypeStr = e.getAttributeValue("unitType");
 
         type = Integer.parseInt(typeStr);
-        if (directionStr!=null) parameter = Integer.parseInt(directionStr);
+        if (parameterStr!=null) parameter = Integer.parseInt(parameterStr);
         if (xStr!=null) x = Integer.parseInt(xStr);
         if (yStr!=null) y = Integer.parseInt(yStr);
         if (unitTypeStr!=null) unitType = utt.getUnitType(unitTypeStr);

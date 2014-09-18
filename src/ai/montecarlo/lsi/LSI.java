@@ -92,7 +92,6 @@ public class LSI extends AI {
     }
     
     public void reset() {
-        throw new RuntimeException("Not Implemented!");
     }
 
     public AI clone() {
