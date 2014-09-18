@@ -62,6 +62,7 @@ public class TraceEntry {
     
     public TraceEntry(Element e, UnitTypeTable utt) {
         Element actions_e = e.getChild("actions");
+        time = Integer.parseInt(e.getAttributeValue("time"));
   
         Element pgs_e = e.getChild(PhysicalGameState.class.getName());
         pgs = new PhysicalGameState(pgs_e, utt);

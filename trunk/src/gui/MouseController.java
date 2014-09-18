@@ -43,6 +43,11 @@ public class MouseController extends AbstractionLayerAI {
         reset();
     }
     
+    public void setFrame(PhysicalGameStateMouseJFrame frame) {
+        m_frame = frame;
+        reset();
+    }
+    
     public void reset() {
         // attach the mouse listener to the frame (make sure we only add one, and also remove the old ones):
         if (m_frame!=null) {

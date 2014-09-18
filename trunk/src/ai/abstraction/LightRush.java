@@ -182,7 +182,7 @@ public class LightRush extends AbstractionLayerAI {
 
         if (nbarracks == 0) {
             // build a barracks:
-            if (p.getResources() > barracksType.cost + resourcesUsed) {
+            if (p.getResources() > barracksType.cost + resourcesUsed && !freeWorkers.isEmpty()) {
                 Unit u = freeWorkers.remove(0);
                 int pos = findBuildingPosition(reservedPositions, u, p, pgs);
                 build(u, barracksType, pos % pgs.getWidth(), pos / pgs.getWidth());
