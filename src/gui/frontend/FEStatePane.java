@@ -11,6 +11,7 @@ import ai.BranchingFactorCalculator;
 import ai.PassiveAI;
 import ai.RandomAI;
 import ai.RandomBiasedAI;
+import ai.abstraction.HeavyRush;
 import ai.abstraction.LightRush;
 import ai.abstraction.RangedRush;
 import ai.abstraction.WorkerRush;
@@ -109,6 +110,7 @@ public class FEStatePane extends JPanel {
                    RandomBiasedAI.class,
                    WorkerRush.class,
                    LightRush.class,
+                   HeavyRush.class,
                    RangedRush.class,
                    ContinuingPortfolioAI.class,
                    IDContinuingRTMinimax.class,
@@ -473,14 +475,16 @@ public class FEStatePane extends JPanel {
                                         }
                                     }while(!gameover && gs.getTime()<MAXCYCLES);
                                     
-                                    TraceEntry te = new TraceEntry(gs.getPhysicalGameState().clone(), gs.getTime());
-                                    trace.addEntry(te);
-                                    
-                                    String traceFileName = FEStatePane.nextTraceName();
+                                    if (trace!=null) {
+                                        TraceEntry te = new TraceEntry(gs.getPhysicalGameState().clone(), gs.getTime());
+                                        trace.addEntry(te);
+                                   
+                                        String traceFileName = FEStatePane.nextTraceName();
 
-                                    XMLWriter xml = new XMLWriter(new FileWriter(traceFileName));
-                                    trace.toxml(xml);
-                                    xml.flush();
+                                        XMLWriter xml = new XMLWriter(new FileWriter(traceFileName));
+                                        trace.toxml(xml);
+                                        xml.flush();
+                                    }
                                     
                                 } catch(Exception ex) {
                                     ex.printStackTrace();
@@ -577,6 +581,8 @@ public class FEStatePane extends JPanel {
             return new WorkerRush(currentUtt, pf);
         } else if (AIs[idx]==LightRush.class) {
             return new LightRush(currentUtt, pf);
+        } else if (AIs[idx]==HeavyRush.class) {
+            return new HeavyRush(currentUtt, pf);
         } else if (AIs[idx]==RangedRush.class) {
             return new RangedRush(currentUtt, pf);
         } else if (AIs[idx]==ContinuingPortfolioAI.class) {
