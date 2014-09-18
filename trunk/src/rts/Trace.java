@@ -20,9 +20,13 @@ public class Trace {
     List<TraceEntry> entries = new LinkedList<TraceEntry>();
     
     public Trace() {
-        utt = new UnitTypeTable();
+        utt = UnitTypeTable.utt;
     }
     
+    public Trace(UnitTypeTable a_utt) {
+        utt = a_utt;
+    }
+
     public List<TraceEntry> getEntries() {
         return entries;
     }
@@ -45,7 +49,6 @@ public class Trace {
         
     public Trace(Element e, UnitTypeTable utt) {
         Element entries_e = e.getChild("entries");
-        utt = new UnitTypeTable();
         
         for(Object o:entries_e.getChildren()) {
             Element entry_e = (Element)o;

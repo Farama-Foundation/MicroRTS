@@ -12,13 +12,17 @@ import java.util.List;
  * @author santi
  */
 public class UnitTypeTable {
+    public static final int VERSION_ORIGINAL = 1;
+    public static final int VERSION_ORIGINAL_FINETUNED = 2;
+    
     List<UnitType> unitTypes = new ArrayList<UnitType>();
     
     // This is just a convenience variable, so that it can be used by other classes if the standard 
     // unitTypeTable is desired:
-    public static UnitTypeTable utt = new UnitTypeTable();
+    public static UnitTypeTable utt = new UnitTypeTable(VERSION_ORIGINAL);
+//    public static UnitTypeTable utt = new UnitTypeTable(VERSION_ORIGINAL_FINETUNED);
     
-    public UnitTypeTable() {
+    public UnitTypeTable(int version) {
         // Create the unit types:
         // RESOURCE:
         UnitType resource = new UnitType();
@@ -36,7 +40,12 @@ public class UnitTypeTable {
         base.name = "Base";
         base.cost = 10;
         base.hp = 10;
-        base.produceTime = 250;
+        switch(version) {
+            case VERSION_ORIGINAL: base.produceTime = 250;
+                                   break;
+            case VERSION_ORIGINAL_FINETUNED: base.produceTime = 200;
+                                   break;
+        }
         base.isResource = false;
         base.isStockpile = true;
         base.canHarvest = false;
@@ -50,7 +59,12 @@ public class UnitTypeTable {
         barracks.name = "Barracks";
         barracks.cost = 5;
         barracks.hp = 4;
-        barracks.produceTime = 200;
+        switch(version) {
+            case VERSION_ORIGINAL: barracks.produceTime = 200;
+                                   break;
+            case VERSION_ORIGINAL_FINETUNED: barracks.produceTime = 100;
+                                   break;
+        }
         barracks.isResource = false;
         barracks.isStockpile = false;
         barracks.canHarvest = false;
@@ -100,12 +114,19 @@ public class UnitTypeTable {
         // HEAVY: ID = 4
         UnitType heavy = new UnitType();
         heavy.name = "Heavy";
-        heavy.cost = 2;
-        heavy.hp = 4;
         heavy.damage = 4;
         heavy.attackRange = 1;
         heavy.produceTime = 120;
-        heavy.moveTime = 12;
+        switch(version) {
+            case VERSION_ORIGINAL: heavy.moveTime = 12;
+                                   heavy.hp = 4;
+                                   heavy.cost = 2;
+                                   break;
+            case VERSION_ORIGINAL_FINETUNED: heavy.moveTime = 10;
+                                             heavy.hp = 8;
+                                             heavy.cost = 3;
+                                             break;
+        }
         heavy.attackTime = 5;
         heavy.isResource = false;
         heavy.isStockpile = false;
@@ -123,8 +144,8 @@ public class UnitTypeTable {
         ranged.damage = 1;
         ranged.attackRange = 3;
         ranged.produceTime = 100;
-        ranged.moveTime = 12;
-        ranged.attackTime = 8;
+        ranged.moveTime = 10;
+        ranged.attackTime = 5;
         ranged.isResource = false;
         ranged.isStockpile = false;
         ranged.canHarvest = false;
