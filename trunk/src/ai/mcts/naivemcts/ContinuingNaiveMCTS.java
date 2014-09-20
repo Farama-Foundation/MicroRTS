@@ -210,7 +210,7 @@ public class ContinuingNaiveMCTS extends AI {
     }
     
     public PlayerAction getBestAction() {
-        int idx = getBestActionIdx();
+        int idx = getMostVisitedActionIdx();
         if (idx==-1) {
             if (DEBUG>=1) System.out.println("ContinuingNaiveMCTS no children selected. Returning an empty asction");
             return new PlayerAction();
@@ -224,7 +224,7 @@ public class ContinuingNaiveMCTS extends AI {
     }
     
     
-    public int getBestActionIdx() {
+    public int getMostVisitedActionIdx() {
         total_actions_issued++;
             
         int bestIdx = -1;
@@ -243,6 +243,34 @@ public class ContinuingNaiveMCTS extends AI {
             }
 //            if (best == null || (child.accum_evaluation/child.visit_count)>(best.accum_evaluation/best.visit_count)) {
             if (best == null || child.visit_count>best.visit_count) {
+                best = child;
+                bestIdx = i;
+            }
+        }
+        
+        return bestIdx;
+    }
+    
+    
+    public int getHighestEvaluationActionIdx() {
+        total_actions_issued++;
+            
+        int bestIdx = -1;
+        NaiveMCTSNode best = null;
+        if (DEBUG>=2) {
+//            for(Player p:gs_to_start_from.getPlayers()) {
+//                System.out.println("Resources P" + p.getID() + ": " + p.getResources());
+//            }
+            System.out.println("Number of playouts: " + tree.visit_count);
+            tree.printUnitActionTable();
+        }
+        for(int i = 0;i<tree.children.size();i++) {
+            NaiveMCTSNode child = (NaiveMCTSNode)tree.children.get(i);
+            if (DEBUG>=2) {
+                System.out.println("child " + tree.actions.get(i) + " explored " + child.visit_count + " Avg evaluation: " + (child.accum_evaluation/((double)child.visit_count)));
+            }
+//            if (best == null || (child.accum_evaluation/child.visit_count)>(best.accum_evaluation/best.visit_count)) {
+            if (best == null || (child.accum_evaluation/((double)child.visit_count))>(best.accum_evaluation/((double)best.visit_count))) {
                 best = child;
                 bestIdx = i;
             }
