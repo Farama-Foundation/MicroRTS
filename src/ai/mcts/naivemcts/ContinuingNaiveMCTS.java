@@ -209,8 +209,22 @@ public class ContinuingNaiveMCTS extends AI {
         return true;
     }
     
-    
     public PlayerAction getBestAction() {
+        int idx = getBestActionIdx();
+        if (idx==-1) {
+            if (DEBUG>=1) System.out.println("ContinuingNaiveMCTS no children selected. Returning an empty asction");
+            return new PlayerAction();
+        }
+        if (DEBUG>=2) tree.showNode(0,1,ef);
+        if (DEBUG>=1) {
+            NaiveMCTSNode best = (NaiveMCTSNode) tree.children.get(idx);
+            System.out.println("ContinuingNaiveMCTS selected children " + tree.actions.get(idx) + " explored " + best.visit_count + " Avg evaluation: " + (best.accum_evaluation/((double)best.visit_count)));
+        }
+        return tree.actions.get(idx);
+    }
+    
+    
+    public int getBestActionIdx() {
         total_actions_issued++;
             
         int bestIdx = -1;
@@ -234,15 +248,7 @@ public class ContinuingNaiveMCTS extends AI {
             }
         }
         
-        if (bestIdx==-1) {
-            if (DEBUG>=1) System.out.println("ContinuingNaiveMCTS no children selected. Returning an empty asction");
-            return new PlayerAction();
-        }
-        
-        if (DEBUG>=2) tree.showNode(0,1,ef);
-        if (DEBUG>=1) System.out.println("ContinuingNaiveMCTS selected children " + tree.actions.get(bestIdx) + " explored " + best.visit_count + " Avg evaluation: " + (best.accum_evaluation/((double)best.visit_count)));
-                
-        return tree.actions.get(bestIdx);
+        return bestIdx;
     }
     
         
