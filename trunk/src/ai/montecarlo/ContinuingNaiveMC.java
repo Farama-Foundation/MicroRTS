@@ -55,13 +55,15 @@ public class ContinuingNaiveMC extends AI {
     public long total_actions_issued = 0;    
         
     int TIME_PER_CYCLE = 100;
+    int MAX_PLAYOUTS = -1;
     int MAXSIMULATIONTIME = 1024;
     float epsilon1 = 0.25f;  
     float epsilon2 = 0.2f;
     int minSamples = 10;
     
-    public ContinuingNaiveMC(int available_time, int lookahead, float e1, float e2, AI policy, EvaluationFunction a_ef) {
+    public ContinuingNaiveMC(int available_time, int max_playouts, int lookahead, float e1, float e2, AI policy, EvaluationFunction a_ef) {
         MAXSIMULATIONTIME = lookahead;
+        MAX_PLAYOUTS = max_playouts;
         randomAI = policy;
         epsilon1 = e1;
         epsilon2 = e2;
@@ -81,7 +83,7 @@ public class ContinuingNaiveMC extends AI {
     
     
     public AI clone() {
-        return new ContinuingNaiveMC(TIME_PER_CYCLE, MAXSIMULATIONTIME, epsilon1, epsilon2, randomAI, ef);
+        return new ContinuingNaiveMC(TIME_PER_CYCLE, MAX_PLAYOUTS, MAXSIMULATIONTIME, epsilon1, epsilon2, randomAI, ef);
     }
     
     
@@ -90,14 +92,14 @@ public class ContinuingNaiveMC extends AI {
         if (gs.canExecuteAnyAction(player)) {
             // continue or start a search:
             if (moveGenerator==null) startNewSearch(player,gs);
-            search(player, TIME_PER_CYCLE);
+            search(player, TIME_PER_CYCLE, MAX_PLAYOUTS);
             PlayerAction best = getBestAction();
             resetSearch();
             return best;
         } else {
             if (moveGenerator!=null) {
                 // continue previous search:
-                search(player, TIME_PER_CYCLE);
+                search(player, TIME_PER_CYCLE, MAX_PLAYOUTS);
             } else {
                 // determine who will be the next player:
                 GameState gs2 = gs.clone();
@@ -108,7 +110,7 @@ public class ContinuingNaiveMC extends AI {
                 if (gs2.canExecuteAnyAction(player)) {
                     // start a new search:
                     startNewSearch(player,gs2);
-                    search(player, TIME_PER_CYCLE);
+                    search(player, TIME_PER_CYCLE, MAX_PLAYOUTS);
                     return new PlayerAction();
                 } else {
                     return new PlayerAction();
@@ -159,12 +161,18 @@ public class ContinuingNaiveMC extends AI {
     }    
     
     
-    public void search(int player, long available_time) throws Exception {
+    public void search(int player, long available_time, int MAX_PLAYOUTS) throws Exception {
         if (moveGenerator.getSize()==1) return;
 //        System.out.println(moveGenerator.getSize());
         long start = System.currentTimeMillis();
-        while((System.currentTimeMillis() - start)<available_time) {
+        long end = start;
+        long count = 0;
+        while(true) {
             monteCarloRun(player, gs_to_start_from);
+            count++;
+            end = System.currentTimeMillis();
+            if (available_time>=0 && (end - start)>=available_time) break; 
+            if (MAX_PLAYOUTS>=0 && count>=MAX_PLAYOUTS) break;             
         }
         
         total_cycles_executed++;

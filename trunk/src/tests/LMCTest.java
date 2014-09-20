@@ -8,13 +8,8 @@ import ai.AI;
 import ai.RandomBiasedAI;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleEvaluationFunction;
-import ai.montecarlo.NaiveMonteCarlo;
-import ai.montecarlo.lsi.LSI;
-import ai.montecarlo.lsi.LSI.EstimateReuseType;
-import ai.montecarlo.lsi.LSI.EstimateType;
-import ai.montecarlo.lsi.LSI.EvaluateType;
-import ai.montecarlo.lsi.LSI.GenerateType;
-import ai.montecarlo.lsi.LSI.RelaxationType;
+import ai.montecarlo.ContinuingNaiveMC;
+import ai.montecarlo.lsi.PseudoContinuingLSI;
 import ai.montecarlo.lsi.Sampling.AgentOrderingType;
 import gui.PhysicalGameStateJFrame;
 import gui.PhysicalGameStatePanel;
@@ -32,8 +27,8 @@ import util.XMLWriter;
         UnitTypeTable utt = UnitTypeTable.utt; // original game (NOOP length = move length)
 
         int MAX_GAME_CYCLES = 3000; // game time
-        int SIMULATION_BUDGET = 2000; // count per decision
-        int LOOKAHEAD_CYCLES = 200; // game time
+        int SIMULATION_BUDGET = 1000; // count per decision
+        int LOOKAHEAD_CYCLES = 100; // game time
         AI simulationAi = new RandomBiasedAI();
         EvaluationFunction evalFunction = new SimpleEvaluationFunction();
 
@@ -45,11 +40,11 @@ import util.XMLWriter;
 //        AI ai1 = new NaiveMonteCarlo(SIMULATION_COUNT, LOOKAHEAD_TIME, 0.33f, 0.2f, simulationAi, evalFunction);
 //        AI ai1 = new LinearMonteCarlo(SIMULATION_COUNT, LOOKAHEAD_TIME, simulationAi, evalFunction);
 //        AI ai1 = new LocalLinearMonteCarlo(SIMULATION_COUNT, LOOKAHEAD_TIME, simulationAi, evalFunction);
-        AI ai1 = new LSI(SIMULATION_BUDGET, LOOKAHEAD_CYCLES,
-                0.25, EstimateType.RANDOM_TAIL, EstimateReuseType.ALL,
-                GenerateType.PER_AGENT, AgentOrderingType.ENTROPY,
-                EvaluateType.HALVING, false,
-                RelaxationType.NONE, 2,
+        AI ai1 = new PseudoContinuingLSI(SIMULATION_BUDGET, LOOKAHEAD_CYCLES,
+                0.25, PseudoContinuingLSI.EstimateType.RANDOM_TAIL, PseudoContinuingLSI.EstimateReuseType.ALL,
+                PseudoContinuingLSI.GenerateType.PER_AGENT, AgentOrderingType.ENTROPY,
+                PseudoContinuingLSI.EvaluateType.HALVING, false,
+                PseudoContinuingLSI.RelaxationType.NONE, 2,
                 false,
                 simulationAi, evalFunction);
 
@@ -58,7 +53,7 @@ import util.XMLWriter;
 //        AI ai2 = new WorkerRush(utt, new AStarPathFinding());
 //        AI ai2 = new LightRush(UnitTypeTable.utt, new AStarPathFinding());
 //        AI ai2 = new RangedRush(UnitTypeTable.utt, new AStarPathFinding());
-        AI ai2 = new NaiveMonteCarlo(SIMULATION_BUDGET, LOOKAHEAD_CYCLES, 0.33f, 0.25f, simulationAi, evalFunction);
+        AI ai2 = new ContinuingNaiveMC(-1, SIMULATION_BUDGET, LOOKAHEAD_CYCLES, 0.33f, 0.25f, simulationAi, evalFunction);
 //        AI ai2 = new GenerateEvaluateMonteCarlo(SIMULATION_BUDGET, LOOKAHEAD_CYCLES,
 //                0.25, EstimateType.RANDOM_TAIL, EstimateReuseType.ALL,
 //                GenerateType.PER_AGENT, AgentOrderingType.ENTROPY,

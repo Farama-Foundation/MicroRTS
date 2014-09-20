@@ -33,13 +33,24 @@ import ai.montecarlo.lsi.Sampling.AgentOrderingType;
 import ai.montecarlo.lsi.Sampling.UnitActionTableEntry;
 import ai.evaluation.EvaluationFunction;
 
-public class LSI extends AI {
+
+/*
+
+This version of LSI simulates the behavior of a "Continuous*" AI, but instead of 
+using the computation budget in each game cycle, it simply counds how many cycles
+it would have had to spend in making a decision, and then in the last cycle, it
+spends the corresponding time.
+
+*/
+
+
+public class PseudoContinuingLSI extends AI {
     public static final int DEBUG = 0;
 
     private static final double NORMALIZATION_EPSILON = 0.01;
 
     private final Random rnd = new Random();
-    private final int availableSimulationCount;
+    private final int availableSimulationCountPerGameCycle;
     private final int lookAhead;
     private final double split;
     private final EstimateType estimateType;
@@ -67,13 +78,17 @@ public class LSI extends AI {
     private Set<Unit> epochUnits = null;
 
     private int actionCount;
-
-    public LSI(int availableSimulationCount, int lookAhead, double split,
+    
+    // Variables for the Continuing version:
+    int n_cycles_to_think = 1;
+    
+    
+    public PseudoContinuingLSI(int availableSimulationCountPerGameCycle, int lookAhead, double split,
             EstimateType estimateType, EstimateReuseType estimateReuseType, GenerateType generateType,
             AgentOrderingType agentOrderingType, EvaluateType evaluateType, boolean eliteReuse,
             RelaxationType relaxationType, int relaxationLimit, boolean epochal,
             AI simulationAi, EvaluationFunction evalFunction) {
-        this.availableSimulationCount = availableSimulationCount;
+        this.availableSimulationCountPerGameCycle = availableSimulationCountPerGameCycle;
         this.lookAhead = lookAhead;
         this.split = split;
         this.estimateType = estimateType;
@@ -95,15 +110,46 @@ public class LSI extends AI {
     }
 
     public AI clone() {
-        return new LSI(availableSimulationCount, lookAhead, split,
+        return new PseudoContinuingLSI(availableSimulationCountPerGameCycle, lookAhead, split,
                 estimateType, estimateReuseType, generateType, agentOrderingType, evaluateType,
                 eliteReuse, relaxationType, relaxationLimit, epochal, simulationAi, evalFunction);
     }
-
-    public PlayerAction getAction(int player, GameState gameState) throws Exception {
+    
+    
+    public PlayerAction getAction(int player, GameState gs) throws Exception {
+        if (gs.canExecuteAnyAction(player)) {
+            if (DEBUG>=1) System.out.println("n_cycles_to_think = " + n_cycles_to_think);
+            PlayerAction action =  getActionInternal(player, gs, availableSimulationCountPerGameCycle*n_cycles_to_think);
+            n_cycles_to_think = 1;   
+            return action;
+        } else {
+            if (n_cycles_to_think==1) {
+                GameState gs2 = gs.clone();
+                while(gs2.winner()==-1 && 
+                      !gs2.gameover() &&  
+                    !gs2.canExecuteAnyAction(0) && 
+                    !gs2.canExecuteAnyAction(1)) gs2.cycle();
+                if ((gs2.winner() == -1 && !gs2.gameover()) && 
+                    gs2.canExecuteAnyAction(player)) {
+                    n_cycles_to_think++;
+                }            
+            } else {
+                n_cycles_to_think++;
+            }
+            
+            return new PlayerAction();        
+        }
+    }
+    
+    
+    
+    
+    public PlayerAction getActionInternal(int player, GameState gameState, int availableSimulationCount) throws Exception {
         if (!gameState.canExecuteAnyAction(player) || gameState.winner() != -1) {
             return new PlayerAction();
         }
+        
+        if (DEBUG>=1) System.out.println("availableSimulationCount:" + availableSimulationCount);
 
         // initialize
         sampling.resetSimulationCount();
@@ -157,7 +203,7 @@ public class LSI extends AI {
             // generate joint actions for later evaluation (+ probability distributions on single actions)
             List<double[]> distributions = null;
             Set<PlayerAction> actionSet = null;
-            if (estimateType.equals(EstimateType.ALL_COMBINATIONS)) {
+            if (estimateType.equals(LSI.EstimateType.ALL_COMBINATIONS)) {
                 actionSet = sampling.generatePlayerActionAll(unitActionTable, player, gameState, true);
 
                 // to be sure increase the sampling counter to be compatible with the LSI versions
@@ -171,13 +217,13 @@ public class LSI extends AI {
                         sampling.increaseSimulationCount(availableSimulationCount * split);
                         break;
                     case NOOP_TAIL:
-                        distributions = stageGenerateNoopTail(player, gameState, unitActionTable);
+                        distributions = stageGenerateNoopTail(player, gameState, unitActionTable, availableSimulationCount);
                         break;
                     case RANDOM_TAIL:
-                        distributions = stageGenerateRandomTail(player, gameState, unitActionTable);
+                        distributions = stageGenerateRandomTail(player, gameState, unitActionTable, availableSimulationCount);
                         break;
                     case RANDOM_TAIL_ELITE:
-                        distributions = stageGenerateRandomTailElite(player, gameState, unitActionTable);
+                        distributions = stageGenerateRandomTailElite(player, gameState, unitActionTable, availableSimulationCount);
                         break;
                     default:
                         throw new RuntimeException("Unknown EstimateType");
@@ -193,7 +239,7 @@ public class LSI extends AI {
                         break;
 
                     default:
-                        actionSet = stageChoosePlayerActionByDist(distributions, player, gameState, unitActionTable);
+                        actionSet = stageChoosePlayerActionByDist(distributions, player, gameState, unitActionTable, availableSimulationCount);
                         break;
                 }
             }
@@ -202,15 +248,15 @@ public class LSI extends AI {
             switch (evaluateType) {
                 case HALVING:
                     //playerAction = stageEvaluateHalving(actionSet, player, gameState);
-                    playerAction = stageEvaluateHalvingFill(actionSet, player, gameState);
+                    playerAction = stageEvaluateHalvingFill(actionSet, player, gameState, availableSimulationCount);
                     break;
 
                 case HALVING_ELITE:
-                    playerAction = stageEvaluateEliteHalving(actionSet, player, gameState);
+                    playerAction = stageEvaluateEliteHalving(actionSet, player, gameState, availableSimulationCount);
                     break;
 
                 case BEST:
-                    playerAction = stageEvaluateBest(actionSet, player, gameState);
+                    playerAction = stageEvaluateBest(actionSet, player, gameState, availableSimulationCount);
                     break;
             }
 
@@ -328,8 +374,9 @@ public class LSI extends AI {
         // resulting joint-action
         return playerAction;
     }
+    
 
-    private List<double[]> stageGenerateNoopTail(int player, GameState gameState, List<UnitActionTableEntry> unitActionTable)
+    private List<double[]> stageGenerateNoopTail(int player, GameState gameState, List<UnitActionTableEntry> unitActionTable, int availableSimulationCount)
             throws Exception {
         PlayerAction currentPA = new PlayerAction();
         currentPA.fillWithNones(gameState, player, 10);
@@ -398,7 +445,7 @@ public class LSI extends AI {
         return distributions;
     }
 
-    private List<double[]> stageGenerateRandomTail(int player, GameState gameState, List<UnitActionTableEntry> unitActionTable)
+    private List<double[]> stageGenerateRandomTail(int player, GameState gameState, List<UnitActionTableEntry> unitActionTable, int availableSimulationCount)
             throws Exception {
         List<double[]> distributions = new ArrayList<double[]>();
 
@@ -530,7 +577,7 @@ public class LSI extends AI {
         return distributions;
     }
 
-    private List<double[]> stageGenerateRandomTailElite(int player, GameState gameState, List<UnitActionTableEntry> unitActionTable)
+    private List<double[]> stageGenerateRandomTailElite(int player, GameState gameState, List<UnitActionTableEntry> unitActionTable, int availableSimulationCount)
             throws Exception {
         List<double[]> distributions = new ArrayList<double[]>();
 
@@ -710,7 +757,7 @@ public class LSI extends AI {
     }
 
     private Set<PlayerAction> stageChoosePlayerActionByDist(List<double[]> distributions, int player, GameState gameState,
-                                                            List<UnitActionTableEntry> unitActionTable) throws Exception {
+                                                            List<UnitActionTableEntry> unitActionTable, int availableSimulationCount) throws Exception {
         int budget = (int) (availableSimulationCount * (1 - split));
 
         int actionCount = 1;
@@ -741,7 +788,7 @@ public class LSI extends AI {
         return actionSet;
     }
 
-    private PlayerAction stageEvaluateHalving(Set<PlayerAction> actionSet, int player, GameState gameState) throws Exception {
+    private PlayerAction stageEvaluateHalving(Set<PlayerAction> actionSet, int player, GameState gameState, int availableSimulationCount) throws Exception {
         int budget = (int) (availableSimulationCount * (1 - split));
 
         List<Pair<PlayerAction, Double>> actionList = new LinkedList<Pair<PlayerAction, Double>>();
@@ -777,7 +824,7 @@ public class LSI extends AI {
         return actionList.get(0).m_a;
     }
 
-    private PlayerAction stageEvaluateHalvingFill(Set<PlayerAction> actionSet, int player, GameState gameState) throws Exception {
+    private PlayerAction stageEvaluateHalvingFill(Set<PlayerAction> actionSet, int player, GameState gameState, int availableSimulationCount) throws Exception {
         int budget = (int) (availableSimulationCount * (1 - split));
 
         List<Pair<PlayerAction, Double>> actionList = new LinkedList<Pair<PlayerAction, Double>>();
@@ -809,7 +856,7 @@ public class LSI extends AI {
         return actionList.get(0).m_a;
     }
 
-    private PlayerAction stageEvaluateEliteHalving(Set<PlayerAction> actionSet, int player, GameState gameState) throws Exception {
+    private PlayerAction stageEvaluateEliteHalving(Set<PlayerAction> actionSet, int player, GameState gameState, int availableSimulationCount) throws Exception {
         // generate combinations
         int budget = (int) (availableSimulationCount * (1 - split));
 
@@ -883,7 +930,7 @@ public class LSI extends AI {
         return actionList.get(0).m_a;
     }
 
-    private PlayerAction stageEvaluateBest(Set<PlayerAction> actionSet, int player, GameState gameState) throws Exception {
+    private PlayerAction stageEvaluateBest(Set<PlayerAction> actionSet, int player, GameState gameState, int availableSimulationCount) throws Exception {
         int budget = (int) (availableSimulationCount * (1 - split));
 
         List<Pair<PlayerAction, Pair<Double, Integer>>> actionList = new LinkedList<Pair<PlayerAction, Pair<Double, Integer>>>();
@@ -1022,7 +1069,7 @@ public class LSI extends AI {
     }
 
     public String toString() {
-        return "LinearMonteCarlo(" + availableSimulationCount + "," + lookAhead + ")";
+        return "LinearMonteCarlo(" + availableSimulationCountPerGameCycle + "," + lookAhead + ")";
     }
 
     public String statisticsString() {

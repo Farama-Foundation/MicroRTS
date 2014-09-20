@@ -36,7 +36,7 @@ import ai.minimax.RMMiniMax.IDContinuingRTMinimaxRandomized;
 import ai.montecarlo.ContinuingDownsamplingMC;
 import ai.montecarlo.ContinuingMC;
 import ai.montecarlo.ContinuingNaiveMC;
-import ai.montecarlo.lsi.LSI;
+import ai.montecarlo.lsi.PseudoContinuingLSI;
 import ai.montecarlo.lsi.Sampling;
 import ai.portfolio.ContinuingPortfolioAI;
 import gui.MouseController;
@@ -44,20 +44,12 @@ import gui.PhysicalGameStateMouseJFrame;
 import gui.PhysicalGameStatePanel;
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.net.URL;
-import java.text.NumberFormat;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -71,8 +63,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import org.jdom.JDOMException;
 import rts.GameState;
 import rts.PhysicalGameState;
 import rts.PlayerAction;
@@ -120,7 +110,7 @@ public class FEStatePane extends JPanel {
                    ContinuingMC.class,
                    ContinuingDownsamplingMC.class,
                    ContinuingNaiveMC.class,
-                   LSI.class,
+                   PseudoContinuingLSI.class,
                    ContinuingUCT.class,
                    ContinuingUCTUnitActions.class,
                    ContinuingUCTFirstPlayUrgency.class,
@@ -606,12 +596,12 @@ public class FEStatePane extends JPanel {
             return new ContinuingDownsamplingMC(TIME, PLAYOUT_TIME, MAX_ACTIONS, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction2());
         } else if (AIs[idx]==ContinuingNaiveMC.class) {
             return new ContinuingNaiveMC(TIME, PLAYOUT_TIME, 0.33f, 0.25f, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction2());
-        } else if (AIs[idx]==LSI.class) {
-            return new LSI(MAX_PLAYOUTS, PLAYOUT_TIME, LSI_SPLIT,
-                LSI.EstimateType.RANDOM_TAIL, LSI.EstimateReuseType.ALL,
-                LSI.GenerateType.PER_AGENT, Sampling.AgentOrderingType.ENTROPY,
-                LSI.EvaluateType.HALVING, false,
-                LSI.RelaxationType.NONE, 2,
+        } else if (AIs[idx]==PseudoContinuingLSI.class) {
+            return new PseudoContinuingLSI(MAX_PLAYOUTS, PLAYOUT_TIME, LSI_SPLIT,
+                PseudoContinuingLSI.EstimateType.RANDOM_TAIL, PseudoContinuingLSI.EstimateReuseType.ALL,
+                PseudoContinuingLSI.GenerateType.PER_AGENT, Sampling.AgentOrderingType.ENTROPY,
+                PseudoContinuingLSI.EvaluateType.HALVING, false,
+                PseudoContinuingLSI.RelaxationType.NONE, 2,
                 false,
                 playout_policy, ef);
         } else if (AIs[idx]==ContinuingUCT.class) {
