@@ -486,7 +486,7 @@ public class LSI extends AI {
         }
         //System.out.println("  G: " + sample);
         if (!completeOnce) {
-            System.err.println("Generate did not complete even one round!");
+            System.err.println("Generate did not complete even one round! " + sample + " >= (" + availableSimulationCount + " * " + split + ")");
         }
 
         for (UnitActionTableEntry entry : unitActionTable) {
