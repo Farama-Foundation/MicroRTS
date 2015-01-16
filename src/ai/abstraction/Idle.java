@@ -25,6 +25,7 @@ public class Idle extends AbstractAction  {
 
     public UnitAction execute(GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
+        if (!unit.getType().canAttack) return null;
         for(Unit target:pgs.getUnits()) {
             if (target.getPlayer()!=-1 && target.getPlayer()!=unit.getPlayer()) {
                 int dx = target.getX()-unit.getX();
