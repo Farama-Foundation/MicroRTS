@@ -6,7 +6,6 @@
 
 package ai.portfolio.portfoliogreedysearch;
 
-import ai.portfolio.*;
 import ai.AI;
 import ai.abstraction.pathfinding.PathFinding;
 import ai.evaluation.EvaluationFunction;
@@ -38,7 +37,8 @@ public class PGSAI extends AI {
 
     public static int DEBUG = 0;
 
-    int MAX_TIME = 100;
+    int MAX_TIME = -1;
+    int MAX_PLAYOUTS = 1000;
     int LOOKAHEAD = 500;
     int I = 1;  // number of iterations for improving a given player
     int R = 1;  // number of times to improve with respect to the response fo the other player
@@ -50,9 +50,11 @@ public class PGSAI extends AI {
     UnitScript defaultScript = null;
 
     long start_time = 0;
+    int nplayouts = 0;
 
-    public PGSAI(int time, int la, int a_I, int a_R, EvaluationFunction e, UnitTypeTable a_utt, PathFinding a_pf) {
+    public PGSAI(int time, int max_playouts, int la, int a_I, int a_R, EvaluationFunction e, UnitTypeTable a_utt, PathFinding a_pf) {
         MAX_TIME = time;
+        MAX_PLAYOUTS = max_playouts;
         LOOKAHEAD = la;
         I = a_I;
         R = a_R;
@@ -146,6 +148,7 @@ public class PGSAI extends AI {
         // Note: here, the original algorithm does "getSeedPlayer", which only makes sense if the same scripts can be used for all the units
 
         start_time = System.currentTimeMillis();
+        nplayouts = 0;
         improve(player, playerScripts, playerUnits, enemyScripts, enemyUnits, gs);
         for(int r = 0;r<R;r++) {
             improve(1-player, enemyScripts, enemyUnits, playerScripts, playerUnits, gs);
@@ -188,6 +191,10 @@ public class PGSAI extends AI {
         for(int i = 0;i<I;i++) {
             if (DEBUG>=1) System.out.println("Improve player " + player + "(" + i + "/" + I + ")");
             for(int u = 0;u<scriptsToImprove.length;u++) {
+                if (MAX_PLAYOUTS>0 && nplayouts>=MAX_PLAYOUTS) {
+                    if (DEBUG>=1) System.out.println("nplayouts>=MAX_PLAYOUTS");
+                    return;
+                }
                 if (MAX_TIME>0 && System.currentTimeMillis()>=start_time+MAX_TIME) {
                     if (DEBUG>=1) System.out.println("Time out!");
                     return;
@@ -220,6 +227,7 @@ public class PGSAI extends AI {
                           UnitScript scripts1[], List<Unit> units1,
                           UnitScript scripts2[], List<Unit> units2, GameState gs) throws Exception {
 //        if (DEBUG>=1) System.out.println("  playout... " + LOOKAHEAD);
+        nplayouts++;
 
         AI ai1 = new UnitScriptsAI(scripts1, units1, scripts, defaultScript);
         AI ai2 = new UnitScriptsAI(scripts2, units2, scripts, defaultScript);
@@ -236,7 +244,7 @@ public class PGSAI extends AI {
                 gs2.issue(ai1.getAction(player, gs2));
                 gs2.issue(ai2.getAction(1-player, gs2));
             }
-        }
+        }        
         double e = evaluation.evaluate(player, 1-player, gs2);
 //        if (DEBUG>=1) System.out.println("  done: " + e);
         return e;
@@ -244,7 +252,7 @@ public class PGSAI extends AI {
 
 
     public AI clone() {
-        return new PGSAI(MAX_TIME, LOOKAHEAD, I, R, evaluation, utt, pf);
+        return new PGSAI(MAX_TIME, MAX_PLAYOUTS, LOOKAHEAD, I, R, evaluation, utt, pf);
     }
 
 }

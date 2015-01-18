@@ -55,7 +55,7 @@ public class CompareAllAIsObservable {
                                           new RangedRush(UnitTypeTable.utt, new BFSPathFinding()),
                                           new RandomBiasedAI()}, 
                                  new boolean[]{true,true,true,false}, 
-                                 TIME, PLAYOUT_TIME*4, new SimpleSqrtEvaluationFunction2()));
+                                 TIME, MAX_PLAYOUTS, PLAYOUT_TIME*4, new SimpleSqrtEvaluationFunction2()));
         
         bots.add(new IDContinuingRTMinimax(TIME, new SimpleEvaluationFunction()));
         bots.add(new IDContinuingRTMinimaxRandomized(TIME, RANDOMIZED_AB_REPEATS, new SimpleEvaluationFunction()));
