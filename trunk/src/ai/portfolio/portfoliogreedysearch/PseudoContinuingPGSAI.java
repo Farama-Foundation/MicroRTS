@@ -38,7 +38,8 @@ public class PseudoContinuingPGSAI extends AI {
 
     public static int DEBUG = 0;
 
-    int MAX_TIME = 100;
+    int MAX_TIME = -1;
+    int MAX_PLAYOUTS = 1000;
     int LOOKAHEAD = 500;
     int I = 1;  // number of iterations for improving a given player
     int R = 1;  // number of times to improve with respect to the response fo the other player
@@ -50,8 +51,9 @@ public class PseudoContinuingPGSAI extends AI {
 
     int n_cycles_to_think = 1;
     
-    public PseudoContinuingPGSAI(int time, int la, int a_I, int a_R, EvaluationFunction e, UnitTypeTable a_utt, PathFinding a_pf) {
+    public PseudoContinuingPGSAI(int time, int max_playouts, int la, int a_I, int a_R, EvaluationFunction e, UnitTypeTable a_utt, PathFinding a_pf) {
         MAX_TIME = time;
+        MAX_PLAYOUTS = max_playouts;
         LOOKAHEAD = la;
         I = a_I;
         R = a_R;
@@ -59,7 +61,7 @@ public class PseudoContinuingPGSAI extends AI {
         utt = a_utt;
         pf = a_pf;
         
-        internalAI = new PGSAI(MAX_TIME, LOOKAHEAD, I, R, evaluation, utt, pf);
+        internalAI = new PGSAI(MAX_TIME, MAX_PLAYOUTS, LOOKAHEAD, I, R, evaluation, utt, pf);
     }
 
 
@@ -71,6 +73,7 @@ public class PseudoContinuingPGSAI extends AI {
         if (gs.canExecuteAnyAction(player)) {
             if (DEBUG>=1) System.out.println("n_cycles_to_think = " + n_cycles_to_think);
             internalAI.MAX_TIME = MAX_TIME*n_cycles_to_think;
+            internalAI.MAX_PLAYOUTS = MAX_PLAYOUTS*n_cycles_to_think;
             PlayerAction pa = internalAI.getAction(player,gs);
             n_cycles_to_think = 1;
             return pa;
@@ -95,7 +98,7 @@ public class PseudoContinuingPGSAI extends AI {
 
 
     public AI clone() {
-        return new PseudoContinuingPGSAI(MAX_TIME, LOOKAHEAD, I, R, evaluation, utt, pf);
+        return new PseudoContinuingPGSAI(MAX_TIME, MAX_PLAYOUTS, LOOKAHEAD, I, R, evaluation, utt, pf);
     }
 
 }

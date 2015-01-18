@@ -19,14 +19,17 @@ public class PortfolioAI extends AI {
     
     public static int DEBUG = 0;
 
-    int MAX_TIME = 100;
+    // if MAX_TIME or MAX_PLAYOUTS are <= 0, they are ignored
+    int MAX_TIME = -1;
+    int MAX_PLAYOUTS = 1000;
     int LOOKAHEAD = 500;
     AI strategies[] = null;
     boolean deterministic[] = null;
     EvaluationFunction evaluation = null;
     
-    public PortfolioAI(AI s[], boolean d[], int time, int la, EvaluationFunction e) {
+    public PortfolioAI(AI s[], boolean d[], int time, int max_playouts, int la, EvaluationFunction e) {
         MAX_TIME = time;
+        MAX_PLAYOUTS = max_playouts;
         LOOKAHEAD = la;
         strategies = s;
         deterministic = d;
@@ -43,6 +46,7 @@ public class PortfolioAI extends AI {
         int n = strategies.length;
         double scores[][] = new double[n][n];
         int counts[][] = new int[n][n];
+        int nplayouts = 0;
         boolean timeout = false;
         long start = System.currentTimeMillis();
         
@@ -71,8 +75,10 @@ public class PortfolioAI extends AI {
                         }                
                         scores[i][j] += evaluation.evaluate(player, 1-player, gs2);
                         counts[i][j]++;
+                        nplayouts++;
                     }
-                    if (System.currentTimeMillis()>start+MAX_TIME) timeout = true;
+                    if (MAX_PLAYOUTS>0 && nplayouts>=MAX_PLAYOUTS) timeout = true;
+                    if (MAX_TIME>0 && System.currentTimeMillis()>start+MAX_TIME) timeout = true;
                 }
             }
             // when all the AIs are deterministic, as soon as we have done one play out with each, we are done
@@ -129,7 +135,7 @@ public class PortfolioAI extends AI {
     }
 
     public AI clone() {
-        return new PortfolioAI(strategies, deterministic, MAX_TIME, LOOKAHEAD, evaluation);
+        return new PortfolioAI(strategies, deterministic, MAX_TIME, MAX_PLAYOUTS,LOOKAHEAD, evaluation);
     }
     
 }

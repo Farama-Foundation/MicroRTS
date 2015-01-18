@@ -581,7 +581,7 @@ public class FEStatePane extends JPanel {
                                                       new RangedRush(currentUtt, pf),
                                                       new RandomBiasedAI()},
                                              new boolean[]{true,true,true,false},
-                                             TIME, PLAYOUT_TIME, ef);
+                                             TIME, MAX_PLAYOUTS, PLAYOUT_TIME, ef);
         } else if (AIs[idx]==IDContinuingRTMinimax.class) {
             return new IDContinuingRTMinimax(TIME, ef);
         } else if (AIs[idx]==IDContinuingRTMinimaxRandomized.class) {

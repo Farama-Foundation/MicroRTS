@@ -20,6 +20,7 @@ public class ContinuingPortfolioAI extends AI {
     public static int DEBUG = 0;
 
     int AVAILABLE_TIME = 100;
+    int MAX_PLAYOUTS = 1000;
     int LOOKAHEAD = 500;
     AI strategies[] = null;
     boolean deterministic[] = null;
@@ -28,10 +29,11 @@ public class ContinuingPortfolioAI extends AI {
     GameState gs_to_start_from = null;
     double scores[][] = null;
     int counts[][] = null;
+    int nplayouts = 0;
     
-    
-    public ContinuingPortfolioAI(AI s[], boolean d[], int time, int la, EvaluationFunction e) {
+    public ContinuingPortfolioAI(AI s[], boolean d[], int time, int max_playouts, int la, EvaluationFunction e) {
         AVAILABLE_TIME = time;
+        MAX_PLAYOUTS = max_playouts;
         LOOKAHEAD = la;
         strategies = s;
         deterministic = d;
@@ -56,14 +58,14 @@ public class ContinuingPortfolioAI extends AI {
                     System.err.println(gs_to_start_from);
                 }
             }
-            search(player, AVAILABLE_TIME);
+            search(player);
             PlayerAction best = getBestAction(player);
             resetSearch();
             return best;
         } else {
             if (scores!=null) {
                 // continue previous search:
-                search(player, AVAILABLE_TIME);
+                search(player);
             } else {
                 // determine who will be the next player:
                 GameState gs2 = gs.clone();
@@ -75,7 +77,7 @@ public class ContinuingPortfolioAI extends AI {
                     gs2.canExecuteAnyAction(player)) {
                     // start a new search:
                     startNewSearch(player,gs2);
-                    search(player, AVAILABLE_TIME);
+                    search(player);
                     return new PlayerAction();
                 } else {
                     return new PlayerAction();
@@ -92,6 +94,7 @@ public class ContinuingPortfolioAI extends AI {
         scores = new double[n][n];
         counts = new int[n][n];
         gs_to_start_from = gs;
+        nplayouts = 0;
     }
     
     public void resetSearch() {
@@ -100,7 +103,7 @@ public class ContinuingPortfolioAI extends AI {
         gs_to_start_from = null;
     }
     
-    public void search(int player, long available_time) throws Exception {        
+    public void search(int player) throws Exception {        
         int n = strategies.length;
         boolean timeout = false;
         long start = System.currentTimeMillis();
@@ -130,8 +133,10 @@ public class ContinuingPortfolioAI extends AI {
                         }                
                         scores[i][j] += evaluation.evaluate(player, 1-player, gs2);
                         counts[i][j]++;
+                        nplayouts++;
                     }
-                    if (System.currentTimeMillis()>start+available_time) timeout = true;
+                    if (MAX_PLAYOUTS>0 && nplayouts>=MAX_PLAYOUTS) timeout = true;
+                    if (AVAILABLE_TIME>0 && System.currentTimeMillis()>start+AVAILABLE_TIME) timeout = true;
                 }
             }
             // when all the AIs are deterministic, as soon as we have done one play out with each, we are done
@@ -192,7 +197,7 @@ public class ContinuingPortfolioAI extends AI {
     }
 
     public AI clone() {
-        return new ContinuingPortfolioAI(strategies, deterministic, AVAILABLE_TIME, LOOKAHEAD, evaluation);
+        return new ContinuingPortfolioAI(strategies, deterministic, AVAILABLE_TIME, MAX_PLAYOUTS, LOOKAHEAD, evaluation);
     }
     
 }
