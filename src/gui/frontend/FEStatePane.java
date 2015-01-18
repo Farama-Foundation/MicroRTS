@@ -137,6 +137,7 @@ public class FEStatePane extends JPanel {
 
     JFormattedTextField maxCyclesField = null;
     JCheckBox saveTraceBox = null;
+    JCheckBox slowDownBox = null;
     
     FEStateMouseListener mouseListener = null;
 
@@ -420,6 +421,9 @@ public class FEStatePane extends JPanel {
                                     AI ai1 = createAI(aiComboBox[0].getSelectedIndex(), 0);
                                     AI ai2 = createAI(aiComboBox[1].getSelectedIndex(), 1);
                                     int PERIOD = Integer.parseInt(cpuTimeField[0].getText()) + Integer.parseInt(cpuTimeField[1].getText());
+                                    if (!saveTraceBox.isSelected()) {
+                                        PERIOD = 1;
+                                    }
                                     int MAXCYCLES = Integer.parseInt(maxCyclesField.getText());
                                     GameState gs = currentGameState.clone();
                                     boolean gameover = false;
@@ -495,6 +499,13 @@ public class FEStatePane extends JPanel {
                 saveTraceBox.setAlignmentY(Component.TOP_ALIGNMENT);
                 saveTraceBox.setMaximumSize(new Dimension(120,20));
                 ptmp.add(saveTraceBox);
+            }
+            {
+                slowDownBox = new JCheckBox("Slow Down");
+                slowDownBox.setAlignmentX(Component.CENTER_ALIGNMENT);
+                slowDownBox.setAlignmentY(Component.TOP_ALIGNMENT);
+                slowDownBox.setMaximumSize(new Dimension(120,20));
+                ptmp.add(slowDownBox);
             }
             p1.add(ptmp);
         }
@@ -591,7 +602,7 @@ public class FEStatePane extends JPanel {
         } else if (AIs[idx]==IDContinuingRTMinimaxRandomized.class) {
             return new IDContinuingRTMinimaxRandomized(TIME, RANDOMIZED_AB_REPEATS, ef);
         } else if (AIs[idx]==IDContinuingABCD.class) {
-            return new IDContinuingABCD(TIME, new LightRush(currentUtt, pf), PLAYOUT_TIME, ef);
+            return new IDContinuingABCD(TIME, MAX_PLAYOUTS, new LightRush(currentUtt, pf), PLAYOUT_TIME, ef);
         } else if (AIs[idx]==IDContinuingDownsamplingABCD.class) {
             return new IDContinuingDownsamplingABCD(TIME, ABCD_DOWNSAMPLING, new LightRush(currentUtt, pf), PLAYOUT_TIME, ef);
         } else if (AIs[idx]==ContinuingMC.class) {

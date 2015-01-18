@@ -200,7 +200,7 @@ public class IDContinuingDownsamplingABCD extends IDDownsamplingABCD {
         ABCDNode head;
         if (stack==null) {
             stack = new LinkedList<ABCDNode>();
-            head = new ABCDNode(-1, 0, initial_gs, -EvaluationFunctionWithActions.VICTORY, EvaluationFunctionWithActions.VICTORY, maxplayer);
+            head = new ABCDNode(-1, 0, initial_gs, -EvaluationFunctionWithActions.VICTORY, EvaluationFunctionWithActions.VICTORY, 0);
             stack.add(head);
         } else {
             if (stack.isEmpty()) return lastResult.m_a;
