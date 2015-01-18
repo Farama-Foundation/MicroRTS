@@ -20,9 +20,42 @@ import util.Pair;
  *
  * @author santi
  */
-public class IDContinuingABCD extends IDABCD {
+public class IDContinuingABCD extends AI {
 
     public static int DEBUG = 0;
+    
+    int TIME_PER_CYCLE = -1;
+    int MAX_PLAYOUTS_PER_CYCLE = 1000;
+
+    int avg_depth_so_far = 0;
+    int count_depth_so_far = 0;
+
+    long avg_branching_so_far = 0;
+    int count_branching_so_far = 0;
+    
+    long avg_leaves_so_far = 0;
+    int count_leaves_so_far = 0;
+
+    long avg_nodes_so_far = 0;
+    int count_nodes_so_far = 0;
+
+    long max_potential_branching_so_far = 0;
+    long avg_potential_branching_so_far = 0;
+    int count_potential_branching_so_far = 0;
+
+    // reset at each execution of minimax:
+    int nPlayouts = 0;  // different form "nLeaves", since this is not reset due to iterative deepening
+    int nLeaves = 0;
+    int nNodes = 0;
+    
+    int max_depth_so_far = 0;
+    long max_branching_so_far = 0;
+    long max_leaves_so_far = 0;
+    long max_nodes_so_far = 0;
+    
+    AI playoutAI = null;
+    int maxPlayoutTime = 100;
+    EvaluationFunction ef = null;
 
     int max_consecutive_frames_searching_so_far = 0;
 
@@ -44,8 +77,12 @@ public class IDContinuingABCD extends IDABCD {
     Pair<PlayerAction,Float> lastResult = null;
     PlayerAction bestMove = null;
 
-    public IDContinuingABCD(int tpc, AI a_playoutAI, int a_maxPlayoutTime, EvaluationFunction a_ef) {
-        super(tpc, a_playoutAI, a_maxPlayoutTime, a_ef);
+    public IDContinuingABCD(int tpc, int ppc, AI a_playoutAI, int a_maxPlayoutTime, EvaluationFunction a_ef) {
+        playoutAI = a_playoutAI;
+        maxPlayoutTime = a_maxPlayoutTime;
+        ef = a_ef;
+        TIME_PER_CYCLE = tpc;
+        MAX_PLAYOUTS_PER_CYCLE = ppc;
     }
 
 
@@ -83,7 +120,7 @@ public class IDContinuingABCD extends IDABCD {
 
 
     public AI clone() {
-        return new IDContinuingABCD(TIME_PER_CYCLE, playoutAI, maxPlayoutTime, ef);
+        return new IDContinuingABCD(TIME_PER_CYCLE, MAX_PLAYOUTS_PER_CYCLE, playoutAI, maxPlayoutTime, ef);
     }
 
 
@@ -95,8 +132,8 @@ public class IDContinuingABCD extends IDABCD {
                 System.out.flush();
             }
             if (gs_to_start_from==null) gs_to_start_from = gs;
-            PlayerAction pa = IDContinuingABCD(player, gs_to_start_from, TIME_PER_CYCLE);
-//            System.out.println("IDContinuingRTMinimaxAI: " + pa);
+            PlayerAction pa = search(player, gs_to_start_from, TIME_PER_CYCLE, MAX_PLAYOUTS_PER_CYCLE);
+//            System.out.println("IDContinuingABCD: " + pa);
 
             // statistics:
             avg_depth_so_far+=last_depth;
@@ -129,7 +166,7 @@ public class IDContinuingABCD extends IDABCD {
                     System.out.println("IDContinuingABCD... (time  " + gs.getTime() + "): no action needed but I can continue the search");
                     System.out.flush();
                 }
-                IDContinuingABCD(player, gs_to_start_from, TIME_PER_CYCLE);
+                search(player, gs_to_start_from, TIME_PER_CYCLE, MAX_PLAYOUTS_PER_CYCLE);
                 return new PlayerAction();
             } else {
                 if (DEBUG>=1) {
@@ -150,7 +187,7 @@ public class IDContinuingABCD extends IDABCD {
                         System.out.flush();
                     }
                     // we will be the next one to act: start search!
-                    IDContinuingABCD(player, gs_to_start_from, TIME_PER_CYCLE);
+                    search(player, gs_to_start_from, TIME_PER_CYCLE, MAX_PLAYOUTS_PER_CYCLE);
                     return new PlayerAction();
                 } else {
                     if (DEBUG>=1) {
@@ -166,20 +203,23 @@ public class IDContinuingABCD extends IDABCD {
     }
 
 
-    public PlayerAction IDContinuingABCD(int player, GameState gs, int availableTime) throws Exception {
+    public PlayerAction search(int player, GameState gs, int availableTime, int maxPlayouts) throws Exception {
         int maxplayer = player;
         int minplayer = 1 - player;
         int depth = 1;
         long startTime = System.currentTimeMillis();
         long cutOffTime = startTime + availableTime;
-
+        
+        if (availableTime<=0) cutOffTime = 0;
+        nPlayouts = 0;
+        
         if (bestMove==null) {
             // The first time, we just want to do a quick evaluation of all actions, to have a first idea of what is best:
-            bestMove = greedyActionScan(gs,player, cutOffTime);
+            bestMove = greedyActionScan(gs,player, cutOffTime, maxPlayouts);
 //            System.out.println("greedyActionScan suggested action: " + bestMove);
         }
 
-        if (System.currentTimeMillis() >= cutOffTime) return bestMove;
+        if (cutOffTime>0 && System.currentTimeMillis() >= cutOffTime) return bestMove;
 
         consecutive_frames_searching++;
 
@@ -193,10 +233,11 @@ public class IDContinuingABCD extends IDABCD {
             }
 
             long currentTime = System.currentTimeMillis();
-            PlayerAction tmp = IDContinuingABCDOutsideStack(gs, maxplayer, minplayer, depth, cutOffTime, false);
+            PlayerAction tmp = searchOutsideStack(gs, maxplayer, minplayer, depth, cutOffTime, maxPlayouts, false);
             if (DEBUG>=1) {
                 System.out.println("  Time taken: " + (System.currentTimeMillis() - currentTime));
             }
+//            System.out.println(gs.getTime() + ", depth: " + depth + ", nPlayouts: " + nPlayouts + ", PA: " + tmp);
             if (tmp!=null) {
                 bestMove = tmp;
                 // the <200 condition is because sometimes, towards the end of the game, the tree is so
@@ -225,13 +266,15 @@ public class IDContinuingABCD extends IDABCD {
             nLeaves = 0;
             nNodes = 0;
             time_depth = 0;
-        }while(System.currentTimeMillis() - startTime < availableTime);
+            if (maxPlayouts>0 && nPlayouts>=maxPlayouts) break;
+            if (cutOffTime>0 && System.currentTimeMillis() >= cutOffTime) break;
+        }while(true);
         last_depth = depth;
         return bestMove;
     }
 
 
-    public PlayerAction greedyActionScan(GameState gs, int player, long cutOffTime) throws Exception {
+    public PlayerAction greedyActionScan(GameState gs, int player, long cutOffTime, int maxPlayouts) throws Exception {
         PlayerAction best = null;
         float bestScore = 0;
         PlayerActionGenerator pag = new PlayerActionGenerator(gs,player);
@@ -249,26 +292,31 @@ public class IDContinuingABCD extends IDABCD {
                     bestScore = score;
                 }
             }
-            if (System.currentTimeMillis()>cutOffTime) return best;
+            if (cutOffTime>0 && System.currentTimeMillis()>cutOffTime) return best;
         }while(pa!=null);
         return best;
     }
 
 
-    public PlayerAction IDContinuingABCDOutsideStack(GameState initial_gs, int maxplayer, int minplayer, int depth, long cutOffTime, boolean needAResult) throws Exception {
+    public PlayerAction searchOutsideStack(GameState initial_gs, int maxplayer, int minplayer, int depth, long cutOffTime, int maxPlayouts, boolean needAResult) throws Exception {
         ABCDNode head;
         if (stack==null) {
+//            System.out.println("searchOutsideStack: stack is null (maxplayer: " + maxplayer + ")");
             nLeaves = 0;
             time_depth = 0;
             stack = new LinkedList<ABCDNode>();
-            head = new ABCDNode(-1, 0, initial_gs, -EvaluationFunctionWithActions.VICTORY, EvaluationFunctionWithActions.VICTORY, maxplayer);
+            head = new ABCDNode(-1, 0, initial_gs, -EvaluationFunctionWithActions.VICTORY, EvaluationFunctionWithActions.VICTORY, 0);
             stack.add(head);
             treeIsComplete = true;
         } else {
+//            System.out.println("searchOutsideStack: stack is NOT null");
             if (stack.isEmpty()) return lastResult.m_a;
             head = stack.get(stack.size()-1);
+//            System.out.println("searchOutsideStack: head type " + head.type);
         }
-        while(!stack.isEmpty() && System.currentTimeMillis()<cutOffTime){
+        while(!stack.isEmpty()) {
+            if (cutOffTime>0 && System.currentTimeMillis()>=cutOffTime) break;
+            if (nPlayouts>=maxPlayouts) break;
 
 //            System.out.print("Stack: [ ");
 //            for(RTMiniMaxNode n:stack) System.out.print(" " + n.type + "(" + n.gs.getTime() + ") ");
@@ -285,6 +333,7 @@ public class IDContinuingABCD extends IDABCD {
                                 }
                                 nLeaves++;
                                 nNodes++;
+                                nPlayouts++;
 
                                 // Run the play out:
                                 GameState gs2 = current.gs.clone();
@@ -301,8 +350,8 @@ public class IDContinuingABCD extends IDABCD {
                                         gs2.issue(playoutAI2.getAction(1, gs2));
                                     }
                                 }
-
                                 lastResult = new Pair<PlayerAction,Float>(null,ef.evaluate(maxplayer,minplayer, gs2));
+//                                System.out.println("last result from -1 node");
                                 stack.remove(0);
                             } else {
                                 current.type = 2;
@@ -414,7 +463,11 @@ public class IDContinuingABCD extends IDABCD {
             }
         }
 
-        if (stack.isEmpty()) return lastResult.m_a;
+        if (stack.isEmpty()) {
+//            System.out.println("searchOutsideStack: stack is empty, returning last result.");
+            return lastResult.m_a;
+        }
+//        System.out.println("searchOutsideStack: stack is not empty.");
         if (needAResult) {
             if (head.best!=null) return head.best.m_a;
             return head.actions.getRandom();
