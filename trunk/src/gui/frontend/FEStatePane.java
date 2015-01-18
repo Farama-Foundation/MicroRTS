@@ -39,6 +39,7 @@ import ai.montecarlo.ContinuingNaiveMC;
 import ai.montecarlo.lsi.PseudoContinuingLSI;
 import ai.montecarlo.lsi.Sampling;
 import ai.portfolio.ContinuingPortfolioAI;
+import ai.portfolio.portfoliogreedysearch.PseudoContinuingPGSAI;
 import gui.MouseController;
 import gui.PhysicalGameStateMouseJFrame;
 import gui.PhysicalGameStatePanel;
@@ -103,6 +104,7 @@ public class FEStatePane extends JPanel {
                    HeavyRush.class,
                    RangedRush.class,
                    ContinuingPortfolioAI.class,
+                   PseudoContinuingPGSAI.class,
                    IDContinuingRTMinimax.class,
                    IDContinuingRTMinimaxRandomized.class,
                    IDContinuingABCD.class,
@@ -582,6 +584,8 @@ public class FEStatePane extends JPanel {
                                                       new RandomBiasedAI()},
                                              new boolean[]{true,true,true,false},
                                              TIME, MAX_PLAYOUTS, PLAYOUT_TIME, ef);
+        } else if (AIs[idx]==PseudoContinuingPGSAI.class) {
+            return new PseudoContinuingPGSAI(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 1, 5, ef, UnitTypeTable.utt, pf);
         } else if (AIs[idx]==IDContinuingRTMinimax.class) {
             return new IDContinuingRTMinimax(TIME, ef);
         } else if (AIs[idx]==IDContinuingRTMinimaxRandomized.class) {
@@ -593,9 +597,9 @@ public class FEStatePane extends JPanel {
         } else if (AIs[idx]==ContinuingMC.class) {
             return new ContinuingMC(TIME, PLAYOUT_TIME, playout_policy, ef);
         } else if (AIs[idx]==ContinuingDownsamplingMC.class) {
-            return new ContinuingDownsamplingMC(TIME, PLAYOUT_TIME, MAX_ACTIONS, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction2());
+            return new ContinuingDownsamplingMC(TIME, PLAYOUT_TIME, MAX_ACTIONS, new RandomBiasedAI(), ef);
         } else if (AIs[idx]==ContinuingNaiveMC.class) {
-            return new ContinuingNaiveMC(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 0.33f, 0.25f, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction2());
+            return new ContinuingNaiveMC(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 0.33f, 0.25f, new RandomBiasedAI(), ef);
         } else if (AIs[idx]==PseudoContinuingLSI.class) {
             return new PseudoContinuingLSI(MAX_PLAYOUTS, PLAYOUT_TIME, LSI_SPLIT,
                 PseudoContinuingLSI.EstimateType.RANDOM_TAIL, PseudoContinuingLSI.EstimateReuseType.ALL,
@@ -605,13 +609,13 @@ public class FEStatePane extends JPanel {
                 false,
                 playout_policy, ef);
         } else if (AIs[idx]==ContinuingUCT.class) {
-            return new ContinuingUCT(TIME, PLAYOUT_TIME, MAX_DEPTH, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction2());
+            return new ContinuingUCT(TIME, PLAYOUT_TIME, MAX_DEPTH, new RandomBiasedAI(), ef);
         } else if (AIs[idx]==ContinuingUCTUnitActions.class) {
-            return new ContinuingUCTUnitActions(TIME, PLAYOUT_TIME, MAX_DEPTH*10, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction2());
+            return new ContinuingUCTUnitActions(TIME, PLAYOUT_TIME, MAX_DEPTH*10, new RandomBiasedAI(), ef);
         } else if (AIs[idx]==ContinuingUCTFirstPlayUrgency.class) {
-            return new ContinuingUCTFirstPlayUrgency(TIME, PLAYOUT_TIME, MAX_DEPTH, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction2(), fpu_value);
+            return new ContinuingUCTFirstPlayUrgency(TIME, PLAYOUT_TIME, MAX_DEPTH, new RandomBiasedAI(), ef, fpu_value);
         } else if (AIs[idx]==ContinuingNaiveMCTS.class) {
-            return new ContinuingNaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction2());
+            return new ContinuingNaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), ef);
         } else if (AIs[idx]==MouseController.class) {
             return new MouseController(null);
         }
