@@ -56,6 +56,7 @@ public class IDContinuingABCD extends AI {
     AI playoutAI = null;
     int maxPlayoutTime = 100;
     EvaluationFunction ef = null;
+    boolean performGreedyActionScan = false;
 
     int max_consecutive_frames_searching_so_far = 0;
 
@@ -77,7 +78,7 @@ public class IDContinuingABCD extends AI {
     Pair<PlayerAction,Float> lastResult = null;
     PlayerAction bestMove = null;
 
-    public IDContinuingABCD(int tpc, int ppc, AI a_playoutAI, int a_maxPlayoutTime, EvaluationFunction a_ef) {
+    public IDContinuingABCD(int tpc, int ppc, AI a_playoutAI, int a_maxPlayoutTime, EvaluationFunction a_ef, boolean a_performGreedyActionScan) {
         playoutAI = a_playoutAI;
         maxPlayoutTime = a_maxPlayoutTime;
         ef = a_ef;
@@ -120,7 +121,7 @@ public class IDContinuingABCD extends AI {
 
 
     public AI clone() {
-        return new IDContinuingABCD(TIME_PER_CYCLE, MAX_PLAYOUTS_PER_CYCLE, playoutAI, maxPlayoutTime, ef);
+        return new IDContinuingABCD(TIME_PER_CYCLE, MAX_PLAYOUTS_PER_CYCLE, playoutAI, maxPlayoutTime, ef, performGreedyActionScan);
     }
 
 
@@ -213,7 +214,7 @@ public class IDContinuingABCD extends AI {
         if (availableTime<=0) cutOffTime = 0;
         nPlayouts = 0;
         
-        if (bestMove==null) {
+        if (bestMove==null && performGreedyActionScan) {
             // The first time, we just want to do a quick evaluation of all actions, to have a first idea of what is best:
             bestMove = greedyActionScan(gs,player, cutOffTime, maxPlayouts);
 //            System.out.println("greedyActionScan suggested action: " + bestMove);
