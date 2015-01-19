@@ -602,7 +602,7 @@ public class FEStatePane extends JPanel {
         } else if (AIs[idx]==IDContinuingRTMinimaxRandomized.class) {
             return new IDContinuingRTMinimaxRandomized(TIME, RANDOMIZED_AB_REPEATS, ef);
         } else if (AIs[idx]==IDContinuingABCD.class) {
-            return new IDContinuingABCD(TIME, MAX_PLAYOUTS, new LightRush(currentUtt, pf), PLAYOUT_TIME, ef);
+            return new IDContinuingABCD(TIME, MAX_PLAYOUTS, new LightRush(currentUtt, pf), PLAYOUT_TIME, ef, false);
         } else if (AIs[idx]==IDContinuingDownsamplingABCD.class) {
             return new IDContinuingDownsamplingABCD(TIME, ABCD_DOWNSAMPLING, new LightRush(currentUtt, pf), PLAYOUT_TIME, ef);
         } else if (AIs[idx]==ContinuingMC.class) {
