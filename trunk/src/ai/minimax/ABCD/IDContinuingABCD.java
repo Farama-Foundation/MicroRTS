@@ -220,7 +220,13 @@ public class IDContinuingABCD extends AI {
 //            System.out.println("greedyActionScan suggested action: " + bestMove);
         }
 
-        if (cutOffTime>0 && System.currentTimeMillis() >= cutOffTime) return bestMove;
+        if (cutOffTime>0 && System.currentTimeMillis() >= cutOffTime) {
+            if (bestMove == null) {
+                PlayerActionGenerator pag = new PlayerActionGenerator(gs,player);
+                return pag.getRandom();
+            }
+            return bestMove;
+        }
 
         consecutive_frames_searching++;
 
@@ -271,6 +277,10 @@ public class IDContinuingABCD extends AI {
             if (cutOffTime>0 && System.currentTimeMillis() >= cutOffTime) break;
         }while(true);
         last_depth = depth;
+        if (bestMove == null) {
+            PlayerActionGenerator pag = new PlayerActionGenerator(gs,player);
+            return pag.getRandom();
+        }
         return bestMove;
     }
 
