@@ -150,7 +150,7 @@ public class WorkerRush extends AbstractionLayerAI {
             }
             closestDistance = 0;
             for(Unit u2:pgs.getUnits()) {
-                if (u2.getType().isStockpile) { 
+                if (u2.getType().isStockpile && u2.getPlayer()==p.getID()) { 
                     int d = Math.abs(u2.getX() - harvestWorker.getX()) + Math.abs(u2.getY() - harvestWorker.getY());
                     if (closestBase==null || d<closestDistance) {
                         closestBase = u2;
