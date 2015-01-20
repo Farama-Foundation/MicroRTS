@@ -213,7 +213,7 @@ public class IDContinuingABCD extends AI {
         long startTime = System.currentTimeMillis();
         long cutOffTime = startTime + availableTime;
         
-        System.out.println("ABCD search starts (consecutive_frames_searching: " + consecutive_frames_searching + ")");
+//        System.out.println("ABCD search starts (consecutive_frames_searching: " + consecutive_frames_searching + ")");
 
         if (availableTime<=0) cutOffTime = 0;
         nPlayouts = 0;
