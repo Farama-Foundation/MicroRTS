@@ -39,8 +39,8 @@ public class UnitScriptHarvest extends UnitScript {
     }
     
     public UnitScript instantiate(Unit u, GameState gs) {
-        Unit closestResource = closestUnitOfType(u, gs, utt.getUnitType("Resource"));
-        Unit closestBase = closestUnitOfType(u, gs, utt.getUnitType("Base"));
+        Unit closestResource = closestUnitOfType(u, gs, utt.getUnitType("Resource"), null);
+        Unit closestBase = closestUnitOfType(u, gs, utt.getUnitType("Base"), u.getPlayer());
         if (closestResource != null && closestBase != null) {
             UnitScriptHarvest script = new UnitScriptHarvest(pf, utt);
             script.action = new Harvest(u, closestResource, closestBase, pf);
@@ -51,11 +51,12 @@ public class UnitScriptHarvest extends UnitScript {
     }
     
     
-    public Unit closestUnitOfType(Unit u, GameState gs, UnitType type) {
+    public Unit closestUnitOfType(Unit u, GameState gs, UnitType type, Integer player) {
         Unit closest = null;
         int closestDistance = 0;
         for (Unit u2 : gs.getPhysicalGameState().getUnits()) {
             if (u2.getType() == type) {
+                if (player!=null && u2.getPlayer()!=player) continue;
                 int d = Math.abs(u2.getX() - u.getX()) + Math.abs(u2.getY() - u.getY());
                 if (closest == null || d < closestDistance) {
                     closest = u2;
