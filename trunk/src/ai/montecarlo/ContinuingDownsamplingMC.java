@@ -59,11 +59,12 @@ public class ContinuingDownsamplingMC extends AI {
     }
     
     
-    public void printStats() {
+    public String statisticsString() {
         if (total_cycles_executed>0 && total_actions_issued>0) {
-            System.out.println("Average runs per cycle: " + ((double)total_runs)/total_cycles_executed);
-            System.out.println("Average runs per action: " + ((double)total_runs)/total_actions_issued);
+            return "Avg runs per cycle: " + ((double)total_runs)/total_cycles_executed + 
+                   ", Avg runs per action: " + ((double)total_runs)/total_actions_issued;
         }
+        return "";
     }
     
     public void reset() {
