@@ -608,7 +608,7 @@ public class FEStatePane extends JPanel {
         } else if (AIs[idx]==ContinuingMC.class) {
             return new ContinuingMC(TIME, PLAYOUT_TIME, MAX_PLAYOUTS, playout_policy, ef);
         } else if (AIs[idx]==ContinuingDownsamplingMC.class) {
-            return new ContinuingDownsamplingMC(TIME, PLAYOUT_TIME, MAX_ACTIONS, new RandomBiasedAI(), ef);
+            return new ContinuingDownsamplingMC(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_ACTIONS, new RandomBiasedAI(), ef);
         } else if (AIs[idx]==ContinuingNaiveMC.class) {
             return new ContinuingNaiveMC(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 0.33f, 0.25f, new RandomBiasedAI(), ef);
         } else if (AIs[idx]==PseudoContinuingLSI.class) {

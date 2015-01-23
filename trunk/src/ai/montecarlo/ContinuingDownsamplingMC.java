@@ -44,15 +44,17 @@ public class ContinuingDownsamplingMC extends AI {
     public long total_cycles_executed = 0;
     public long total_actions_issued = 0;
         
-    int TIME_PER_CYCLE = 100;
+    int TIME_PER_CYCLE = -1;
+    int PLAYOUTS_PER_CYCLE = 200;
     long MAXACTIONS = 100;
     int MAXSIMULATIONTIME = 1024;
     
-    public ContinuingDownsamplingMC(int available_time, int lookahead, long maxactions, AI policy, EvaluationFunction a_ef) {
+    public ContinuingDownsamplingMC(int available_time, int playouts_per_cycle, int lookahead, long maxactions, AI policy, EvaluationFunction a_ef) {
         MAXACTIONS = maxactions;
         MAXSIMULATIONTIME = lookahead;
         randomAI = policy;
         TIME_PER_CYCLE = available_time;
+        PLAYOUTS_PER_CYCLE = playouts_per_cycle;
         ef = a_ef;
     }
     
@@ -72,7 +74,7 @@ public class ContinuingDownsamplingMC extends AI {
     }    
     
     public AI clone() {
-        return new ContinuingDownsamplingMC(TIME_PER_CYCLE, MAXSIMULATIONTIME, MAXACTIONS, randomAI, ef);
+        return new ContinuingDownsamplingMC(TIME_PER_CYCLE, PLAYOUTS_PER_CYCLE, MAXSIMULATIONTIME, MAXACTIONS, randomAI, ef);
     }
     
     public PlayerAction getAction(int player, GameState gs) throws Exception{
@@ -80,7 +82,7 @@ public class ContinuingDownsamplingMC extends AI {
         if (gs.canExecuteAnyAction(player)) {
             // continue or start a search:
             if (moveGenerator==null) {
-                startNewSearch(player,gs, System.currentTimeMillis() + TIME_PER_CYCLE);
+                startNewSearch(player,gs, (TIME_PER_CYCLE>0 ? System.currentTimeMillis() + TIME_PER_CYCLE:0));
             } else {
                 if (!gs.getPhysicalGameState().equivalents(gs_to_start_from.getPhysicalGameState())) {
                     System.err.println("Game state used for search NOT equivalent to the actual one!!!");
@@ -107,7 +109,7 @@ public class ContinuingDownsamplingMC extends AI {
                     !gs2.canExecuteAnyAction(1)) gs2.cycle();
                 if (gs2.canExecuteAnyAction(player)) {
                     // start a new search:
-                    startNewSearch(player,gs2, System.currentTimeMillis() + TIME_PER_CYCLE);
+                    startNewSearch(player,gs2, (TIME_PER_CYCLE>0 ? System.currentTimeMillis() + TIME_PER_CYCLE:0));
                     search(player, TIME_PER_CYCLE);
                     return new PlayerAction();
                 } else {
@@ -164,8 +166,12 @@ public class ContinuingDownsamplingMC extends AI {
     public void search(int player, long available_time) throws Exception {
         if (DEBUG>=2) System.out.println("Search...");
         long start = System.currentTimeMillis();
-        while((System.currentTimeMillis() - start)<available_time) {
+        int nruns = 0;
+        while(true) {
+            if (TIME_PER_CYCLE>0 && (System.currentTimeMillis() - start)<TIME_PER_CYCLE) break;
+            if (PLAYOUTS_PER_CYCLE>0 && nruns>=PLAYOUTS_PER_CYCLE) break;
             monteCarloRun(player, gs_to_start_from);
+            nruns++;
         }
         
         total_cycles_executed++;
@@ -225,7 +231,7 @@ public class ContinuingDownsamplingMC extends AI {
     }
     
     public String toString() {
-        return "ContinuingDownsamplingMC(" + MAXSIMULATIONTIME + "," + MAXACTIONS + ")";
+        return "ContinuingDownsamplingMC(" + MAXSIMULATIONTIME + "," + PLAYOUTS_PER_CYCLE + "," + MAXACTIONS + ")";
     }
     
 }

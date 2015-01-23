@@ -81,7 +81,7 @@ public class ContinuingMC extends AI {
         if (gs.canExecuteAnyAction(player)) {
             // continue or start a search:
             if (moveGenerator==null) {
-                startNewSearch(player,gs, System.currentTimeMillis() + TIME_PER_CYCLE);
+                startNewSearch(player,gs, (TIME_PER_CYCLE>0 ? System.currentTimeMillis() + TIME_PER_CYCLE:0));
             } else {
                 if (!gs.getPhysicalGameState().equivalents(gs_to_start_from.getPhysicalGameState())) {
                     System.err.println("Game state used for search NOT equivalent to the actual one!!!");
@@ -108,7 +108,7 @@ public class ContinuingMC extends AI {
                     !temporary_gameState.canExecuteAnyAction(1)) temporary_gameState.cycle();
                 if (temporary_gameState.canExecuteAnyAction(player)) {
                     // start a new search:
-                    startNewSearch(player,temporary_gameState, System.currentTimeMillis() + TIME_PER_CYCLE);
+                    startNewSearch(player,temporary_gameState, (TIME_PER_CYCLE>0 ? System.currentTimeMillis() + TIME_PER_CYCLE:0));
                     search(player);
                     return new PlayerAction();
                 } else {
@@ -127,7 +127,7 @@ public class ContinuingMC extends AI {
         moveGenerator = new PlayerActionGenerator(gs,player);
         
         actions = new LinkedList<PlayerActionTableEntry>();
-        {      
+        {
             PlayerAction pa;
             do{
                 pa = moveGenerator.getNextAction(cutOffTime);
