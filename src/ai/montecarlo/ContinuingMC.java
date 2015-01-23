@@ -45,13 +45,15 @@ public class ContinuingMC extends AI {
     public long total_cycles_executed = 0;
     public long total_actions_issued = 0;
         
-    int TIME_PER_CYCLE = 100;
+    int TIME_PER_CYCLE = -1;
+    int PLAYOUTS_PER_CYCLE = 200;
     int MAXSIMULATIONTIME = 1024;
     
-    public ContinuingMC(int available_time, int lookahead, AI policy, EvaluationFunction a_ef) {
+    public ContinuingMC(int available_time, int playouts_per_cycle, int lookahead, AI policy, EvaluationFunction a_ef) {
         MAXSIMULATIONTIME = lookahead;
         randomAI = policy;
         TIME_PER_CYCLE = available_time;
+        PLAYOUTS_PER_CYCLE = playouts_per_cycle;
         ef = a_ef;
     }
     
@@ -71,7 +73,7 @@ public class ContinuingMC extends AI {
     }    
     
     public AI clone() {
-        return new ContinuingMC(TIME_PER_CYCLE, MAXSIMULATIONTIME, randomAI, ef);
+        return new ContinuingMC(TIME_PER_CYCLE, PLAYOUTS_PER_CYCLE, MAXSIMULATIONTIME, randomAI, ef);
     }
     
     public PlayerAction getAction(int player, GameState gs) throws Exception{
@@ -89,14 +91,14 @@ public class ContinuingMC extends AI {
                     System.err.println(gs_to_start_from);
                 }
             }
-            search(player, TIME_PER_CYCLE);
+            search(player);
             PlayerAction best = getBestAction();
             resetSearch();
             return best;
         } else {
             if (moveGenerator!=null) {
                 // continue previous search:
-                search(player, TIME_PER_CYCLE);
+                search(player);
             } else {
                 // determine who will be the next player:
                 GameState temporary_gameState = gs.clone();
@@ -107,7 +109,7 @@ public class ContinuingMC extends AI {
                 if (temporary_gameState.canExecuteAnyAction(player)) {
                     // start a new search:
                     startNewSearch(player,temporary_gameState, System.currentTimeMillis() + TIME_PER_CYCLE);
-                    search(player, TIME_PER_CYCLE);
+                    search(player);
                     return new PlayerAction();
                 } else {
                     return new PlayerAction();
@@ -151,11 +153,15 @@ public class ContinuingMC extends AI {
     }
     
 
-    public void search(int player, long available_time) throws Exception {
+    public void search(int player) throws Exception {
         if (DEBUG>=2) System.out.println("Search...");
         long start = System.currentTimeMillis();
-        while((System.currentTimeMillis() - start)<available_time) {
+        int nruns = 0;
+        while(true) {
+            if (TIME_PER_CYCLE>0 && (System.currentTimeMillis() - start)<TIME_PER_CYCLE) break;
+            if (PLAYOUTS_PER_CYCLE>0 && nruns>=PLAYOUTS_PER_CYCLE) break;
             monteCarloRun(player, gs_to_start_from);
+            nruns++;
         }
         
         total_cycles_executed++;
@@ -213,7 +219,7 @@ public class ContinuingMC extends AI {
     }
     
     public String toString() {
-        return "ContinuingMC(" + MAXSIMULATIONTIME + ")";
+        return "ContinuingMC(" + TIME_PER_CYCLE + "," +  PLAYOUTS_PER_CYCLE + "," + MAXSIMULATIONTIME + ")";
     }
     
 }
