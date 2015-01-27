@@ -85,26 +85,26 @@ public class Experimenter {
                             PlayerAction pa1 = null, pa2 = null;
                             if (partiallyObservable) {
                                 pa1 = ai1.getAction(0, new PartiallyObservableGameState(gs,0));
-                                if (DEBUG>=1) {out.println("AI1 done.");out.flush();}
+//                                if (DEBUG>=1) {System.out.println("AI1 done.");out.flush();}
                                 pa2 = ai2.getAction(1, new PartiallyObservableGameState(gs,1));
-                                if (DEBUG>=1) {out.println("AI2 done.");out.flush();}
+//                                if (DEBUG>=1) {System.out.println("AI2 done.");out.flush();}
                             } else {
                                 pa1 = ai1.getAction(0, gs);
-                                if (DEBUG>=1) {out.println("AI1 done.");out.flush();}
+//                                if (DEBUG>=1) {System.out.println("AI1 done.");out.flush();}
                                 pa2 = ai2.getAction(1, gs);
-                                if (DEBUG>=1) {out.println("AI2 done.");out.flush();}
+//                                if (DEBUG>=1) {System.out.println("AI2 done.");out.flush();}
                             }
                             if (gs.issueSafe(pa1)) lastTimeActionIssued = gs.getTime();
-                            if (DEBUG>=1) {out.println("issue action AI1 done: " + pa1);out.flush();}
+//                            if (DEBUG>=1) {System.out.println("issue action AI1 done: " + pa1);out.flush();}
                             if (gs.issueSafe(pa2)) lastTimeActionIssued = gs.getTime();
-                            if (DEBUG>=1) {out.println("issue action AI2 done:" + pa2);out.flush();}
+//                            if (DEBUG>=1) {System.out.println("issue action AI2 done:" + pa2);out.flush();}
                             gameover = gs.cycle();
-                            if (DEBUG>=1) {out.println("cycle done.");out.flush();}
+                            //if (DEBUG>=1) {System.out.println("cycle done.");out.flush();}
                             if (w!=null) {
                                 w.setState(gs.clone());
                                 w.repaint();
                             }
-                            if (DEBUG>=1) {out.println("repaint done.");out.flush();}
+//                            if (DEBUG>=1) {System.out.println("repaint done.");out.flush();}
                             try {
                                 Thread.sleep(1);    // give time to the window to repaint
                             } catch (Exception e) {

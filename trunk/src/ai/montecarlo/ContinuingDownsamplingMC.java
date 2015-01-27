@@ -129,7 +129,7 @@ public class ContinuingDownsamplingMC extends AI {
         moveGenerator = new PlayerActionGenerator(gs,player);
         
         actions = new LinkedList<PlayerActionTableEntry>();
-        if (moveGenerator.getSize()>10*MAXACTIONS) {
+        if (moveGenerator.getSize()>2*MAXACTIONS) {
             for(int i = 0;i<MAXACTIONS;i++) {
                 PlayerActionTableEntry pate = new PlayerActionTableEntry();
                 pate.pa = moveGenerator.getRandom();
