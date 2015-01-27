@@ -36,6 +36,7 @@ public class ContinuingMC extends AI {
     long max_actions_so_far = 0;
     
     PlayerActionGenerator  moveGenerator = null;
+    boolean allMovesGenerated = false;
     List<PlayerActionTableEntry> actions = null;
     GameState gs_to_start_from = null;
     int run = 0;
@@ -81,7 +82,7 @@ public class ContinuingMC extends AI {
         if (gs.canExecuteAnyAction(player)) {
             // continue or start a search:
             if (moveGenerator==null) {
-                startNewSearch(player,gs, (TIME_PER_CYCLE>0 ? System.currentTimeMillis() + TIME_PER_CYCLE:0));
+                startNewSearch(player,gs);
             } else {
                 if (!gs.getPhysicalGameState().equivalents(gs_to_start_from.getPhysicalGameState())) {
                     System.err.println("Game state used for search NOT equivalent to the actual one!!!");
@@ -108,7 +109,7 @@ public class ContinuingMC extends AI {
                     !temporary_gameState.canExecuteAnyAction(1)) temporary_gameState.cycle();
                 if (temporary_gameState.canExecuteAnyAction(player)) {
                     // start a new search:
-                    startNewSearch(player,temporary_gameState, (TIME_PER_CYCLE>0 ? System.currentTimeMillis() + TIME_PER_CYCLE:0));
+                    startNewSearch(player,temporary_gameState);
                     search(player);
                     return new PlayerAction();
                 } else {
@@ -120,26 +121,13 @@ public class ContinuingMC extends AI {
         return new PlayerAction();
     }    
     
-    public void startNewSearch(int player, GameState gs, long cutOffTime) throws Exception {
+    public void startNewSearch(int player, GameState gs) throws Exception {
         if (DEBUG>=2) System.out.println("Starting a new search...");
         if (DEBUG>=2) System.out.println(gs);
         gs_to_start_from = gs;
         moveGenerator = new PlayerActionGenerator(gs,player);
-        
+        allMovesGenerated = false;
         actions = new LinkedList<PlayerActionTableEntry>();
-        {
-            PlayerAction pa;
-            do{
-                pa = moveGenerator.getNextAction(cutOffTime);
-                if (pa!=null) {
-                    PlayerActionTableEntry pate = new PlayerActionTableEntry();
-                    pate.pa = pa;
-                    actions.add(pate);
-                }
-            }while(pa!=null);
-            max_actions_so_far = Math.max(actions.size(),max_actions_so_far);
-            if (DEBUG>=1) System.out.println("MontCarloAI (complete generation plus random reduction) for player " + player + " chooses between " + actions.size() + " actions [maximum so far " + max_actions_so_far + "] (cycle " + gs.getTime() + ")");
-        }
         run = 0;
     }    
     
@@ -157,9 +145,26 @@ public class ContinuingMC extends AI {
         if (DEBUG>=2) System.out.println("Search...");
         long start = System.currentTimeMillis();
         int nruns = 0;
+        long cutOffTime = (TIME_PER_CYCLE>0 ? System.currentTimeMillis() + TIME_PER_CYCLE:0);
+        if (TIME_PER_CYCLE<=0) cutOffTime = 0;
         while(true) {
             if (TIME_PER_CYCLE>0 && (System.currentTimeMillis() - start)<TIME_PER_CYCLE) break;
             if (PLAYOUTS_PER_CYCLE>0 && nruns>=PLAYOUTS_PER_CYCLE) break;
+            
+            if (!allMovesGenerated) {
+                PlayerAction pa;
+                pa = moveGenerator.getNextAction(cutOffTime);
+                if (pa!=null) {
+                    PlayerActionTableEntry pate = new PlayerActionTableEntry();
+                    pate.pa = pa;
+                    actions.add(pate);
+                } else {
+                    allMovesGenerated = true;
+                    max_actions_so_far = Math.max(actions.size(),max_actions_so_far);
+                    if (DEBUG>=1) System.out.println("MontCarloAI (complete generation plus random reduction) for player " + player + " chooses between " + actions.size() + " actions [maximum so far " + max_actions_so_far + "]");
+                }
+            }
+            
             monteCarloRun(player, gs_to_start_from);
             nruns++;
         }
@@ -170,6 +175,7 @@ public class ContinuingMC extends AI {
 
     public void monteCarloRun(int player, GameState gs) throws Exception {
         int idx = run%actions.size();
+//        System.out.println(idx);
         PlayerActionTableEntry pate = actions.get(idx);
 
         GameState gs2 = gs.cloneIssue(pate.pa);
