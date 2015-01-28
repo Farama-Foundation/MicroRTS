@@ -119,7 +119,9 @@ public class IDABCD extends ABCD {
             switch (current.type) {
                 case -1: // unknown node:
                 {
-                    if (current.depth>=depth || current.gs.winner() != -1) {
+                    int winner = current.gs.winner();
+                    boolean gameover = current.gs.gameover();
+                    if (current.depth>=depth || winner != -1 || gameover) {
                         nNodes++;
                         nLeaves++;
 
@@ -128,7 +130,7 @@ public class IDABCD extends ABCD {
                         AI playoutAI1 = playoutAI.clone();
                         AI playoutAI2 = playoutAI.clone();
                         int timeOut = gs2.getTime() + maxPlayoutTime;
-                        boolean gameover = false;
+                        gameover = false;
                         while (!gameover && gs2.getTime() < timeOut) {
                             PlayerAction pa1 = playoutAI1.getAction(0, gs2);
                             PlayerAction pa2 = playoutAI2.getAction(1, gs2);
