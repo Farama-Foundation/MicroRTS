@@ -345,7 +345,8 @@ public class IDContinuingABCD extends AI {
                 case -1: // unknown node:
                         {
                             int winner = current.gs.winner();
-                            if (current.depth>=depth || winner != -1) {
+                            boolean gameover = current.gs.gameover();
+                            if (current.depth>=depth || winner != -1 || gameover) {
                                 if (current.gs.getTime() - initial_gs.getTime() > time_depth) {
                                     time_depth = current.gs.getTime() - initial_gs.getTime();
                                 }
@@ -364,7 +365,7 @@ public class IDContinuingABCD extends AI {
                                 AI playoutAI2 = playoutAI.clone();
                                 int timeOut = gs2.getTime() + maxPlayoutTime;
                                 if (!gs2.gameover()) treeIsComplete = false;
-                                boolean gameover = false;
+                                gameover = false;
                                 while(!gameover && gs2.getTime()<timeOut) {
                                     if (gs2.isComplete()) {
                                         gameover = gs2.cycle();
