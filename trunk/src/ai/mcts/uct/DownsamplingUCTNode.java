@@ -51,9 +51,11 @@ public class DownsamplingUCTNode {
         } else if (gs.canExecuteAnyAction(maxplayer)) {
             type = 0;
             moveGenerator = new PlayerActionGenerator(a_gs, maxplayer);
+            moveGenerator.randomizeOrder();
         } else if (gs.canExecuteAnyAction(minplayer)) {
             type = 1;
             moveGenerator = new PlayerActionGenerator(a_gs, minplayer);
+            moveGenerator.randomizeOrder();
         } else {
             type = -1;
             System.err.println("RTMCTSNode: This should not have happened...");

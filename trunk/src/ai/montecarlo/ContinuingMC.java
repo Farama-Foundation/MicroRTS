@@ -126,6 +126,7 @@ public class ContinuingMC extends AI {
         if (DEBUG>=2) System.out.println(gs);
         gs_to_start_from = gs;
         moveGenerator = new PlayerActionGenerator(gs,player);
+        moveGenerator.randomizeOrder();
         allMovesGenerated = false;
         actions = new LinkedList<PlayerActionTableEntry>();
         run = 0;

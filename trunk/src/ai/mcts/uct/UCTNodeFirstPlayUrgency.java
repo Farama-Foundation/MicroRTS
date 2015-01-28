@@ -56,12 +56,14 @@ public class UCTNodeFirstPlayUrgency {
             type = 0;
 //            actions = gs.getPlayerActions(maxplayer);
             moveGenerator = new PlayerActionGenerator(a_gs, maxplayer);
+            moveGenerator.randomizeOrder();
             actions = new ArrayList<PlayerAction>();
             children = new ArrayList<UCTNodeFirstPlayUrgency>();
         } else if (gs.canExecuteAnyAction(minplayer)) {
             type = 1;
 //            actions = gs.getPlayerActions(minplayer);
             moveGenerator = new PlayerActionGenerator(a_gs, minplayer);
+            moveGenerator.randomizeOrder();
             actions = new ArrayList<PlayerAction>();
             children = new ArrayList<UCTNodeFirstPlayUrgency>();
         } else {

@@ -53,6 +53,7 @@ public class MonteCarlo extends AI {
         }        
                 
         PlayerActionGenerator pag = new PlayerActionGenerator(gs,player);
+        pag.randomizeOrder();
         List<PlayerAction> l = new LinkedList<PlayerAction>();
         {
             PlayerAction pa = null;
