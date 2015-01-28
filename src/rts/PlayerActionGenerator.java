@@ -16,6 +16,8 @@ import util.Pair;
  * @author santi
  */
 public class PlayerActionGenerator {
+    static Random r = new Random();
+    
     GameState gs;
     PhysicalGameState pgs;
     ResourceUsage base_ru;
@@ -84,6 +86,16 @@ public class PlayerActionGenerator {
             i++;
         }
     } 
+    
+    
+    public void randomizeOrder() {
+        for(Pair<Unit,List<UnitAction>> choice:choices) {
+            List<UnitAction> tmp = new LinkedList<>();
+            tmp.addAll(choice.m_b);
+            choice.m_b.clear();
+            while(!tmp.isEmpty()) choice.m_b.add(tmp.remove(r.nextInt(tmp.size())));
+        }
+    }
     
     
     public void incrementCurrentChoice(int startPosition) {

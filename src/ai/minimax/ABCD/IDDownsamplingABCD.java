@@ -137,6 +137,7 @@ public class IDDownsamplingABCD extends DownsamplingABCD {
                 case 0: // max node:
                     if (current.actions == null) {
                         current.actions = new PlayerActionGenerator(current.gs, maxplayer);
+                        current.actions.randomizeOrder();
                         long l = current.actions.getSize();
                         if (l > max_branching_so_far) {
                             max_branching_so_far = l;
@@ -171,6 +172,7 @@ public class IDDownsamplingABCD extends DownsamplingABCD {
                 case 1: // min node:
                     if (current.actions == null) {
                         current.actions = new PlayerActionGenerator(current.gs, minplayer);
+                        current.actions.randomizeOrder();
                         long l = current.actions.getSize();
                         if (l > max_branching_so_far) {
                             max_branching_so_far = l;

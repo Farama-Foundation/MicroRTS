@@ -55,6 +55,7 @@ public class DownsamplingMonteCarlo extends AI {
         }        
                 
         PlayerActionGenerator pag = new PlayerActionGenerator(gs,player);
+        pag.randomizeOrder();
         List<PlayerAction> l = new LinkedList<PlayerAction>();
         if (pag.getSize()>10*MAXACTIONS) {
             for(int i = 0;i<MAXACTIONS;i++) {

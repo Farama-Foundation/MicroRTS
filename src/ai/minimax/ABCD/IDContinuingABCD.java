@@ -397,6 +397,7 @@ public class IDContinuingABCD extends AI {
                         nNodes++;
                         if (current.actions == null) {
                             current.actions = new PlayerActionGenerator(current.gs, maxplayer);
+                            current.actions.randomizeOrder();
                             long l = current.actions.getSize();
                             if (DEBUG>=2) {
                                 for(int i = 0;i<current.depth;i++) System.out.print(" ");
@@ -444,6 +445,7 @@ public class IDContinuingABCD extends AI {
                         nNodes++;
                         if (current.actions == null) {
                             current.actions = new PlayerActionGenerator(current.gs, minplayer);
+                            current.actions.randomizeOrder();
                             long l = current.actions.getSize();
                             if (DEBUG>=2) {
                                 for(int i = 0;i<current.depth;i++) System.out.print(" ");

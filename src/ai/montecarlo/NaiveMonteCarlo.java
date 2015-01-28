@@ -73,6 +73,7 @@ public class NaiveMonteCarlo extends AI {
         }        
                 
         PlayerActionGenerator  moveGenerator = new PlayerActionGenerator(gs, player);
+        moveGenerator.randomizeOrder();
         long multipliers[] = new long[moveGenerator.getChoices().size()];
         List<UnitActionTableEntry> unitActionTable = new LinkedList<UnitActionTableEntry>();
         long baseMultiplier = 1;

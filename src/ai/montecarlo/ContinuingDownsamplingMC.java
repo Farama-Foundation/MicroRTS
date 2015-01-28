@@ -127,6 +127,7 @@ public class ContinuingDownsamplingMC extends AI {
         if (DEBUG>=2) System.out.println(gs);
         gs_to_start_from = gs;
         moveGenerator = new PlayerActionGenerator(gs,player);
+        moveGenerator.randomizeOrder();
         
         actions = new LinkedList<PlayerActionTableEntry>();
         if (moveGenerator.getSize()>2*MAXACTIONS) {
