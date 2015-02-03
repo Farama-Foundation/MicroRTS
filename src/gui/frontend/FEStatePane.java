@@ -620,7 +620,7 @@ public class FEStatePane extends JPanel {
                 false,
                 playout_policy, ef);
         } else if (AIs[idx]==ContinuingUCT.class) {
-            return new ContinuingUCT(TIME, PLAYOUT_TIME, MAX_DEPTH, new RandomBiasedAI(), ef);
+            return new ContinuingUCT(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, new RandomBiasedAI(), ef);
         } else if (AIs[idx]==ContinuingUCTUnitActions.class) {
             return new ContinuingUCTUnitActions(TIME, PLAYOUT_TIME, MAX_DEPTH*10, new RandomBiasedAI(), ef);
         } else if (AIs[idx]==ContinuingUCTFirstPlayUrgency.class) {
