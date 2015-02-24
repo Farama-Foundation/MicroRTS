@@ -421,7 +421,7 @@ public class FEStatePane extends JPanel {
                                     AI ai1 = createAI(aiComboBox[0].getSelectedIndex(), 0);
                                     AI ai2 = createAI(aiComboBox[1].getSelectedIndex(), 1);
                                     int PERIOD = Integer.parseInt(cpuTimeField[0].getText()) + Integer.parseInt(cpuTimeField[1].getText());
-                                    if (!saveTraceBox.isSelected()) {
+                                    if (!slowDownBox.isSelected()) {
                                         PERIOD = 1;
                                     }
                                     int MAXCYCLES = Integer.parseInt(maxCyclesField.getText());
