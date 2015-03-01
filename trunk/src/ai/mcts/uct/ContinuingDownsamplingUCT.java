@@ -37,16 +37,18 @@ public class ContinuingDownsamplingUCT extends AI {
     public long total_actions_issued = 0;
         
     long MAXACTIONS = 100;
+    long MAX_PLAYOUTS = 1000;
     int TIME_PER_CYCLE = 100;
     int MAXSIMULATIONTIME = 1024;
     int MAX_TREE_DEPTH = 10;
     
     
-    public ContinuingDownsamplingUCT(int available_time, int lookahead, long maxactions, int max_depth, AI policy, EvaluationFunction a_ef) {
+    public ContinuingDownsamplingUCT(int available_time, long max_playouts, int lookahead, long maxactions, int max_depth, AI policy, EvaluationFunction a_ef) {
+        TIME_PER_CYCLE = available_time;
+        MAX_PLAYOUTS = max_playouts;
         MAXACTIONS = maxactions;
         MAXSIMULATIONTIME = lookahead;
         randomAI = policy;
-        TIME_PER_CYCLE = available_time;
         MAX_TREE_DEPTH =  max_depth;
         ef = a_ef;
     }
@@ -67,7 +69,7 @@ public class ContinuingDownsamplingUCT extends AI {
         
     
     public AI clone() {
-        return new ContinuingDownsamplingUCT(TIME_PER_CYCLE, MAXSIMULATIONTIME, MAXACTIONS, MAX_TREE_DEPTH, randomAI, ef);
+        return new ContinuingDownsamplingUCT(TIME_PER_CYCLE, MAX_PLAYOUTS, MAXSIMULATIONTIME, MAXACTIONS, MAX_TREE_DEPTH, randomAI, ef);
     }  
     
     
@@ -96,7 +98,7 @@ public class ContinuingDownsamplingUCT extends AI {
                     System.err.println(gs_to_start_from);
                 }
             }
-            search(player, TIME_PER_CYCLE);
+            search(player, TIME_PER_CYCLE, MAX_PLAYOUTS);
             PlayerAction best = getBestAction();
             resetSearch();
             if (DEBUG>=1) {
@@ -107,7 +109,7 @@ public class ContinuingDownsamplingUCT extends AI {
         } else {
             if (tree!=null) {
                 // continue previous search:
-                search(player, TIME_PER_CYCLE);
+                search(player, TIME_PER_CYCLE, MAX_PLAYOUTS);
             } else {
                 // determine who will be the next player:
                 GameState gs2 = gs.clone();
@@ -118,7 +120,7 @@ public class ContinuingDownsamplingUCT extends AI {
                 if (gs2.canExecuteAnyAction(player)) {
                     // start a new search:
                     startNewSearch(player,gs2);
-                    search(player, TIME_PER_CYCLE);
+                    search(player, TIME_PER_CYCLE, MAX_PLAYOUTS);
                     if (DEBUG>=1) {
                         System.out.println("ContinuingDownsamplingUCT: getAction finished");
                         System.out.flush();
@@ -155,12 +157,14 @@ public class ContinuingDownsamplingUCT extends AI {
     }
     
 
-    public void search(int player, long available_time) throws Exception {
+    public void search(int player, long available_time, long max_playouts) throws Exception {
         if (DEBUG>=2) System.out.println("Search...");
         long start = System.currentTimeMillis();
-        long cutOffTime = start + available_time;
+        long cutOffTime = (available_time>0 ? start + available_time:0);
+        long end = start;
+        long count = 0;
         
-        while(System.currentTimeMillis() < cutOffTime) {
+        while(true) {
             DownsamplingUCTNode leaf = tree.UCTSelectLeaf(player, 1-player, MAXACTIONS, cutOffTime, MAX_TREE_DEPTH);
             
             if (leaf!=null) {
@@ -181,6 +185,10 @@ public class ContinuingDownsamplingUCT extends AI {
                 System.err.println(this.getClass().getSimpleName() + ": claims there are no more leafs to explore...");
                 break;
             }
+            count++;
+            end = System.currentTimeMillis();
+            if (available_time>=0 && (end - start)>=available_time) break; 
+            if (max_playouts>=0 && count>=max_playouts) break;            
         }
         
         total_cycles_executed++;

@@ -123,13 +123,13 @@ public class DownsamplingUCTNode {
     
     
     public void showNode(int depth, int maxdepth) {
-        int mostVisitedIdx = -1;
-        DownsamplingUCTNode mostVisited = null;
-        for(int i = 0;i<children.size();i++) {
-            DownsamplingUCTNode child = children.get(i);
-            for(int j = 0;j<depth;j++) System.out.print("    ");
-            System.out.println("child " + actions.get(i) + " explored " + child.visit_count + " Avg evaluation: " + (child.accum_evaluation/((double)child.visit_count)));
-            if (depth<maxdepth) child.showNode(depth+1,maxdepth);
-        }        
+        if (children!=null) {
+            for(int i = 0;i<children.size();i++) {
+                DownsamplingUCTNode child = children.get(i);
+                for(int j = 0;j<depth;j++) System.out.print("    ");
+                System.out.println("child " + actions.get(i) + " explored " + child.visit_count + " Avg evaluation: " + (child.accum_evaluation/((double)child.visit_count)));
+                if (depth<maxdepth) child.showNode(depth+1,maxdepth);
+            }        
+        }
     }
 }
