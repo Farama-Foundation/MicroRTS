@@ -23,7 +23,7 @@ public class PlayerActionGenerator {
     ResourceUsage base_ru;
     List<Pair<Unit,List<UnitAction>>> choices;
     PlayerAction lastAction = null;
-    long size = 1;
+    long size = 1;  // this will be capped at Long.MAX_VALUE;
     long generated = 0;
     int choiceSizes[] = null;
     int currentChoice[] = null;
@@ -60,16 +60,24 @@ public class PlayerActionGenerator {
             }
         }
         
-        choices = new ArrayList<Pair<Unit,List<UnitAction>>>();
+        choices = new ArrayList<>();
         for(Unit u:pgs.getUnits()) {
             if (u.getPlayer()==pID) {
                 if (gs.unitActions.get(u)==null) {
                     List<UnitAction> l = u.getUnitActions(gs);
-                    choices.add(new Pair<Unit,List<UnitAction>>(u,l));
-                    size*=l.size();
+                    choices.add(new Pair<>(u,l));
+                    // make sure we don't overflow:
+                    long tmp = l.size();
+                    if (Long.MAX_VALUE/size >= tmp) {
+                        size = Long.MAX_VALUE;
+                    } else {
+                        size*=(long)l.size();
+                    }
+                    System.out.println("size = " + size);
                 }
             }
         }  
+        System.out.println("---");
 
         if (choices.size()==0) {
             System.err.println("Problematic game state:");
