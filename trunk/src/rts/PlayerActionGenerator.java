@@ -68,7 +68,7 @@ public class PlayerActionGenerator {
                     choices.add(new Pair<>(u,l));
                     // make sure we don't overflow:
                     long tmp = l.size();
-                    if (Long.MAX_VALUE/size >= tmp) {
+                    if (Long.MAX_VALUE/size <= tmp) {
                         size = Long.MAX_VALUE;
                     } else {
                         size*=(long)l.size();
