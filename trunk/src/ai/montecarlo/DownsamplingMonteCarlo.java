@@ -57,7 +57,7 @@ public class DownsamplingMonteCarlo extends AI {
         PlayerActionGenerator pag = new PlayerActionGenerator(gs,player);
         pag.randomizeOrder();
         List<PlayerAction> l = new LinkedList<PlayerAction>();
-        if (pag.getSize()>10*MAXACTIONS) {
+        if (pag.getSize()>2*MAXACTIONS) {
             for(int i = 0;i<MAXACTIONS;i++) {
                 l.add(pag.getRandom());
             }
@@ -65,9 +65,14 @@ public class DownsamplingMonteCarlo extends AI {
             if (DEBUG>=1) System.out.println("MontCarloAI for player " + player + " chooses between " + pag.getSize() + " actions [maximum so far " + max_actions_so_far + "] (cycle " + gs.getTime() + ")");
         } else {      
             PlayerAction pa = null;
+            long count = 0;
             do{
                 pa = pag.getNextAction(-1);
-                if (pa!=null) l.add(pa);
+                if (pa!=null) {
+                    l.add(pa);
+                    count++;
+                    if (count>=2*MAXACTIONS) break; // this is needed since some times, moveGenerator.size() overflows
+                }
             }while(pa!=null);
             max_actions_so_far = Math.max(l.size(),max_actions_so_far);
             if (DEBUG>=1) System.out.println("MontCarloAI for player " + player + " chooses between " + l.size() + " actions [maximum so far " + max_actions_so_far + "] (cycle " + gs.getTime() + ")");
