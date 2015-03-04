@@ -73,11 +73,11 @@ public class PlayerActionGenerator {
                     } else {
                         size*=(long)l.size();
                     }
-                    System.out.println("size = " + size);
+//                    System.out.println("size = " + size);
                 }
             }
         }  
-        System.out.println("---");
+//        System.out.println("---");
 
         if (choices.size()==0) {
             System.err.println("Problematic game state:");
