@@ -70,15 +70,20 @@ public class DownsamplingUCTNode {
         if (moveGenerator!=null && actions==null) {
             actions = new ArrayList<PlayerAction>();
             children = new ArrayList<DownsamplingUCTNode>();
-            if (moveGenerator.getSize()>10*MAXACTIONS) {
+            if (moveGenerator.getSize()>2*MAXACTIONS) {
                 for(int i = 0;i<MAXACTIONS;i++) {
                     actions.add(moveGenerator.getRandom());
                 }
             } else {      
                 PlayerAction pa = null;
+                long count = 0;
                 do{
                     pa = moveGenerator.getNextAction(cutOffTime);
-                    if (pa!=null) actions.add(pa);
+                    if (pa!=null) {
+                        actions.add(pa);
+                        count++;
+                        if (count>=2*MAXACTIONS) break; // this is needed since some times, moveGenerator.size() overflows
+                    }
                 }while(pa!=null);
                 while(actions.size()>MAXACTIONS) actions.remove(r.nextInt(actions.size()));
             }            

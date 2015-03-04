@@ -140,12 +140,15 @@ public class ContinuingDownsamplingMC extends AI {
             if (DEBUG>=1) System.out.println("MontCarloAI (random action sampling) for player " + player + " chooses between " + moveGenerator.getSize() + " actions [maximum so far " + max_actions_so_far + "] (cycle " + gs.getTime() + ")");
         } else {      
             PlayerAction pa;
+            long count = 0;
             do{
                 pa = moveGenerator.getNextAction(cutOffTime);
                 if (pa!=null) {
                     PlayerActionTableEntry pate = new PlayerActionTableEntry();
                     pate.pa = pa;
                     actions.add(pate);
+                    count++;
+                    if (count>=2*MAXACTIONS) break; // this is needed since some times, moveGenerator.size() overflows
                 }
             }while(pa!=null);
             max_actions_so_far = Math.max(actions.size(),max_actions_so_far);
