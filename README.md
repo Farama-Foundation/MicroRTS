@@ -1,9 +1,21 @@
 # microrts
 
-microRTS is a very simple Java implementation of an RTS game designed to test AI techniques. The motivation to create microRTS was to be able to test simple AI techniques without having to invest the high development time that is required to start working with Wargus or Starcraft using BWAPI. Also, for some AI techniques, one needs to know the exact details of the transition function used in the game, which is not available for some of those games.
+microRTS is a small implementation of an RTS game, designed to perform AI research. The advantage of using microRTS with respect to using a full-fledged game like Wargus or Starcraft (using BWAPI) is that microRTS is much simpler, and can be used to quickly test theoretical ideas, before moving on to full-fledged RTS games.
 
-microRTS is deterministic, fully-observable and real-time (i.e. players can issue actions simultaneously, and actions are durative). For that reason, it is not adequate for evaluating techniques designed to address non-determinism or partial observability. I created it for testing, in particular, game-tree search techniques such as Monte Carlo search algorithms.
+microRTS is deterministic and real-time (i.e. players can issue actions simultaneously, and actions are durative). It is possible to experiment both with fully-observable and partially-observable games. Thus, it is not adequate for evaluating AI techniques designed to deal with non-determinism (although future versions of microRTS might include non-determinism activated via certain flags). As part of the implementation, I include a collection of hard-coded, and game-tree search techniques (such as variants of minimax, Monte Carlo search, and Monte Carlo Tree Search).
 
-Although microRTS is designed to run without the need for a visualization (since it is not meant to be for a human to play, but for AIs), it comes with a simple visualization panel that can be used to see games in real-time (see the wiki pages for a screenshot).
+microRTS was developed by Santiago Ontañón ( https://sites.google.com/site/santiagoontanonvillar/Home ). 
 
-Maps can be defined directly in code, or using xml files.
+For a video of how microRTS lookslike when a human plays see youtube video ( https://www.youtube.com/watch?v=ZsKKAoiD7B0  )
+
+To cite microRTS, please cite this paper:
+
+Santiago Ontañón (2013) The Combinatorial Multi-Armed Bandit Problem and its Application to Real-Time Strategy Games, In AIIDE 2013. pp. 58 - 64.
+
+# Contributions:
+
+The LSI AI was contributed by Alexander Shleyfman, Antonin Komenda and Carmel Domshlak (the theory behind the AI is described in this paper ( http://iew3.technion.ac.il/~dcarmel/Papers/Sources/ecai14c.pdf ).
+
+# Instructions:
+
+https://raw.githubusercontent.com/santiontanon/microrts/master/help.png
