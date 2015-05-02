@@ -39,14 +39,16 @@ public class ContinuingUCTFirstPlayUrgency extends AI {
     long total_runs_this_move = 0;
         
     int TIME_PER_CYCLE = 100;
+    int MAX_PLAYOUTS = 200;
     int MAXSIMULATIONTIME = 1024;
     int MAX_TREE_DEPTH = 10;
     
     double FPUvalue = 0;
     
     
-    public ContinuingUCTFirstPlayUrgency(int available_time, int lookahead, int max_depth, AI policy, EvaluationFunction a_ef, double a_FPUvalue) {
+    public ContinuingUCTFirstPlayUrgency(int available_time, int max_playouts, int lookahead, int max_depth, AI policy, EvaluationFunction a_ef, double a_FPUvalue) {
         MAXSIMULATIONTIME = lookahead;
+        MAX_PLAYOUTS = max_playouts;
         randomAI = policy;
         TIME_PER_CYCLE = available_time;
         MAX_TREE_DEPTH = max_depth;
@@ -71,7 +73,7 @@ public class ContinuingUCTFirstPlayUrgency extends AI {
     
     
     public AI clone() {
-        return new ContinuingUCTFirstPlayUrgency(TIME_PER_CYCLE, MAXSIMULATIONTIME, MAX_TREE_DEPTH, randomAI, ef, FPUvalue);
+        return new ContinuingUCTFirstPlayUrgency(TIME_PER_CYCLE, MAX_PLAYOUTS, MAXSIMULATIONTIME, MAX_TREE_DEPTH, randomAI, ef, FPUvalue);
     }  
     
     
@@ -90,14 +92,14 @@ public class ContinuingUCTFirstPlayUrgency extends AI {
                     System.err.println(gs_to_start_from);
                 }
             }
-            search(player, TIME_PER_CYCLE);
+            search(player, TIME_PER_CYCLE, MAX_PLAYOUTS);
             PlayerAction best = getBestAction();
             resetSearch();
             return best;
         } else {
             if (tree!=null) {
                 // continue previous search:
-                search(player, TIME_PER_CYCLE);
+                search(player, TIME_PER_CYCLE, MAX_PLAYOUTS);
             } else {
                 // determine who will be the next player:
                 GameState gs2 = gs.clone();
@@ -108,7 +110,7 @@ public class ContinuingUCTFirstPlayUrgency extends AI {
                 if (gs2.canExecuteAnyAction(player)) {
                     // start a new search:
                     startNewSearch(player,gs2);
-                    search(player, TIME_PER_CYCLE);
+                    search(player, TIME_PER_CYCLE, MAX_PLAYOUTS);
                     return new PlayerAction();
                 } else {
                     return new PlayerAction();
@@ -136,15 +138,20 @@ public class ContinuingUCTFirstPlayUrgency extends AI {
     }
     
 
-    public void search(int player, long available_time) throws Exception {
+    public void search(int player, long available_time, int maxPlayouts) throws Exception {
         if (DEBUG>=2) System.out.println("Search...");
         long start = System.currentTimeMillis();
+        int nPlayouts = 0;
         long cutOffTime = start + available_time;
+        if (available_time<=0) cutOffTime = 0;
 
 //        System.out.println(start + " + " + available_time + " = " + cutOffTime);
-        
-        while(System.currentTimeMillis() < cutOffTime) {
+
+        while(true) {
+            if (cutOffTime>0 && System.currentTimeMillis() < cutOffTime) break;
+            if (maxPlayouts>0 && nPlayouts>maxPlayouts) break;
             monteCarloRun(player, cutOffTime);
+            nPlayouts++;
         }
         
         total_cycles_executed++;
