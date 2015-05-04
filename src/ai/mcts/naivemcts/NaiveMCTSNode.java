@@ -17,7 +17,7 @@ import util.Sampler;
  */
 public class NaiveMCTSNode extends MCTSNode {
 
-    static public int DEBUG = 1;
+    static public int DEBUG = 0;
         
     boolean hasMoreActions = true;
     public PlayerActionGenerator moveGenerator = null;

@@ -27,7 +27,7 @@ import util.Pair;
  */
 public class MLPSNode extends MCTSNode {
 
-    static public int DEBUG = 1;
+    static public int DEBUG = 0;
         
     boolean hasMoreActions = true;
     public PlayerActionGenerator moveGenerator = null;
@@ -118,6 +118,7 @@ public class MLPSNode extends MCTSNode {
     
     
     public double actionValue(UnitActionTableEntry e, int action, double C) {
+        if (e.visit_count[action]==0) return Double.MAX_VALUE;
         double exploitation = e.accum_evaluation[action] / e.visit_count[action];
         double exploration = e.nactions*Math.sqrt((e.nactions+1)*Math.log(((double)visit_count)/e.visit_count[action]));
         if (type==0) {
@@ -135,13 +136,12 @@ public class MLPSNode extends MCTSNode {
     public MLPSNode selectLeaf(int maxplayer, int minplayer, double C, int max_depth, int a_creation_ID) throws Exception {
         if (unitActionTable == null) return this;
         
-       if (depth>=max_depth) return this;        
+        if (depth>=max_depth) return this;        
         
-        PlayerAction pa2;
-        long actionCode;
- 
+        if (DEBUG>=1) System.out.println("MLPSNode.selectLeaf...");
+        
         // For each unit, compute the UCB1 scores for each action:
-        List<Integer> notSampledYet = new LinkedList<Integer>();
+        List<Integer> notSampledYetIDs = new LinkedList<Integer>();
         for(int ate_idx = 0;ate_idx<unitActionTable.size();ate_idx++) {
             UnitActionTableEntry ate = unitActionTable.get(ate_idx);
             double []scores = UCBscores.get(ate_idx);
@@ -155,7 +155,7 @@ public class MLPSNode extends MCTSNode {
                 for(int i = 0;i<ate.nactions;i++) System.out.print(scores[i] + " ");
                 System.out.println("]");
             }
-            notSampledYet.add(ate.nactions);
+            notSampledYetIDs.add(ate_idx);
         }
 
         // Select the best combination that results in a valid playeraction by MLPS sampling (maximizing UCB1 score of each action):
@@ -168,56 +168,79 @@ public class MLPSNode extends MCTSNode {
             }
         }
 
-        pa2 = new PlayerAction();
-        actionCode = 0;
-        pa2.setResourceUsage(base_ru.clone());            
-        while(!notSampledYet.isEmpty()) {
-            int i = notSampledYet.remove(r.nextInt(notSampledYet.size()));
-            try {
-                UnitActionTableEntry ate = unitActionTable.get(i);
-                double []scores = UCBscores.get(i);
-                int code = -1;
-                UnitAction ua;
-                ResourceUsage r2;
+        PlayerAction best_pa = null;
+        long best_actionCode = -1;
+        double best_accumUCBScore = 0;
 
-                // select the best one:
-                for(int j = 0;j<ate.nactions;j++) 
-                    if (code==-1 || scores[j]>scores[code]) code = j;
-                ua = ate.actions.get(code);
-                r2 = ua.resourceUsage(ate.u, gs.getPhysicalGameState());
-                if (!pa2.getResourceUsage().consistentWith(r2, gs)) {
-                    // get the best next one:
-                    List<Integer> actions = new ArrayList<Integer>();
+        for(int repeat = 0;repeat<10;repeat++) {
+            PlayerAction pa2 = new PlayerAction();
+            long actionCode = 0; 
+            double accumUCBScore = 0;
+            pa2.setResourceUsage(base_ru.clone());
+            List<Integer> notSampledYetIDs2 = new LinkedList<Integer>();
+            notSampledYetIDs2.addAll(notSampledYetIDs);
+            while(!notSampledYetIDs2.isEmpty()) {            
+                if (DEBUG>=2) System.out.println("notSampledYet: " + notSampledYetIDs2);
+                int i = r.nextInt(notSampledYetIDs2.size());
+                i = notSampledYetIDs2.remove(i);
+                try {
+                    UnitActionTableEntry ate = unitActionTable.get(i);
+                    double []scores = UCBscores.get(i);
+                    int code = -1;
+                    UnitAction ua;
+                    ResourceUsage r2;
 
-                    for(int j = 0;j<ate.nactions;j++) {
-                        if (j!=code) actions.add(j);
+                    // select the best one:
+                    for(int j = 0;j<ate.nactions;j++) 
+                        if (code==-1 || scores[j]>scores[code]) code = j;
+                    ua = ate.actions.get(code);
+                    r2 = ua.resourceUsage(ate.u, gs.getPhysicalGameState());
+                    if (!pa2.getResourceUsage().consistentWith(r2, gs)) {
+                        // get the best next one:
+                        List<Integer> actions = new ArrayList<Integer>();
+
+                        for(int j = 0;j<ate.nactions;j++) {
+                            if (j!=code) actions.add(j);
+                        }
+                        if (DEBUG>=3) System.out.println("    unit " + i + ": trying " + code);
+                        do{
+                            code = -1;
+                            for(Integer j:actions)  
+                                if (code==-1 || scores[j]>scores[code]) code = j;
+                            if (DEBUG>=3) System.out.println("    unit " + i + ": trying " + code);
+                            actions.remove((Integer)code);
+                            ua = ate.actions.get(code);
+                            r2 = ua.resourceUsage(ate.u, gs.getPhysicalGameState());
+                        }while(!pa2.getResourceUsage().consistentWith(r2, gs));
                     }
-                    do{
-                        code = -1;
-                        for(Integer j:actions)  
-                            if (code==-1 || scores[j]>scores[code]) code = j;
-                        actions.remove((Integer)code);
-                        ua = ate.actions.get(code);
-                        r2 = ua.resourceUsage(ate.u, gs.getPhysicalGameState());
-                    }while(!pa2.getResourceUsage().consistentWith(r2, gs));
+
+                    if (DEBUG>=2) System.out.println("  unit " + i + ": " + code);
+
+                    accumUCBScore += scores[code];
+                    pa2.getResourceUsage().merge(r2);
+                    pa2.addUnitAction(ate.u, ua);
+
+                    actionCode+= ((long)code)*multipliers[i];
+
+                } catch(Exception e) {
+                    e.printStackTrace();
                 }
-
-                pa2.getResourceUsage().merge(r2);
-                pa2.addUnitAction(ate.u, ua);
-
-                actionCode+= ((long)code)*multipliers[i];
-
-            } catch(Exception e) {
-                e.printStackTrace();
+            }   
+            
+            if (DEBUG>=1) System.out.println("  accumUCBScore: " + accumUCBScore);
+            if (best_pa==null || accumUCBScore>best_accumUCBScore) {
+                best_pa = pa2;
+                best_accumUCBScore = accumUCBScore;
+                best_actionCode = actionCode;
             }
-        }   
+        }
 
-        MLPSNode pate = childrenMap.get(actionCode);
+        MLPSNode pate = childrenMap.get(best_actionCode);
         if (pate==null) {
-            actions.add(pa2);
-            GameState gs2 = gs.cloneIssue(pa2);
+            actions.add(best_pa);
+            GameState gs2 = gs.cloneIssue(best_pa);
             MLPSNode node = new MLPSNode(maxplayer, minplayer, gs2.clone(), this, evaluation_bound, a_creation_ID);
-            childrenMap.put(actionCode,node);
+            childrenMap.put(best_actionCode,node);
             children.add(node);
             return node;                
         }
