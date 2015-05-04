@@ -134,7 +134,7 @@ public class UCTNodeFirstPlayUrgency {
             exploitation = - (exploitation - evaluation_bound)/(2*evaluation_bound);
         }
 
-        System.out.println("    " + exploitation + " + " + exploration);
+        //System.out.println("    " + exploitation + " + " + exploration);
         double tmp = exploitation + C*exploration;
         return tmp;
     }
