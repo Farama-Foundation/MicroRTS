@@ -127,7 +127,7 @@ public class MLPSNode extends MCTSNode {
         } else {
             exploitation = (evaluation_bound - exploitation)/(2*evaluation_bound);
         }
-        double tmp = C*exploitation + exploration;
+        double tmp = exploitation + C*exploration;
         return tmp;
     }
 

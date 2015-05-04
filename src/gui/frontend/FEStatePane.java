@@ -220,6 +220,17 @@ public class FEStatePane extends JPanel {
                                 textArea.append("  - " + ef.getClass().getSimpleName() + ": " + ef.evaluate(0, 1, currentGameState) + ", " + ef.evaluate(1, 0, currentGameState) + "\n");
                             }
                             textArea.append("\n");
+                            
+                            // units:
+                            {
+                                int n0 = 0, n1 = 0;
+                                for(Unit u:currentGameState.getUnits()) {
+                                    if (u.getPlayer()==0) n0++;
+                                    if (u.getPlayer()==1) n1++;
+                                }
+                                textArea.append("Player 0 has " + n0 + " units\n");
+                                textArea.append("Player 1 has " + n1 + " units\n\n");
+                            }
 
                             // Branching:
                             textArea.append("Braching Factor:\n");
