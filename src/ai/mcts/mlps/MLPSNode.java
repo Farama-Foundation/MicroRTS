@@ -34,8 +34,10 @@ public class MLPSNode extends MCTSNode {
     HashMap<Long,MLPSNode> childrenMap = new LinkedHashMap<Long,MLPSNode>();    // associates action codes with children
     // Decomposition of the player actions in unit actions, and their contributions:
     public List<UnitActionTableEntry> unitActionTable = null;
-    public List<double[]> UCBscores = null;
+    public List<double[]> UCBExplorationScores = null;
+    public List<double[]> UCBExploitationScores = null;
     double evaluation_bound = 0;
+    int max_nactions = 0;
     
     public long multipliers[];
 
@@ -62,7 +64,8 @@ public class MLPSNode extends MCTSNode {
             actions = new ArrayList<>();
             children = new ArrayList<>();
             unitActionTable = new ArrayList<>();
-            UCBscores = new ArrayList<>();
+            UCBExplorationScores = new ArrayList<>();
+            UCBExploitationScores = new ArrayList<>();
             multipliers = new long[moveGenerator.getChoices().size()];
             long baseMultiplier = 1;
             int idx = 0;
@@ -70,6 +73,7 @@ public class MLPSNode extends MCTSNode {
                 UnitActionTableEntry ae = new UnitActionTableEntry();
                 ae.u = choice.m_a;
                 ae.nactions = choice.m_b.size();
+                if (ae.nactions>max_nactions) max_nactions= ae.nactions;
                 ae.actions = choice.m_b;
                 ae.accum_evaluation = new double[ae.nactions];
                 ae.visit_count = new int[ae.nactions];
@@ -78,7 +82,8 @@ public class MLPSNode extends MCTSNode {
                     ae.visit_count[i] = 0;
                 }
                 unitActionTable.add(ae);
-                UCBscores.add(new double[ae.nactions]);
+                UCBExplorationScores.add(new double[ae.nactions]);
+                UCBExploitationScores.add(new double[ae.nactions]);
                 multipliers[idx] = baseMultiplier;
                 baseMultiplier*=ae.nactions;
                 idx++;
@@ -89,7 +94,8 @@ public class MLPSNode extends MCTSNode {
             actions = new ArrayList<>();
             children = new ArrayList<>();
             unitActionTable = new ArrayList<>();
-            UCBscores = new ArrayList<>();
+            UCBExplorationScores = new ArrayList<>();
+            UCBExploitationScores = new ArrayList<>();
             multipliers = new long[moveGenerator.getChoices().size()];
             long baseMultiplier = 1;
             int idx = 0;
@@ -97,6 +103,7 @@ public class MLPSNode extends MCTSNode {
                 UnitActionTableEntry ae = new UnitActionTableEntry();
                 ae.u = choice.m_a;
                 ae.nactions = choice.m_b.size();
+                if (ae.nactions>max_nactions) max_nactions= ae.nactions;
                 ae.actions = choice.m_b;
                 ae.accum_evaluation = new double[ae.nactions];
                 ae.visit_count = new int[ae.nactions];
@@ -105,7 +112,8 @@ public class MLPSNode extends MCTSNode {
                     ae.visit_count[i] = 0;
                 }
                 unitActionTable.add(ae);
-                UCBscores.add(new double[ae.nactions]);
+                UCBExplorationScores.add(new double[ae.nactions]);
+                UCBExploitationScores.add(new double[ae.nactions]);
                 multipliers[idx] = baseMultiplier;
                 baseMultiplier*=ae.nactions;
                 idx++;
@@ -117,20 +125,19 @@ public class MLPSNode extends MCTSNode {
     }
     
     
-    public double actionValue(UnitActionTableEntry e, int action, double C) {
-        if (e.visit_count[action]==0) return Double.MAX_VALUE;
+    public double actionExploitationValue(UnitActionTableEntry e, int action) {
+        if (e.visit_count[action]==0) return 0;
         double exploitation = e.accum_evaluation[action] / e.visit_count[action];
-        double exploration = e.nactions*Math.sqrt((e.nactions+1)*Math.log(((double)visit_count)/e.visit_count[action]));
-        if (type==0) {
-            // max node:
-            exploitation = (evaluation_bound + exploitation)/(2*evaluation_bound);
-        } else {
-            exploitation = (evaluation_bound - exploitation)/(2*evaluation_bound);
-        }
-        double tmp = exploitation + C*exploration;
-        return tmp;
+        return exploitation;
     }
 
+    public double explorationValue(int M, int n, int n_ij) {
+        if (n_ij == 0) return Double.MAX_VALUE;
+        double exploration = M*Math.sqrt((M+1)*Math.log((double)n)/n_ij);
+        return exploration;
+    }
+
+    
     
     // C is the UCB constant for exploration/exploitation
     public MLPSNode selectLeaf(int maxplayer, int minplayer, double C, int max_depth, int a_creation_ID) throws Exception {
@@ -144,15 +151,16 @@ public class MLPSNode extends MCTSNode {
         List<Integer> notSampledYetIDs = new LinkedList<Integer>();
         for(int ate_idx = 0;ate_idx<unitActionTable.size();ate_idx++) {
             UnitActionTableEntry ate = unitActionTable.get(ate_idx);
-            double []scores = UCBscores.get(ate_idx);
-            for(int i = 0;i<ate.nactions;i++) scores[i] = actionValue(ate, i, C);
+            double []scoresExploitation = UCBExploitationScores.get(ate_idx);
+            double []scoresExploration = UCBExplorationScores.get(ate_idx);
+            for(int i = 0;i<ate.nactions;i++) {
+                scoresExploitation[i] = actionExploitationValue(ate, i);
+                scoresExploration[i] = explorationValue(max_nactions, visit_count, ate.visit_count[i]);
+            }
 
             if (DEBUG>=3) {
                 System.out.print("[ ");
-                for(int i = 0;i<ate.nactions;i++) System.out.print("(" + ate.visit_count[i] + "," + ate.accum_evaluation[i]/ate.visit_count[i] + ")");
-                System.out.println("]");
-                System.out.print("[ ");
-                for(int i = 0;i<ate.nactions;i++) System.out.print(scores[i] + " ");
+                for(int i = 0;i<ate.nactions;i++) System.out.print("(" + ate.visit_count[i] + "," + scoresExploitation[i] + "," + scoresExploration[i] + ")");
                 System.out.println("]");
             }
             notSampledYetIDs.add(ate_idx);
@@ -176,6 +184,7 @@ public class MLPSNode extends MCTSNode {
             PlayerAction pa2 = new PlayerAction();
             long actionCode = 0; 
             double accumUCBScore = 0;
+            double maxExplorationScore = 0;
             pa2.setResourceUsage(base_ru.clone());
             List<Integer> notSampledYetIDs2 = new LinkedList<Integer>();
             notSampledYetIDs2.addAll(notSampledYetIDs);
@@ -185,14 +194,22 @@ public class MLPSNode extends MCTSNode {
                 i = notSampledYetIDs2.remove(i);
                 try {
                     UnitActionTableEntry ate = unitActionTable.get(i);
-                    double []scores = UCBscores.get(i);
+                    double []scoresExploitation = UCBExploitationScores.get(i);
+                    double []scoresExploration = UCBExplorationScores.get(i);
                     int code = -1;
                     UnitAction ua;
                     ResourceUsage r2;
 
                     // select the best one:
-                    for(int j = 0;j<ate.nactions;j++) 
-                        if (code==-1 || scores[j]>scores[code]) code = j;
+                    for(int j = 0;j<ate.nactions;j++) {
+                        if (code==-1) {
+                            code = j;
+                            continue;
+                        }
+                        double s1 = scoresExploitation[j] + C*Math.max(scoresExploration[j], maxExplorationScore);
+                        double s2 = scoresExploitation[code] + C*Math.max(scoresExploration[code], maxExplorationScore);
+                        if (s1>s2) code = j;
+                    }
                     ua = ate.actions.get(code);
                     r2 = ua.resourceUsage(ate.u, gs.getPhysicalGameState());
                     if (!pa2.getResourceUsage().consistentWith(r2, gs)) {
@@ -202,21 +219,29 @@ public class MLPSNode extends MCTSNode {
                         for(int j = 0;j<ate.nactions;j++) {
                             if (j!=code) actions.add(j);
                         }
-                        if (DEBUG>=3) System.out.println("    unit " + i + ": trying " + code);
+                        if (DEBUG>=4) System.out.println("    unit " + i + ": trying " + code);
                         do{
                             code = -1;
-                            for(Integer j:actions)  
-                                if (code==-1 || scores[j]>scores[code]) code = j;
-                            if (DEBUG>=3) System.out.println("    unit " + i + ": trying " + code);
+                            for(Integer j:actions) {
+                                if (code==-1) {
+                                    code = j;
+                                    continue;
+                                }
+                                double s1 = scoresExploitation[j] + C*Math.max(scoresExploration[j], maxExplorationScore);
+                                double s2 = scoresExploitation[code] + C*Math.max(scoresExploration[code], maxExplorationScore);
+                                if (s1>s2) code = j;
+                            }
+                            if (DEBUG>=4) System.out.println("    unit " + i + ": trying " + code);
                             actions.remove((Integer)code);
                             ua = ate.actions.get(code);
                             r2 = ua.resourceUsage(ate.u, gs.getPhysicalGameState());
                         }while(!pa2.getResourceUsage().consistentWith(r2, gs));
                     }
 
-                    if (DEBUG>=2) System.out.println("  unit " + i + ": " + code);
+                    if (DEBUG>=3) System.out.println("  unit " + i + ": " + code);
 
-                    accumUCBScore += scores[code];
+                    accumUCBScore += C*scoresExploitation[code];
+                    maxExplorationScore = Math.max(scoresExploration[code], maxExplorationScore);
                     pa2.getResourceUsage().merge(r2);
                     pa2.addUnitAction(ate.u, ua);
 
@@ -226,6 +251,7 @@ public class MLPSNode extends MCTSNode {
                     e.printStackTrace();
                 }
             }   
+            accumUCBScore+=maxExplorationScore;
             
             if (DEBUG>=1) System.out.println("  accumUCBScore: " + accumUCBScore);
             if (best_pa==null || accumUCBScore>best_accumUCBScore) {

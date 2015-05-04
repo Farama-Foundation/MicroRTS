@@ -126,7 +126,7 @@ public class UCTNodeFirstPlayUrgency {
         
     public double childValue(UCTNodeFirstPlayUrgency child) {
         double exploitation = ((double)child.accum_evaluation) / child.visit_count;
-        double exploration = Math.sqrt(Math.log(((double)visit_count)/child.visit_count));
+        double exploration = Math.sqrt(Math.log((double)visit_count)/child.visit_count);
         if (type==0) {
             // max node:
             exploitation = (exploitation + evaluation_bound)/(2*evaluation_bound);
