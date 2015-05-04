@@ -2,37 +2,50 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ai.mcts.naivemcts;
+package ai.mcts.mlps;
 
 import ai.mcts.MCTSNode;
+import ai.montecarlo.lsi.Sampling.UnitActionTableEntry;
 import java.util.*;
 import rts.*;
 import rts.units.Unit;
 import util.Pair;
-import util.Sampler;
 
 /**
  *
  * @author santi
+ * 
+ * From: "Learning Multiuser Channel Allocations in Cognitive Radio Networks: A Combinatorial Multi-Armed Bandit Formulation"
+ * Yi Gai, Bhaskar Krishnamachari and Rahul Jain
+ * 
+ * The original NLPS sampling strategy used the Hungarian algorithm to selct the best macro-arm 
+ * at each cycle. However, that only works in their formulation. In the more general case that
+ * we consider here, the Hungarian algorithm is not applicable. Thus, I replaced that step by
+ * simply selecting the actino with the maximum score for each unit. If the actions do not interfere
+ * too much, this obtains the obtimal action most of the times, and it's O(n*m)
+ * 
  */
-public class NaiveMCTSNode extends MCTSNode {
+public class MLPSNode extends MCTSNode {
 
     static public int DEBUG = 1;
         
     boolean hasMoreActions = true;
     public PlayerActionGenerator moveGenerator = null;
-    HashMap<Long,NaiveMCTSNode> childrenMap = new LinkedHashMap<Long,NaiveMCTSNode>();    // associates action codes with children
+    HashMap<Long,MLPSNode> childrenMap = new LinkedHashMap<Long,MLPSNode>();    // associates action codes with children
     // Decomposition of the player actions in unit actions, and their contributions:
     public List<UnitActionTableEntry> unitActionTable = null;
+    public List<double[]> UCBscores = null;
+    double evaluation_bound = 0;
     
     public long multipliers[];
 
 
-    public NaiveMCTSNode(int maxplayer, int minplayer, GameState a_gs, NaiveMCTSNode a_parent, int a_creation_ID) throws Exception {
+    public MLPSNode(int maxplayer, int minplayer, GameState a_gs, MLPSNode a_parent, double bound, int a_creation_ID) throws Exception {
         parent = a_parent;
         gs = a_gs;
         if (parent==null) depth = 0;
-                     else depth = parent.depth+1;        
+                     else depth = parent.depth+1;
+        evaluation_bound = bound;
         creation_ID = a_creation_ID;
  
         while (gs.winner() == -1 &&
@@ -46,9 +59,10 @@ public class NaiveMCTSNode extends MCTSNode {
         } else if (gs.canExecuteAnyAction(maxplayer)) {
             type = 0;
             moveGenerator = new PlayerActionGenerator(a_gs, maxplayer);
-            actions = new ArrayList<PlayerAction>();
-            children = new ArrayList<MCTSNode>();
-            unitActionTable = new LinkedList<UnitActionTableEntry>();
+            actions = new ArrayList<>();
+            children = new ArrayList<>();
+            unitActionTable = new ArrayList<>();
+            UCBscores = new ArrayList<>();
             multipliers = new long[moveGenerator.getChoices().size()];
             long baseMultiplier = 1;
             int idx = 0;
@@ -64,6 +78,7 @@ public class NaiveMCTSNode extends MCTSNode {
                     ae.visit_count[i] = 0;
                 }
                 unitActionTable.add(ae);
+                UCBscores.add(new double[ae.nactions]);
                 multipliers[idx] = baseMultiplier;
                 baseMultiplier*=ae.nactions;
                 idx++;
@@ -71,9 +86,10 @@ public class NaiveMCTSNode extends MCTSNode {
         } else if (gs.canExecuteAnyAction(minplayer)) {
             type = 1;
             moveGenerator = new PlayerActionGenerator(a_gs, minplayer);
-            actions = new ArrayList<PlayerAction>();
-            children = new ArrayList<MCTSNode>();
-            unitActionTable = new LinkedList<UnitActionTableEntry>();
+            actions = new ArrayList<>();
+            children = new ArrayList<>();
+            unitActionTable = new ArrayList<>();
+            UCBscores = new ArrayList<>();
             multipliers = new long[moveGenerator.getChoices().size()];
             long baseMultiplier = 1;
             int idx = 0;
@@ -89,108 +105,60 @@ public class NaiveMCTSNode extends MCTSNode {
                     ae.visit_count[i] = 0;
                 }
                 unitActionTable.add(ae);
+                UCBscores.add(new double[ae.nactions]);
                 multipliers[idx] = baseMultiplier;
                 baseMultiplier*=ae.nactions;
                 idx++;
            }
         } else {
             type = -1;
-            System.err.println("NaiveMCTSNode: This should not have happened...");
+            System.err.println("MLPSNode: This should not have happened...");
         }
+    }
+    
+    
+    public double actionValue(UnitActionTableEntry e, int action, double C) {
+        double exploitation = e.accum_evaluation[action] / e.visit_count[action];
+        double exploration = e.nactions*Math.sqrt((e.nactions+1)*Math.log(((double)visit_count)/e.visit_count[action]));
+        if (type==0) {
+            // max node:
+            exploitation = (exploitation + evaluation_bound)/(2*evaluation_bound);
+        } else {
+            exploitation = (evaluation_bound - exploitation)/(2*evaluation_bound);
+        }
+        double tmp = C*exploitation + exploration;
+        return tmp;
     }
 
     
-    // Using an epsilon greedy strategy:
-    public NaiveMCTSNode selectLeaf(int maxplayer, int minplayer, float epsilon_l, float epsilon_g, float epsilon_0, int max_depth, int a_creation_ID) throws Exception {
+    // C is the UCB constant for exploration/exploitation
+    public MLPSNode selectLeaf(int maxplayer, int minplayer, double C, int max_depth, int a_creation_ID) throws Exception {
         if (unitActionTable == null) return this;
         
        if (depth>=max_depth) return this;        
         
         PlayerAction pa2;
         long actionCode;
-
-        if (children.size()>0 && r.nextFloat()>=epsilon_0) {
-            // select the player action with the highest value found so far:
-            if (r.nextFloat()>=epsilon_g) {
-                NaiveMCTSNode best = null;
-                for(MCTSNode pate:children) {
-                    if (type==0) {
-                        // max node:
-                        if (best==null || (pate.accum_evaluation/pate.visit_count)>(best.accum_evaluation/best.visit_count)) {
-                            best = (NaiveMCTSNode)pate;
-                        }                    
-                    } else {
-                        // min node:
-                        if (best==null || (pate.accum_evaluation/pate.visit_count)<(best.accum_evaluation/best.visit_count)) {
-                            best = (NaiveMCTSNode)pate;
-                        }                                        
-                    }
-                }
-
-                return best.selectLeaf(maxplayer, minplayer, epsilon_l, epsilon_g, epsilon_0, max_depth, a_creation_ID);
-            } else {
-                // cohose one at random from the ones seen so far:
-                NaiveMCTSNode best = (NaiveMCTSNode)children.get(r.nextInt(children.size()));
-                return best.selectLeaf(maxplayer, minplayer, epsilon_l, epsilon_g, epsilon_0, max_depth, a_creation_ID);
-            }
-        }
-        
  
-        // For each unit, rank the unitActions according to preference:
-        List<double []> distributions = new LinkedList<double []>();
+        // For each unit, compute the UCB1 scores for each action:
         List<Integer> notSampledYet = new LinkedList<Integer>();
-        for(UnitActionTableEntry ate:unitActionTable) {
-            double []dist = new double[ate.nactions];
-            double total = 0;
-            int bestIdx = -1;
-            double bestEvaluation = 0;
-            int visits = 0;
-            for(int i = 0;i<ate.nactions;i++) {
-                if (type==0) {
-                    // max node:
-                    if (bestIdx==-1 || 
-                        (visits!=0 && ate.visit_count[i]==0) ||
-                        (visits!=0 && (ate.accum_evaluation[i]/ate.visit_count[i])>bestEvaluation)) {
-                        bestIdx = i;
-                        if (ate.visit_count[i]>0) bestEvaluation = (ate.accum_evaluation[i]/ate.visit_count[i]);
-                                             else bestEvaluation = 0;
-                        visits = ate.visit_count[i];
-                    }
-                } else {
-                    // min node:
-                    if (bestIdx==-1 || 
-                        (visits!=0 && ate.visit_count[i]==0) ||
-                        (visits!=0 && (ate.accum_evaluation[i]/ate.visit_count[i])<bestEvaluation)) {
-                        bestIdx = i;
-                        if (ate.visit_count[i]>0) bestEvaluation = (ate.accum_evaluation[i]/ate.visit_count[i]);
-                                             else bestEvaluation = 0;
-                        visits = ate.visit_count[i];
-                    }
-                }
-                dist[i] = epsilon_l/ate.nactions;
-                total+=dist[i];
-            }
-            if (ate.visit_count[bestIdx]!=0) {
-                dist[bestIdx] = (1-epsilon_l) + (epsilon_l/ate.nactions);
-            } else {
-                for(int j = 0;j<dist.length;j++) 
-                    if (ate.visit_count[j]>0) dist[j] = 0;
-            }  
+        for(int ate_idx = 0;ate_idx<unitActionTable.size();ate_idx++) {
+            UnitActionTableEntry ate = unitActionTable.get(ate_idx);
+            double []scores = UCBscores.get(ate_idx);
+            for(int i = 0;i<ate.nactions;i++) scores[i] = actionValue(ate, i, C);
 
             if (DEBUG>=3) {
                 System.out.print("[ ");
                 for(int i = 0;i<ate.nactions;i++) System.out.print("(" + ate.visit_count[i] + "," + ate.accum_evaluation[i]/ate.visit_count[i] + ")");
                 System.out.println("]");
                 System.out.print("[ ");
-                for(int i = 0;i<dist.length;i++) System.out.print(dist[i] + " ");
+                for(int i = 0;i<ate.nactions;i++) System.out.print(scores[i] + " ");
                 System.out.println("]");
             }
-
-            notSampledYet.add(distributions.size());
-            distributions.add(dist);
+            notSampledYet.add(ate.nactions);
         }
 
-        // Select the best combination that results in a valid playeraction by epsilon-greedy sampling:
+        // Select the best combination that results in a valid playeraction by MLPS sampling (maximizing UCB1 score of each action):
         ResourceUsage base_ru = new ResourceUsage();
         for(Unit u:gs.getUnits()) {
             UnitAction ua = gs.getUnitAction(u);
@@ -205,37 +173,34 @@ public class NaiveMCTSNode extends MCTSNode {
         pa2.setResourceUsage(base_ru.clone());            
         while(!notSampledYet.isEmpty()) {
             int i = notSampledYet.remove(r.nextInt(notSampledYet.size()));
-
             try {
                 UnitActionTableEntry ate = unitActionTable.get(i);
-                int code;
+                double []scores = UCBscores.get(i);
+                int code = -1;
                 UnitAction ua;
                 ResourceUsage r2;
 
-                // try one at random:
-                double []distribution = distributions.get(i);
-                code = Sampler.weighted(distribution);
+                // select the best one:
+                for(int j = 0;j<ate.nactions;j++) 
+                    if (code==-1 || scores[j]>scores[code]) code = j;
                 ua = ate.actions.get(code);
                 r2 = ua.resourceUsage(ate.u, gs.getPhysicalGameState());
                 if (!pa2.getResourceUsage().consistentWith(r2, gs)) {
-                    // sample at random, eliminating the ones that have not worked so far:
-                    List<Double> dist_l = new ArrayList<Double>();
-                    List<Integer> dist_outputs = new ArrayList<Integer>();
+                    // get the best next one:
+                    List<Integer> actions = new ArrayList<Integer>();
 
-                    for(int j = 0;j<distribution.length;j++) {
-                        dist_l.add(distribution[j]);
-                        dist_outputs.add(j);
+                    for(int j = 0;j<ate.nactions;j++) {
+                        if (j!=code) actions.add(j);
                     }
                     do{
-                        int idx = dist_outputs.indexOf(code);
-                        dist_l.remove(idx);
-                        dist_outputs.remove(idx);
-                        code = (Integer)Sampler.weighted(dist_l, dist_outputs);
+                        code = -1;
+                        for(Integer j:actions)  
+                            if (code==-1 || scores[j]>scores[code]) code = j;
+                        actions.remove((Integer)code);
                         ua = ate.actions.get(code);
-                        r2 = ua.resourceUsage(ate.u, gs.getPhysicalGameState());                            
+                        r2 = ua.resourceUsage(ate.u, gs.getPhysicalGameState());
                     }while(!pa2.getResourceUsage().consistentWith(r2, gs));
                 }
-
 
                 pa2.getResourceUsage().merge(r2);
                 pa2.addUnitAction(ate.u, ua);
@@ -247,17 +212,17 @@ public class NaiveMCTSNode extends MCTSNode {
             }
         }   
 
-        NaiveMCTSNode pate = childrenMap.get(actionCode);
+        MLPSNode pate = childrenMap.get(actionCode);
         if (pate==null) {
             actions.add(pa2);
             GameState gs2 = gs.cloneIssue(pa2);
-            NaiveMCTSNode node = new NaiveMCTSNode(maxplayer, minplayer, gs2.clone(), this, a_creation_ID);
+            MLPSNode node = new MLPSNode(maxplayer, minplayer, gs2.clone(), this, evaluation_bound, a_creation_ID);
             childrenMap.put(actionCode,node);
             children.add(node);
             return node;                
         }
 
-        return pate.selectLeaf(maxplayer, minplayer, epsilon_l, epsilon_g, epsilon_0, max_depth, a_creation_ID);
+        return pate.selectLeaf(maxplayer, minplayer, C, max_depth, a_creation_ID);
     }
     
     
@@ -269,7 +234,7 @@ public class NaiveMCTSNode extends MCTSNode {
     }
             
 
-    public void propagateEvaluation(float evaluation, NaiveMCTSNode child) {
+    public void propagateEvaluation(float evaluation, MLPSNode child) {
         accum_evaluation += evaluation;
         visit_count++;
         
@@ -295,7 +260,7 @@ public class NaiveMCTSNode extends MCTSNode {
         }
 
         if (parent != null) {
-            ((NaiveMCTSNode)parent).propagateEvaluation(evaluation, this);
+            ((MLPSNode)parent).propagateEvaluation(evaluation, this);
         }
     }
 

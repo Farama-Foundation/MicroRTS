@@ -16,6 +16,6 @@ public class UnitActionTableEntry {
     public Unit u;
     public int nactions = 0;
     public List<UnitAction> actions = null;
-    public float[] accum_evaluation = null;
+    public double[] accum_evaluation = null;
     public int[] visit_count = null;
 }
