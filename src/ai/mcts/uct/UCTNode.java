@@ -17,8 +17,10 @@ import rts.PlayerActionGenerator;
  */
 public class UCTNode {
     static Random r = new Random();
-//    static float C = 50;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
-    public static float C = 5;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
+    public static float C = 0.05f;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
+//    public static float C = 1;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
+//    public static float C = 5;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
+//    public static float C = 50;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
     
     public int type;    // 0 : max, 1 : min, -1: Game-over
     UCTNode parent = null;
@@ -117,9 +119,9 @@ public class UCTNode {
         double exploration = Math.sqrt(Math.log(((double)visit_count)/child.visit_count));
         if (type==0) {
             // max node:
-            exploitation = (exploitation + evaluation_bound)/(2*evaluation_bound);
+            exploitation = (evaluation_bound + exploitation)/(2*evaluation_bound);
         } else {
-            exploitation = - (exploitation - evaluation_bound)/(2*evaluation_bound);
+            exploitation = (evaluation_bound - exploitation)/(2*evaluation_bound);
         }
 //            System.out.println(exploitation + " + " + exploration);
 

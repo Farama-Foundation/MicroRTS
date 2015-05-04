@@ -114,7 +114,7 @@ public class ContinuingUCTUnitActions extends AI {
     }    
     
     public void startNewSearch(int player, GameState gs) {
-        float evaluation_bound = SimpleEvaluationFunction.upperBound(gs);
+        float evaluation_bound = ef.upperBound(gs);
         tree = new UCTUnitActionsNode(player, 1-player, gs, null, evaluation_bound);
         gs_to_start_from = gs;
 //        System.out.println(evaluation_bound);

@@ -37,7 +37,7 @@ public class SimpleEvaluationFunction extends EvaluationFunction {
         return score;
     }    
     
-    public static float upperBound(GameState gs) {
+    public float upperBound(GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         int free_resources = 0;
         int player_resources[] = {gs.getPlayer(0).getResources(),gs.getPlayer(1).getResources()};

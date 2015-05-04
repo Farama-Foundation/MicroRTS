@@ -4,7 +4,6 @@
  */
 package ai.minimax.RMMiniMax;
 
-import ai.evaluation.EvaluationFunctionWithActions;
 import ai.evaluation.EvaluationFunctionForwarding;
 import ai.AI;
 import ai.evaluation.EvaluationFunction;
@@ -86,8 +85,8 @@ public class RTMinimax extends AI {
     
     public PlayerAction realTimeMinimaxAB(int player, GameState gs, int lookAhead) {
         long start = System.currentTimeMillis();
-        float alpha = -EvaluationFunctionWithActions.VICTORY;
-        float beta = EvaluationFunctionWithActions.VICTORY;
+        float alpha = -EvaluationFunction.VICTORY;
+        float beta = EvaluationFunction.VICTORY;
         int maxplayer = player;
         int minplayer = 1 - player;
         System.out.println("Starting realTimeMinimaxAB...");

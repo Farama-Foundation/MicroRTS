@@ -122,7 +122,7 @@ public class ContinuingUCTFirstPlayUrgency extends AI {
     }    
     
     public void startNewSearch(int player, GameState gs) throws Exception {
-        float evaluation_bound = SimpleEvaluationFunction.upperBound(gs);
+        float evaluation_bound = ef.upperBound(gs);
         tree = new UCTNodeFirstPlayUrgency(player, 1-player, gs, null, evaluation_bound, FPUvalue);
         gs_to_start_from = gs;
         total_runs_this_move = 0;
@@ -200,7 +200,10 @@ public class ContinuingUCTFirstPlayUrgency extends AI {
         }
         
 //        tree.showNode(0,0);
-        if (DEBUG>=2) tree.showNode(0,1);
+        if (DEBUG>=2) {
+            System.out.println("--- Tree: ----");
+            tree.showNode(0,1);
+        }
         if (DEBUG>=1) System.out.println(this.getClass().getSimpleName() + " performed " + total_runs_this_move + " playouts.");
         if (DEBUG>=1) System.out.println(this.getClass().getSimpleName() + " selected children " + tree.actions.get(mostVisitedIdx) + " explored " + mostVisited.visit_count + " Avg evaluation: " + (mostVisited.accum_evaluation/((double)mostVisited.visit_count)));
         

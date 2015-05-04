@@ -59,7 +59,7 @@ public class UCTUnitActions extends AI {
     
     
     public PlayerAction UCT(int maxplayer, int minplayer, GameState gs, int T, int cutOffTime) throws Exception {
-        float evaluation_bound = SimpleEvaluationFunction.upperBound(gs);
+        float evaluation_bound = ef.upperBound(gs);
         UCTUnitActionsNode tree = new UCTUnitActionsNode(maxplayer, minplayer, gs, null, evaluation_bound);
         
         if (DEBUG>=1) System.out.println(this.getClass().getSimpleName() + " started...");

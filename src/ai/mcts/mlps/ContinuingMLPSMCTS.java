@@ -32,7 +32,7 @@ public class ContinuingMLPSMCTS extends AI {
     public int MAXSIMULATIONTIME = 1024;
     public int MAX_TREE_DEPTH = 10;
 
-    double C = 5.0;
+    double C = 0.05;
     
     // statistics:
     public long total_runs = 0;
@@ -117,7 +117,7 @@ public class ContinuingMLPSMCTS extends AI {
     
     public void startNewSearch(int player, GameState gs) throws Exception {
         current_iteration = 0;
-        float evaluation_bound = SimpleEvaluationFunction.upperBound(gs);
+        float evaluation_bound = ef.upperBound(gs);
         tree = new MLPSNode(player, 1-player, gs, null, evaluation_bound, current_iteration++);
         
         max_actions_so_far = Math.max(tree.moveGenerator.getSize(),max_actions_so_far);

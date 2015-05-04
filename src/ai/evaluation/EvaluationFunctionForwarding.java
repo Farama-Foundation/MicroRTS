@@ -30,4 +30,8 @@ public class EvaluationFunctionForwarding extends EvaluationFunction {
         return baseFunction.evaluate(maxplayer,minplayer,gs) + 
                baseFunction.evaluate(maxplayer,minplayer,gs2) * 0.5f;
     }
+    
+    public float upperBound(GameState gs) {
+        return baseFunction.upperBound(gs)*1.5f;
+    }
 }

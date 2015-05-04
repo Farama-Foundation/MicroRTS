@@ -14,4 +14,5 @@ public abstract class EvaluationFunction {
     public static float VICTORY = 10000;
     
     public abstract float evaluate(int maxplayer, int minplayer, GameState gs);
+    public abstract float upperBound(GameState gs);
 }

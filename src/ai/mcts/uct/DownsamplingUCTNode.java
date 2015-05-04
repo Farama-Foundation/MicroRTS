@@ -20,7 +20,8 @@ public class DownsamplingUCTNode {
 
     static Random r = new Random();
 //    static float C = 50;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
-    static float C = 5;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
+//    static float C = 5;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
+    static float C = 0.05f;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
     
     public int type;    // 0 : max, 1 : min, -1: Game-over
     DownsamplingUCTNode parent = null;

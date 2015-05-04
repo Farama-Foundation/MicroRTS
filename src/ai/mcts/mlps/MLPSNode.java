@@ -123,7 +123,7 @@ public class MLPSNode extends MCTSNode {
         double exploration = e.nactions*Math.sqrt((e.nactions+1)*Math.log(((double)visit_count)/e.visit_count[action]));
         if (type==0) {
             // max node:
-            exploitation = (exploitation + evaluation_bound)/(2*evaluation_bound);
+            exploitation = (evaluation_bound + exploitation)/(2*evaluation_bound);
         } else {
             exploitation = (evaluation_bound - exploitation)/(2*evaluation_bound);
         }

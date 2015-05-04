@@ -4,7 +4,6 @@
  */
 package ai.minimax.RMMiniMax;
 
-import ai.evaluation.EvaluationFunctionWithActions;
 import ai.AI;
 import ai.evaluation.EvaluationFunction;
 import java.util.LinkedList;
@@ -85,7 +84,7 @@ public class IDRTMinimax extends RTMinimax {
     
     public PlayerAction timeBoundedRealTimeMinimaxAB(GameState initial_gs, int maxplayer, int minplayer, int lookAhead, long cutOffTime, boolean needAResult) throws Exception {
         List<RTMiniMaxNode> stack = new LinkedList<RTMiniMaxNode>();      
-        RTMiniMaxNode head = new RTMiniMaxNode(0,initial_gs,-EvaluationFunctionWithActions.VICTORY, EvaluationFunctionWithActions.VICTORY);
+        RTMiniMaxNode head = new RTMiniMaxNode(0,initial_gs,-EvaluationFunction.VICTORY, EvaluationFunction.VICTORY);
         stack.add(head);
         Pair<PlayerAction,Float> lastResult = null;
         while(!stack.isEmpty() && System.currentTimeMillis()<cutOffTime){

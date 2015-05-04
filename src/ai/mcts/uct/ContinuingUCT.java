@@ -125,7 +125,7 @@ public class ContinuingUCT extends AI {
     }    
     
     public void startNewSearch(int player, GameState gs) throws Exception {
-        float evaluation_bound = SimpleEvaluationFunction.upperBound(gs);
+        float evaluation_bound = ef.upperBound(gs);
         tree = new UCTNode(player, 1-player, gs, null, evaluation_bound);
         gs_to_start_from = gs;
         total_runs_this_move = 0;

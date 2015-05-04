@@ -18,9 +18,11 @@ import rts.PlayerActionGenerator;
  * @author santi
  */
 public class UCTNodeFirstPlayUrgency {
+    public static int DEBUG = 0;
+    
     static Random r = new Random();
-//    static float C = 50;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
-    static float C = 5;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
+    static float C = 0.05f;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
+//    static float C = 1;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
     
     public int type;    // 0 : max, 1 : min, -1: Game-over
     UCTNodeFirstPlayUrgency parent = null;
@@ -80,9 +82,11 @@ public class UCTNodeFirstPlayUrgency {
         // Bandit policy:
         double best_score = 0;
         UCTNodeFirstPlayUrgency best = null;
+        if (DEBUG>=1) System.out.println("UCTNodeFirstPlayUrgency.UCTSelectLeaf:");
         for(int i = 0;i<children.size();i++) {
             UCTNodeFirstPlayUrgency child = children.get(i);
             double tmp = childValue(child);
+            if (DEBUG>=1) System.out.println("  " + tmp);
             if (best==null || tmp>best_score) {
                 best = child;
                 best_score = tmp;
@@ -129,9 +133,9 @@ public class UCTNodeFirstPlayUrgency {
         } else {
             exploitation = - (exploitation - evaluation_bound)/(2*evaluation_bound);
         }
-//            System.out.println(exploitation + " + " + exploration);
 
-        double tmp = C*exploitation + exploration;
+        System.out.println("    " + exploitation + " + " + exploration);
+        double tmp = exploitation + C*exploration;
         return tmp;
     }
     

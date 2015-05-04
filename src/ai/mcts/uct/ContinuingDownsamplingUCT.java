@@ -144,7 +144,7 @@ public class ContinuingDownsamplingUCT extends AI {
     }    
     
     public void startNewSearch(int player, GameState gs) throws Exception {
-        float evaluation_bound = SimpleEvaluationFunction.upperBound(gs);
+        float evaluation_bound = ef.upperBound(gs);
         tree = new DownsamplingUCTNode(player, 1-player, gs, null, MAXACTIONS, evaluation_bound);
         gs_to_start_from = gs;
     }    

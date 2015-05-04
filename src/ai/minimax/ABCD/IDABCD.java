@@ -4,7 +4,6 @@
  */
 package ai.minimax.ABCD;
 
-import ai.evaluation.EvaluationFunctionWithActions;
 import ai.AI;
 import ai.evaluation.EvaluationFunction;
 import java.util.LinkedList;
@@ -110,7 +109,7 @@ public class IDABCD extends ABCD {
 
     public PlayerAction timeBoundedABCD(GameState initial_gs, int maxplayer, int minplayer, int depth, long cutOffTime, boolean needAResult) throws Exception {
         List<ABCDNode> stack = new LinkedList<ABCDNode>();
-        ABCDNode head = new ABCDNode(-1, 0, initial_gs, -EvaluationFunctionWithActions.VICTORY, EvaluationFunctionWithActions.VICTORY, maxplayer);
+        ABCDNode head = new ABCDNode(-1, 0, initial_gs, -EvaluationFunction.VICTORY, EvaluationFunction.VICTORY, maxplayer);
         stack.add(head);
         Pair<PlayerAction, Float> lastResult = null;
         while (!stack.isEmpty() && System.currentTimeMillis() < cutOffTime) {

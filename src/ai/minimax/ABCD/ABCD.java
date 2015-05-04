@@ -6,7 +6,6 @@ package ai.minimax.ABCD;
 
 import ai.AI;
 import ai.evaluation.EvaluationFunction;
-import ai.evaluation.EvaluationFunctionWithActions;
 import ai.minimax.MiniMaxResult;
 import java.util.List;
 import rts.GameState;
@@ -74,8 +73,8 @@ public class ABCD extends AI {
     
     public PlayerAction ABCD(int player, GameState gs, int depthLeft) throws Exception {
         long start = System.currentTimeMillis();
-        float alpha = -EvaluationFunctionWithActions.VICTORY;
-        float beta = EvaluationFunctionWithActions.VICTORY;
+        float alpha = -EvaluationFunction.VICTORY;
+        float beta = EvaluationFunction.VICTORY;
         int maxplayer = player;
         int minplayer = 1 - player;
         if (DEBUG>=1) System.out.println("Starting ABCD... " + player);

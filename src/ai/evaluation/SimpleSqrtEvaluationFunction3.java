@@ -12,9 +12,10 @@ import rts.units.*;
  *
  * @author santi
  * 
- * This function is similar to SimpleSqrtEvaluationFunction, except that it detects when a player has won and returns a special, larger value.
+ * This function uses the same base evaluation as SimpleSqrtEvaluationFunction and SimpleSqrtEvaluationFunction2, but returns the (proportion*2)-1 of the total score on the board that belongs to one player.
+ * The advantage of this function is that evaluation is bounded between -1 and 1.
  */
-public class SimpleSqrtEvaluationFunction2 extends EvaluationFunction {    
+public class SimpleSqrtEvaluationFunction3 extends EvaluationFunction {    
     public static float RESOURCE = 20;
     public static float RESOURCE_IN_WORKER = 10;
     public static float UNIT_BONUS_MULTIPLIER = 40.0f;
@@ -23,9 +24,8 @@ public class SimpleSqrtEvaluationFunction2 extends EvaluationFunction {
     public float evaluate(int maxplayer, int minplayer, GameState gs) {
         float s1 = base_score(maxplayer,gs);
         float s2 = base_score(minplayer,gs);
-        if (s1==0 && s2!=0) return -VICTORY;
-        if (s1!=0 && s2==0) return VICTORY;
-        return  s1 - s2;
+        if (s1 + s2 == 0) return 0.5f;
+        return  (2*s1 / (s1 + s2))-1;
     }
     
     public float base_score(int player, GameState gs) {
@@ -44,20 +44,6 @@ public class SimpleSqrtEvaluationFunction2 extends EvaluationFunction {
     }    
     
     public float upperBound(GameState gs) {
-        PhysicalGameState pgs = gs.getPhysicalGameState();
-        int free_resources = 0;
-        int player_resources[] = {gs.getPlayer(0).getResources(),gs.getPlayer(1).getResources()};
-        for(Unit u:pgs.getUnits()) {
-            if (u.getPlayer()==-1) free_resources+=u.getResources();
-            if (u.getPlayer()==0) {
-                player_resources[0] += u.getResources();
-                player_resources[0] += u.getCost();
-            }
-            if (u.getPlayer()==1) {
-                player_resources[1] += u.getResources();
-                player_resources[1] += u.getCost();                
-            }
-        }
-        return (free_resources + Math.max(player_resources[0],player_resources[1]))*UNIT_BONUS_MULTIPLIER;
+        return 1.0f;
     }
 }

@@ -21,10 +21,10 @@ import ai.abstraction.pathfinding.GreedyPathFinding;
 import ai.abstraction.pathfinding.PathFinding;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.EvaluationFunctionForwarding;
-import ai.evaluation.EvaluationFunctionWithActions;
 import ai.evaluation.SimpleEvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction2;
+import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import ai.mcts.naivemcts.ContinuingNaiveMCTS;
 import ai.mcts.uct.ContinuingUCT;
 import ai.mcts.uct.ContinuingUCTFirstPlayUrgency;
@@ -93,7 +93,7 @@ public class FEStatePane extends JPanel {
     EvaluationFunction efs[] = {new SimpleEvaluationFunction(),
                                 new SimpleSqrtEvaluationFunction(),
                                 new SimpleSqrtEvaluationFunction2(),
-                                new EvaluationFunctionWithActions(),
+                                new SimpleSqrtEvaluationFunction3(),
                                 new EvaluationFunctionForwarding(new SimpleEvaluationFunction())};
 
     Class AIs[] = {PassiveAI.class,

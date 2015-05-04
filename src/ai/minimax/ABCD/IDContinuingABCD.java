@@ -7,7 +7,6 @@ package ai.minimax.ABCD;
 import ai.evaluation.EvaluationFunctionForwarding;
 import ai.AI;
 import ai.evaluation.EvaluationFunction;
-import ai.evaluation.EvaluationFunctionWithActions;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -317,7 +316,7 @@ public class IDContinuingABCD extends AI {
             nLeaves = 0;
             time_depth = 0;
             stack = new LinkedList<ABCDNode>();
-            head = new ABCDNode(-1, 0, initial_gs, -EvaluationFunctionWithActions.VICTORY, EvaluationFunctionWithActions.VICTORY, 0);
+            head = new ABCDNode(-1, 0, initial_gs, -EvaluationFunction.VICTORY, EvaluationFunction.VICTORY, 0);
             stack.add(head);
             treeIsComplete = true;
         } else {
