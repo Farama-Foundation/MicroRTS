@@ -177,6 +177,7 @@ public class PhysicalGameStatePanel extends JPanel {
                             PartiallyObservableGameState pogs[],
                             int colorScheme,
                             EvaluationFunction evalFunction) {
+        if (pgs==null) return;
         int gridx = (dx-64)/pgs.getWidth();
         int gridy = (dy-64)/pgs.getHeight();
         int grid = Math.min(gridx,gridy);
