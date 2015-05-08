@@ -11,7 +11,7 @@ import ai.core.AI;
  *
  * @author santi
  * 
- * A "AIWithComputationBudget" is one that is given a limit in the amount of CPU it can use. This limit is specified in either:
+ * A "AIWithComputationBudget" is one that is given a limit in the amount of CPU it can use per game frame. This limit is specified in either:
  * - MAX_TIME: number of milliseconds that the call to "getAction" can take
  * - MAX_ITERATIONS: number of internal iterations the AI can use (e.g., in a Monte Carlo AI, this is the number of playouts, 
  *                   or in a minimax AI, this is the number of leaves it can explore).
@@ -20,4 +20,9 @@ import ai.core.AI;
 public abstract class AIWithComputationBudget extends AI {
     protected int MAX_TIME = 100;
     protected int MAX_ITERATIONS = 100;
+    
+    public AIWithComputationBudget(int mt, int mi) {
+        MAX_TIME = mt;
+        MAX_ITERATIONS = mi;
+    }
 }

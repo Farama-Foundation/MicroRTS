@@ -7,6 +7,7 @@
 package ai.portfolio;
 
 import ai.core.AI;
+import ai.core.AIWithComputationBudget;
 import ai.evaluation.EvaluationFunction;
 import rts.GameState;
 import rts.PlayerAction;
@@ -15,21 +16,17 @@ import rts.PlayerAction;
  *
  * @author santi
  */
-public class PortfolioAI extends AI {
+public class PortfolioAI extends AIWithComputationBudget {
     
     public static int DEBUG = 0;
 
-    // if MAX_TIME or MAX_PLAYOUTS are <= 0, they are ignored
-    int MAX_TIME = -1;
-    int MAX_PLAYOUTS = 1000;
     int LOOKAHEAD = 500;
     AI strategies[] = null;
     boolean deterministic[] = null;
     EvaluationFunction evaluation = null;
     
     public PortfolioAI(AI s[], boolean d[], int time, int max_playouts, int la, EvaluationFunction e) {
-        MAX_TIME = time;
-        MAX_PLAYOUTS = max_playouts;
+        super(time, max_playouts);
         LOOKAHEAD = la;
         strategies = s;
         deterministic = d;
@@ -77,7 +74,7 @@ public class PortfolioAI extends AI {
                         counts[i][j]++;
                         nplayouts++;
                     }
-                    if (MAX_PLAYOUTS>0 && nplayouts>=MAX_PLAYOUTS) timeout = true;
+                    if (MAX_ITERATIONS>0 && nplayouts>=MAX_ITERATIONS) timeout = true;
                     if (MAX_TIME>0 && System.currentTimeMillis()>start+MAX_TIME) timeout = true;
                 }
             }
@@ -135,7 +132,7 @@ public class PortfolioAI extends AI {
     }
 
     public AI clone() {
-        return new PortfolioAI(strategies, deterministic, MAX_TIME, MAX_PLAYOUTS,LOOKAHEAD, evaluation);
+        return new PortfolioAI(strategies, deterministic, MAX_TIME, MAX_ITERATIONS,LOOKAHEAD, evaluation);
     }
     
 }

@@ -56,6 +56,7 @@ public class PseudoContinuingAI extends AI {
     
     public void reset()
     {
+        n_cycles_to_think = 1;
         m_AI.reset();
     }
     
