@@ -6,7 +6,7 @@
 
 package gui.frontend;
 
-import ai.AI;
+import ai.core.AI;
 import ai.BranchingFactorCalculator;
 import ai.PassiveAI;
 import ai.RandomAI;

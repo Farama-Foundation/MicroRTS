@@ -5,6 +5,7 @@
 package ai.mcts.naivemcts;
 
 import ai.*;
+import ai.core.AI;
 import ai.evaluation.EvaluationFunction;
 import java.util.Random;
 import rts.GameState;

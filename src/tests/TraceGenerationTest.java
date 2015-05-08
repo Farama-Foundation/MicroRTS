@@ -4,6 +4,7 @@
  */
 package tests;
 
+import ai.core.AI;
 import ai.abstraction.WorkerRush;
 import ai.*;
 import ai.abstraction.pathfinding.BFSPathFinding;

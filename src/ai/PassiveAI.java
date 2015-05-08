@@ -4,6 +4,7 @@
  */
 package ai;
 
+import ai.core.AI;
 import java.util.List;
 import rts.*;
 import rts.units.Unit;

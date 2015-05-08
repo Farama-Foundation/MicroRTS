@@ -7,7 +7,7 @@
 package ai.portfolio.portfoliogreedysearch;
 
 import ai.portfolio.*;
-import ai.AI;
+import ai.core.AI;
 import ai.abstraction.pathfinding.PathFinding;
 import ai.evaluation.EvaluationFunction;
 import java.util.ArrayList;

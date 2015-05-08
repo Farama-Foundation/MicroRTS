@@ -4,8 +4,9 @@
  */
 package tests;
 
-import ai.portfolio.ContinuingPortfolioAI;
+import ai.core.AI;
 import ai.*;
+import ai.portfolio.ContinuingPortfolioAI;
 import ai.abstraction.LightRush;
 import ai.abstraction.RangedRush;
 import ai.abstraction.WorkerRush;

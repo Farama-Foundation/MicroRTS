@@ -4,6 +4,7 @@
  */
 package tests;
 
+import ai.core.AI;
 import ai.*;
 import ai.abstraction.LightRush;
 import ai.abstraction.RangedRush;

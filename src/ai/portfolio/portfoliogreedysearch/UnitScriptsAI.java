@@ -5,7 +5,7 @@
  */
 package ai.portfolio.portfoliogreedysearch;
 
-import ai.AI;
+import ai.core.AI;
 import java.util.HashMap;
 import java.util.List;
 import rts.GameState;

@@ -6,7 +6,7 @@
 
 package ai.portfolio;
 
-import ai.AI;
+import ai.core.AI;
 import ai.evaluation.EvaluationFunction;
 import rts.GameState;
 import rts.PlayerAction;

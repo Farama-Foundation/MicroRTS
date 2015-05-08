@@ -28,7 +28,7 @@ import rts.UnitAction;
 import rts.UnitActionAssignment;
 import rts.units.Unit;
 import util.Pair;
-import ai.AI;
+import ai.core.AI;
 import ai.montecarlo.lsi.Sampling.AgentOrderingType;
 import ai.montecarlo.lsi.Sampling.UnitActionTableEntry;
 import ai.evaluation.EvaluationFunction;

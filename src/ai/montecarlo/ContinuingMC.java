@@ -4,7 +4,7 @@
  */
 package ai.montecarlo;
 
-import ai.AI;
+import ai.core.AI;
 import ai.RandomBiasedAI;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleEvaluationFunction;
