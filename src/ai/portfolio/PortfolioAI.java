@@ -6,7 +6,8 @@
 
 package ai.portfolio;
 
-import ai.AI;
+import ai.core.AI;
+import ai.core.InterruptibleAIWithComputationBudget;
 import ai.evaluation.EvaluationFunction;
 import rts.GameState;
 import rts.PlayerAction;
@@ -15,21 +16,23 @@ import rts.PlayerAction;
  *
  * @author santi
  */
-public class PortfolioAI extends AI {
+public class PortfolioAI extends InterruptibleAIWithComputationBudget {
     
     public static int DEBUG = 0;
 
-    // if MAX_TIME or MAX_PLAYOUTS are <= 0, they are ignored
-    int MAX_TIME = -1;
-    int MAX_PLAYOUTS = 1000;
     int LOOKAHEAD = 500;
     AI strategies[] = null;
     boolean deterministic[] = null;
     EvaluationFunction evaluation = null;
     
+    GameState gs_to_start_from = null;
+    double scores[][] = null;
+    int counts[][] = null;
+    int nplayouts = 0;
+    int player;
+    
     public PortfolioAI(AI s[], boolean d[], int time, int max_playouts, int la, EvaluationFunction e) {
-        MAX_TIME = time;
-        MAX_PLAYOUTS = max_playouts;
+        super(time, max_playouts);
         LOOKAHEAD = la;
         strategies = s;
         deterministic = d;
@@ -39,14 +42,24 @@ public class PortfolioAI extends AI {
     public void reset() {
     }
 
-    public PlayerAction getAction(int player, GameState gs) throws Exception {
-        if (gs.winner()!=-1) return new PlayerAction();
-        if (!gs.canExecuteAnyAction(player)) return new PlayerAction();
-        
+    
+    public void startNewComputation(int a_player, GameState gs) {
         int n = strategies.length;
-        double scores[][] = new double[n][n];
-        int counts[][] = new int[n][n];
-        int nplayouts = 0;
+        scores = new double[n][n];
+        counts = new int[n][n];
+        player = a_player;
+        gs_to_start_from = gs;
+        nplayouts = 0;
+    }
+    
+    public void resetSearch() {
+        scores = null;
+        counts = null;
+        gs_to_start_from = null;
+    }
+    
+    public void computeDuringOneGameFrame() throws Exception {        
+        int n = strategies.length;
         boolean timeout = false;
         long start = System.currentTimeMillis();
         
@@ -60,7 +73,7 @@ public class PortfolioAI extends AI {
                         anyChange = true;
                         AI ai1 = strategies[i].clone();
                         AI ai2 = strategies[j].clone();
-                        GameState gs2 = gs.clone();
+                        GameState gs2 = gs_to_start_from.clone();
                         ai1.reset();
                         ai2.reset();
                         int timeLimit = gs2.getTime() + LOOKAHEAD;
@@ -77,16 +90,20 @@ public class PortfolioAI extends AI {
                         counts[i][j]++;
                         nplayouts++;
                     }
-                    if (MAX_PLAYOUTS>0 && nplayouts>=MAX_PLAYOUTS) timeout = true;
+                    if (MAX_ITERATIONS>0 && nplayouts>=MAX_ITERATIONS) timeout = true;
                     if (MAX_TIME>0 && System.currentTimeMillis()>start+MAX_TIME) timeout = true;
                 }
             }
             // when all the AIs are deterministic, as soon as we have done one play out with each, we are done
             if (!anyChange) break;
         }while(!timeout);
-        
+    }
+     
+    
+    public PlayerAction getBestActionSoFar() throws Exception {
+        int n = strategies.length;
         if (DEBUG>=1) {
-            System.out.println("PortfolioAI, game cycle: " + gs.getTime());
+            System.out.println("PortfolioAI, game cycle: " + gs_to_start_from.getTime());
             System.out.println("  counts:");
             for(int i = 0;i<n;i++) {
                 System.out.print("    ");
@@ -131,11 +148,11 @@ public class PortfolioAI extends AI {
         // use the AI that obtained best results:
         AI ai = strategies[bestMax].clone();
         ai.reset();
-        return ai.getAction(player, gs);
+        return ai.getAction(player, gs_to_start_from);
     }
 
     public AI clone() {
-        return new PortfolioAI(strategies, deterministic, MAX_TIME, MAX_PLAYOUTS,LOOKAHEAD, evaluation);
+        return new PortfolioAI(strategies, deterministic, MAX_TIME, MAX_ITERATIONS, LOOKAHEAD, evaluation);
     }
     
 }

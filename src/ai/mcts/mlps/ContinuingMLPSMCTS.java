@@ -5,6 +5,7 @@
 package ai.mcts.mlps;
 
 import ai.*;
+import ai.core.AI;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleEvaluationFunction;
 import java.util.Random;

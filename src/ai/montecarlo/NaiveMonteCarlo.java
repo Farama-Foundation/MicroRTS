@@ -4,10 +4,10 @@
  */
 package ai.montecarlo;
 
-import ai.AI;
+import ai.core.AI;
 import ai.RandomBiasedAI;
+import ai.core.InterruptibleAIWithComputationBudget;
 import ai.evaluation.EvaluationFunction;
-import ai.evaluation.SimpleEvaluationFunction;
 import java.util.*;
 import rts.*;
 import rts.units.Unit;
@@ -18,8 +18,8 @@ import util.Sampler;
  *
  * @author santi
  */
-public class NaiveMonteCarlo extends AI {
-    public static final int DEBUG = 0;
+public class NaiveMonteCarlo extends InterruptibleAIWithComputationBudget {
+    public static int DEBUG = 0;
     EvaluationFunction ef = null;
     
     public class UnitActionTableEntry {
@@ -34,48 +34,63 @@ public class NaiveMonteCarlo extends AI {
         long code;
         int selectedUnitActions[];
         PlayerAction pa;
-        float accum_evaluation;
-        int visit_count;
+        float accum_evaluation = 0;
+        int visit_count = 0;
     }
     
     Random r = new Random();
     AI randomAI = new RandomBiasedAI();
     long max_actions_so_far = 0;
+    
+    PlayerActionGenerator  moveGenerator = null;
+    long multipliers[] = null;
+    List<UnitActionTableEntry> unitActionTable = null;
+    HashMap<Long,PlayerActionTableEntry> playerActionTable = null;
+    GameState gs_to_start_from = null;
+    int run = 0;
+    int player;
+    
+    // statistics:
+    public long total_runs = 0;
+    public long total_cycles_executed = 0;
+    public long total_actions_issued = 0;    
         
-    int NSIMULATIONS = 1000;
     int MAXSIMULATIONTIME = 1024;
-    float epsilon1 = 0.25f;
+    float epsilon1 = 0.25f;  
     float epsilon2 = 0.2f;
     int minSamples = 10;
     
-    public NaiveMonteCarlo(int simulations, int lookahead, float e1, float e2, AI policy, EvaluationFunction a_ef) {
-        NSIMULATIONS = simulations;
-        MAXSIMULATIONTIME = lookahead;
+    public NaiveMonteCarlo(int available_time, int max_playouts, int lookahead, float e1, float e2, AI policy, EvaluationFunction a_ef) {
+        super(available_time, max_playouts);
         randomAI = policy;
         epsilon1 = e1;
         epsilon2 = e2;
+        MAXSIMULATIONTIME = lookahead;
         ef = a_ef;
     }
     
     
     public void reset() {        
+        moveGenerator = null;
+        multipliers = null;
+        unitActionTable = null;
+        playerActionTable = null;
+        gs_to_start_from = null;
+        run = 0;
     }    
-
+    
     
     public AI clone() {
-        return new NaiveMonteCarlo(NSIMULATIONS, MAXSIMULATIONTIME, epsilon1, epsilon2, randomAI, ef);
-    }    
-
+        return new NaiveMonteCarlo(MAX_TIME, MAX_ITERATIONS, MAXSIMULATIONTIME, epsilon1, epsilon2, randomAI, ef);
+    }
     
-    public PlayerAction getAction(int player, GameState gs) throws Exception {
-        if (!gs.canExecuteAnyAction(player) || gs.winner()!=-1) {
-            return new PlayerAction();
-        }        
-                
-        PlayerActionGenerator  moveGenerator = new PlayerActionGenerator(gs, player);
-        moveGenerator.randomizeOrder();
-        long multipliers[] = new long[moveGenerator.getChoices().size()];
-        List<UnitActionTableEntry> unitActionTable = new LinkedList<UnitActionTableEntry>();
+    
+    public void startNewComputation(int a_player, GameState gs) throws Exception {
+        gs_to_start_from = gs;
+        player = a_player;
+        moveGenerator = new PlayerActionGenerator(gs, player);
+        multipliers = new long[moveGenerator.getChoices().size()];
+        unitActionTable = new LinkedList<UnitActionTableEntry>();
         long baseMultiplier = 1;
         int idx = 0;
         for (Pair<Unit, List<UnitAction>> choice : moveGenerator.getChoices()) {
@@ -94,42 +109,41 @@ public class NaiveMonteCarlo extends AI {
             baseMultiplier*=ae.nactions;
             idx++;
         }
-        HashMap<Long,PlayerActionTableEntry> playerActionTable = new LinkedHashMap<Long,PlayerActionTableEntry>();    // associates action codes with children
-        
-        for(int run = 0;run<NSIMULATIONS;run++) {
-            monteCarloRun(player,gs,run,unitActionTable,playerActionTable,multipliers);
-        }
-        
-        // find the best:
-        PlayerActionTableEntry best = null;
-        PlayerActionTableEntry bestIgnoringMinSamples = null;
-        for(PlayerActionTableEntry pate:playerActionTable.values()) {
-            if (pate.visit_count>minSamples) {
-                if (best==null || (pate.accum_evaluation/pate.visit_count)>(best.accum_evaluation/best.visit_count)) {
-                    best = pate;
-                }
-            }
-            if (bestIgnoringMinSamples==null || (pate.accum_evaluation/pate.visit_count)>(bestIgnoringMinSamples.accum_evaluation/bestIgnoringMinSamples.visit_count)) {
-                bestIgnoringMinSamples = pate;
-            }
-        }
-        if (best==null) best = bestIgnoringMinSamples;
-        
-        if (DEBUG>=2) printState(unitActionTable, playerActionTable);
-
-        if (DEBUG>=1) {
-            System.out.println("Explored actions: " + playerActionTable.size() + " / " + moveGenerator.getSize());
-            System.out.println("Selected action: " + best + " visited " + best.visit_count + " with average evaluation " + (best.accum_evaluation/best.visit_count));
-        }        
-        
-        return best.pa;
+        max_actions_so_far = Math.max(moveGenerator.getSize(),max_actions_so_far);
+        playerActionTable = new LinkedHashMap<Long,PlayerActionTableEntry>();    // associates action codes with children           
+        run = 0;
     }
     
     
-    public float monteCarloRun(int player, GameState gs, int run, 
-                               List<UnitActionTableEntry> unitActionTable,
-                               HashMap<Long,PlayerActionTableEntry> playerActionTable,
-                               long multipliers[]) throws Exception {
+    public void resetSearch() {
+        gs_to_start_from = null;
+        moveGenerator = null;
+        multipliers = null;
+        unitActionTable = null;
+        playerActionTable = null;
+        run = 0;
+    }    
+    
+    
+    public void computeDuringOneGameFrame() throws Exception {
+        if (moveGenerator.getSize()==1) return;
+//        System.out.println(moveGenerator.getSize());
+        long start = System.currentTimeMillis();
+        long end = start;
+        long count = 0;
+        while(true) {
+            monteCarloRun(player, gs_to_start_from);
+            count++;
+            end = System.currentTimeMillis();
+            if (MAX_TIME>=0 && (end - start)>=MAX_TIME) break; 
+            if (MAX_ITERATIONS>=0 && count>=MAX_ITERATIONS) break;             
+        }
+        
+        total_cycles_executed++;
+    }
+    
+    
+    public float monteCarloRun(int player, GameState gs) throws Exception {
         PlayerAction pa = null;
         long actionCode = 0;
         int selectedUnitActions[] = new int[unitActionTable.size()];
@@ -280,9 +294,74 @@ public class NaiveMonteCarlo extends AI {
             unitActionTable.get(i).visit_count[uaIdx]++;
         }    
         
+        run++;
+        total_runs++;
         return eval;
+    }
+    
+        
+    public PlayerAction getBestActionSoFar() {
+        // find the best:
+        PlayerActionTableEntry best = null;
+        PlayerActionTableEntry bestIgnoringMinSamples = null;
+        for(PlayerActionTableEntry pate:playerActionTable.values()) {
+            if (pate.visit_count>minSamples) {
+                if (best==null || (pate.accum_evaluation/pate.visit_count)>(best.accum_evaluation/best.visit_count)) {
+                    best = pate;
+                }
+            }
+            if (bestIgnoringMinSamples==null || (pate.accum_evaluation/pate.visit_count)>(bestIgnoringMinSamples.accum_evaluation/bestIgnoringMinSamples.visit_count)) {
+                bestIgnoringMinSamples = pate;
+            }
+        }
+        if (best==null) best = bestIgnoringMinSamples;
+        
+        if (DEBUG>=2) printState(unitActionTable, playerActionTable);
+
+        if (DEBUG>=1) {
+            System.out.println("Executed " + run + " runs");
+            System.out.println("Explored actions: " + playerActionTable.size() + " / " + moveGenerator.getSize());
+            System.out.println("Selected action: " + best + " visited " + best.visit_count + " with average evaluation " + (best.accum_evaluation/best.visit_count));
+        }        
+        
+        total_actions_issued++;
+        
+        if (best==null) return new PlayerAction();        
+        return best.pa;        
+    }
+    
+    
+    // gets the best action, evaluates it for 'N' times using a simulation, and returns the average obtained value:
+    public float getBestActionEvaluation(GameState gs, int player, int N) throws Exception {
+        PlayerAction pa = getBestActionSoFar();
+        
+        if (pa==null) return 0;
+
+        float accum = 0;
+        for(int i = 0;i<N;i++) {
+            GameState gs2 = gs.cloneIssue(pa);
+            GameState gs3 = gs2.clone();
+            simulate(gs3,gs3.getTime() + MAXSIMULATIONTIME);
+            int time = gs3.getTime() - gs2.getTime();
+            // Discount factor:
+            accum += (float)(ef.evaluate(player, 1-player, gs3)*Math.pow(0.99,time/10.0));
+        }
+            
+        return accum/N;
     }    
     
+
+    public void printState() {
+        System.out.println("Unit actions table:");
+        for(UnitActionTableEntry uat : unitActionTable) {
+            System.out.println("Actions for unit " + uat.u);
+            for (int i = 0; i < uat.nactions; i++) {
+                System.out.println("   " + uat.actions.get(i) + " visited " + uat.visit_count[i] + " with average evaluation " + (uat.accum_evaluation[i] / uat.visit_count[i]));
+            }
+        }        
+        System.out.println("Player actions:" + playerActionTable.size() + " actions evaluated.");
+    }
+
     
     public void printState(List<UnitActionTableEntry> unitActionTable,
                            HashMap<Long,PlayerActionTableEntry> playerActionTable) {
@@ -316,6 +395,14 @@ public class NaiveMonteCarlo extends AI {
     
     
     public String toString() {
-        return "NaiveMonteCarlo(" + NSIMULATIONS + "," + MAXSIMULATIONTIME + "," + epsilon1 + "," + epsilon2 + ")";
+        return "NaiveMonteCarlo(" + MAXSIMULATIONTIME + "," + epsilon1 + "," + epsilon2 +  ")";
     }
+    
+    public String statisticsString() {
+        return "Total runs: " + total_runs + 
+               " , runs per action: " + (total_runs/(float)total_actions_issued) + 
+               " , runs per cycle: " + (total_runs/(float)total_cycles_executed) + 
+               " , max branching factor: " + max_actions_so_far;
+    }
+    
 }

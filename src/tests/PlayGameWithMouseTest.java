@@ -4,6 +4,7 @@
  */
 package tests;
 
+import ai.core.AI;
 import ai.*;
 import ai.evaluation.SimpleEvaluationFunction;
 import ai.mcts.naivemcts.ContinuingNaiveMCTS;

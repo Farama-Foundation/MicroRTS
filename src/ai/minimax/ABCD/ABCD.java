@@ -4,7 +4,7 @@
  */
 package ai.minimax.ABCD;
 
-import ai.AI;
+import ai.core.AI;
 import ai.evaluation.EvaluationFunction;
 import ai.minimax.MiniMaxResult;
 import java.util.List;

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ai;
+package ai.core;
 
 import rts.GameState;
 import rts.PlayerAction;

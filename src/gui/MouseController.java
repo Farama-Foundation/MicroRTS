@@ -6,7 +6,7 @@
 
 package gui;
 
-import ai.AI;
+import ai.core.AI;
 import ai.abstraction.AbstractAction;
 import ai.abstraction.AbstractionLayerAI;
 import ai.abstraction.pathfinding.BFSPathFinding;

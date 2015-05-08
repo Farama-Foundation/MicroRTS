@@ -4,7 +4,7 @@
  */
 package ai.minimax.RMMiniMax;
 
-import ai.AI;
+import ai.core.AI;
 import ai.evaluation.EvaluationFunction;
 import java.util.LinkedList;
 import java.util.List;

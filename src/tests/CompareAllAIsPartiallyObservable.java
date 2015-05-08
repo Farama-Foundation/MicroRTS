@@ -4,7 +4,8 @@
  */
 package tests;
 
-import ai.portfolio.ContinuingPortfolioAI;
+import ai.core.AI;
+import ai.portfolio.PortfolioAI;
 import ai.*;
 import ai.abstraction.LightRush;
 import ai.abstraction.RangedRush;
@@ -54,7 +55,7 @@ public class CompareAllAIsPartiallyObservable {
         bots.add(new LightRush(UnitTypeTable.utt, new BFSPathFinding()));
         bots.add(new RangedRush(UnitTypeTable.utt, new BFSPathFinding()));
         bots.add(new WorkerRush(UnitTypeTable.utt, new BFSPathFinding()));
-        bots.add(new ContinuingPortfolioAI(new AI[]{new WorkerRush(UnitTypeTable.utt, new BFSPathFinding()),
+        bots.add(new PortfolioAI(new AI[]{new WorkerRush(UnitTypeTable.utt, new BFSPathFinding()),
                                           new LightRush(UnitTypeTable.utt, new BFSPathFinding()),
                                           new RangedRush(UnitTypeTable.utt, new BFSPathFinding()),
                                           new RandomBiasedAI()}, 
@@ -65,10 +66,10 @@ public class CompareAllAIsPartiallyObservable {
         bots.add(new IDContinuingRTMinimaxRandomized(TIME, RANDOMIZED_AB_REPEATS, new SimpleSqrtEvaluationFunction3()));
         bots.add(new IDContinuingABCD(TIME, MAX_PLAYOUTS, new LightRush(UnitTypeTable.utt, new GreedyPathFinding()), PLAYOUT_TIME, new SimpleSqrtEvaluationFunction3(), false));
 
-        bots.add(new ContinuingMC(TIME, PLAYOUT_TIME, MAX_PLAYOUTS, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
-        bots.add(new ContinuingDownsamplingMC(TIME, PLAYOUT_TIME, MAX_PLAYOUTS, MAX_ACTIONS, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
-        bots.add(new ContinuingNaiveMC(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 0.33f, 0.25f, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
-        bots.add(new ContinuingNaiveMC(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 1.00f, 0.25f, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
+        bots.add(new MonteCarlo(TIME, PLAYOUT_TIME, MAX_PLAYOUTS, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
+        bots.add(new MonteCarlo(TIME, PLAYOUT_TIME, MAX_PLAYOUTS, MAX_ACTIONS, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
+        bots.add(new NaiveMonteCarlo(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 0.33f, 0.25f, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
+        bots.add(new NaiveMonteCarlo(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 1.00f, 0.25f, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
 
         bots.add(new ContinuingUCT(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
         bots.add(new ContinuingDownsamplingUCT(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_ACTIONS, MAX_DEPTH, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));

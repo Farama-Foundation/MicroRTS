@@ -4,7 +4,7 @@
  */
 package ai.abstraction;
 
-import ai.AI;
+import ai.core.AI;
 import ai.abstraction.AbstractionLayerAI;
 import ai.abstraction.pathfinding.PathFinding;
 import java.util.LinkedList;

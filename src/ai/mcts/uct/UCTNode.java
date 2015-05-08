@@ -116,7 +116,7 @@ public class UCTNode {
         
     public double childValue(UCTNode child) {
         double exploitation = ((double)child.accum_evaluation) / child.visit_count;
-        double exploration = Math.sqrt(Math.log(((double)visit_count)/child.visit_count));
+        double exploration = Math.sqrt(Math.log((double)visit_count)/child.visit_count);
         if (type==0) {
             // max node:
             exploitation = (evaluation_bound + exploitation)/(2*evaluation_bound);

@@ -6,8 +6,9 @@
 
 package ai.portfolio.portfoliogreedysearch;
 
-import ai.AI;
+import ai.core.AI;
 import ai.abstraction.pathfinding.PathFinding;
+import ai.core.AIWithComputationBudget;
 import ai.evaluation.EvaluationFunction;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,12 +34,10 @@ import rts.units.UnitTypeTable;
  * - new units might be created, so a script is selected as the "default" for those new units before hand
  *
  */
-public class PGSAI extends AI {
+public class PGSAI extends AIWithComputationBudget {
 
     public static int DEBUG = 0;
 
-    int MAX_TIME = -1;
-    int MAX_PLAYOUTS = 1000;
     int LOOKAHEAD = 500;
     int I = 1;  // number of iterations for improving a given player
     int R = 1;  // number of times to improve with respect to the response fo the other player
@@ -53,8 +52,7 @@ public class PGSAI extends AI {
     int nplayouts = 0;
 
     public PGSAI(int time, int max_playouts, int la, int a_I, int a_R, EvaluationFunction e, UnitTypeTable a_utt, PathFinding a_pf) {
-        MAX_TIME = time;
-        MAX_PLAYOUTS = max_playouts;
+        super(time, max_playouts);
         LOOKAHEAD = la;
         I = a_I;
         R = a_R;
@@ -191,7 +189,7 @@ public class PGSAI extends AI {
         for(int i = 0;i<I;i++) {
             if (DEBUG>=1) System.out.println("Improve player " + player + "(" + i + "/" + I + ")");
             for(int u = 0;u<scriptsToImprove.length;u++) {
-                if (MAX_PLAYOUTS>0 && nplayouts>=MAX_PLAYOUTS) {
+                if (MAX_ITERATIONS>0 && nplayouts>=MAX_ITERATIONS) {
                     if (DEBUG>=1) System.out.println("nplayouts>=MAX_PLAYOUTS");
                     return;
                 }
@@ -252,7 +250,7 @@ public class PGSAI extends AI {
 
 
     public AI clone() {
-        return new PGSAI(MAX_TIME, MAX_PLAYOUTS, LOOKAHEAD, I, R, evaluation, utt, pf);
+        return new PGSAI(MAX_TIME, MAX_ITERATIONS, LOOKAHEAD, I, R, evaluation, utt, pf);
     }
 
 }

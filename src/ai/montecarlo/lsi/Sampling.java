@@ -5,7 +5,7 @@
 package ai.montecarlo.lsi;
 
 import util.CartesianProduct;
-import ai.AI;
+import ai.core.AI;
 import ai.evaluation.EvaluationFunction;
 import java.util.ArrayList;
 import java.util.Collections;

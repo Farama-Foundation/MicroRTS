@@ -6,7 +6,7 @@
 
 package gui.frontend;
 
-import ai.AI;
+import ai.core.AI;
 import ai.BranchingFactorCalculator;
 import ai.PassiveAI;
 import ai.RandomAI;
@@ -33,13 +33,12 @@ import ai.minimax.ABCD.IDContinuingABCD;
 import ai.minimax.ABCD.IDContinuingDownsamplingABCD;
 import ai.minimax.RMMiniMax.IDContinuingRTMinimax;
 import ai.minimax.RMMiniMax.IDContinuingRTMinimaxRandomized;
-import ai.montecarlo.ContinuingDownsamplingMC;
-import ai.montecarlo.ContinuingMC;
-import ai.montecarlo.ContinuingNaiveMC;
-import ai.montecarlo.lsi.PseudoContinuingLSI;
+import ai.montecarlo.MonteCarlo;
+import ai.montecarlo.NaiveMonteCarlo;
+import ai.montecarlo.lsi.LSI;
 import ai.montecarlo.lsi.Sampling;
-import ai.portfolio.ContinuingPortfolioAI;
-import ai.portfolio.portfoliogreedysearch.PseudoContinuingPGSAI;
+import ai.portfolio.PortfolioAI;
+import ai.portfolio.portfoliogreedysearch.PGSAI;
 import gui.MouseController;
 import gui.PhysicalGameStateMouseJFrame;
 import gui.PhysicalGameStatePanel;
@@ -103,16 +102,15 @@ public class FEStatePane extends JPanel {
                    LightRush.class,
                    HeavyRush.class,
                    RangedRush.class,
-                   ContinuingPortfolioAI.class,
-                   PseudoContinuingPGSAI.class,
+                   PortfolioAI.class,
+                   PGSAI.class,
                    IDContinuingRTMinimax.class,
                    IDContinuingRTMinimaxRandomized.class,
                    IDContinuingABCD.class,
                    IDContinuingDownsamplingABCD.class,
-                   ContinuingMC.class,
-                   ContinuingDownsamplingMC.class,
-                   ContinuingNaiveMC.class,
-                   PseudoContinuingLSI.class,
+                   MonteCarlo.class,
+                   NaiveMonteCarlo.class,
+                   LSI.class,
                    ContinuingUCT.class,
                    ContinuingUCTUnitActions.class,
                    ContinuingUCTFirstPlayUrgency.class,
@@ -400,7 +398,7 @@ public class FEStatePane extends JPanel {
             cpuTimeField[player] = addTextField(p1,"CPU time per cycle:", "100", 5);
             maxPlayoutsField[player] = addTextField(p1,"max playouts (set >0 for LSI!):", "-1", 5);
             playoutTimeField[player] = addTextField(p1,"playout time:", "100", 5);
-            maxActionsField[player] = addTextField(p1,"max actions (downsampling MC):", "100", 5);
+            maxActionsField[player] = addTextField(p1,"max actions (downsampling):", "-1", 5);
             downsamplingField[player] = addTextField(p1,"downsampling (ABCD):", "0.5", 5);
             {
                 JPanel ptmp = new JPanel();
@@ -599,15 +597,15 @@ public class FEStatePane extends JPanel {
             return new HeavyRush(currentUtt, pf);
         } else if (AIs[idx]==RangedRush.class) {
             return new RangedRush(currentUtt, pf);
-        } else if (AIs[idx]==ContinuingPortfolioAI.class) {
-            return new ContinuingPortfolioAI(new AI[]{new WorkerRush(currentUtt, pf),
-                                                      new LightRush(currentUtt, pf),
-                                                      new RangedRush(currentUtt, pf),
-                                                      new RandomBiasedAI()},
-                                             new boolean[]{true,true,true,false},
-                                             TIME, MAX_PLAYOUTS, PLAYOUT_TIME, ef);
-        } else if (AIs[idx]==PseudoContinuingPGSAI.class) {
-            return new PseudoContinuingPGSAI(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 1, 5, ef, UnitTypeTable.utt, pf);
+        } else if (AIs[idx]==PortfolioAI.class) {
+            return new PortfolioAI(new AI[]{new WorkerRush(currentUtt, pf),
+                                            new LightRush(currentUtt, pf),
+                                            new RangedRush(currentUtt, pf),
+                                            new RandomBiasedAI()},
+                                    new boolean[]{true,true,true,false},
+                                    TIME, MAX_PLAYOUTS, PLAYOUT_TIME, ef);
+        } else if (AIs[idx]==PGSAI.class) {
+            return new PGSAI(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 1, 5, ef, UnitTypeTable.utt, pf);
         } else if (AIs[idx]==IDContinuingRTMinimax.class) {
             return new IDContinuingRTMinimax(TIME, ef);
         } else if (AIs[idx]==IDContinuingRTMinimaxRandomized.class) {
@@ -616,18 +614,16 @@ public class FEStatePane extends JPanel {
             return new IDContinuingABCD(TIME, MAX_PLAYOUTS, new LightRush(currentUtt, pf), PLAYOUT_TIME, ef, false);
         } else if (AIs[idx]==IDContinuingDownsamplingABCD.class) {
             return new IDContinuingDownsamplingABCD(TIME, ABCD_DOWNSAMPLING, new LightRush(currentUtt, pf), PLAYOUT_TIME, ef);
-        } else if (AIs[idx]==ContinuingMC.class) {
-            return new ContinuingMC(TIME, PLAYOUT_TIME, MAX_PLAYOUTS, playout_policy, ef);
-        } else if (AIs[idx]==ContinuingDownsamplingMC.class) {
-            return new ContinuingDownsamplingMC(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_ACTIONS, new RandomBiasedAI(), ef);
-        } else if (AIs[idx]==ContinuingNaiveMC.class) {
-            return new ContinuingNaiveMC(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 0.33f, 0.25f, new RandomBiasedAI(), ef);
-        } else if (AIs[idx]==PseudoContinuingLSI.class) {
-            return new PseudoContinuingLSI(MAX_PLAYOUTS, PLAYOUT_TIME, LSI_SPLIT,
-                PseudoContinuingLSI.EstimateType.RANDOM_TAIL, PseudoContinuingLSI.EstimateReuseType.ALL,
-                PseudoContinuingLSI.GenerateType.PER_AGENT, Sampling.AgentOrderingType.ENTROPY,
-                PseudoContinuingLSI.EvaluateType.HALVING, false,
-                PseudoContinuingLSI.RelaxationType.NONE, 2,
+        } else if (AIs[idx]==MonteCarlo.class) {
+            return new MonteCarlo(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_ACTIONS, playout_policy, ef);
+        } else if (AIs[idx]==NaiveMonteCarlo.class) {
+            return new NaiveMonteCarlo(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 0.33f, 0.25f, new RandomBiasedAI(), ef);
+        } else if (AIs[idx]==LSI.class) {
+            return new LSI(MAX_PLAYOUTS, PLAYOUT_TIME, LSI_SPLIT,
+                LSI.EstimateType.RANDOM_TAIL, LSI.EstimateReuseType.ALL,
+                LSI.GenerateType.PER_AGENT, Sampling.AgentOrderingType.ENTROPY,
+                LSI.EvaluateType.HALVING, false,
+                LSI.RelaxationType.NONE, 2,
                 false,
                 playout_policy, ef);
         } else if (AIs[idx]==ContinuingUCT.class) {
