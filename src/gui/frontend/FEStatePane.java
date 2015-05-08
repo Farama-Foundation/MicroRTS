@@ -39,7 +39,7 @@ import ai.montecarlo.ContinuingNaiveMC;
 import ai.montecarlo.lsi.PseudoContinuingLSI;
 import ai.montecarlo.lsi.Sampling;
 import ai.portfolio.PortfolioAI;
-import ai.portfolio.portfoliogreedysearch.PseudoContinuingPGSAI;
+import ai.portfolio.portfoliogreedysearch.PGSAI;
 import gui.MouseController;
 import gui.PhysicalGameStateMouseJFrame;
 import gui.PhysicalGameStatePanel;
@@ -104,7 +104,7 @@ public class FEStatePane extends JPanel {
                    HeavyRush.class,
                    RangedRush.class,
                    PortfolioAI.class,
-                   PseudoContinuingPGSAI.class,
+                   PGSAI.class,
                    IDContinuingRTMinimax.class,
                    IDContinuingRTMinimaxRandomized.class,
                    IDContinuingABCD.class,
@@ -606,8 +606,8 @@ public class FEStatePane extends JPanel {
                                             new RandomBiasedAI()},
                                     new boolean[]{true,true,true,false},
                                     TIME, MAX_PLAYOUTS, PLAYOUT_TIME, ef);
-        } else if (AIs[idx]==PseudoContinuingPGSAI.class) {
-            return new PseudoContinuingPGSAI(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 1, 5, ef, UnitTypeTable.utt, pf);
+        } else if (AIs[idx]==PGSAI.class) {
+            return new PGSAI(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 1, 5, ef, UnitTypeTable.utt, pf);
         } else if (AIs[idx]==IDContinuingRTMinimax.class) {
             return new IDContinuingRTMinimax(TIME, ef);
         } else if (AIs[idx]==IDContinuingRTMinimaxRandomized.class) {
