@@ -38,7 +38,7 @@ import ai.montecarlo.ContinuingMC;
 import ai.montecarlo.ContinuingNaiveMC;
 import ai.montecarlo.lsi.PseudoContinuingLSI;
 import ai.montecarlo.lsi.Sampling;
-import ai.portfolio.ContinuingPortfolioAI;
+import ai.portfolio.PortfolioAI;
 import ai.portfolio.portfoliogreedysearch.PseudoContinuingPGSAI;
 import gui.MouseController;
 import gui.PhysicalGameStateMouseJFrame;
@@ -103,7 +103,7 @@ public class FEStatePane extends JPanel {
                    LightRush.class,
                    HeavyRush.class,
                    RangedRush.class,
-                   ContinuingPortfolioAI.class,
+                   PortfolioAI.class,
                    PseudoContinuingPGSAI.class,
                    IDContinuingRTMinimax.class,
                    IDContinuingRTMinimaxRandomized.class,
@@ -599,13 +599,13 @@ public class FEStatePane extends JPanel {
             return new HeavyRush(currentUtt, pf);
         } else if (AIs[idx]==RangedRush.class) {
             return new RangedRush(currentUtt, pf);
-        } else if (AIs[idx]==ContinuingPortfolioAI.class) {
-            return new ContinuingPortfolioAI(new AI[]{new WorkerRush(currentUtt, pf),
-                                                      new LightRush(currentUtt, pf),
-                                                      new RangedRush(currentUtt, pf),
-                                                      new RandomBiasedAI()},
-                                             new boolean[]{true,true,true,false},
-                                             TIME, MAX_PLAYOUTS, PLAYOUT_TIME, ef);
+        } else if (AIs[idx]==PortfolioAI.class) {
+            return new PortfolioAI(new AI[]{new WorkerRush(currentUtt, pf),
+                                            new LightRush(currentUtt, pf),
+                                            new RangedRush(currentUtt, pf),
+                                            new RandomBiasedAI()},
+                                    new boolean[]{true,true,true,false},
+                                    TIME, MAX_PLAYOUTS, PLAYOUT_TIME, ef);
         } else if (AIs[idx]==PseudoContinuingPGSAI.class) {
             return new PseudoContinuingPGSAI(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 1, 5, ef, UnitTypeTable.utt, pf);
         } else if (AIs[idx]==IDContinuingRTMinimax.class) {

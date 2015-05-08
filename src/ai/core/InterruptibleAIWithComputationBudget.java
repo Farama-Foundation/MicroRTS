@@ -5,7 +5,6 @@
  */
 package ai.core;
 
-import ai.core.AI;
 import rts.GameState;
 import rts.PlayerAction;
 
@@ -34,7 +33,7 @@ public abstract class InterruptibleAIWithComputationBudget extends AIWithComputa
     }
     
     public abstract void startNewComputation(int player, GameState gs);
-    public abstract void computeDuringOneGameFrame();
-    public abstract PlayerAction getBestActionSoFar();
+    public abstract void computeDuringOneGameFrame() throws Exception;
+    public abstract PlayerAction getBestActionSoFar() throws Exception;
     
 }
