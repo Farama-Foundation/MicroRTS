@@ -29,17 +29,17 @@ import rts.UnitActionAssignment;
 import rts.units.Unit;
 import util.Pair;
 import ai.core.AI;
+import ai.core.AIWithComputationBudget;
 import ai.montecarlo.lsi.Sampling.AgentOrderingType;
 import ai.montecarlo.lsi.Sampling.UnitActionTableEntry;
 import ai.evaluation.EvaluationFunction;
 
-public class LSI extends AI {
+public class LSI extends AIWithComputationBudget {
     public static final int DEBUG = 0;
 
     private static final double NORMALIZATION_EPSILON = 0.01;
 
     private final Random rnd = new Random();
-    private final int availableSimulationCount;
     private final int lookAhead;
     private final double split;
     private final EstimateType estimateType;
@@ -73,7 +73,7 @@ public class LSI extends AI {
             AgentOrderingType agentOrderingType, EvaluateType evaluateType, boolean eliteReuse,
             RelaxationType relaxationType, int relaxationLimit, boolean epochal,
             AI simulationAi, EvaluationFunction evalFunction) {
-        this.availableSimulationCount = availableSimulationCount;
+        super(-1,availableSimulationCount);
         this.lookAhead = lookAhead;
         this.split = split;
         this.estimateType = estimateType;
@@ -95,7 +95,7 @@ public class LSI extends AI {
     }
 
     public AI clone() {
-        return new LSI(availableSimulationCount, lookAhead, split,
+        return new LSI(MAX_ITERATIONS, lookAhead, split,
                 estimateType, estimateReuseType, generateType, agentOrderingType, evaluateType,
                 eliteReuse, relaxationType, relaxationLimit, epochal, simulationAi, evalFunction);
     }
@@ -161,14 +161,14 @@ public class LSI extends AI {
                 actionSet = sampling.generatePlayerActionAll(unitActionTable, player, gameState, true);
 
                 // to be sure increase the sampling counter to be compatible with the LSI versions
-                sampling.increaseSimulationCount(availableSimulationCount * split);
+                sampling.increaseSimulationCount(MAX_ITERATIONS * split);
             } else {
                 switch (estimateType) {
                     case RANDOM:
                         distributions = stageGenerateRandom(player, gameState, unitActionTable);
 
                         // to be sure increase the sampling counter to be compatible with the LSI versions
-                        sampling.increaseSimulationCount(availableSimulationCount * split);
+                        sampling.increaseSimulationCount(MAX_ITERATIONS * split);
                         break;
                     case NOOP_TAIL:
                         distributions = stageGenerateNoopTail(player, gameState, unitActionTable);
@@ -361,7 +361,7 @@ public class LSI extends AI {
 
                 if (isPlayerActionValid(gameState, neighbourPA)) {
                     double eval = sampling.evaluatePlayerAction(player, gameState, neighbourPA,
-                            (int) (availableSimulationCount * split / reducedActionCount));
+                            (int) (MAX_ITERATIONS * split / reducedActionCount));
                     distribution[idx] = eval;
 
                     if (eval < min) min = eval;
@@ -474,7 +474,7 @@ public class LSI extends AI {
                     }
                     sample++;
 
-                    if (sample >= availableSimulationCount * split) {
+                    if (sample >= MAX_ITERATIONS * split) {
                         break roundrobin;
                     }
 
@@ -486,7 +486,7 @@ public class LSI extends AI {
         }
         //System.out.println("  G: " + sample);
         if (!completeOnce) {
-            System.err.println("Generate did not complete even one round! " + sample + " >= (" + availableSimulationCount + " * " + split + ")");
+            System.err.println("Generate did not complete even one round! " + sample + " >= (" + MAX_ITERATIONS + " * " + split + ")");
         }
 
         for (UnitActionTableEntry entry : unitActionTable) {
@@ -536,7 +536,7 @@ public class LSI extends AI {
 
         int sample = 0;
         // round-robin
-        while (sample < availableSimulationCount * split) {
+        while (sample < MAX_ITERATIONS * split) {
             // over all agents
             int agentIndex = 0;
             for (UnitActionTableEntry entry : unitActionTable) {
@@ -711,7 +711,7 @@ public class LSI extends AI {
 
     private Set<PlayerAction> stageChoosePlayerActionByDist(List<double[]> distributions, int player, GameState gameState,
                                                             List<UnitActionTableEntry> unitActionTable) throws Exception {
-        int budget = (int) (availableSimulationCount * (1 - split));
+        int budget = (int) (MAX_ITERATIONS * (1 - split));
 
         int actionCount = 1;
         do {
@@ -742,7 +742,7 @@ public class LSI extends AI {
     }
 
     private PlayerAction stageEvaluateHalving(Set<PlayerAction> actionSet, int player, GameState gameState) throws Exception {
-        int budget = (int) (availableSimulationCount * (1 - split));
+        int budget = (int) (MAX_ITERATIONS * (1 - split));
 
         List<Pair<PlayerAction, Double>> actionList = new LinkedList<Pair<PlayerAction, Double>>();
         for (PlayerAction playerAction : actionSet) {
@@ -773,12 +773,12 @@ public class LSI extends AI {
         actionList = sampling.halvedOriginalSampling(actionList, gameState, player,
                 (budget - sampling.getSimulationCount()) / actionList.size(), sampleCountSum);
 
-        if (DEBUG>=1) System.out.println("GEMC H " + availableSimulationCount + " " + actionList.get(0).m_b + " " + sampleCountSum);
+        if (DEBUG>=1) System.out.println("GEMC H " + MAX_ITERATIONS + " " + actionList.get(0).m_b + " " + sampleCountSum);
         return actionList.get(0).m_a;
     }
 
     private PlayerAction stageEvaluateHalvingFill(Set<PlayerAction> actionSet, int player, GameState gameState) throws Exception {
-        int budget = (int) (availableSimulationCount * (1 - split));
+        int budget = (int) (MAX_ITERATIONS * (1 - split));
 
         List<Pair<PlayerAction, Double>> actionList = new LinkedList<Pair<PlayerAction, Double>>();
         for (PlayerAction playerAction : actionSet) {
@@ -805,13 +805,13 @@ public class LSI extends AI {
             sampleCountSum += sampleCount;
         }
 
-        if (DEBUG>=1) System.out.println("GEMC H " + availableSimulationCount + " " + actionList.get(0).m_b + " " + sampleCountSum);
+        if (DEBUG>=1) System.out.println("GEMC H " + MAX_ITERATIONS + " " + actionList.get(0).m_b + " " + sampleCountSum);
         return actionList.get(0).m_a;
     }
 
     private PlayerAction stageEvaluateEliteHalving(Set<PlayerAction> actionSet, int player, GameState gameState) throws Exception {
         // generate combinations
-        int budget = (int) (availableSimulationCount * (1 - split));
+        int budget = (int) (MAX_ITERATIONS * (1 - split));
 
         List<Pair<PlayerAction, Pair<Double, Integer>>> actionList = new LinkedList<Pair<PlayerAction, Pair<Double, Integer>>>();
         for (PlayerAction playerAction : actionSet) {
@@ -877,14 +877,14 @@ public class LSI extends AI {
             actionList = sampling.halvedSampling(actionList, gameState, player, sampleCount);
         }
         actionList = sampling.halvedSampling(actionList, gameState, player,
-                (availableSimulationCount - sampling.getSimulationCount()) / actionList.size());
+                (MAX_ITERATIONS - sampling.getSimulationCount()) / actionList.size());
 
-        if (DEBUG>=1) System.out.println("GEMC H " + availableSimulationCount + " " + actionList.get(0).m_b);
+        if (DEBUG>=1) System.out.println("GEMC H " + MAX_ITERATIONS + " " + actionList.get(0).m_b);
         return actionList.get(0).m_a;
     }
 
     private PlayerAction stageEvaluateBest(Set<PlayerAction> actionSet, int player, GameState gameState) throws Exception {
-        int budget = (int) (availableSimulationCount * (1 - split));
+        int budget = (int) (MAX_ITERATIONS * (1 - split));
 
         List<Pair<PlayerAction, Pair<Double, Integer>>> actionList = new LinkedList<Pair<PlayerAction, Pair<Double, Integer>>>();
         for (PlayerAction playerAction : actionSet) {
@@ -916,7 +916,7 @@ public class LSI extends AI {
             actionList.get(0).m_b.m_b++;
         }
 
-        if (DEBUG>=1) System.out.println("GEMC B " + availableSimulationCount + " " + actionList.get(0).m_b);
+        if (DEBUG>=1) System.out.println("GEMC B " + MAX_ITERATIONS + " " + actionList.get(0).m_b);
         return actionList.get(0).m_a;
     }
 
@@ -1022,7 +1022,7 @@ public class LSI extends AI {
     }
 
     public String toString() {
-        return "LinearMonteCarlo(" + availableSimulationCount + "," + lookAhead + ")";
+        return "LinearMonteCarlo(" + MAX_ITERATIONS + "," + lookAhead + ")";
     }
 
     public String statisticsString() {

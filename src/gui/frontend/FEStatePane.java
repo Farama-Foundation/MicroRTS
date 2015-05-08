@@ -36,7 +36,7 @@ import ai.minimax.RMMiniMax.IDContinuingRTMinimaxRandomized;
 import ai.montecarlo.ContinuingDownsamplingMC;
 import ai.montecarlo.ContinuingMC;
 import ai.montecarlo.ContinuingNaiveMC;
-import ai.montecarlo.lsi.PseudoContinuingLSI;
+import ai.montecarlo.lsi.LSI;
 import ai.montecarlo.lsi.Sampling;
 import ai.portfolio.PortfolioAI;
 import ai.portfolio.portfoliogreedysearch.PGSAI;
@@ -112,7 +112,7 @@ public class FEStatePane extends JPanel {
                    ContinuingMC.class,
                    ContinuingDownsamplingMC.class,
                    ContinuingNaiveMC.class,
-                   PseudoContinuingLSI.class,
+                   LSI.class,
                    ContinuingUCT.class,
                    ContinuingUCTUnitActions.class,
                    ContinuingUCTFirstPlayUrgency.class,
@@ -622,12 +622,12 @@ public class FEStatePane extends JPanel {
             return new ContinuingDownsamplingMC(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_ACTIONS, new RandomBiasedAI(), ef);
         } else if (AIs[idx]==ContinuingNaiveMC.class) {
             return new ContinuingNaiveMC(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 0.33f, 0.25f, new RandomBiasedAI(), ef);
-        } else if (AIs[idx]==PseudoContinuingLSI.class) {
-            return new PseudoContinuingLSI(MAX_PLAYOUTS, PLAYOUT_TIME, LSI_SPLIT,
-                PseudoContinuingLSI.EstimateType.RANDOM_TAIL, PseudoContinuingLSI.EstimateReuseType.ALL,
-                PseudoContinuingLSI.GenerateType.PER_AGENT, Sampling.AgentOrderingType.ENTROPY,
-                PseudoContinuingLSI.EvaluateType.HALVING, false,
-                PseudoContinuingLSI.RelaxationType.NONE, 2,
+        } else if (AIs[idx]==LSI.class) {
+            return new LSI(MAX_PLAYOUTS, PLAYOUT_TIME, LSI_SPLIT,
+                LSI.EstimateType.RANDOM_TAIL, LSI.EstimateReuseType.ALL,
+                LSI.GenerateType.PER_AGENT, Sampling.AgentOrderingType.ENTROPY,
+                LSI.EvaluateType.HALVING, false,
+                LSI.RelaxationType.NONE, 2,
                 false,
                 playout_policy, ef);
         } else if (AIs[idx]==ContinuingUCT.class) {
