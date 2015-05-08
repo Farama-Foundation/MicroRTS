@@ -32,7 +32,7 @@ public abstract class InterruptibleAIWithComputationBudget extends AIWithComputa
         }       
     }
     
-    public abstract void startNewComputation(int player, GameState gs);
+    public abstract void startNewComputation(int player, GameState gs) throws Exception;
     public abstract void computeDuringOneGameFrame() throws Exception;
     public abstract PlayerAction getBestActionSoFar() throws Exception;
     

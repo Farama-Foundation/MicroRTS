@@ -33,9 +33,8 @@ import ai.minimax.ABCD.IDContinuingABCD;
 import ai.minimax.ABCD.IDContinuingDownsamplingABCD;
 import ai.minimax.RMMiniMax.IDContinuingRTMinimax;
 import ai.minimax.RMMiniMax.IDContinuingRTMinimaxRandomized;
-import ai.montecarlo.ContinuingDownsamplingMC;
-import ai.montecarlo.ContinuingMC;
-import ai.montecarlo.ContinuingNaiveMC;
+import ai.montecarlo.MonteCarlo;
+import ai.montecarlo.NaiveMonteCarlo;
 import ai.montecarlo.lsi.LSI;
 import ai.montecarlo.lsi.Sampling;
 import ai.portfolio.PortfolioAI;
@@ -109,9 +108,8 @@ public class FEStatePane extends JPanel {
                    IDContinuingRTMinimaxRandomized.class,
                    IDContinuingABCD.class,
                    IDContinuingDownsamplingABCD.class,
-                   ContinuingMC.class,
-                   ContinuingDownsamplingMC.class,
-                   ContinuingNaiveMC.class,
+                   MonteCarlo.class,
+                   NaiveMonteCarlo.class,
                    LSI.class,
                    ContinuingUCT.class,
                    ContinuingUCTUnitActions.class,
@@ -400,7 +398,7 @@ public class FEStatePane extends JPanel {
             cpuTimeField[player] = addTextField(p1,"CPU time per cycle:", "100", 5);
             maxPlayoutsField[player] = addTextField(p1,"max playouts (set >0 for LSI!):", "-1", 5);
             playoutTimeField[player] = addTextField(p1,"playout time:", "100", 5);
-            maxActionsField[player] = addTextField(p1,"max actions (downsampling MC):", "100", 5);
+            maxActionsField[player] = addTextField(p1,"max actions (downsampling):", "-1", 5);
             downsamplingField[player] = addTextField(p1,"downsampling (ABCD):", "0.5", 5);
             {
                 JPanel ptmp = new JPanel();
@@ -616,12 +614,10 @@ public class FEStatePane extends JPanel {
             return new IDContinuingABCD(TIME, MAX_PLAYOUTS, new LightRush(currentUtt, pf), PLAYOUT_TIME, ef, false);
         } else if (AIs[idx]==IDContinuingDownsamplingABCD.class) {
             return new IDContinuingDownsamplingABCD(TIME, ABCD_DOWNSAMPLING, new LightRush(currentUtt, pf), PLAYOUT_TIME, ef);
-        } else if (AIs[idx]==ContinuingMC.class) {
-            return new ContinuingMC(TIME, PLAYOUT_TIME, MAX_PLAYOUTS, playout_policy, ef);
-        } else if (AIs[idx]==ContinuingDownsamplingMC.class) {
-            return new ContinuingDownsamplingMC(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_ACTIONS, new RandomBiasedAI(), ef);
-        } else if (AIs[idx]==ContinuingNaiveMC.class) {
-            return new ContinuingNaiveMC(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 0.33f, 0.25f, new RandomBiasedAI(), ef);
+        } else if (AIs[idx]==MonteCarlo.class) {
+            return new MonteCarlo(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_ACTIONS, playout_policy, ef);
+        } else if (AIs[idx]==NaiveMonteCarlo.class) {
+            return new NaiveMonteCarlo(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 0.33f, 0.25f, new RandomBiasedAI(), ef);
         } else if (AIs[idx]==LSI.class) {
             return new LSI(MAX_PLAYOUTS, PLAYOUT_TIME, LSI_SPLIT,
                 LSI.EstimateType.RANDOM_TAIL, LSI.EstimateReuseType.ALL,

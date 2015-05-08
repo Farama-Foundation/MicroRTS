@@ -8,7 +8,7 @@ import ai.core.AI;
 import ai.RandomBiasedAI;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleEvaluationFunction;
-import ai.montecarlo.ContinuingNaiveMC;
+import ai.montecarlo.NaiveMonteCarlo;
 import ai.montecarlo.lsi.LSI;
 import ai.montecarlo.lsi.Sampling.AgentOrderingType;
 import gui.PhysicalGameStateJFrame;
@@ -53,7 +53,7 @@ import util.XMLWriter;
 //        AI ai2 = new WorkerRush(utt, new AStarPathFinding());
 //        AI ai2 = new LightRush(UnitTypeTable.utt, new AStarPathFinding());
 //        AI ai2 = new RangedRush(UnitTypeTable.utt, new AStarPathFinding());
-        AI ai2 = new ContinuingNaiveMC(-1, SIMULATION_BUDGET, LOOKAHEAD_CYCLES, 0.33f, 0.25f, simulationAi, evalFunction);
+        AI ai2 = new NaiveMonteCarlo(-1, SIMULATION_BUDGET, LOOKAHEAD_CYCLES, 0.33f, 0.25f, simulationAi, evalFunction);
 //        AI ai2 = new GenerateEvaluateMonteCarlo(SIMULATION_BUDGET, LOOKAHEAD_CYCLES,
 //                0.25, EstimateType.RANDOM_TAIL, EstimateReuseType.ALL,
 //                GenerateType.PER_AGENT, AgentOrderingType.ENTROPY,
