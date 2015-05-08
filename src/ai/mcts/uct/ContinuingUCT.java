@@ -196,7 +196,9 @@ public class ContinuingUCT extends AI {
         UCTNode mostVisited = null;
         for(int i = 0;i<tree.children.size();i++) {
             UCTNode child = tree.children.get(i);
-            if (mostVisited == null || child.visit_count>mostVisited.visit_count) {
+            if (mostVisited == null || child.visit_count>mostVisited.visit_count ||
+                (child.visit_count==mostVisited.visit_count &&
+                 child.accum_evaluation > mostVisited.accum_evaluation)) {
                 mostVisited = child;
                 mostVisitedIdx = i;
             }
