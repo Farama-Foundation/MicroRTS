@@ -17,20 +17,15 @@ import ai.mcts.naivemcts.ContinuingNaiveMCTS;
 import ai.mcts.uct.ContinuingDownsamplingUCT;
 import ai.mcts.uct.ContinuingUCT;
 import ai.mcts.uct.ContinuingUCTUnitActions;
-import ai.mcts.uct.UCT;
 import ai.minimax.ABCD.IDABCD;
 import ai.minimax.RMMiniMax.IDRTMinimax;
 import ai.minimax.RMMiniMax.IDRTMinimaxRandomized;
 import ai.montecarlo.*;
-import gui.PhysicalGameStatePanel;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.List;
-import javax.swing.JFrame;
-import rts.GameState;
 import rts.PhysicalGameState;
-import rts.PlayerAction;
 import rts.units.UnitTypeTable;
 
 /**

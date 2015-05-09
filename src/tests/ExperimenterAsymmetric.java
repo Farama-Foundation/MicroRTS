@@ -5,11 +5,6 @@
 package tests;
 
 import ai.core.AI;
-import ai.*;
-import ai.montecarlo.*;
-import ai.mcts.naivemcts.ContinuingNaiveMCTS;
-import ai.minimax.RMMiniMax.IDRTMinimax;
-import ai.mcts.uct.UCT;
 import gui.PhysicalGameStatePanel;
 import java.io.PrintStream;
 import java.util.List;
