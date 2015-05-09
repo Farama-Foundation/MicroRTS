@@ -25,7 +25,7 @@ import ai.evaluation.SimpleEvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction2;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
-import ai.mcts.naivemcts.ContinuingNaiveMCTS;
+import ai.mcts.naivemcts.NaiveMCTS;
 import ai.mcts.uct.UCT;
 import ai.mcts.uct.UCTFirstPlayUrgency;
 import ai.mcts.uct.UCTUnitActions;
@@ -112,7 +112,7 @@ public class FEStatePane extends JPanel {
                    UCT.class,
                    UCTUnitActions.class,
                    UCTFirstPlayUrgency.class,
-                   ContinuingNaiveMCTS.class,
+                   NaiveMCTS.class,
                    MouseController.class
                   };
 
@@ -625,8 +625,8 @@ public class FEStatePane extends JPanel {
             return new UCTUnitActions(TIME, PLAYOUT_TIME, MAX_DEPTH*10, new RandomBiasedAI(), ef);
         } else if (AIs[idx]==UCTFirstPlayUrgency.class) {
             return new UCTFirstPlayUrgency(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, new RandomBiasedAI(), ef, fpu_value);
-        } else if (AIs[idx]==ContinuingNaiveMCTS.class) {
-            return new ContinuingNaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), ef);
+        } else if (AIs[idx]==NaiveMCTS.class) {
+            return new NaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), ef);
         } else if (AIs[idx]==MouseController.class) {
             return new MouseController(null);
         }

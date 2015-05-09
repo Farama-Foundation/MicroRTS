@@ -6,6 +6,7 @@ package ai.mcts.naivemcts;
 
 import ai.*;
 import ai.core.AI;
+import ai.core.InterruptibleAIWithComputationBudget;
 import ai.evaluation.EvaluationFunction;
 import java.util.Random;
 import rts.GameState;
@@ -15,7 +16,7 @@ import rts.PlayerAction;
  *
  * @author santi
  */
-public class Continuing2PhaseNaiveMCTS extends AI {
+public class TwoPhaseNaiveMCTS extends InterruptibleAIWithComputationBudget {
     public static int DEBUG = 0;
     public EvaluationFunction ef = null;
        
@@ -29,10 +30,10 @@ public class Continuing2PhaseNaiveMCTS extends AI {
     int n_phase1_iterations_left = -1;      // this is set in the first cycle of execution for each action
     int n_phase1_milliseconds_left = -1;      // this is set in the first cycle of execution for each action
             
-    public int AVAILABLE_TIME = 100;
-    public long MAX_PLAYOUTS = 1000;
     public int MAXSIMULATIONTIME = 1024;
     public int MAX_TREE_DEPTH = 10;
+    
+    int player;
     
     public float phase1_epsilon_l = 0.3f;
     public float phase1_epsilon_g = 0.0f;
@@ -49,15 +50,14 @@ public class Continuing2PhaseNaiveMCTS extends AI {
     public long total_time = 0;
     
     
-    public Continuing2PhaseNaiveMCTS(int available_time, long max_playouts, int lookahead, int max_depth, 
+    public TwoPhaseNaiveMCTS(int available_time, int max_playouts, int lookahead, int max_depth, 
                                float el1, float eg1, float e01,
                                float el2, float eg2, float e02,
                                float p1_ratio,
                                AI policy, EvaluationFunction a_ef) {
+        super(available_time, max_playouts);
         MAXSIMULATIONTIME = lookahead;
         randomAI = policy;
-        AVAILABLE_TIME = available_time;
-        MAX_PLAYOUTS = max_playouts;
         MAX_TREE_DEPTH = max_depth;
         phase1_epsilon_l = el1;
         phase1_epsilon_g = eg1;
@@ -83,67 +83,15 @@ public class Continuing2PhaseNaiveMCTS extends AI {
         
     
     public AI clone() {
-        return new Continuing2PhaseNaiveMCTS(AVAILABLE_TIME, MAX_PLAYOUTS, MAXSIMULATIONTIME, MAX_TREE_DEPTH, 
+        return new TwoPhaseNaiveMCTS(MAX_TIME, MAX_ITERATIONS, MAXSIMULATIONTIME, MAX_TREE_DEPTH, 
                                              phase1_epsilon_l, phase1_epsilon_g, phase1_epsilon_0,
                                              phase2_epsilon_l, phase2_epsilon_g, phase2_epsilon_0,
                                              phase1_ratio, randomAI, ef);
     }    
     
     
-    public PlayerAction getAction(int player, GameState gs) throws Exception {
-        if (gs.winner()!=-1) return new PlayerAction();
-        if (gs.canExecuteAnyAction(player)) {
-            // continue or start a search:
-            if (tree==null) {
-                startNewSearch(player,gs);
-                if (MAX_PLAYOUTS>0) n_phase1_iterations_left = (int)(MAX_PLAYOUTS*phase1_ratio);
-                if (AVAILABLE_TIME>0) n_phase1_milliseconds_left = (int)(AVAILABLE_TIME*phase1_ratio);
-            } else {
-                if (!gs.getPhysicalGameState().equivalents(gs_to_start_from.getPhysicalGameState())) {
-                    System.err.println("Game state used for search NOT equivalent to the actual one!!!");
-                    System.err.println("gs:");
-                    System.err.println(gs);
-                    System.err.println("gs_to_start_from:");
-                    System.err.println(gs_to_start_from);
-                }
-            }
-            search(player, AVAILABLE_TIME, MAX_PLAYOUTS);
-            PlayerAction best = getBestAction();
-            resetSearch();
-            return best;
-        } else {
-            if (tree!=null) {
-                // continue previous search:
-                search(player, AVAILABLE_TIME, MAX_PLAYOUTS);
-            } else {
-                // determine who will be the next player:
-                GameState gs2 = gs.clone();
-                int n = 1;
-                while(gs2.winner()==-1 && 
-                      !gs2.gameover() &&  
-                    !gs2.canExecuteAnyAction(0) && 
-                    !gs2.canExecuteAnyAction(1)) {
-                    gs2.cycle();
-                    n++;
-                }
-                if ((gs2.winner() == -1 && !gs2.gameover()) && 
-                    gs2.canExecuteAnyAction(player)) {
-                    // start a new search:
-                    startNewSearch(player,gs2);
-                    if (MAX_PLAYOUTS>0) n_phase1_iterations_left = (int)(MAX_PLAYOUTS*n*phase1_ratio);
-                    if (AVAILABLE_TIME>0) n_phase1_milliseconds_left = (int)(AVAILABLE_TIME*n*phase1_ratio);                    
-                    search(player, AVAILABLE_TIME, MAX_PLAYOUTS);
-                    return new PlayerAction();
-                } else {
-                    return new PlayerAction();
-                }
-            }
-        }
-        
-        return new PlayerAction();
-    }    
-    
-    public void startNewSearch(int player, GameState gs) throws Exception {
+    public void startNewComputation(int a_player, GameState gs) throws Exception {
+        player = a_player;
         node_creation_ID = 0;
         tree = new NaiveMCTSNode(player, 1-player, gs, null, node_creation_ID++);
         
@@ -164,7 +112,7 @@ public class Continuing2PhaseNaiveMCTS extends AI {
     }
     
 
-    public void search(int player, long available_time, long max_playouts) throws Exception {        
+    public void computeDuringOneGameFrame() throws Exception {        
         if (DEBUG>=2) System.out.println("Search...");
         long start = System.currentTimeMillis();
         long end = start;
@@ -175,8 +123,8 @@ public class Continuing2PhaseNaiveMCTS extends AI {
             if (!iteration(player)) break;
             count++;
             end = System.currentTimeMillis();
-            if (available_time>=0 && (end - start)>=available_time) break; 
-            if (max_playouts>=0 && count>=max_playouts) break;             
+            if (MAX_TIME>=0 && (end - start)>=MAX_TIME) break; 
+            if (MAX_ITERATIONS>=0 && count>=MAX_ITERATIONS) break;             
         }
         n_phase1_milliseconds_left = n_phase1_milliseconds_left_initial - (int)(end - start);
 //        System.out.println("HL: " + count + " time: " + (System.currentTimeMillis() - start) + " (" + available_time + "," + max_playouts + ")");
@@ -215,16 +163,16 @@ public class Continuing2PhaseNaiveMCTS extends AI {
         return true;
     }
     
-    public PlayerAction getBestAction() {
+    public PlayerAction getBestActionSoFar() {
         int idx = getMostVisitedActionIdx();
         if (idx==-1) {
-            if (DEBUG>=1) System.out.println("ContinuingNaiveMCTS no children selected. Returning an empty asction");
+            if (DEBUG>=1) System.out.println("TwoPhaseNaiveMCTS no children selected. Returning an empty asction");
             return new PlayerAction();
         }
         if (DEBUG>=2) tree.showNode(0,1,ef);
         if (DEBUG>=1) {
             NaiveMCTSNode best = (NaiveMCTSNode) tree.children.get(idx);
-            System.out.println("ContinuingNaiveMCTS selected children " + tree.actions.get(idx) + " explored " + best.visit_count + " Avg evaluation: " + (best.accum_evaluation/((double)best.visit_count)));
+            System.out.println("TwoPhaseNaiveMCTS selected children " + tree.actions.get(idx) + " explored " + best.visit_count + " Avg evaluation: " + (best.accum_evaluation/((double)best.visit_count)));
         }
         return tree.actions.get(idx);
     }
@@ -309,7 +257,7 @@ public class Continuing2PhaseNaiveMCTS extends AI {
     
     
     public String toString() {
-        return "Continuing2PhaseNaiveMCTS(" + MAXSIMULATIONTIME + "," + MAX_PLAYOUTS + "," + MAX_TREE_DEPTH + "," + phase1_epsilon_l +","+ phase1_epsilon_g +","+phase1_epsilon_0+","+phase2_epsilon_l+","+phase2_epsilon_g+","+phase2_epsilon_0+","+phase1_ratio + ")";
+        return "TwoPhaseNaiveMCTS(" + MAXSIMULATIONTIME + "," + MAX_TIME + "," + MAX_ITERATIONS + "," + MAX_TREE_DEPTH + "," + phase1_epsilon_l +","+ phase1_epsilon_g +","+phase1_epsilon_0+","+phase2_epsilon_l+","+phase2_epsilon_g+","+phase2_epsilon_0+","+phase1_ratio + ")";
     }
     
     public String statisticsString() {

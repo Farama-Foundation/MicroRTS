@@ -6,8 +6,9 @@ package tests;
 
 import ai.core.AI;
 import ai.*;
+import ai.core.ContinuingAI;
 import ai.evaluation.SimpleEvaluationFunction;
-import ai.mcts.naivemcts.ContinuingNaiveMCTS;
+import ai.mcts.naivemcts.NaiveMCTS;
 import gui.MouseController;
 import gui.PhysicalGameStateMouseJFrame;
 import gui.PhysicalGameStatePanel;
@@ -38,7 +39,7 @@ public class PlayGameWithMouseTest {
 //        AI ai2 = new PassiveAI();
 //        AI ai2 = new RandomBiasedAI();
 //        AI ai2 = new LightRush(UnitTypeTable.utt, new AStarPathFinding());
-        AI ai2 = new ContinuingNaiveMCTS(PERIOD, -1, 100, 20, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), new SimpleEvaluationFunction());
+        AI ai2 = new ContinuingAI(new NaiveMCTS(PERIOD, -1, 100, 20, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
 
         long nextTimeToUpdate = System.currentTimeMillis() + PERIOD;
         do{

@@ -6,6 +6,7 @@ package ai.mcts.naivemcts;
 
 import ai.*;
 import ai.core.AI;
+import ai.core.InterruptibleAIWithComputationBudget;
 import ai.evaluation.EvaluationFunction;
 import java.util.Random;
 import rts.GameState;
@@ -15,7 +16,7 @@ import rts.PlayerAction;
  *
  * @author santi
  */
-public class ContinuingNaiveMCTS extends AI {
+public class NaiveMCTS extends InterruptibleAIWithComputationBudget {
     public static int DEBUG = 0;
     public EvaluationFunction ef = null;
        
@@ -27,10 +28,10 @@ public class ContinuingNaiveMCTS extends AI {
     NaiveMCTSNode tree = null;
     int current_iteration = 0;
             
-    public int AVAILABLE_TIME = 100;
-    public long MAX_PLAYOUTS = 1000;
     public int MAXSIMULATIONTIME = 1024;
     public int MAX_TREE_DEPTH = 10;
+    
+    int player;
     
     public float initial_epsilon_0 = 0.2f;
     public float initial_epsilon_l = 0.25f;
@@ -49,15 +50,14 @@ public class ContinuingNaiveMCTS extends AI {
     public long total_time = 0;
     
     
-    public ContinuingNaiveMCTS(int available_time, long max_playouts, int lookahead, int max_depth, 
+    public NaiveMCTS(int available_time, int max_playouts, int lookahead, int max_depth, 
                                float e1, float discout1,
                                float e2, float discout2, 
                                float e3, float discout3, 
                                AI policy, EvaluationFunction a_ef) {
+        super(available_time, max_playouts);
         MAXSIMULATIONTIME = lookahead;
         randomAI = policy;
-        AVAILABLE_TIME = available_time;
-        MAX_PLAYOUTS = max_playouts;
         MAX_TREE_DEPTH = max_depth;
         initial_epsilon_l = epsilon_l = e1;
         initial_epsilon_g = epsilon_g = e2;
@@ -68,11 +68,10 @@ public class ContinuingNaiveMCTS extends AI {
         ef = a_ef;
     }    
 
-    public ContinuingNaiveMCTS(int available_time, long max_playouts, int lookahead, int max_depth, float e1, float e2, float e3, AI policy, EvaluationFunction a_ef) {
+    public NaiveMCTS(int available_time, int max_playouts, int lookahead, int max_depth, float e1, float e2, float e3, AI policy, EvaluationFunction a_ef) {
+        super(available_time, max_playouts);
         MAXSIMULATIONTIME = lookahead;
         randomAI = policy;
-        AVAILABLE_TIME = available_time;
-        MAX_PLAYOUTS = max_playouts;
         MAX_TREE_DEPTH = max_depth;
         initial_epsilon_l = epsilon_l = e1;
         initial_epsilon_g = epsilon_g = e2;
@@ -95,56 +94,12 @@ public class ContinuingNaiveMCTS extends AI {
         
     
     public AI clone() {
-        return new ContinuingNaiveMCTS(AVAILABLE_TIME, MAX_PLAYOUTS, MAXSIMULATIONTIME, MAX_TREE_DEPTH, epsilon_l, discount_l, epsilon_g, discount_g, epsilon_0, discount_0, randomAI, ef);
+        return new NaiveMCTS(MAX_TIME, MAX_ITERATIONS, MAXSIMULATIONTIME, MAX_TREE_DEPTH, epsilon_l, discount_l, epsilon_g, discount_g, epsilon_0, discount_0, randomAI, ef);
     }    
     
     
-    public PlayerAction getAction(int player, GameState gs) throws Exception {
-        if (gs.winner()!=-1) return new PlayerAction();
-        if (gs.canExecuteAnyAction(player)) {
-            // continue or start a search:
-            if (tree==null) {
-                startNewSearch(player,gs);
-            } else {
-                if (!gs.getPhysicalGameState().equivalents(gs_to_start_from.getPhysicalGameState())) {
-                    System.err.println("Game state used for search NOT equivalent to the actual one!!!");
-                    System.err.println("gs:");
-                    System.err.println(gs);
-                    System.err.println("gs_to_start_from:");
-                    System.err.println(gs_to_start_from);
-                }
-            }
-            search(player, AVAILABLE_TIME, MAX_PLAYOUTS);
-            PlayerAction best = getBestAction();
-            resetSearch();
-            return best;
-        } else {
-            if (tree!=null) {
-                // continue previous search:
-                search(player, AVAILABLE_TIME, MAX_PLAYOUTS);
-            } else {
-                // determine who will be the next player:
-                GameState gs2 = gs.clone();
-                while(gs2.winner()==-1 && 
-                      !gs2.gameover() &&  
-                    !gs2.canExecuteAnyAction(0) && 
-                    !gs2.canExecuteAnyAction(1)) gs2.cycle();
-                if ((gs2.winner() == -1 && !gs2.gameover()) && 
-                    gs2.canExecuteAnyAction(player)) {
-                    // start a new search:
-                    startNewSearch(player,gs2);
-                    search(player, AVAILABLE_TIME, MAX_PLAYOUTS);
-                    return new PlayerAction();
-                } else {
-                    return new PlayerAction();
-                }
-            }
-        }
-        
-        return new PlayerAction();
-    }    
-    
-    public void startNewSearch(int player, GameState gs) throws Exception {
+    public void startNewComputation(int a_player, GameState gs) throws Exception {
+        player = a_player;
         current_iteration = 0;
         tree = new NaiveMCTSNode(player, 1-player, gs, null, current_iteration++);
         
@@ -164,7 +119,7 @@ public class ContinuingNaiveMCTS extends AI {
     }
     
 
-    public void search(int player, long available_time, long max_playouts) throws Exception {        
+    public void computeDuringOneGameFrame() throws Exception {        
         if (DEBUG>=2) System.out.println("Search...");
         long start = System.currentTimeMillis();
         long end = start;
@@ -173,8 +128,8 @@ public class ContinuingNaiveMCTS extends AI {
             if (!iteration(player)) break;
             count++;
             end = System.currentTimeMillis();
-            if (available_time>=0 && (end - start)>=available_time) break; 
-            if (max_playouts>=0 && count>=max_playouts) break;             
+            if (MAX_TIME>=0 && (end - start)>=MAX_TIME) break; 
+            if (MAX_ITERATIONS>=0 && count>=MAX_ITERATIONS) break;             
         }
 //        System.out.println("HL: " + count + " time: " + (System.currentTimeMillis() - start) + " (" + available_time + "," + max_playouts + ")");
         total_time += (end - start);
@@ -210,16 +165,16 @@ public class ContinuingNaiveMCTS extends AI {
         return true;
     }
     
-    public PlayerAction getBestAction() {
+    public PlayerAction getBestActionSoFar() {
         int idx = getMostVisitedActionIdx();
         if (idx==-1) {
-            if (DEBUG>=1) System.out.println("ContinuingNaiveMCTS no children selected. Returning an empty asction");
+            if (DEBUG>=1) System.out.println("NaiveMCTS no children selected. Returning an empty asction");
             return new PlayerAction();
         }
         if (DEBUG>=2) tree.showNode(0,1,ef);
         if (DEBUG>=1) {
             NaiveMCTSNode best = (NaiveMCTSNode) tree.children.get(idx);
-            System.out.println("ContinuingNaiveMCTS selected children " + tree.actions.get(idx) + " explored " + best.visit_count + " Avg evaluation: " + (best.accum_evaluation/((double)best.visit_count)));
+            System.out.println("NaiveMCTS selected children " + tree.actions.get(idx) + " explored " + best.visit_count + " Avg evaluation: " + (best.accum_evaluation/((double)best.visit_count)));
         }
         return tree.actions.get(idx);
     }
@@ -304,7 +259,7 @@ public class ContinuingNaiveMCTS extends AI {
     
     
     public String toString() {
-        return "ContinuingNaiveMCTS(" + MAXSIMULATIONTIME + "," + MAX_PLAYOUTS + "," + MAX_TREE_DEPTH + "," + epsilon_l + "," + epsilon_g + "," + epsilon_0 + ")";
+        return "NaiveMCTS(" + MAXSIMULATIONTIME + "," + MAX_TIME + "," + MAX_ITERATIONS + "," + MAX_TREE_DEPTH + "," + epsilon_l + "," + epsilon_g + "," + epsilon_0 + ")";
     }
     
     public String statisticsString() {

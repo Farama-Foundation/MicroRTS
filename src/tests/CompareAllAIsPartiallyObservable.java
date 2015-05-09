@@ -13,7 +13,7 @@ import ai.abstraction.WorkerRush;
 import ai.abstraction.pathfinding.BFSPathFinding;
 import ai.abstraction.pathfinding.GreedyPathFinding;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
-import ai.mcts.naivemcts.ContinuingNaiveMCTS;
+import ai.mcts.naivemcts.NaiveMCTS;
 import ai.mcts.uct.DownsamplingUCT;
 import ai.mcts.uct.UCT;
 import ai.mcts.uct.UCTUnitActions;
@@ -69,8 +69,8 @@ public class CompareAllAIsPartiallyObservable {
         bots.add(new UCT(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
         bots.add(new DownsamplingUCT(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_ACTIONS, MAX_DEPTH, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
         bots.add(new UCTUnitActions(TIME, PLAYOUT_TIME, MAX_DEPTH*10, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
-        bots.add(new ContinuingNaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
-        bots.add(new ContinuingNaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, 1.00f, 0.0f, 0.25f, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
+        bots.add(new NaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
+        bots.add(new NaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, 1.00f, 0.0f, 0.25f, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
 
         PrintStream out = new PrintStream(new File("results-PO.txt"));
         

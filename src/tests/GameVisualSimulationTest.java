@@ -6,13 +6,9 @@ package tests;
 
 import ai.core.AI;
 import ai.*;
-import ai.abstraction.LightRush;
-import ai.abstraction.RangedRush;
 import ai.abstraction.WorkerRush;
 import ai.abstraction.pathfinding.BFSPathFinding;
-import ai.abstraction.pathfinding.GreedyPathFinding;
-import ai.evaluation.SimpleEvaluationFunction;
-import ai.mcts.naivemcts.ContinuingNaiveMCTS;
+import ai.mcts.naivemcts.NaiveMCTS;
 import gui.PhysicalGameStatePanel;
 import java.io.OutputStreamWriter;
 import javax.swing.JFrame;
