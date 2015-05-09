@@ -17,7 +17,7 @@ import rts.PlayerAction;
  *
  * @author santi
  */
-public class ContinuingMLPSMCTS extends InterruptibleAIWithComputationBudget {
+public class MLPSMCTS extends InterruptibleAIWithComputationBudget {
     public static int DEBUG = 0;
     public EvaluationFunction ef = null;
        
@@ -43,7 +43,7 @@ public class ContinuingMLPSMCTS extends InterruptibleAIWithComputationBudget {
     public long total_time = 0;
     
     
-    public ContinuingMLPSMCTS(int available_time, int max_playouts, int lookahead, int max_depth, 
+    public MLPSMCTS(int available_time, int max_playouts, int lookahead, int max_depth, 
                                double a_C,
                                AI policy, EvaluationFunction a_ef) {
         super(available_time,max_playouts);
@@ -67,7 +67,7 @@ public class ContinuingMLPSMCTS extends InterruptibleAIWithComputationBudget {
         
     
     public AI clone() {
-        return new ContinuingMLPSMCTS(MAX_TIME, MAX_ITERATIONS, MAXSIMULATIONTIME, MAX_TREE_DEPTH, C, randomAI, ef);
+        return new MLPSMCTS(MAX_TIME, MAX_ITERATIONS, MAXSIMULATIONTIME, MAX_TREE_DEPTH, C, randomAI, ef);
     }    
     
     
@@ -132,13 +132,13 @@ public class ContinuingMLPSMCTS extends InterruptibleAIWithComputationBudget {
     public PlayerAction getBestActionSoFar() {
         int idx = getMostVisitedActionIdx();
         if (idx==-1) {
-            if (DEBUG>=1) System.out.println("ContinuingNaiveMCTS no children selected. Returning an empty asction");
+            if (DEBUG>=1) System.out.println("MLPSMCTS no children selected. Returning an empty asction");
             return new PlayerAction();
         }
         if (DEBUG>=2) tree.showNode(0,1,ef);
         if (DEBUG>=1) {
             MLPSNode best = (MLPSNode) tree.children.get(idx);
-            System.out.println("ContinuingMLPSMCTS selected children " + tree.actions.get(idx) + " explored " + best.visit_count + " Avg evaluation: " + (best.accum_evaluation/((double)best.visit_count)));
+            System.out.println("MLPSMCTS selected children " + tree.actions.get(idx) + " explored " + best.visit_count + " Avg evaluation: " + (best.accum_evaluation/((double)best.visit_count)));
         }
         return tree.actions.get(idx);
     }
@@ -223,7 +223,7 @@ public class ContinuingMLPSMCTS extends InterruptibleAIWithComputationBudget {
     
     
     public String toString() {
-        return "ContinuingMLPSMCTS(" + MAXSIMULATIONTIME + "," + MAX_ITERATIONS + "," + MAX_TREE_DEPTH + "," + C + ")";
+        return "MLPSMCTS(" + MAXSIMULATIONTIME + "," + MAX_ITERATIONS + "," + MAX_TREE_DEPTH + "," + C + ")";
     }
     
     public String statisticsString() {
