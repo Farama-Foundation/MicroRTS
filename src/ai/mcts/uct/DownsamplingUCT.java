@@ -4,23 +4,19 @@
  */
 package ai.mcts.uct;
 
-import ai.montecarlo.*;
 import ai.core.AI;
 import ai.RandomBiasedAI;
+import ai.core.InterruptibleAIWithComputationBudget;
 import ai.evaluation.EvaluationFunction;
-import ai.evaluation.SimpleEvaluationFunction;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
 import rts.GameState;
 import rts.PlayerAction;
-import rts.PlayerActionGenerator;
 
 /**
  *
  * @author santi
  */
-public class DownsamplingUCT extends AI {
+public class DownsamplingUCT extends InterruptibleAIWithComputationBudget {
     public static final int DEBUG = 0;
     EvaluationFunction ef = null;
        
@@ -37,15 +33,13 @@ public class DownsamplingUCT extends AI {
     public long total_actions_issued = 0;
         
     long MAXACTIONS = 100;
-    long MAX_PLAYOUTS = 1000;
-    int TIME_PER_CYCLE = 100;
     int MAXSIMULATIONTIME = 1024;
     int MAX_TREE_DEPTH = 10;
     
+    int player;
     
-    public DownsamplingUCT(int available_time, long max_playouts, int lookahead, long maxactions, int max_depth, AI policy, EvaluationFunction a_ef) {
-        TIME_PER_CYCLE = available_time;
-        MAX_PLAYOUTS = max_playouts;
+    public DownsamplingUCT(int available_time, int max_playouts, int lookahead, long maxactions, int max_depth, AI policy, EvaluationFunction a_ef) {
+        super(available_time, max_playouts);
         MAXACTIONS = maxactions;
         MAXSIMULATIONTIME = lookahead;
         randomAI = policy;
@@ -69,81 +63,12 @@ public class DownsamplingUCT extends AI {
         
     
     public AI clone() {
-        return new DownsamplingUCT(TIME_PER_CYCLE, MAX_PLAYOUTS, MAXSIMULATIONTIME, MAXACTIONS, MAX_TREE_DEPTH, randomAI, ef);
+        return new DownsamplingUCT(MAX_TIME, MAX_ITERATIONS, MAXSIMULATIONTIME, MAXACTIONS, MAX_TREE_DEPTH, randomAI, ef);
     }  
     
     
-    public PlayerAction getAction(int player, GameState gs) throws Exception {
-        if (DEBUG>=1) {
-            System.out.println("DownsamplingUCT: getAction started...");
-            System.out.flush();
-        }
-        if (gs.winner()!=-1) {
-            if (DEBUG>=1) {
-                System.out.println("DownsamplingUCT: getAction finished");
-                System.out.flush();
-            }
-            return new PlayerAction();
-        }
-        if (gs.canExecuteAnyAction(player)) {
-            // continue or start a search:
-            if (tree==null) {
-                startNewSearch(player,gs);
-            } else {
-                if (!gs.getPhysicalGameState().equivalents(gs_to_start_from.getPhysicalGameState())) {
-                    System.err.println("Game state used for search NOT equivalent to the actual one!!!");
-                    System.err.println("gs:");
-                    System.err.println(gs);
-                    System.err.println("gs_to_start_from:");
-                    System.err.println(gs_to_start_from);
-                }
-            }
-            search(player, TIME_PER_CYCLE, MAX_PLAYOUTS);
-            PlayerAction best = getBestAction();
-            resetSearch();
-            if (DEBUG>=1) {
-                System.out.println("DownsamplingUCT: getAction finished");
-                System.out.flush();
-            }
-            return best;
-        } else {
-            if (tree!=null) {
-                // continue previous search:
-                search(player, TIME_PER_CYCLE, MAX_PLAYOUTS);
-            } else {
-                // determine who will be the next player:
-                GameState gs2 = gs.clone();
-                while(gs2.winner()==-1 && 
-                      !gs2.gameover() &&  
-                    !gs2.canExecuteAnyAction(0) && 
-                    !gs2.canExecuteAnyAction(1)) gs2.cycle();
-                if (gs2.canExecuteAnyAction(player)) {
-                    // start a new search:
-                    startNewSearch(player,gs2);
-                    search(player, TIME_PER_CYCLE, MAX_PLAYOUTS);
-                    if (DEBUG>=1) {
-                        System.out.println("DownsamplingUCT: getAction finished");
-                        System.out.flush();
-                    }
-                    return new PlayerAction();
-                } else {
-                    if (DEBUG>=1) {
-                        System.out.println("DownsamplingUCT: getAction finished");
-                        System.out.flush();
-                    }
-                    return new PlayerAction();
-                }
-            }
-        }
-        
-        if (DEBUG>=1) {
-            System.out.println("DownsamplingUCT: getAction finished");
-            System.out.flush();
-        }
-        return new PlayerAction();
-    }    
-    
-    public void startNewSearch(int player, GameState gs) throws Exception {
+    public void startNewComputation(int a_player, GameState gs) throws Exception {
+        player = a_player;
         float evaluation_bound = ef.upperBound(gs);
         tree = new DownsamplingUCTNode(player, 1-player, gs, null, MAXACTIONS, evaluation_bound);
         gs_to_start_from = gs;
@@ -157,10 +82,10 @@ public class DownsamplingUCT extends AI {
     }
     
 
-    public void search(int player, long available_time, long max_playouts) throws Exception {
+    public void computeDuringOneGameFrame() throws Exception {
         if (DEBUG>=2) System.out.println("Search...");
         long start = System.currentTimeMillis();
-        long cutOffTime = (available_time>0 ? start + available_time:0);
+        long cutOffTime = (MAX_TIME>0 ? start + MAX_TIME:0);
         long end = start;
         long count = 0;
         
@@ -187,15 +112,15 @@ public class DownsamplingUCT extends AI {
             }
             count++;
             end = System.currentTimeMillis();
-            if (available_time>=0 && (end - start)>=available_time) break; 
-            if (max_playouts>=0 && count>=max_playouts) break;            
+            if (MAX_TIME>=0 && (end - start)>=MAX_TIME) break; 
+            if (MAX_ITERATIONS>=0 && count>=MAX_ITERATIONS) break;            
         }
         
         total_cycles_executed++;
     }
     
     
-    public PlayerAction getBestAction() {
+    public PlayerAction getBestActionSoFar() {
         total_actions_issued++;
                 
         int mostVisitedIdx = -1;

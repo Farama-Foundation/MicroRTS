@@ -4,23 +4,19 @@
  */
 package ai.mcts.uct;
 
-import ai.montecarlo.*;
 import ai.core.AI;
 import ai.RandomBiasedAI;
+import ai.core.InterruptibleAIWithComputationBudget;
 import ai.evaluation.EvaluationFunction;
-import ai.evaluation.SimpleEvaluationFunction;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
 import rts.GameState;
 import rts.PlayerAction;
-import rts.PlayerActionGenerator;
 
 /**
  *
  * @author santi
  */
-public class UCTFirstPlayUrgency extends AI {
+public class UCTFirstPlayUrgency extends InterruptibleAIWithComputationBudget {
     public static int DEBUG = 0;
     EvaluationFunction ef = null;
        
@@ -38,19 +34,18 @@ public class UCTFirstPlayUrgency extends AI {
     
     long total_runs_this_move = 0;
         
-    int TIME_PER_CYCLE = 100;
-    int MAX_PLAYOUTS = 200;
     int MAXSIMULATIONTIME = 1024;
     int MAX_TREE_DEPTH = 10;
     
+    int player;
+
     double FPUvalue = 0;
-    
+        
     
     public UCTFirstPlayUrgency(int available_time, int max_playouts, int lookahead, int max_depth, AI policy, EvaluationFunction a_ef, double a_FPUvalue) {
+        super(available_time, max_playouts);
         MAXSIMULATIONTIME = lookahead;
-        MAX_PLAYOUTS = max_playouts;
         randomAI = policy;
-        TIME_PER_CYCLE = available_time;
         MAX_TREE_DEPTH = max_depth;
         ef = a_ef;
         FPUvalue = a_FPUvalue;
@@ -73,55 +68,12 @@ public class UCTFirstPlayUrgency extends AI {
     
     
     public AI clone() {
-        return new UCTFirstPlayUrgency(TIME_PER_CYCLE, MAX_PLAYOUTS, MAXSIMULATIONTIME, MAX_TREE_DEPTH, randomAI, ef, FPUvalue);
+        return new UCTFirstPlayUrgency(MAX_TIME, MAX_ITERATIONS, MAXSIMULATIONTIME, MAX_TREE_DEPTH, randomAI, ef, FPUvalue);
     }  
+     
     
-    
-    public PlayerAction getAction(int player, GameState gs) throws Exception {
-        if (gs.winner()!=-1) return new PlayerAction();
-        if (gs.canExecuteAnyAction(player)) {
-            // continue or start a search:
-            if (tree==null) {
-                startNewSearch(player,gs);
-            } else {
-                if (!gs.getPhysicalGameState().equivalents(gs_to_start_from.getPhysicalGameState())) {
-                    System.err.println("Game state used for search NOT equivalent to the actual one!!!");
-                    System.err.println("gs:");
-                    System.err.println(gs);
-                    System.err.println("gs_to_start_from:");
-                    System.err.println(gs_to_start_from);
-                }
-            }
-            search(player, TIME_PER_CYCLE, MAX_PLAYOUTS);
-            PlayerAction best = getBestAction();
-            resetSearch();
-            return best;
-        } else {
-            if (tree!=null) {
-                // continue previous search:
-                search(player, TIME_PER_CYCLE, MAX_PLAYOUTS);
-            } else {
-                // determine who will be the next player:
-                GameState gs2 = gs.clone();
-                while(gs2.winner()==-1 && 
-                      !gs2.gameover() &&  
-                    !gs2.canExecuteAnyAction(0) && 
-                    !gs2.canExecuteAnyAction(1)) gs2.cycle();
-                if (gs2.canExecuteAnyAction(player)) {
-                    // start a new search:
-                    startNewSearch(player,gs2);
-                    search(player, TIME_PER_CYCLE, MAX_PLAYOUTS);
-                    return new PlayerAction();
-                } else {
-                    return new PlayerAction();
-                }
-            }
-        }
-        
-        return new PlayerAction();
-    }    
-    
-    public void startNewSearch(int player, GameState gs) throws Exception {
+    public void startNewComputation(int a_player, GameState gs) throws Exception {
+        player = a_player;
         float evaluation_bound = ef.upperBound(gs);
         tree = new UCTNodeFirstPlayUrgency(player, 1-player, gs, null, evaluation_bound, FPUvalue);
         gs_to_start_from = gs;
@@ -138,18 +90,20 @@ public class UCTFirstPlayUrgency extends AI {
     }
     
 
-    public void search(int player, long available_time, int maxPlayouts) throws Exception {
+    public void computeDuringOneGameFrame() throws Exception {
         if (DEBUG>=2) System.out.println("Search...");
         long start = System.currentTimeMillis();
         int nPlayouts = 0;
-        long cutOffTime = start + available_time;
-        if (available_time<=0) cutOffTime = 0;
+        long cutOffTime = start + MAX_TIME;
+        if (MAX_TIME<=0) cutOffTime = 0;
 
 //        System.out.println(start + " + " + available_time + " = " + cutOffTime);
 
         while(true) {
-            if (cutOffTime>0 && System.currentTimeMillis() < cutOffTime) break;
-            if (maxPlayouts>0 && nPlayouts>maxPlayouts) break;
+//            System.out.println("time " + System.currentTimeMillis() + " - " + cutOffTime);
+//            System.out.println("playouts " + MAX_ITERATIONS + " - " + nPlayouts);
+            if (cutOffTime>0 && System.currentTimeMillis() >= cutOffTime) break;
+            if (MAX_ITERATIONS>0 && nPlayouts>=MAX_ITERATIONS) break;
             monteCarloRun(player, cutOffTime);
             nPlayouts++;
         }
@@ -160,7 +114,8 @@ public class UCTFirstPlayUrgency extends AI {
 
     public double monteCarloRun(int player, long cutOffTime) throws Exception {
         UCTNodeFirstPlayUrgency leaf = tree.UCTSelectLeaf(player, 1-player, cutOffTime, MAX_TREE_DEPTH);
-
+//        System.out.println(leaf);
+        
         if (leaf!=null) {
             GameState gs2 = leaf.gs.clone();
             simulate(gs2, gs2.getTime() + MAXSIMULATIONTIME);
@@ -186,7 +141,7 @@ public class UCTFirstPlayUrgency extends AI {
     }
     
     
-    public PlayerAction getBestAction() {
+    public PlayerAction getBestActionSoFar() {
         total_actions_issued++;
                 
         int mostVisitedIdx = -1;
@@ -217,7 +172,7 @@ public class UCTFirstPlayUrgency extends AI {
     
     // gets the best action, evaluates it for 'N' times using a simulation, and returns the average obtained value:
     public float getBestActionEvaluation(GameState gs, int player, int N) throws Exception {
-        PlayerAction pa = getBestAction();
+        PlayerAction pa = getBestActionSoFar();
         
         if (pa==null) return 0;
 

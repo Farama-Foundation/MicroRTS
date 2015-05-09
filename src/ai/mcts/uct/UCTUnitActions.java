@@ -4,23 +4,19 @@
  */
 package ai.mcts.uct;
 
-import ai.montecarlo.*;
 import ai.core.AI;
 import ai.RandomBiasedAI;
+import ai.core.InterruptibleAIWithComputationBudget;
 import ai.evaluation.EvaluationFunction;
-import ai.evaluation.SimpleEvaluationFunction;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
 import rts.GameState;
 import rts.PlayerAction;
-import rts.PlayerActionGenerator;
 
 /**
  *
  * @author santi
  */
-public class UCTUnitActions extends AI {
+public class UCTUnitActions extends InterruptibleAIWithComputationBudget {
     public static final int DEBUG = 0;
     EvaluationFunction ef = null;
        
@@ -37,14 +33,15 @@ public class UCTUnitActions extends AI {
     public long total_cycles_executed = 0;
     public long total_actions_issued = 0;
         
-    int TIME_PER_CYCLE = 100;
     int MAXSIMULATIONTIME = 1024;
+    
+    int player;
     
     
     public UCTUnitActions(int available_time, int lookahead, int max_depth, AI policy, EvaluationFunction a_ef) {
+        super(available_time, -1);
         MAXSIMULATIONTIME = lookahead;
         randomAI = policy;
-        TIME_PER_CYCLE = available_time;
         MAX_TREE_DEPTH = max_depth;
         ef = a_ef;
     }
@@ -65,55 +62,12 @@ public class UCTUnitActions extends AI {
     
     
     public AI clone() {
-        return new UCTUnitActions(TIME_PER_CYCLE, MAXSIMULATIONTIME, MAX_TREE_DEPTH, randomAI, ef);
+        return new UCTUnitActions(MAX_TIME, MAXSIMULATIONTIME, MAX_TREE_DEPTH, randomAI, ef);
     }  
     
     
-    public PlayerAction getAction(int player, GameState gs) throws Exception {
-        if (gs.winner()!=-1) return new PlayerAction();
-        if (gs.canExecuteAnyAction(player)) {
-            // continue or start a search:
-            if (tree==null) {
-                startNewSearch(player,gs);
-            } else {
-                if (!gs.getPhysicalGameState().equivalents(gs_to_start_from.getPhysicalGameState())) {
-                    System.err.println("Game state used for search NOT equivalent to the actual one!!!");
-                    System.err.println("gs:");
-                    System.err.println(gs);
-                    System.err.println("gs_to_start_from:");
-                    System.err.println(gs_to_start_from);
-                }
-            }
-            search(player, TIME_PER_CYCLE);
-            PlayerAction best = getBestAction();
-            resetSearch();
-            return best;
-        } else {
-            if (tree!=null) {
-                // continue previous search:
-                search(player, TIME_PER_CYCLE);
-            } else {
-                // determine who will be the next player:
-                GameState gs2 = gs.clone();
-                while(gs2.winner()==-1 && 
-                      !gs2.gameover() &&  
-                    !gs2.canExecuteAnyAction(0) && 
-                    !gs2.canExecuteAnyAction(1)) gs2.cycle();
-                if (gs2.canExecuteAnyAction(player)) {
-                    // start a new search:
-                    startNewSearch(player,gs2);
-                    search(player, TIME_PER_CYCLE);
-                    return new PlayerAction();
-                } else {
-                    return new PlayerAction();
-                }
-            }
-        }
-        
-        return new PlayerAction();
-    }    
-    
-    public void startNewSearch(int player, GameState gs) {
+    public void startNewComputation(int a_player, GameState gs) {
+        player = a_player;
         float evaluation_bound = ef.upperBound(gs);
         tree = new UCTUnitActionsNode(player, 1-player, gs, null, evaluation_bound);
         gs_to_start_from = gs;
@@ -128,11 +82,11 @@ public class UCTUnitActions extends AI {
     }
     
 
-    public void search(int player, long available_time) throws Exception {
+    public void computeDuringOneGameFrame() throws Exception {
         if (DEBUG>=2) System.out.println("Search...");
         long start = System.currentTimeMillis();
         
-        while((System.currentTimeMillis() - start)<available_time) {
+        while((System.currentTimeMillis() - start)<MAX_TIME) {
             UCTUnitActionsNode leaf = tree.UCTSelectLeaf(player, 1-player, MAX_TREE_DEPTH);
             
             if (leaf!=null) {
@@ -161,7 +115,7 @@ public class UCTUnitActions extends AI {
     }
     
     
-    public PlayerAction getBestAction() {
+    public PlayerAction getBestActionSoFar() {
         return getMostVisited(tree, gs_to_start_from.getTime());
     }
     
