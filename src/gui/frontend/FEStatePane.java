@@ -29,8 +29,7 @@ import ai.mcts.naivemcts.ContinuingNaiveMCTS;
 import ai.mcts.uct.ContinuingUCT;
 import ai.mcts.uct.ContinuingUCTFirstPlayUrgency;
 import ai.mcts.uct.ContinuingUCTUnitActions;
-import ai.minimax.ABCD.IDContinuingABCD;
-import ai.minimax.ABCD.IDContinuingDownsamplingABCD;
+import ai.minimax.ABCD.IDABCD;
 import ai.minimax.RMMiniMax.IDRTMinimax;
 import ai.minimax.RMMiniMax.IDRTMinimaxRandomized;
 import ai.montecarlo.MonteCarlo;
@@ -106,8 +105,7 @@ public class FEStatePane extends JPanel {
                    PGSAI.class,
                    IDRTMinimax.class,
                    IDRTMinimaxRandomized.class,
-                   IDContinuingABCD.class,
-                   IDContinuingDownsamplingABCD.class,
+                   IDABCD.class,
                    MonteCarlo.class,
                    NaiveMonteCarlo.class,
                    LSI.class,
@@ -129,7 +127,6 @@ public class FEStatePane extends JPanel {
     JFormattedTextField maxPlayoutsField[] = {null,null};    
     JFormattedTextField playoutTimeField[] = {null,null};    
     JFormattedTextField maxActionsField[] = {null,null};    
-    JFormattedTextField downsamplingField[] = {null,null};    
     JFormattedTextField LSIsplitField[] = {null,null};    
     JFormattedTextField fpuField[] = {null,null};    
 
@@ -399,7 +396,6 @@ public class FEStatePane extends JPanel {
             maxPlayoutsField[player] = addTextField(p1,"max playouts (set >0 for LSI!):", "-1", 5);
             playoutTimeField[player] = addTextField(p1,"playout time:", "100", 5);
             maxActionsField[player] = addTextField(p1,"max actions (downsampling):", "-1", 5);
-            downsamplingField[player] = addTextField(p1,"downsampling (ABCD):", "0.5", 5);
             {
                 JPanel ptmp = new JPanel();
                 ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
@@ -574,7 +570,6 @@ public class FEStatePane extends JPanel {
         int PLAYOUT_TIME = Integer.parseInt(playoutTimeField[player].getText());
         int MAX_ACTIONS = Integer.parseInt(maxActionsField[player].getText());
         double LSI_SPLIT = Double.parseDouble(LSIsplitField[player].getText());
-        double ABCD_DOWNSAMPLING = Double.parseDouble(downsamplingField[player].getText());
         double fpu_value = Double.parseDouble(fpuField[player].getText());
         AI playout_policy = new RandomBiasedAI();
 
@@ -610,10 +605,8 @@ public class FEStatePane extends JPanel {
             return new IDRTMinimax(TIME, ef);
         } else if (AIs[idx]==IDRTMinimaxRandomized.class) {
             return new IDRTMinimaxRandomized(TIME, RANDOMIZED_AB_REPEATS, ef);
-        } else if (AIs[idx]==IDContinuingABCD.class) {
-            return new IDContinuingABCD(TIME, MAX_PLAYOUTS, new LightRush(currentUtt, pf), PLAYOUT_TIME, ef, false);
-        } else if (AIs[idx]==IDContinuingDownsamplingABCD.class) {
-            return new IDContinuingDownsamplingABCD(TIME, ABCD_DOWNSAMPLING, new LightRush(currentUtt, pf), PLAYOUT_TIME, ef);
+        } else if (AIs[idx]==IDABCD.class) {
+            return new IDABCD(TIME, MAX_PLAYOUTS, new LightRush(currentUtt, pf), PLAYOUT_TIME, ef, false);
         } else if (AIs[idx]==MonteCarlo.class) {
             return new MonteCarlo(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_ACTIONS, playout_policy, ef);
         } else if (AIs[idx]==NaiveMonteCarlo.class) {

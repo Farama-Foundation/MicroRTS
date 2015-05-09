@@ -18,7 +18,7 @@ import ai.mcts.uct.ContinuingDownsamplingUCT;
 import ai.mcts.uct.ContinuingUCT;
 import ai.mcts.uct.ContinuingUCTUnitActions;
 import ai.mcts.uct.UCT;
-import ai.minimax.ABCD.IDContinuingABCD;
+import ai.minimax.ABCD.IDABCD;
 import ai.minimax.RMMiniMax.IDRTMinimax;
 import ai.minimax.RMMiniMax.IDRTMinimaxRandomized;
 import ai.montecarlo.*;
@@ -64,7 +64,7 @@ public class CompareAllAIsPartiallyObservable {
       
         bots.add(new IDRTMinimax(TIME, new SimpleSqrtEvaluationFunction3()));
         bots.add(new IDRTMinimaxRandomized(TIME, RANDOMIZED_AB_REPEATS, new SimpleSqrtEvaluationFunction3()));
-        bots.add(new IDContinuingABCD(TIME, MAX_PLAYOUTS, new LightRush(UnitTypeTable.utt, new GreedyPathFinding()), PLAYOUT_TIME, new SimpleSqrtEvaluationFunction3(), false));
+        bots.add(new IDABCD(TIME, MAX_PLAYOUTS, new LightRush(UnitTypeTable.utt, new GreedyPathFinding()), PLAYOUT_TIME, new SimpleSqrtEvaluationFunction3(), false));
 
         bots.add(new MonteCarlo(TIME, PLAYOUT_TIME, MAX_PLAYOUTS, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
         bots.add(new MonteCarlo(TIME, PLAYOUT_TIME, MAX_PLAYOUTS, MAX_ACTIONS, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
