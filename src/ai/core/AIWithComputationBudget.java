@@ -25,4 +25,8 @@ public abstract class AIWithComputationBudget extends AI {
         MAX_TIME = mt;
         MAX_ITERATIONS = mi;
     }
+    
+    public void setMaxIterations(int mp) {
+        MAX_ITERATIONS = mp;
+    }
 }
