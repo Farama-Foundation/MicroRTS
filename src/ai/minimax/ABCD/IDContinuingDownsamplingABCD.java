@@ -26,10 +26,31 @@ import util.Pair;
  * moves at each node.
  */
 
-public class IDContinuingDownsamplingABCD extends IDDownsamplingABCD {
-    
+//public class IDContinuingDownsamplingABCD extends IDDownsamplingABCD {
+public class IDContinuingDownsamplingABCD extends AI {
     public static int DEBUG = 0;
-                
+    
+    // reset at each execution of minimax:
+    int nLeaves = 0;
+    
+    int max_depth_so_far = 0;
+    long max_branching_so_far = 0;
+    long max_leaves_so_far = 0;
+    
+    int MAXDEPTH = 4;
+    AI playoutAI = null;
+    int maxPlayoutTime = 100;
+    EvaluationFunction ef = null;
+    protected int defaultNONEduration = 8;
+    
+    Random r = new Random();
+    double downsampling = 1.0;  // at each node, each action is explored with "downsampling" probability
+                                // except the "noop" action, which is always explored.    
+    
+    int TIME_PER_CYCLE = 100;
+    
+    long max_potential_branching_so_far = 0; 
+                    
     int max_consecutive_frames_searching_so_far = 0;
 
     GameState gs_to_start_from = null;
@@ -40,7 +61,11 @@ public class IDContinuingDownsamplingABCD extends IDDownsamplingABCD {
     PlayerAction bestMove = null;
     
     public IDContinuingDownsamplingABCD(int tpc, double a_downsampling, AI a_playoutAI, int a_maxPlayoutTime, EvaluationFunction a_ef) {
-        super(tpc, a_downsampling, a_playoutAI, a_maxPlayoutTime, a_ef);
+        MAXDEPTH = 1;
+        playoutAI = a_playoutAI;
+        maxPlayoutTime = a_maxPlayoutTime;
+        ef = a_ef;
+        downsampling = a_downsampling;    TIME_PER_CYCLE = tpc;
     }
     
     
