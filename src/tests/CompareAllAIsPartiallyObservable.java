@@ -19,8 +19,8 @@ import ai.mcts.uct.ContinuingUCT;
 import ai.mcts.uct.ContinuingUCTUnitActions;
 import ai.mcts.uct.UCT;
 import ai.minimax.ABCD.IDContinuingABCD;
-import ai.minimax.RMMiniMax.IDContinuingRTMinimax;
-import ai.minimax.RMMiniMax.IDContinuingRTMinimaxRandomized;
+import ai.minimax.RMMiniMax.IDRTMinimax;
+import ai.minimax.RMMiniMax.IDRTMinimaxRandomized;
 import ai.montecarlo.*;
 import gui.PhysicalGameStatePanel;
 import java.io.File;
@@ -62,8 +62,8 @@ public class CompareAllAIsPartiallyObservable {
                                  new boolean[]{true,true,true,false}, 
                                  TIME, MAX_PLAYOUTS, PLAYOUT_TIME*4, new SimpleSqrtEvaluationFunction3()));
       
-        bots.add(new IDContinuingRTMinimax(TIME, new SimpleSqrtEvaluationFunction3()));
-        bots.add(new IDContinuingRTMinimaxRandomized(TIME, RANDOMIZED_AB_REPEATS, new SimpleSqrtEvaluationFunction3()));
+        bots.add(new IDRTMinimax(TIME, new SimpleSqrtEvaluationFunction3()));
+        bots.add(new IDRTMinimaxRandomized(TIME, RANDOMIZED_AB_REPEATS, new SimpleSqrtEvaluationFunction3()));
         bots.add(new IDContinuingABCD(TIME, MAX_PLAYOUTS, new LightRush(UnitTypeTable.utt, new GreedyPathFinding()), PLAYOUT_TIME, new SimpleSqrtEvaluationFunction3(), false));
 
         bots.add(new MonteCarlo(TIME, PLAYOUT_TIME, MAX_PLAYOUTS, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));

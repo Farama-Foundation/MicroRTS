@@ -31,8 +31,8 @@ import ai.mcts.uct.ContinuingUCTFirstPlayUrgency;
 import ai.mcts.uct.ContinuingUCTUnitActions;
 import ai.minimax.ABCD.IDContinuingABCD;
 import ai.minimax.ABCD.IDContinuingDownsamplingABCD;
-import ai.minimax.RMMiniMax.IDContinuingRTMinimax;
-import ai.minimax.RMMiniMax.IDContinuingRTMinimaxRandomized;
+import ai.minimax.RMMiniMax.IDRTMinimax;
+import ai.minimax.RMMiniMax.IDRTMinimaxRandomized;
 import ai.montecarlo.MonteCarlo;
 import ai.montecarlo.NaiveMonteCarlo;
 import ai.montecarlo.lsi.LSI;
@@ -104,8 +104,8 @@ public class FEStatePane extends JPanel {
                    RangedRush.class,
                    PortfolioAI.class,
                    PGSAI.class,
-                   IDContinuingRTMinimax.class,
-                   IDContinuingRTMinimaxRandomized.class,
+                   IDRTMinimax.class,
+                   IDRTMinimaxRandomized.class,
                    IDContinuingABCD.class,
                    IDContinuingDownsamplingABCD.class,
                    MonteCarlo.class,
@@ -606,10 +606,10 @@ public class FEStatePane extends JPanel {
                                     TIME, MAX_PLAYOUTS, PLAYOUT_TIME, ef);
         } else if (AIs[idx]==PGSAI.class) {
             return new PGSAI(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 1, 5, ef, UnitTypeTable.utt, pf);
-        } else if (AIs[idx]==IDContinuingRTMinimax.class) {
-            return new IDContinuingRTMinimax(TIME, ef);
-        } else if (AIs[idx]==IDContinuingRTMinimaxRandomized.class) {
-            return new IDContinuingRTMinimaxRandomized(TIME, RANDOMIZED_AB_REPEATS, ef);
+        } else if (AIs[idx]==IDRTMinimax.class) {
+            return new IDRTMinimax(TIME, ef);
+        } else if (AIs[idx]==IDRTMinimaxRandomized.class) {
+            return new IDRTMinimaxRandomized(TIME, RANDOMIZED_AB_REPEATS, ef);
         } else if (AIs[idx]==IDContinuingABCD.class) {
             return new IDContinuingABCD(TIME, MAX_PLAYOUTS, new LightRush(currentUtt, pf), PLAYOUT_TIME, ef, false);
         } else if (AIs[idx]==IDContinuingDownsamplingABCD.class) {
