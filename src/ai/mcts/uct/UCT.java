@@ -20,7 +20,7 @@ import rts.PlayerActionGenerator;
  *
  * @author santi
  */
-public class ContinuingUCT extends AI {
+public class UCT extends AI {
     public static int DEBUG = 0;
     EvaluationFunction ef = null;
        
@@ -44,7 +44,7 @@ public class ContinuingUCT extends AI {
     int MAX_TREE_DEPTH = 10;
     
     
-    public ContinuingUCT(int available_time, int max_playouts, int lookahead, int max_depth, AI policy, EvaluationFunction a_ef) {
+    public UCT(int available_time, int max_playouts, int lookahead, int max_depth, AI policy, EvaluationFunction a_ef) {
         MAXSIMULATIONTIME = lookahead;
         MAX_PLAYOUTS = max_playouts;
         randomAI = policy;
@@ -76,7 +76,7 @@ public class ContinuingUCT extends AI {
     
     
     public AI clone() {
-        return new ContinuingUCT(TIME_PER_CYCLE, MAX_PLAYOUTS, MAXSIMULATIONTIME, MAX_TREE_DEPTH, randomAI, ef);
+        return new UCT(TIME_PER_CYCLE, MAX_PLAYOUTS, MAXSIMULATIONTIME, MAX_TREE_DEPTH, randomAI, ef);
     }  
     
     
@@ -252,7 +252,7 @@ public class ContinuingUCT extends AI {
     }
     
     public String toString() {
-        return "ContinuingUCT(" + MAXSIMULATIONTIME + ")";
+        return "UCT(" + MAXSIMULATIONTIME + ")";
     }
     
 }

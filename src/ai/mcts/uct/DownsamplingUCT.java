@@ -20,7 +20,7 @@ import rts.PlayerActionGenerator;
  *
  * @author santi
  */
-public class ContinuingUCTUnitActions extends AI {
+public class DownsamplingUCT extends AI {
     public static final int DEBUG = 0;
     EvaluationFunction ef = null;
        
@@ -29,23 +29,27 @@ public class ContinuingUCTUnitActions extends AI {
     long max_actions_so_far = 0;
     
     GameState gs_to_start_from = null;
-    UCTUnitActionsNode tree = null;
-    int MAX_TREE_DEPTH = 10;
+    DownsamplingUCTNode tree = null;
     
     // statistics:
     public long total_runs = 0;
     public long total_cycles_executed = 0;
     public long total_actions_issued = 0;
         
+    long MAXACTIONS = 100;
+    long MAX_PLAYOUTS = 1000;
     int TIME_PER_CYCLE = 100;
     int MAXSIMULATIONTIME = 1024;
+    int MAX_TREE_DEPTH = 10;
     
     
-    public ContinuingUCTUnitActions(int available_time, int lookahead, int max_depth, AI policy, EvaluationFunction a_ef) {
+    public DownsamplingUCT(int available_time, long max_playouts, int lookahead, long maxactions, int max_depth, AI policy, EvaluationFunction a_ef) {
+        TIME_PER_CYCLE = available_time;
+        MAX_PLAYOUTS = max_playouts;
+        MAXACTIONS = maxactions;
         MAXSIMULATIONTIME = lookahead;
         randomAI = policy;
-        TIME_PER_CYCLE = available_time;
-        MAX_TREE_DEPTH = max_depth;
+        MAX_TREE_DEPTH =  max_depth;
         ef = a_ef;
     }
     
@@ -62,15 +66,25 @@ public class ContinuingUCTUnitActions extends AI {
         gs_to_start_from = null;
         tree = null;
     }
-    
+        
     
     public AI clone() {
-        return new ContinuingUCTUnitActions(TIME_PER_CYCLE, MAXSIMULATIONTIME, MAX_TREE_DEPTH, randomAI, ef);
+        return new DownsamplingUCT(TIME_PER_CYCLE, MAX_PLAYOUTS, MAXSIMULATIONTIME, MAXACTIONS, MAX_TREE_DEPTH, randomAI, ef);
     }  
     
     
     public PlayerAction getAction(int player, GameState gs) throws Exception {
-        if (gs.winner()!=-1) return new PlayerAction();
+        if (DEBUG>=1) {
+            System.out.println("DownsamplingUCT: getAction started...");
+            System.out.flush();
+        }
+        if (gs.winner()!=-1) {
+            if (DEBUG>=1) {
+                System.out.println("DownsamplingUCT: getAction finished");
+                System.out.flush();
+            }
+            return new PlayerAction();
+        }
         if (gs.canExecuteAnyAction(player)) {
             // continue or start a search:
             if (tree==null) {
@@ -84,14 +98,18 @@ public class ContinuingUCTUnitActions extends AI {
                     System.err.println(gs_to_start_from);
                 }
             }
-            search(player, TIME_PER_CYCLE);
+            search(player, TIME_PER_CYCLE, MAX_PLAYOUTS);
             PlayerAction best = getBestAction();
             resetSearch();
+            if (DEBUG>=1) {
+                System.out.println("DownsamplingUCT: getAction finished");
+                System.out.flush();
+            }
             return best;
         } else {
             if (tree!=null) {
                 // continue previous search:
-                search(player, TIME_PER_CYCLE);
+                search(player, TIME_PER_CYCLE, MAX_PLAYOUTS);
             } else {
                 // determine who will be the next player:
                 GameState gs2 = gs.clone();
@@ -102,22 +120,33 @@ public class ContinuingUCTUnitActions extends AI {
                 if (gs2.canExecuteAnyAction(player)) {
                     // start a new search:
                     startNewSearch(player,gs2);
-                    search(player, TIME_PER_CYCLE);
+                    search(player, TIME_PER_CYCLE, MAX_PLAYOUTS);
+                    if (DEBUG>=1) {
+                        System.out.println("DownsamplingUCT: getAction finished");
+                        System.out.flush();
+                    }
                     return new PlayerAction();
                 } else {
+                    if (DEBUG>=1) {
+                        System.out.println("DownsamplingUCT: getAction finished");
+                        System.out.flush();
+                    }
                     return new PlayerAction();
                 }
             }
         }
         
+        if (DEBUG>=1) {
+            System.out.println("DownsamplingUCT: getAction finished");
+            System.out.flush();
+        }
         return new PlayerAction();
     }    
     
-    public void startNewSearch(int player, GameState gs) {
+    public void startNewSearch(int player, GameState gs) throws Exception {
         float evaluation_bound = ef.upperBound(gs);
-        tree = new UCTUnitActionsNode(player, 1-player, gs, null, evaluation_bound);
+        tree = new DownsamplingUCTNode(player, 1-player, gs, null, MAXACTIONS, evaluation_bound);
         gs_to_start_from = gs;
-//        System.out.println(evaluation_bound);
     }    
     
     
@@ -128,12 +157,15 @@ public class ContinuingUCTUnitActions extends AI {
     }
     
 
-    public void search(int player, long available_time) throws Exception {
+    public void search(int player, long available_time, long max_playouts) throws Exception {
         if (DEBUG>=2) System.out.println("Search...");
         long start = System.currentTimeMillis();
+        long cutOffTime = (available_time>0 ? start + available_time:0);
+        long end = start;
+        long count = 0;
         
-        while((System.currentTimeMillis() - start)<available_time) {
-            UCTUnitActionsNode leaf = tree.UCTSelectLeaf(player, 1-player, MAX_TREE_DEPTH);
+        while(true) {
+            DownsamplingUCTNode leaf = tree.UCTSelectLeaf(player, 1-player, MAXACTIONS, cutOffTime, MAX_TREE_DEPTH);
             
             if (leaf!=null) {
                 GameState gs2 = leaf.gs.clone();
@@ -142,8 +174,6 @@ public class ContinuingUCTUnitActions extends AI {
                 int time = gs2.getTime() - gs_to_start_from.getTime();
                 double evaluation = ef.evaluate(player, 1-player, gs2)*Math.pow(0.99,time/10.0);
             
-//                System.out.println(evaluation_bound + " -> " + evaluation + " -> " + (evaluation+evaluation_bound)/(evaluation_bound*2));
-                
                 while(leaf!=null) {
                     leaf.accum_evaluation += evaluation;
                     leaf.visit_count++;
@@ -155,6 +185,10 @@ public class ContinuingUCTUnitActions extends AI {
                 System.err.println(this.getClass().getSimpleName() + ": claims there are no more leafs to explore...");
                 break;
             }
+            count++;
+            end = System.currentTimeMillis();
+            if (available_time>=0 && (end - start)>=available_time) break; 
+            if (max_playouts>=0 && count>=max_playouts) break;            
         }
         
         total_cycles_executed++;
@@ -162,35 +196,25 @@ public class ContinuingUCTUnitActions extends AI {
     
     
     public PlayerAction getBestAction() {
-        return getMostVisited(tree, gs_to_start_from.getTime());
-    }
-    
-    
-    public PlayerAction getMostVisited(UCTUnitActionsNode current, int time) {
-        if (current.type!=0 || current.gs.getTime()!=time) return null;
-        
+        total_actions_issued++;
+                
         int mostVisitedIdx = -1;
-        
-        UCTUnitActionsNode mostVisited = null;
-        for(int i = 0;i<current.children.size();i++) {
-            UCTUnitActionsNode child = current.children.get(i);
+        DownsamplingUCTNode mostVisited = null;
+        for(int i = 0;i<tree.children.size();i++) {
+            DownsamplingUCTNode child = tree.children.get(i);
             if (mostVisited == null || child.visit_count>mostVisited.visit_count) {
                 mostVisited = child;
                 mostVisitedIdx = i;
             }
-//            System.out.println(child.visit_count);
         }
         
-        if (mostVisitedIdx==-1) return null;
+        if (DEBUG>=2) tree.showNode(0,1);        
+        if (DEBUG>=1) System.out.println(this.getClass().getSimpleName() + " selected children " + tree.actions.get(mostVisitedIdx) + " explored " + mostVisited.visit_count + " Avg evaluation: " + (mostVisited.accum_evaluation/((double)mostVisited.visit_count)));
         
-        PlayerAction mostVisitedAction = current.actions.get(mostVisitedIdx);
-        PlayerAction restOfAction = getMostVisited(mostVisited, time);
+//        printStats();        
         
-        if (restOfAction!=null) mostVisitedAction = mostVisitedAction.merge(restOfAction);
-                
-        return mostVisitedAction;
+        return tree.actions.get(mostVisitedIdx);
     }
-    
     
     
     public void simulate(GameState gs, int time) throws Exception {
@@ -207,7 +231,7 @@ public class ContinuingUCTUnitActions extends AI {
     }
     
     public String toString() {
-        return "ContinuingUCTUnitActions(" + MAXSIMULATIONTIME + ")";
+        return "DownsamplingUCT(" + MAXSIMULATIONTIME + ")";
     }
     
 }

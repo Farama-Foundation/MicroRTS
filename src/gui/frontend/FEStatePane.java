@@ -26,9 +26,9 @@ import ai.evaluation.SimpleSqrtEvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction2;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import ai.mcts.naivemcts.ContinuingNaiveMCTS;
-import ai.mcts.uct.ContinuingUCT;
-import ai.mcts.uct.ContinuingUCTFirstPlayUrgency;
-import ai.mcts.uct.ContinuingUCTUnitActions;
+import ai.mcts.uct.UCT;
+import ai.mcts.uct.UCTFirstPlayUrgency;
+import ai.mcts.uct.UCTUnitActions;
 import ai.minimax.ABCD.IDABCD;
 import ai.minimax.RMMiniMax.IDRTMinimax;
 import ai.minimax.RMMiniMax.IDRTMinimaxRandomized;
@@ -109,9 +109,9 @@ public class FEStatePane extends JPanel {
                    MonteCarlo.class,
                    NaiveMonteCarlo.class,
                    LSI.class,
-                   ContinuingUCT.class,
-                   ContinuingUCTUnitActions.class,
-                   ContinuingUCTFirstPlayUrgency.class,
+                   UCT.class,
+                   UCTUnitActions.class,
+                   UCTFirstPlayUrgency.class,
                    ContinuingNaiveMCTS.class,
                    MouseController.class
                   };
@@ -619,12 +619,12 @@ public class FEStatePane extends JPanel {
                 LSI.RelaxationType.NONE, 2,
                 false,
                 playout_policy, ef);
-        } else if (AIs[idx]==ContinuingUCT.class) {
-            return new ContinuingUCT(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, new RandomBiasedAI(), ef);
-        } else if (AIs[idx]==ContinuingUCTUnitActions.class) {
-            return new ContinuingUCTUnitActions(TIME, PLAYOUT_TIME, MAX_DEPTH*10, new RandomBiasedAI(), ef);
-        } else if (AIs[idx]==ContinuingUCTFirstPlayUrgency.class) {
-            return new ContinuingUCTFirstPlayUrgency(TIME, PLAYOUT_TIME, MAX_PLAYOUTS, MAX_DEPTH, new RandomBiasedAI(), ef, fpu_value);
+        } else if (AIs[idx]==UCT.class) {
+            return new UCT(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, new RandomBiasedAI(), ef);
+        } else if (AIs[idx]==UCTUnitActions.class) {
+            return new UCTUnitActions(TIME, PLAYOUT_TIME, MAX_DEPTH*10, new RandomBiasedAI(), ef);
+        } else if (AIs[idx]==UCTFirstPlayUrgency.class) {
+            return new UCTFirstPlayUrgency(TIME, PLAYOUT_TIME, MAX_PLAYOUTS, MAX_DEPTH, new RandomBiasedAI(), ef, fpu_value);
         } else if (AIs[idx]==ContinuingNaiveMCTS.class) {
             return new ContinuingNaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), ef);
         } else if (AIs[idx]==MouseController.class) {

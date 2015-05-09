@@ -14,9 +14,9 @@ import ai.abstraction.pathfinding.BFSPathFinding;
 import ai.abstraction.pathfinding.GreedyPathFinding;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import ai.mcts.naivemcts.ContinuingNaiveMCTS;
-import ai.mcts.uct.ContinuingDownsamplingUCT;
-import ai.mcts.uct.ContinuingUCT;
-import ai.mcts.uct.ContinuingUCTUnitActions;
+import ai.mcts.uct.DownsamplingUCT;
+import ai.mcts.uct.UCT;
+import ai.mcts.uct.UCTUnitActions;
 import ai.minimax.ABCD.IDABCD;
 import ai.minimax.RMMiniMax.IDRTMinimax;
 import ai.minimax.RMMiniMax.IDRTMinimaxRandomized;
@@ -66,9 +66,9 @@ public class CompareAllAIsObservable {
         bots.add(new NaiveMonteCarlo(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 0.33f, 0.25f, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
         bots.add(new NaiveMonteCarlo(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 1.00f, 0.25f, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
 
-        bots.add(new ContinuingUCT(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
-        bots.add(new ContinuingDownsamplingUCT(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_ACTIONS, MAX_DEPTH, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
-        bots.add(new ContinuingUCTUnitActions(TIME, PLAYOUT_TIME, MAX_DEPTH*10, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
+        bots.add(new UCT(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
+        bots.add(new DownsamplingUCT(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_ACTIONS, MAX_DEPTH, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
+        bots.add(new UCTUnitActions(TIME, PLAYOUT_TIME, MAX_DEPTH*10, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
         bots.add(new ContinuingNaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
         bots.add(new ContinuingNaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, 1.00f, 0.0f, 0.25f, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
 
