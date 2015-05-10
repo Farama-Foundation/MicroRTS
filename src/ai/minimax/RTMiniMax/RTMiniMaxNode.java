@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ai.minimax.RMMiniMax;
+package ai.minimax.RTMiniMax;
 
 import rts.GameState;
 import rts.PlayerAction;
