@@ -50,7 +50,7 @@ public class IDRTMinimax extends InterruptibleAIWithComputationBudget {
     PlayerAction bestMove = null;
     
     Random r = new Random();
-    int player;
+    int playerForThisComputation;
 
     public IDRTMinimax(int tpc, EvaluationFunction a_ef) {
         super(tpc, -1);
@@ -75,7 +75,7 @@ public class IDRTMinimax extends InterruptibleAIWithComputationBudget {
     
     public void startNewComputation(int a_player, GameState gs) throws Exception
     {
-        player = a_player;
+    	playerForThisComputation = a_player;
         stack = null;
         last_lookAhead = 1;
         gs_to_start_from = gs;
@@ -84,15 +84,15 @@ public class IDRTMinimax extends InterruptibleAIWithComputationBudget {
 
     
     public void computeDuringOneGameFrame() throws Exception {
-        int maxplayer = player;
-        int minplayer = 1 - player;
+        int maxplayer = playerForThisComputation;
+        int minplayer = 1 - playerForThisComputation;
         int lookAhead = 1;
         long startTime = System.currentTimeMillis();
         long cutOffTime = startTime + MAX_TIME;
                 
         if (bestMove==null) {
             // The first time, we just want to do a quick evaluation of all actions, to have a first idea of what is best:
-            bestMove = greedyActionScan(gs_to_start_from,player, cutOffTime);
+            bestMove = greedyActionScan(gs_to_start_from, playerForThisComputation, cutOffTime);
 //            System.out.println("greedyActionScan suggested action: " + bestMove);
         }
         

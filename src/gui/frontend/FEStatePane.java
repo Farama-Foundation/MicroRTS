@@ -7,6 +7,10 @@
 package gui.frontend;
 
 import ai.core.AI;
+import ai.core.AIWithComputationBudget;
+import ai.core.ContinuingAI;
+import ai.core.InterruptibleAIWithComputationBudget;
+import ai.core.PseudoContinuingAI;
 import ai.BranchingFactorCalculator;
 import ai.PassiveAI;
 import ai.RandomAI;
@@ -41,6 +45,7 @@ import ai.portfolio.portfoliogreedysearch.PGSAI;
 import gui.MouseController;
 import gui.PhysicalGameStateMouseJFrame;
 import gui.PhysicalGameStatePanel;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -49,6 +54,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.List;
+
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -62,6 +68,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
+
 import rts.GameState;
 import rts.PhysicalGameState;
 import rts.PlayerAction;
@@ -129,6 +136,7 @@ public class FEStatePane extends JPanel {
     JFormattedTextField maxActionsField[] = {null,null};    
     JFormattedTextField LSIsplitField[] = {null,null};    
     JFormattedTextField fpuField[] = {null,null};    
+    JCheckBox continuingBox[] = {null,null};
 
     JFormattedTextField maxCyclesField = null;
     JCheckBox saveTraceBox = null;
@@ -403,6 +411,12 @@ public class FEStatePane extends JPanel {
                 fpuField[player] = addTextField(ptmp,"FPU:", "4.9", 5);
                 p1.add(ptmp);
             }
+            continuingBox[player] = new JCheckBox("Continuing");
+            continuingBox[player].setAlignmentX(Component.CENTER_ALIGNMENT);
+            continuingBox[player].setAlignmentY(Component.TOP_ALIGNMENT);
+            continuingBox[player].setMaximumSize(new Dimension(120,20));
+            continuingBox[player].setSelected(true);
+            p1.add(continuingBox[player]);
         }
 
         p1.add(new JSeparator(SwingConstants.HORIZONTAL));
@@ -565,6 +579,21 @@ public class FEStatePane extends JPanel {
 
 
     public AI createAI(int idx, int player) {
+    	AI ai = createAIInternal(idx, player);
+    	if (continuingBox[player].isSelected()) {
+    		// If the user wants a "continuous" AI, check if we can wrap it around a continuing decorator:
+    		if (ai instanceof AIWithComputationBudget) {
+    			if (ai instanceof InterruptibleAIWithComputationBudget) {
+    				ai = new ContinuingAI((InterruptibleAIWithComputationBudget)ai);
+    			} else {
+    				ai = new PseudoContinuingAI((AIWithComputationBudget)ai);        				
+    			}
+    		}
+    	}
+    	return ai;
+    }
+    
+    public AI createAIInternal(int idx, int player) {
         int TIME = Integer.parseInt(cpuTimeField[player].getText());
         int MAX_PLAYOUTS = Integer.parseInt(maxPlayoutsField[player].getText());
         int PLAYOUT_TIME = Integer.parseInt(playoutTimeField[player].getText());

@@ -35,7 +35,7 @@ public class UCTUnitActions extends InterruptibleAIWithComputationBudget {
         
     int MAXSIMULATIONTIME = 1024;
     
-    int player;
+    int playerForThisComputation;
     
     
     public UCTUnitActions(int available_time, int lookahead, int max_depth, AI policy, EvaluationFunction a_ef) {
@@ -67,9 +67,9 @@ public class UCTUnitActions extends InterruptibleAIWithComputationBudget {
     
     
     public void startNewComputation(int a_player, GameState gs) {
-        player = a_player;
+    	playerForThisComputation = a_player;
         float evaluation_bound = ef.upperBound(gs);
-        tree = new UCTUnitActionsNode(player, 1-player, gs, null, evaluation_bound);
+        tree = new UCTUnitActionsNode(playerForThisComputation, 1-playerForThisComputation, gs, null, evaluation_bound);
         gs_to_start_from = gs;
 //        System.out.println(evaluation_bound);
     }    
@@ -87,14 +87,14 @@ public class UCTUnitActions extends InterruptibleAIWithComputationBudget {
         long start = System.currentTimeMillis();
         
         while((System.currentTimeMillis() - start)<MAX_TIME) {
-            UCTUnitActionsNode leaf = tree.UCTSelectLeaf(player, 1-player, MAX_TREE_DEPTH);
+            UCTUnitActionsNode leaf = tree.UCTSelectLeaf(playerForThisComputation, 1-playerForThisComputation, MAX_TREE_DEPTH);
             
             if (leaf!=null) {
                 GameState gs2 = leaf.gs.clone();
                 simulate(gs2, gs2.getTime() + MAXSIMULATIONTIME);
                 
                 int time = gs2.getTime() - gs_to_start_from.getTime();
-                double evaluation = ef.evaluate(player, 1-player, gs2)*Math.pow(0.99,time/10.0);
+                double evaluation = ef.evaluate(playerForThisComputation, 1-playerForThisComputation, gs2)*Math.pow(0.99,time/10.0);
             
 //                System.out.println(evaluation_bound + " -> " + evaluation + " -> " + (evaluation+evaluation_bound)/(evaluation_bound*2));
                 

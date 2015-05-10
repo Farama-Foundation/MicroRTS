@@ -5,6 +5,10 @@
 package tests;
 
 import ai.core.AI;
+import ai.core.AIWithComputationBudget;
+import ai.core.ContinuingAI;
+import ai.core.InterruptibleAIWithComputationBudget;
+import ai.core.PseudoContinuingAI;
 import ai.*;
 import ai.portfolio.PortfolioAI;
 import ai.abstraction.LightRush;
@@ -21,10 +25,12 @@ import ai.minimax.ABCD.IDABCD;
 import ai.minimax.RTMiniMax.IDRTMinimax;
 import ai.minimax.RTMiniMax.IDRTMinimaxRandomized;
 import ai.montecarlo.*;
+
 import java.io.File;
 import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.List;
+
 import rts.PhysicalGameState;
 import rts.units.UnitTypeTable;
 
@@ -36,6 +42,7 @@ public class CompareAllAIsObservable {
     
     public static void main(String args[]) throws Exception 
     {
+    	boolean CONTINUING = true;
         int TIME = 100;
         int MAX_ACTIONS = 100;
         int MAX_PLAYOUTS = -1;
@@ -43,7 +50,7 @@ public class CompareAllAIsObservable {
         int MAX_DEPTH = 10;
         int RANDOMIZED_AB_REPEATS = 10;
         
-        List<AI> bots = new LinkedList<AI>();
+        List<AI> bots = new LinkedList<>();
 
         bots.add(new RandomAI());
         bots.add(new RandomBiasedAI());
@@ -72,6 +79,23 @@ public class CompareAllAIsObservable {
         bots.add(new NaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
         bots.add(new NaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, 1.00f, 0.0f, 0.25f, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
 
+        if (CONTINUING) {
+        	// Find out which of the bots can be used in "continuing" mode:
+        	List<AI> bots2 = new LinkedList<>();
+        	for(AI bot:bots) {
+        		if (bot instanceof AIWithComputationBudget) {
+        			if (bot instanceof InterruptibleAIWithComputationBudget) {
+        				bots2.add(new ContinuingAI((InterruptibleAIWithComputationBudget)bot));
+        			} else {
+        				bots2.add(new PseudoContinuingAI((AIWithComputationBudget)bot));        				
+        			}
+        		} else {
+        			bots2.add(bot);
+        		}
+        	}
+        	bots = bots2;
+        }
+        
         PrintStream out = new PrintStream(new File("results.txt"));
         
         // Separate the matchs by map:

@@ -48,7 +48,7 @@ public class NaiveMonteCarlo extends InterruptibleAIWithComputationBudget {
     HashMap<Long,PlayerActionTableEntry> playerActionTable = null;
     GameState gs_to_start_from = null;
     int run = 0;
-    int player;
+    int playerForThisComputation;
     
     // statistics:
     public long total_runs = 0;
@@ -87,8 +87,8 @@ public class NaiveMonteCarlo extends InterruptibleAIWithComputationBudget {
     
     public void startNewComputation(int a_player, GameState gs) throws Exception {
         gs_to_start_from = gs;
-        player = a_player;
-        moveGenerator = new PlayerActionGenerator(gs, player);
+        playerForThisComputation = a_player;
+        moveGenerator = new PlayerActionGenerator(gs, playerForThisComputation);
         multipliers = new long[moveGenerator.getChoices().size()];
         unitActionTable = new LinkedList<UnitActionTableEntry>();
         long baseMultiplier = 1;
@@ -132,7 +132,7 @@ public class NaiveMonteCarlo extends InterruptibleAIWithComputationBudget {
         long end = start;
         long count = 0;
         while(true) {
-            monteCarloRun(player, gs_to_start_from);
+            monteCarloRun(playerForThisComputation, gs_to_start_from);
             count++;
             end = System.currentTimeMillis();
             if (MAX_TIME>=0 && (end - start)>=MAX_TIME) break; 

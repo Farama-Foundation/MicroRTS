@@ -40,7 +40,7 @@ public class MonteCarlo extends InterruptibleAIWithComputationBudget {
     List<PlayerActionTableEntry> actions = null;
     GameState gs_to_start_from = null;
     int run = 0;
-    int player;
+    int playerForThisComputation;
     
     // statistics:
     public long total_runs = 0;
@@ -88,9 +88,9 @@ public class MonteCarlo extends InterruptibleAIWithComputationBudget {
     public void startNewComputation(int a_player, GameState gs) throws Exception {
         if (DEBUG>=2) System.out.println("Starting a new search...");
         if (DEBUG>=2) System.out.println(gs);
-        player = a_player;
+        playerForThisComputation = a_player;
         gs_to_start_from = gs;
-        moveGenerator = new PlayerActionGenerator(gs,player);
+        moveGenerator = new PlayerActionGenerator(gs,playerForThisComputation);
         moveGenerator.randomizeOrder();
         allMovesGenerated = false;
         actions = null;  
@@ -123,7 +123,7 @@ public class MonteCarlo extends InterruptibleAIWithComputationBudget {
                     actions.add(pate);
                 }
                 max_actions_so_far = Math.max(moveGenerator.getSize(),max_actions_so_far);
-                if (DEBUG>=1) System.out.println("MontCarloAI (random action sampling) for player " + player + " chooses between " + moveGenerator.getSize() + " actions [maximum so far " + max_actions_so_far + "] (cycle " + gs_to_start_from.getTime() + ")");
+                if (DEBUG>=1) System.out.println("MontCarloAI (random action sampling) for player " + playerForThisComputation + " chooses between " + moveGenerator.getSize() + " actions [maximum so far " + max_actions_so_far + "] (cycle " + gs_to_start_from.getTime() + ")");
             } else {      
                 PlayerAction pa;
                 long count = 0;
@@ -138,7 +138,7 @@ public class MonteCarlo extends InterruptibleAIWithComputationBudget {
                     }
                 }while(pa!=null);
                 max_actions_so_far = Math.max(actions.size(),max_actions_so_far);
-                if (DEBUG>=1) System.out.println("MontCarloAI (complete generation plus random reduction) for player " + player + " chooses between " + actions.size() + " actions [maximum so far " + max_actions_so_far + "] (cycle " + gs_to_start_from.getTime() + ")");
+                if (DEBUG>=1) System.out.println("MontCarloAI (complete generation plus random reduction) for player " + playerForThisComputation + " chooses between " + actions.size() + " actions [maximum so far " + max_actions_so_far + "] (cycle " + gs_to_start_from.getTime() + ")");
                 while(MAXACTIONS>0 && actions.size()>MAXACTIONS) actions.remove(r.nextInt(actions.size()));
             }      
         }
@@ -146,7 +146,7 @@ public class MonteCarlo extends InterruptibleAIWithComputationBudget {
         while(true) {
             if (MAX_TIME>0 && (System.currentTimeMillis() - start)>=MAX_TIME) break;
             if (MAX_ITERATIONS>0 && nruns>=MAX_ITERATIONS) break;
-            monteCarloRun(player, gs_to_start_from);
+            monteCarloRun(playerForThisComputation, gs_to_start_from);
             nruns++;
         }
         

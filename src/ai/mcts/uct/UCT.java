@@ -37,7 +37,7 @@ public class UCT extends InterruptibleAIWithComputationBudget {
     int MAXSIMULATIONTIME = 1024;
     int MAX_TREE_DEPTH = 10;
     
-    int player;
+    int playerForThisComputation;
     
     
     public UCT(int available_time, int max_playouts, int lookahead, int max_depth, AI policy, EvaluationFunction a_ef) {
@@ -77,8 +77,8 @@ public class UCT extends InterruptibleAIWithComputationBudget {
     
     public void startNewComputation(int a_player, GameState gs) throws Exception {
         float evaluation_bound = ef.upperBound(gs);
-        player = a_player;
-        tree = new UCTNode(player, 1-player, gs, null, evaluation_bound);
+        playerForThisComputation = a_player;
+        tree = new UCTNode(playerForThisComputation, 1-playerForThisComputation, gs, null, evaluation_bound);
         gs_to_start_from = gs;
         total_runs_this_move = 0;
 //        System.out.println(evaluation_bound);
@@ -105,7 +105,7 @@ public class UCT extends InterruptibleAIWithComputationBudget {
         while(true) {
             if (cutOffTime>0 && System.currentTimeMillis() < cutOffTime) break;
             if (MAX_ITERATIONS>0 && nPlayouts>MAX_ITERATIONS) break;
-            monteCarloRun(player, cutOffTime);
+            monteCarloRun(playerForThisComputation, cutOffTime);
             nPlayouts++;
         }
         

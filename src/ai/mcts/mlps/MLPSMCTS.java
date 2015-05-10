@@ -32,7 +32,7 @@ public class MLPSMCTS extends InterruptibleAIWithComputationBudget {
     public int MAXSIMULATIONTIME = 1024;
     public int MAX_TREE_DEPTH = 10;
 
-    int player;
+    int playerForThisComputation;
     
     double C = 0.05;
     
@@ -72,10 +72,10 @@ public class MLPSMCTS extends InterruptibleAIWithComputationBudget {
     
     
     public void startNewComputation(int a_player, GameState gs) throws Exception {
-        player = a_player;
+    	playerForThisComputation = a_player;
         current_iteration = 0;
         float evaluation_bound = ef.upperBound(gs);
-        tree = new MLPSNode(player, 1-player, gs, null, evaluation_bound, current_iteration++);
+        tree = new MLPSNode(playerForThisComputation, 1-playerForThisComputation, gs, null, evaluation_bound, current_iteration++);
         
         max_actions_so_far = Math.max(tree.moveGenerator.getSize(),max_actions_so_far);
         gs_to_start_from = gs;        
@@ -95,7 +95,7 @@ public class MLPSMCTS extends InterruptibleAIWithComputationBudget {
         long end = start;
         long count = 0;
         while(true) {
-            if (!iteration(player)) break;
+            if (!iteration(playerForThisComputation)) break;
             count++;
             end = System.currentTimeMillis();
             if (MAX_TIME>=0 && (end - start)>=MAX_TIME) break; 

@@ -36,7 +36,7 @@ public class DownsamplingUCT extends InterruptibleAIWithComputationBudget {
     int MAXSIMULATIONTIME = 1024;
     int MAX_TREE_DEPTH = 10;
     
-    int player;
+    int playerForThisComputation;
     
     public DownsamplingUCT(int available_time, int max_playouts, int lookahead, long maxactions, int max_depth, AI policy, EvaluationFunction a_ef) {
         super(available_time, max_playouts);
@@ -68,9 +68,9 @@ public class DownsamplingUCT extends InterruptibleAIWithComputationBudget {
     
     
     public void startNewComputation(int a_player, GameState gs) throws Exception {
-        player = a_player;
+    	playerForThisComputation = a_player;
         float evaluation_bound = ef.upperBound(gs);
-        tree = new DownsamplingUCTNode(player, 1-player, gs, null, MAXACTIONS, evaluation_bound);
+        tree = new DownsamplingUCTNode(playerForThisComputation, 1-playerForThisComputation, gs, null, MAXACTIONS, evaluation_bound);
         gs_to_start_from = gs;
     }    
     
@@ -90,14 +90,14 @@ public class DownsamplingUCT extends InterruptibleAIWithComputationBudget {
         long count = 0;
         
         while(true) {
-            DownsamplingUCTNode leaf = tree.UCTSelectLeaf(player, 1-player, MAXACTIONS, cutOffTime, MAX_TREE_DEPTH);
+            DownsamplingUCTNode leaf = tree.UCTSelectLeaf(playerForThisComputation, 1-playerForThisComputation, MAXACTIONS, cutOffTime, MAX_TREE_DEPTH);
             
             if (leaf!=null) {
                 GameState gs2 = leaf.gs.clone();
                 simulate(gs2, gs2.getTime() + MAXSIMULATIONTIME);
                 
                 int time = gs2.getTime() - gs_to_start_from.getTime();
-                double evaluation = ef.evaluate(player, 1-player, gs2)*Math.pow(0.99,time/10.0);
+                double evaluation = ef.evaluate(playerForThisComputation, 1-playerForThisComputation, gs2)*Math.pow(0.99,time/10.0);
             
                 while(leaf!=null) {
                     leaf.accum_evaluation += evaluation;

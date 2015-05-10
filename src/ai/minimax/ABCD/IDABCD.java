@@ -74,7 +74,7 @@ public class IDABCD extends InterruptibleAIWithComputationBudget {
     List<ABCDNode> stack = null;
     Pair<PlayerAction,Float> lastResult = null;
     PlayerAction bestMove = null;
-    int player;
+    int playerForThisComputation;
 
     public IDABCD(int tpc, int ppc, AI a_playoutAI, int a_maxPlayoutTime, EvaluationFunction a_ef, boolean a_performGreedyActionScan) {
         super(tpc, ppc);
@@ -121,87 +121,6 @@ public class IDABCD extends InterruptibleAIWithComputationBudget {
     public AI clone() {
         return new IDABCD(MAX_TIME, MAX_ITERATIONS, playoutAI, maxPlayoutTime, ef, performGreedyActionScan);
     }
-
-
-    /*
-    public PlayerAction getAction(int player, GameState gs) throws Exception {
-        if (gs.winner()!=-1) return new PlayerAction();
-        if (gs.canExecuteAnyAction(player)) {
-            if (DEBUG>=1) {
-                System.out.println("IDABCD... (time " + gs.getTime() + ", player " + player + "): time to produce an action");
-                System.out.flush();
-            }
-            if (gs_to_start_from==null) gs_to_start_from = gs;
-            PlayerAction pa = search(player, gs_to_start_from, TIME_PER_CYCLE, MAX_PLAYOUTS_PER_CYCLE);
-//            System.out.println("IDABCD: " + pa);
-
-            // statistics:
-            avg_depth_so_far+=last_depth;
-            count_depth_so_far++;
-
-            avg_leaves_so_far += last_nleaves;
-            count_leaves_so_far++;
-
-            avg_nodes_so_far += last_nnodes;
-            count_nodes_so_far++;
-            
-            avg_time_depth_so_far += last_time_depth;
-            count_time_depth_so_far++;
-            
-            if (last_time_depth>max_time_depth_so_far) max_time_depth_so_far = last_time_depth;
-
-            consecutive_frames_searching = 0;
-            stack = null;
-            last_depth = 1;
-            last_nleaves = 0;
-            last_nnodes = 0;
-            last_time_depth = 0;
-            gs_to_start_from = null;
-            bestMove = null;
-
-            return pa;
-        } else {
-            if (stack!=null) {
-                if (DEBUG>=1) {
-                    System.out.println("IDABCD... (time  " + gs.getTime() + "): no action needed but I can continue the search");
-                    System.out.flush();
-                }
-                search(player, gs_to_start_from, TIME_PER_CYCLE, MAX_PLAYOUTS_PER_CYCLE);
-                return new PlayerAction();
-            } else {
-                if (DEBUG>=1) {
-                    System.out.println("IDABCD... (time  " + gs.getTime() + "): no action needed fast forwarding state...");
-                    System.out.flush();
-                }
-                // determine whether to create a new stack or not:
-                gs_to_start_from = gs.clone();
-                while(gs_to_start_from.winner()==-1 &&
-                      !gs_to_start_from.gameover() &&
-                    !gs_to_start_from.canExecuteAnyAction(0) &&
-                    !gs_to_start_from.canExecuteAnyAction(1)) gs_to_start_from.cycle();
-                if (gs_to_start_from.winner()==-1 &&
-                    !gs_to_start_from.gameover() &&
-                    gs_to_start_from.canExecuteAnyAction(player)) {
-                    if (DEBUG>=1) {
-                        System.out.println("IDABCD... (time  " + gs.getTime() + "): no action needed but I will be the next one to play, start a new search");
-                        System.out.flush();
-                    }
-                    // we will be the next one to act: start search!
-                    search(player, gs_to_start_from, TIME_PER_CYCLE, MAX_PLAYOUTS_PER_CYCLE);
-                    return new PlayerAction();
-                } else {
-                    if (DEBUG>=1) {
-                        System.out.println("IDABCD... (time  " + gs.getTime() + "): no action needed and the opponent is next, doing nothing");
-                        System.out.flush();
-                    }
-                    // we are NOT the next one to act. Do nothing...
-                    gs_to_start_from = null;
-                    return new PlayerAction();
-                }
-            }
-        }
-    }
-    */
     
 
     public void startNewComputation(int a_player, GameState gs) throws Exception
@@ -213,14 +132,14 @@ public class IDABCD extends InterruptibleAIWithComputationBudget {
         last_nnodes = 0;
         last_time_depth = 0;
         gs_to_start_from = gs;
-        player = a_player;
+        playerForThisComputation = a_player;
         bestMove = null;
     }
     
 
     public void computeDuringOneGameFrame() throws Exception {
-        int maxplayer = player;
-        int minplayer = 1 - player;
+        int maxplayer = playerForThisComputation;
+        int minplayer = 1 - playerForThisComputation;
         int depth = 1;
         long startTime = System.currentTimeMillis();
         long cutOffTime = startTime + MAX_TIME;
@@ -232,7 +151,7 @@ public class IDABCD extends InterruptibleAIWithComputationBudget {
         
         if (bestMove==null && performGreedyActionScan) {
             // The first time, we just want to do a quick evaluation of all actions, to have a first idea of what is best:
-            bestMove = greedyActionScan(gs_to_start_from,player, cutOffTime, MAX_ITERATIONS);
+            bestMove = greedyActionScan(gs_to_start_from,playerForThisComputation, cutOffTime, MAX_ITERATIONS);
 //            System.out.println("greedyActionScan suggested action: " + bestMove);
         }
 
@@ -316,7 +235,7 @@ public class IDABCD extends InterruptibleAIWithComputationBudget {
         if (last_time_depth>max_time_depth_so_far) max_time_depth_so_far = last_time_depth;
         
         if (bestMove == null) {
-            PlayerActionGenerator pag = new PlayerActionGenerator(gs_to_start_from,player);
+            PlayerActionGenerator pag = new PlayerActionGenerator(gs_to_start_from,playerForThisComputation);
             return pag.getRandom();
         }
         

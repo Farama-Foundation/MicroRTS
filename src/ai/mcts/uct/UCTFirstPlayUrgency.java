@@ -37,7 +37,7 @@ public class UCTFirstPlayUrgency extends InterruptibleAIWithComputationBudget {
     int MAXSIMULATIONTIME = 1024;
     int MAX_TREE_DEPTH = 10;
     
-    int player;
+    int playerForThisComputation;
 
     double FPUvalue = 0;
         
@@ -73,9 +73,9 @@ public class UCTFirstPlayUrgency extends InterruptibleAIWithComputationBudget {
      
     
     public void startNewComputation(int a_player, GameState gs) throws Exception {
-        player = a_player;
+    	playerForThisComputation = a_player;
         float evaluation_bound = ef.upperBound(gs);
-        tree = new UCTNodeFirstPlayUrgency(player, 1-player, gs, null, evaluation_bound, FPUvalue);
+        tree = new UCTNodeFirstPlayUrgency(playerForThisComputation, 1-playerForThisComputation, gs, null, evaluation_bound, FPUvalue);
         gs_to_start_from = gs;
         total_runs_this_move = 0;
 //        System.out.println(evaluation_bound);
@@ -104,7 +104,7 @@ public class UCTFirstPlayUrgency extends InterruptibleAIWithComputationBudget {
 //            System.out.println("playouts " + MAX_ITERATIONS + " - " + nPlayouts);
             if (cutOffTime>0 && System.currentTimeMillis() >= cutOffTime) break;
             if (MAX_ITERATIONS>0 && nPlayouts>=MAX_ITERATIONS) break;
-            monteCarloRun(player, cutOffTime);
+            monteCarloRun(playerForThisComputation, cutOffTime);
             nPlayouts++;
         }
         

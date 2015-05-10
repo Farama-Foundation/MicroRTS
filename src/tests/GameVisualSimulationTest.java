@@ -41,14 +41,6 @@ public class GameVisualSimulationTest {
         AI ai1 = new WorkerRush(UnitTypeTable.utt, new BFSPathFinding());
 //        AI ai1 = new LightRush(UnitTypeTable.utt, new AStarPathFinding());
 //        AI ai1 = new RangedRush(UnitTypeTable.utt, new GreedyPathFinding());
-//        AI ai1 = new ContinuingNaiveMC(PERIOD, 200, 0.33f, 0.2f, new RandomBiasedAI(), new SimpleEvaluationFunction());
-/*
-        AI ai1 = new ContinuingNaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, 
-                                         1.00f, 1.00f,
-                                         0.00f, 1.00f,
-                                         0.25f, 0.9975f,
-                                         new RandomBiasedAI(), new SimpleEvaluationFunction());
-*/
         
         AI ai2 = new RandomBiasedAI();
 //        AI ai2 = new LightRush(UnitTypeTable.utt, new AStarPathFinding());

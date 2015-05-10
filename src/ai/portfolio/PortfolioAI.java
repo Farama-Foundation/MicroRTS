@@ -29,7 +29,7 @@ public class PortfolioAI extends InterruptibleAIWithComputationBudget {
     double scores[][] = null;
     int counts[][] = null;
     int nplayouts = 0;
-    int player;
+    int playerForThisComputation;
     
     public PortfolioAI(AI s[], boolean d[], int time, int max_playouts, int la, EvaluationFunction e) {
         super(time, max_playouts);
@@ -47,7 +47,7 @@ public class PortfolioAI extends InterruptibleAIWithComputationBudget {
         int n = strategies.length;
         scores = new double[n][n];
         counts = new int[n][n];
-        player = a_player;
+        playerForThisComputation = a_player;
         gs_to_start_from = gs;
         nplayouts = 0;
     }
@@ -82,11 +82,11 @@ public class PortfolioAI extends InterruptibleAIWithComputationBudget {
                             if (gs2.isComplete()) {
                                 gameover = gs2.cycle();
                             } else {
-                                gs2.issue(ai1.getAction(player, gs2));
-                                gs2.issue(ai2.getAction(1-player, gs2));
+                                gs2.issue(ai1.getAction(playerForThisComputation, gs2));
+                                gs2.issue(ai2.getAction(1-playerForThisComputation, gs2));
                             }
                         }                
-                        scores[i][j] += evaluation.evaluate(player, 1-player, gs2);
+                        scores[i][j] += evaluation.evaluate(playerForThisComputation, 1-playerForThisComputation, gs2);
                         counts[i][j]++;
                         nplayouts++;
                     }
@@ -148,7 +148,7 @@ public class PortfolioAI extends InterruptibleAIWithComputationBudget {
         // use the AI that obtained best results:
         AI ai = strategies[bestMax].clone();
         ai.reset();
-        return ai.getAction(player, gs_to_start_from);
+        return ai.getAction(playerForThisComputation, gs_to_start_from);
     }
 
     public AI clone() {
