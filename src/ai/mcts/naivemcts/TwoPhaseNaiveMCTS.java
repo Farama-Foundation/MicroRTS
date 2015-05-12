@@ -100,6 +100,8 @@ public class TwoPhaseNaiveMCTS extends InterruptibleAIWithComputationBudget {
 
         n_phase1_iterations_left = -1;
         n_phase1_milliseconds_left = -1;
+        if (MAX_ITERATIONS>0) n_phase1_iterations_left = (int)(phase1_ratio * MAX_ITERATIONS);
+        if (MAX_TIME>0) n_phase1_milliseconds_left = (int)(phase1_ratio * MAX_TIME);
     }    
     
     
@@ -135,6 +137,7 @@ public class TwoPhaseNaiveMCTS extends InterruptibleAIWithComputationBudget {
     
     public boolean iteration(int player) throws Exception {
         NaiveMCTSNode leaf;
+//        System.out.println("  " + n_phase1_iterations_left);
         if (n_phase1_iterations_left>0 || n_phase1_milliseconds_left>0) {
             leaf = tree.selectLeaf(player, 1-player, phase1_epsilon_l, phase1_epsilon_g, phase1_epsilon_0, MAX_TREE_DEPTH, node_creation_ID++);
             n_phase1_iterations_left--;
