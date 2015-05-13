@@ -6,7 +6,7 @@ microRTS is deterministic and real-time (i.e. players can issue actions simultan
 
 microRTS was developed by [Santiago Ontañón](https://sites.google.com/site/santiagoontanonvillar/Home). 
 
-For a video of how microRTS lookslike when a human plays see a [youtube video](https://www.youtube.com/watch?v=ZsKKAoiD7B0)
+For a video of how microRTS looks like when a human plays see a [youtube video](https://www.youtube.com/watch?v=ZsKKAoiD7B0)
 
 To cite microRTS, please cite this paper:
 
