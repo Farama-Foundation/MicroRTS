@@ -121,14 +121,14 @@ public class TwoPhaseNaiveMCTS extends InterruptibleAIWithComputationBudget {
         long count = 0;
         int n_phase1_milliseconds_left_initial = n_phase1_milliseconds_left;
         while(true) {
-            n_phase1_milliseconds_left = n_phase1_milliseconds_left_initial - (int)(end - start);
+            if (n_phase1_milliseconds_left>0) n_phase1_milliseconds_left = n_phase1_milliseconds_left_initial - (int)(end - start);
             if (!iteration(playerForThisComputation)) break;
             count++;
             end = System.currentTimeMillis();
             if (MAX_TIME>=0 && (end - start)>=MAX_TIME) break; 
             if (MAX_ITERATIONS>=0 && count>=MAX_ITERATIONS) break;             
         }
-        n_phase1_milliseconds_left = n_phase1_milliseconds_left_initial - (int)(end - start);
+            if (n_phase1_milliseconds_left>0) n_phase1_milliseconds_left = n_phase1_milliseconds_left_initial - (int)(end - start);
 //        System.out.println("HL: " + count + " time: " + (System.currentTimeMillis() - start) + " (" + available_time + "," + max_playouts + ")");
         total_time += (end - start);
         total_cycles_executed++;
