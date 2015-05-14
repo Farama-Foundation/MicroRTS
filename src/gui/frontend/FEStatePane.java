@@ -37,7 +37,6 @@ import ai.minimax.ABCD.IDABCD;
 import ai.minimax.RTMiniMax.IDRTMinimax;
 import ai.minimax.RTMiniMax.IDRTMinimaxRandomized;
 import ai.montecarlo.MonteCarlo;
-import ai.montecarlo.NaiveMonteCarlo;
 import ai.montecarlo.lsi.LSI;
 import ai.montecarlo.lsi.Sampling;
 import ai.portfolio.PortfolioAI;
@@ -114,7 +113,6 @@ public class FEStatePane extends JPanel {
                    IDRTMinimaxRandomized.class,
                    IDABCD.class,
                    MonteCarlo.class,
-                   NaiveMonteCarlo.class,
                    LSI.class,
                    UCT.class,
                    UCTUnitActions.class,
@@ -638,8 +636,6 @@ public class FEStatePane extends JPanel {
             return new IDABCD(TIME, MAX_PLAYOUTS, new LightRush(currentUtt, pf), PLAYOUT_TIME, ef, false);
         } else if (AIs[idx]==MonteCarlo.class) {
             return new MonteCarlo(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_ACTIONS, playout_policy, ef);
-        } else if (AIs[idx]==NaiveMonteCarlo.class) {
-            return new NaiveMonteCarlo(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 0.33f, 0.25f, new RandomBiasedAI(), ef);
         } else if (AIs[idx]==LSI.class) {
             return new LSI(MAX_PLAYOUTS, PLAYOUT_TIME, LSI_SPLIT,
                 LSI.EstimateType.RANDOM_TAIL, LSI.EstimateReuseType.ALL,

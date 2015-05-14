@@ -8,7 +8,8 @@ import ai.core.AI;
 import ai.RandomBiasedAI;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleEvaluationFunction;
-import ai.montecarlo.NaiveMonteCarlo;
+import ai.evaluation.SimpleSqrtEvaluationFunction3;
+import ai.mcts.naivemcts.NaiveMCTS;
 import ai.montecarlo.lsi.LSI;
 import ai.montecarlo.lsi.Sampling.AgentOrderingType;
 import gui.PhysicalGameStateJFrame;
@@ -30,7 +31,7 @@ import util.XMLWriter;
         int SIMULATION_BUDGET = 1000; // count per decision
         int LOOKAHEAD_CYCLES = 100; // game time
         AI simulationAi = new RandomBiasedAI();
-        EvaluationFunction evalFunction = new SimpleEvaluationFunction();
+        EvaluationFunction evalFunction = new SimpleSqrtEvaluationFunction3();
 
 //        AI ai1 = new RandomAI();
 //        AI ai1 = new RandomBiasedAI();
@@ -53,7 +54,8 @@ import util.XMLWriter;
 //        AI ai2 = new WorkerRush(utt, new AStarPathFinding());
 //        AI ai2 = new LightRush(UnitTypeTable.utt, new AStarPathFinding());
 //        AI ai2 = new RangedRush(UnitTypeTable.utt, new AStarPathFinding());
-        AI ai2 = new NaiveMonteCarlo(-1, SIMULATION_BUDGET, LOOKAHEAD_CYCLES, 0.33f, 0.25f, simulationAi, evalFunction);
+        // by setting "MAX_DEPTH = 1" in the next bot, this effectively makes it Monte Carlo search, instead of Monte Carlo Tree Search
+        AI ai2 = new NaiveMCTS(-1, SIMULATION_BUDGET, LOOKAHEAD_CYCLES, 1, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), evalFunction);
 //        AI ai2 = new GenerateEvaluateMonteCarlo(SIMULATION_BUDGET, LOOKAHEAD_CYCLES,
 //                0.25, EstimateType.RANDOM_TAIL, EstimateReuseType.ALL,
 //                GenerateType.PER_AGENT, AgentOrderingType.ENTROPY,

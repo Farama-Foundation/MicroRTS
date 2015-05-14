@@ -100,48 +100,57 @@ public class NaiveMCTSNode extends MCTSNode {
     }
 
     
-    // Using an epsilon greedy strategy:
+    // Naive Sampling:
     public NaiveMCTSNode selectLeaf(int maxplayer, int minplayer, float epsilon_l, float epsilon_g, float epsilon_0, int max_depth, int a_creation_ID) throws Exception {
         if (unitActionTable == null) return this;
+        if (depth>=max_depth) return this;        
         
-       if (depth>=max_depth) return this;        
-        
+        if (children.size()>0 && r.nextFloat()>=epsilon_0) {
+            // sample from the global MAB:
+            NaiveMCTSNode selected = selectFromAlreadySampledEpsilonGreedy(epsilon_g);
+            return selected.selectLeaf(maxplayer, minplayer, epsilon_l, epsilon_g, epsilon_0, max_depth, a_creation_ID);
+        }  else {
+            // sample from the local MABs (this might recursively call "selectLeaf" internally):
+            return selectLeafUsingLocalMABs(maxplayer, minplayer, epsilon_l, epsilon_g, epsilon_0, max_depth, a_creation_ID);
+        }
+    }
+   
+    
+    public NaiveMCTSNode selectFromAlreadySampledEpsilonGreedy(float epsilon_g) throws Exception {
+        if (r.nextFloat()>=epsilon_g) {
+            NaiveMCTSNode best = null;
+            for(MCTSNode pate:children) {
+                if (type==0) {
+                    // max node:
+                    if (best==null || (pate.accum_evaluation/pate.visit_count)>(best.accum_evaluation/best.visit_count)) {
+                        best = (NaiveMCTSNode)pate;
+                    }                    
+                } else {
+                    // min node:
+                    if (best==null || (pate.accum_evaluation/pate.visit_count)<(best.accum_evaluation/best.visit_count)) {
+                        best = (NaiveMCTSNode)pate;
+                    }                                        
+                }
+            }
+
+            return best;
+        } else {
+            // choose one at random from the ones seen so far:
+            NaiveMCTSNode best = (NaiveMCTSNode)children.get(r.nextInt(children.size()));
+            return best;
+        }
+    }
+    
+    
+    public NaiveMCTSNode selectLeafUsingLocalMABs(int maxplayer, int minplayer, float epsilon_l, float epsilon_g, float epsilon_0, int max_depth, int a_creation_ID) throws Exception {   
         PlayerAction pa2;
         long actionCode;
 
-        if (children.size()>0 && r.nextFloat()>=epsilon_0) {
-            // select the player action with the highest value found so far:
-            if (r.nextFloat()>=epsilon_g) {
-                NaiveMCTSNode best = null;
-                for(MCTSNode pate:children) {
-                    if (type==0) {
-                        // max node:
-                        if (best==null || (pate.accum_evaluation/pate.visit_count)>(best.accum_evaluation/best.visit_count)) {
-                            best = (NaiveMCTSNode)pate;
-                        }                    
-                    } else {
-                        // min node:
-                        if (best==null || (pate.accum_evaluation/pate.visit_count)<(best.accum_evaluation/best.visit_count)) {
-                            best = (NaiveMCTSNode)pate;
-                        }                                        
-                    }
-                }
-
-                return best.selectLeaf(maxplayer, minplayer, epsilon_l, epsilon_g, epsilon_0, max_depth, a_creation_ID);
-            } else {
-                // cohose one at random from the ones seen so far:
-                NaiveMCTSNode best = (NaiveMCTSNode)children.get(r.nextInt(children.size()));
-                return best.selectLeaf(maxplayer, minplayer, epsilon_l, epsilon_g, epsilon_0, max_depth, a_creation_ID);
-            }
-        }
-        
- 
         // For each unit, rank the unitActions according to preference:
         List<double []> distributions = new LinkedList<double []>();
         List<Integer> notSampledYet = new LinkedList<Integer>();
         for(UnitActionTableEntry ate:unitActionTable) {
             double []dist = new double[ate.nactions];
-            double total = 0;
             int bestIdx = -1;
             double bestEvaluation = 0;
             int visits = 0;
@@ -168,7 +177,6 @@ public class NaiveMCTSNode extends MCTSNode {
                     }
                 }
                 dist[i] = epsilon_l/ate.nactions;
-                total+=dist[i];
             }
             if (ate.visit_count[bestIdx]!=0) {
                 dist[bestIdx] = (1-epsilon_l) + (epsilon_l/ate.nactions);
