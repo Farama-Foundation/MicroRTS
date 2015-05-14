@@ -16,23 +16,28 @@ import util.Sampler;
  * @author santi
  */
 public class NaiveMCTSNode extends MCTSNode {
-
+    public static final int E_GREEDY = 0;
+    public static final int UCB1 = 1;
+    
     static public int DEBUG = 0;
-        
+    
+    public static float C = 0.05f;   // exploration constant for UCB1
+    
     boolean hasMoreActions = true;
     public PlayerActionGenerator moveGenerator = null;
     HashMap<Long,NaiveMCTSNode> childrenMap = new LinkedHashMap<Long,NaiveMCTSNode>();    // associates action codes with children
     // Decomposition of the player actions in unit actions, and their contributions:
     public List<UnitActionTableEntry> unitActionTable = null;
-    
+    double evaluation_bound;    // this is the maximum positive value that the evaluation function can return
     public long multipliers[];
 
 
-    public NaiveMCTSNode(int maxplayer, int minplayer, GameState a_gs, NaiveMCTSNode a_parent, int a_creation_ID) throws Exception {
+    public NaiveMCTSNode(int maxplayer, int minplayer, GameState a_gs, NaiveMCTSNode a_parent, double a_evaluation_bound, int a_creation_ID) throws Exception {
         parent = a_parent;
         gs = a_gs;
         if (parent==null) depth = 0;
-                     else depth = parent.depth+1;        
+                     else depth = parent.depth+1;     
+        evaluation_bound = a_evaluation_bound;
         creation_ID = a_creation_ID;
  
         while (gs.winner() == -1 &&
@@ -101,20 +106,23 @@ public class NaiveMCTSNode extends MCTSNode {
 
     
     // Naive Sampling:
-    public NaiveMCTSNode selectLeaf(int maxplayer, int minplayer, float epsilon_l, float epsilon_g, float epsilon_0, int max_depth, int a_creation_ID) throws Exception {
+    public NaiveMCTSNode selectLeaf(int maxplayer, int minplayer, float epsilon_l, float epsilon_g, float epsilon_0, int global_strategy, int max_depth, int a_creation_ID) throws Exception {
         if (unitActionTable == null) return this;
         if (depth>=max_depth) return this;        
         
         if (children.size()>0 && r.nextFloat()>=epsilon_0) {
             // sample from the global MAB:
-            NaiveMCTSNode selected = selectFromAlreadySampledEpsilonGreedy(epsilon_g);
-            return selected.selectLeaf(maxplayer, minplayer, epsilon_l, epsilon_g, epsilon_0, max_depth, a_creation_ID);
+            NaiveMCTSNode selected = null;
+            if (global_strategy==E_GREEDY) selected = selectFromAlreadySampledEpsilonGreedy(epsilon_g);
+            else if (global_strategy==UCB1) selected = selectFromAlreadySampledUCB1(C);
+            return selected.selectLeaf(maxplayer, minplayer, epsilon_l, epsilon_g, epsilon_0, global_strategy, max_depth, a_creation_ID);
         }  else {
             // sample from the local MABs (this might recursively call "selectLeaf" internally):
-            return selectLeafUsingLocalMABs(maxplayer, minplayer, epsilon_l, epsilon_g, epsilon_0, max_depth, a_creation_ID);
+            return selectLeafUsingLocalMABs(maxplayer, minplayer, epsilon_l, epsilon_g, epsilon_0, global_strategy, max_depth, a_creation_ID);
         }
     }
    
+
     
     public NaiveMCTSNode selectFromAlreadySampledEpsilonGreedy(float epsilon_g) throws Exception {
         if (r.nextFloat()>=epsilon_g) {
@@ -142,7 +150,32 @@ public class NaiveMCTSNode extends MCTSNode {
     }
     
     
-    public NaiveMCTSNode selectLeafUsingLocalMABs(int maxplayer, int minplayer, float epsilon_l, float epsilon_g, float epsilon_0, int max_depth, int a_creation_ID) throws Exception {   
+    public NaiveMCTSNode selectFromAlreadySampledUCB1(float C) throws Exception {
+        NaiveMCTSNode best = null;
+        double bestScore = 0;
+        for(MCTSNode pate:children) {
+            double exploitation = ((double)pate.accum_evaluation) / pate.visit_count;
+            double exploration = Math.sqrt(Math.log((double)visit_count)/pate.visit_count);
+            if (type==0) {
+                // max node:
+                exploitation = (evaluation_bound + exploitation)/(2*evaluation_bound);
+            } else {
+                exploitation = (evaluation_bound - exploitation)/(2*evaluation_bound);
+            }
+    //            System.out.println(exploitation + " + " + exploration);
+
+            double tmp = C*exploitation + exploration;            
+            if (best==null || tmp>bestScore) {
+                best = (NaiveMCTSNode)pate;
+                bestScore = tmp;
+            }
+        }
+        
+        return best;
+    }    
+    
+    
+    public NaiveMCTSNode selectLeafUsingLocalMABs(int maxplayer, int minplayer, float epsilon_l, float epsilon_g, float epsilon_0, int global_strategy, int max_depth, int a_creation_ID) throws Exception {   
         PlayerAction pa2;
         long actionCode;
 
@@ -259,13 +292,13 @@ public class NaiveMCTSNode extends MCTSNode {
         if (pate==null) {
             actions.add(pa2);
             GameState gs2 = gs.cloneIssue(pa2);
-            NaiveMCTSNode node = new NaiveMCTSNode(maxplayer, minplayer, gs2.clone(), this, a_creation_ID);
+            NaiveMCTSNode node = new NaiveMCTSNode(maxplayer, minplayer, gs2.clone(), this, evaluation_bound, a_creation_ID);
             childrenMap.put(actionCode,node);
             children.add(node);
             return node;                
         }
 
-        return pate.selectLeaf(maxplayer, minplayer, epsilon_l, epsilon_g, epsilon_0, max_depth, a_creation_ID);
+        return pate.selectLeaf(maxplayer, minplayer, epsilon_l, epsilon_g, epsilon_0, global_strategy, max_depth, a_creation_ID);
     }
     
     
@@ -277,7 +310,7 @@ public class NaiveMCTSNode extends MCTSNode {
     }
             
 
-    public void propagateEvaluation(float evaluation, NaiveMCTSNode child) {
+    public void propagateEvaluation(double evaluation, NaiveMCTSNode child) {
         accum_evaluation += evaluation;
         visit_count++;
         

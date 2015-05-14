@@ -19,8 +19,6 @@ public class UCTNode {
     static Random r = new Random();
     public static float C = 0.05f;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
 //    public static float C = 1;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
-//    public static float C = 5;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
-//    public static float C = 50;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
     
     public int type;    // 0 : max, 1 : min, -1: Game-over
     UCTNode parent = null;
@@ -54,15 +52,15 @@ public class UCTNode {
 //            actions = gs.getPlayerActions(maxplayer);
             moveGenerator = new PlayerActionGenerator(a_gs, maxplayer);
             moveGenerator.randomizeOrder();
-            actions = new ArrayList<PlayerAction>();
-            children = new ArrayList<UCTNode>();
+            actions = new ArrayList<>();
+            children = new ArrayList<>();
         } else if (gs.canExecuteAnyAction(minplayer)) {
             type = 1;
 //            actions = gs.getPlayerActions(minplayer);
             moveGenerator = new PlayerActionGenerator(a_gs, minplayer);
             moveGenerator.randomizeOrder();
-            actions = new ArrayList<PlayerAction>();
-            children = new ArrayList<UCTNode>();
+            actions = new ArrayList<>();
+            children = new ArrayList<>();
         } else {
             type = -1;
             System.err.println("RTMCTSNode: This should not have happened...");
@@ -95,8 +93,7 @@ public class UCTNode {
         // Bandit policy:
         double best_score = 0;
         UCTNode best = null;
-        for(int i = 0;i<children.size();i++) {
-            UCTNode child = children.get(i);
+        for (UCTNode child : children) {
             double tmp = childValue(child);
             if (best==null || tmp>best_score) {
                 best = child;

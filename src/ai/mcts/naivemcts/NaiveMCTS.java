@@ -33,15 +33,20 @@ public class NaiveMCTS extends InterruptibleAIWithComputationBudget {
     
     int player;
     
-    public float initial_epsilon_0 = 0.2f;
-    public float initial_epsilon_l = 0.25f;
-    public float initial_epsilon_g = 0.0f;
     public float epsilon_0 = 0.2f;
     public float epsilon_l = 0.25f;
     public float epsilon_g = 0.0f;
+
+    // these variables are for using a discount factor on the epsilon values above. My experiments indicate that things work better without discount
+    // So, they are just maintained here for completeness:
+    public float initial_epsilon_0 = 0.2f;
+    public float initial_epsilon_l = 0.25f;
+    public float initial_epsilon_g = 0.0f;
     public float discount_0 = 0.999f;
     public float discount_l = 0.999f;
     public float discount_g = 0.999f;
+    
+    public int global_strategy = NaiveMCTSNode.E_GREEDY;
     
     // statistics:
     public long total_runs = 0;
@@ -82,6 +87,21 @@ public class NaiveMCTS extends InterruptibleAIWithComputationBudget {
         ef = a_ef;
     }    
     
+    public NaiveMCTS(int available_time, int max_playouts, int lookahead, int max_depth, float e1, float e2, float e3, int a_global_strategy, AI policy, EvaluationFunction a_ef) {
+        super(available_time, max_playouts);
+        MAXSIMULATIONTIME = lookahead;
+        randomAI = policy;
+        MAX_TREE_DEPTH = max_depth;
+        initial_epsilon_l = epsilon_l = e1;
+        initial_epsilon_g = epsilon_g = e2;
+        initial_epsilon_0 = epsilon_0 = e3;
+        discount_l = 1.0f;
+        discount_g = 1.0f;
+        discount_0 = 1.0f;
+        global_strategy = a_global_strategy;
+        ef = a_ef;
+    }        
+    
     public void reset() {
         tree = null;
         gs_to_start_from = null;
@@ -101,7 +121,7 @@ public class NaiveMCTS extends InterruptibleAIWithComputationBudget {
     public void startNewComputation(int a_player, GameState gs) throws Exception {
         player = a_player;
         current_iteration = 0;
-        tree = new NaiveMCTSNode(player, 1-player, gs, null, current_iteration++);
+        tree = new NaiveMCTSNode(player, 1-player, gs, null, ef.upperBound(gs), current_iteration++);
         
         max_actions_so_far = Math.max(tree.moveGenerator.getSize(),max_actions_so_far);
         gs_to_start_from = gs;
@@ -138,7 +158,7 @@ public class NaiveMCTS extends InterruptibleAIWithComputationBudget {
     
     
     public boolean iteration(int player) throws Exception {
-        NaiveMCTSNode leaf = tree.selectLeaf(player, 1-player, epsilon_l, epsilon_g, epsilon_0, MAX_TREE_DEPTH, current_iteration++);
+        NaiveMCTSNode leaf = tree.selectLeaf(player, 1-player, epsilon_l, epsilon_g, epsilon_0, global_strategy, MAX_TREE_DEPTH, current_iteration++);
 
         if (leaf!=null) {            
             GameState gs2 = leaf.gs.clone();
@@ -147,7 +167,7 @@ public class NaiveMCTS extends InterruptibleAIWithComputationBudget {
             int time = gs2.getTime() - gs_to_start_from.getTime();
             double evaluation = ef.evaluate(player, 1-player, gs2)*Math.pow(0.99,time/10.0);
 
-            leaf.propagateEvaluation((float)evaluation,null);            
+            leaf.propagateEvaluation(evaluation,null);            
 
             // update the epsilon values:
             epsilon_0*=discount_0;

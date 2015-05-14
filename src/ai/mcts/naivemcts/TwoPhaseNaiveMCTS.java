@@ -43,6 +43,9 @@ public class TwoPhaseNaiveMCTS extends InterruptibleAIWithComputationBudget {
     public float phase2_epsilon_0 = 0.0f;
     public float phase1_ratio = 0.5f;
     
+    public int phase1_global_strategy = NaiveMCTSNode.E_GREEDY;
+    public int phase2_global_strategy = NaiveMCTSNode.E_GREEDY;
+    
     // statistics:
     public long total_runs = 0;
     public long total_cycles_executed = 0;
@@ -68,6 +71,29 @@ public class TwoPhaseNaiveMCTS extends InterruptibleAIWithComputationBudget {
         phase1_ratio = p1_ratio;
         ef = a_ef;
     }    
+    
+    public TwoPhaseNaiveMCTS(int available_time, int max_playouts, int lookahead, int max_depth, 
+                               float el1, float eg1, float e01, int a_gs1,
+                               float el2, float eg2, float e02, int a_gs2,
+                               float p1_ratio,
+                               AI policy, EvaluationFunction a_ef) {
+        super(available_time, max_playouts);
+        MAXSIMULATIONTIME = lookahead;
+        randomAI = policy;
+        MAX_TREE_DEPTH = max_depth;
+        phase1_epsilon_l = el1;
+        phase1_epsilon_g = eg1;
+        phase1_epsilon_0 = e01;
+        phase1_global_strategy = a_gs1;
+        
+        phase2_epsilon_l = el2;
+        phase2_epsilon_g = eg2;
+        phase2_epsilon_0 = e02;
+        phase2_global_strategy = a_gs2;
+        
+        phase1_ratio = p1_ratio;
+        ef = a_ef;
+    }        
 
     public void reset() {
         tree = null;
@@ -93,7 +119,7 @@ public class TwoPhaseNaiveMCTS extends InterruptibleAIWithComputationBudget {
     public void startNewComputation(int a_player, GameState gs) throws Exception {
     	playerForThisComputation = a_player;
         node_creation_ID = 0;
-        tree = new NaiveMCTSNode(playerForThisComputation, 1-playerForThisComputation, gs, null, node_creation_ID++);
+        tree = new NaiveMCTSNode(playerForThisComputation, 1-playerForThisComputation, gs, null, ef.upperBound(gs), node_creation_ID++);
         
         max_actions_so_far = Math.max(tree.moveGenerator.getSize(),max_actions_so_far);
         gs_to_start_from = gs;
@@ -139,10 +165,10 @@ public class TwoPhaseNaiveMCTS extends InterruptibleAIWithComputationBudget {
         NaiveMCTSNode leaf;
 //        System.out.println("  " + n_phase1_iterations_left);
         if (n_phase1_iterations_left>0 || n_phase1_milliseconds_left>0) {
-            leaf = tree.selectLeaf(player, 1-player, phase1_epsilon_l, phase1_epsilon_g, phase1_epsilon_0, MAX_TREE_DEPTH, node_creation_ID++);
+            leaf = tree.selectLeaf(player, 1-player, phase1_epsilon_l, phase1_epsilon_g, phase1_epsilon_0, phase1_global_strategy, MAX_TREE_DEPTH, node_creation_ID++);
             n_phase1_iterations_left--;
         } else {
-            leaf = tree.selectLeaf(player, 1-player, phase2_epsilon_l, phase2_epsilon_g, phase2_epsilon_0, MAX_TREE_DEPTH, node_creation_ID++);
+            leaf = tree.selectLeaf(player, 1-player, phase2_epsilon_l, phase2_epsilon_g, phase2_epsilon_0, phase2_global_strategy, MAX_TREE_DEPTH, node_creation_ID++);
         }
 
         if (leaf!=null) {            
