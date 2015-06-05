@@ -110,6 +110,26 @@ public class PopUpStateEditorMenu extends JPopupMenu {
                        });                        
                     add(i2);
                 }
+                if (u.getResources()>9) {
+                    JMenuItem i2 = new JMenuItem("-10 resource");
+                    i2.addActionListener(new ActionListener() {
+                         public void actionPerformed(ActionEvent event) {
+                            u.setResources(u.getResources()-10);
+                            panel.repaint();
+                         }
+                       });                        
+                    add(i2);
+                }
+                if (u.getType().isResource) {
+                    JMenuItem i2 = new JMenuItem("+10 resource");
+                    i2.addActionListener(new ActionListener() {
+                         public void actionPerformed(ActionEvent event) {
+                            u.setResources(u.getResources()+10);
+                            panel.repaint();
+                         }
+                       });                        
+                    add(i2);
+                }
             }
             if (gs.getUnitAction(u)==null) {
                 if (u.getPlayer()!=-1) {

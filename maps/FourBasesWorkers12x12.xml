@@ -7,15 +7,15 @@
     </rts.Player>
   </players>
   <units>
-    <rts.units.Unit type="Resource" ID="37" player="-1" x="11" y="11" resources="20" hitpoints="1" >
+    <rts.units.Unit type="Resource" ID="37" player="-1" x="11" y="11" resources="10" hitpoints="1" >
     </rts.units.Unit>
-    <rts.units.Unit type="Resource" ID="38" player="-1" x="10" y="11" resources="20" hitpoints="1" >
+    <rts.units.Unit type="Resource" ID="38" player="-1" x="10" y="11" resources="10" hitpoints="1" >
     </rts.units.Unit>
-    <rts.units.Unit type="Resource" ID="39" player="-1" x="9" y="11" resources="20" hitpoints="1" >
+    <rts.units.Unit type="Resource" ID="39" player="-1" x="9" y="11" resources="10" hitpoints="1" >
     </rts.units.Unit>
-    <rts.units.Unit type="Resource" ID="40" player="-1" x="8" y="11" resources="20" hitpoints="1" >
+    <rts.units.Unit type="Resource" ID="40" player="-1" x="8" y="11" resources="10" hitpoints="1" >
     </rts.units.Unit>
-    <rts.units.Unit type="Resource" ID="41" player="-1" x="7" y="11" resources="20" hitpoints="1" >
+    <rts.units.Unit type="Resource" ID="41" player="-1" x="7" y="11" resources="10" hitpoints="1" >
     </rts.units.Unit>
     <rts.units.Unit type="Base" ID="42" player="1" x="7" y="9" resources="0" hitpoints="10" >
     </rts.units.Unit>
@@ -29,15 +29,15 @@
     </rts.units.Unit>
     <rts.units.Unit type="Worker" ID="47" player="1" x="7" y="10" resources="0" hitpoints="1" >
     </rts.units.Unit>
-    <rts.units.Unit type="Resource" ID="48" player="-1" x="0" y="0" resources="20" hitpoints="1" >
+    <rts.units.Unit type="Resource" ID="48" player="-1" x="0" y="0" resources="10" hitpoints="1" >
     </rts.units.Unit>
-    <rts.units.Unit type="Resource" ID="49" player="-1" x="1" y="0" resources="20" hitpoints="1" >
+    <rts.units.Unit type="Resource" ID="49" player="-1" x="1" y="0" resources="10" hitpoints="1" >
     </rts.units.Unit>
-    <rts.units.Unit type="Resource" ID="50" player="-1" x="2" y="0" resources="20" hitpoints="1" >
+    <rts.units.Unit type="Resource" ID="50" player="-1" x="2" y="0" resources="10" hitpoints="1" >
     </rts.units.Unit>
-    <rts.units.Unit type="Resource" ID="51" player="-1" x="3" y="0" resources="20" hitpoints="1" >
+    <rts.units.Unit type="Resource" ID="51" player="-1" x="3" y="0" resources="10" hitpoints="1" >
     </rts.units.Unit>
-    <rts.units.Unit type="Resource" ID="52" player="-1" x="4" y="0" resources="20" hitpoints="1" >
+    <rts.units.Unit type="Resource" ID="52" player="-1" x="4" y="0" resources="10" hitpoints="1" >
     </rts.units.Unit>
     <rts.units.Unit type="Base" ID="53" player="0" x="4" y="2" resources="0" hitpoints="10" >
     </rts.units.Unit>
@@ -51,17 +51,17 @@
     </rts.units.Unit>
     <rts.units.Unit type="Worker" ID="58" player="0" x="4" y="1" resources="0" hitpoints="1" >
     </rts.units.Unit>
-    <rts.units.Unit type="Resource" ID="59" player="-1" x="6" y="11" resources="20" hitpoints="1" >
+    <rts.units.Unit type="Resource" ID="59" player="-1" x="6" y="11" resources="10" hitpoints="1" >
     </rts.units.Unit>
-    <rts.units.Unit type="Resource" ID="60" player="-1" x="5" y="11" resources="20" hitpoints="1" >
+    <rts.units.Unit type="Resource" ID="60" player="-1" x="5" y="11" resources="10" hitpoints="1" >
     </rts.units.Unit>
     <rts.units.Unit type="Base" ID="61" player="1" x="5" y="9" resources="0" hitpoints="10" >
     </rts.units.Unit>
     <rts.units.Unit type="Worker" ID="64" player="1" x="5" y="10" resources="0" hitpoints="1" >
     </rts.units.Unit>
-    <rts.units.Unit type="Resource" ID="65" player="-1" x="5" y="0" resources="20" hitpoints="1" >
+    <rts.units.Unit type="Resource" ID="65" player="-1" x="5" y="0" resources="10" hitpoints="1" >
     </rts.units.Unit>
-    <rts.units.Unit type="Resource" ID="66" player="-1" x="6" y="0" resources="20" hitpoints="1" >
+    <rts.units.Unit type="Resource" ID="66" player="-1" x="6" y="0" resources="10" hitpoints="1" >
     </rts.units.Unit>
     <rts.units.Unit type="Worker" ID="67" player="0" x="6" y="1" resources="0" hitpoints="1" >
     </rts.units.Unit>
