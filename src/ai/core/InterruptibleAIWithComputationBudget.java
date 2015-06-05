@@ -24,7 +24,7 @@ public abstract class InterruptibleAIWithComputationBudget extends AIWithComputa
     public final PlayerAction getAction(int player, GameState gs) throws Exception
     {
         if (gs.canExecuteAnyAction(player)) {
-            startNewComputation(player,gs);
+            startNewComputation(player,gs.clone());
             computeDuringOneGameFrame();
             return getBestActionSoFar();
         } else {

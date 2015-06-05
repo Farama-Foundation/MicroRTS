@@ -175,7 +175,7 @@ public class GameState {
                 UnitActionAssignment uaa = new UnitActionAssignment(p.m_a, p.m_b, time);
                 unitActions.put(p.m_a,uaa);
                 if (p.m_b.type!=UnitAction.TYPE_NONE) returnValue = true;
-//                System.out.println("Issuing action " + p.m_b + " to " + p.m_a);
+//                System.out.println("Issuing action " + p.m_b + " to " + p.m_a);                
             }
         }
         return returnValue;

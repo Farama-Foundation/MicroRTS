@@ -158,6 +158,7 @@ public class NaiveMCTS extends InterruptibleAIWithComputationBudget {
     
     
     public boolean iteration(int player) throws Exception {
+        
         NaiveMCTSNode leaf = tree.selectLeaf(player, 1-player, epsilon_l, epsilon_g, epsilon_0, global_strategy, MAX_TREE_DEPTH, current_iteration++);
 
         if (leaf!=null) {            

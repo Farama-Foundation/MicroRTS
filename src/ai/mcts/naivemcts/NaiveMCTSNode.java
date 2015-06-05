@@ -50,7 +50,7 @@ public class NaiveMCTSNode extends MCTSNode {
             type = -1;
         } else if (gs.canExecuteAnyAction(maxplayer)) {
             type = 0;
-            moveGenerator = new PlayerActionGenerator(a_gs, maxplayer);
+            moveGenerator = new PlayerActionGenerator(gs, maxplayer);
             actions = new ArrayList<PlayerAction>();
             children = new ArrayList<MCTSNode>();
             unitActionTable = new LinkedList<UnitActionTableEntry>();
@@ -75,7 +75,7 @@ public class NaiveMCTSNode extends MCTSNode {
              }
         } else if (gs.canExecuteAnyAction(minplayer)) {
             type = 1;
-            moveGenerator = new PlayerActionGenerator(a_gs, minplayer);
+            moveGenerator = new PlayerActionGenerator(gs, minplayer);
             actions = new ArrayList<PlayerAction>();
             children = new ArrayList<MCTSNode>();
             unitActionTable = new LinkedList<UnitActionTableEntry>();
@@ -108,7 +108,21 @@ public class NaiveMCTSNode extends MCTSNode {
     // Naive Sampling:
     public NaiveMCTSNode selectLeaf(int maxplayer, int minplayer, float epsilon_l, float epsilon_g, float epsilon_0, int global_strategy, int max_depth, int a_creation_ID) throws Exception {
         if (unitActionTable == null) return this;
-        if (depth>=max_depth) return this;        
+        if (depth>=max_depth) return this;       
+        
+        /*
+        // DEBUG:
+        for(PlayerAction a:actions) {
+            for(Pair<Unit,UnitAction> tmp:a.getActions()) {
+                if (!gs.getUnits().contains(tmp.m_a)) new Error("DEBUG!!!!");
+                boolean found = false;
+                for(UnitActionTableEntry e:unitActionTable) {
+                    if (e.u == tmp.m_a) found = true;
+                }
+                if (!found) new Error("DEBUG 2!!!!!");
+            }
+        } 
+        */
         
         if (children.size()>0 && r.nextFloat()>=epsilon_0) {
             // sample from the global MAB:
@@ -177,7 +191,7 @@ public class NaiveMCTSNode extends MCTSNode {
     
     public NaiveMCTSNode selectLeafUsingLocalMABs(int maxplayer, int minplayer, float epsilon_l, float epsilon_g, float epsilon_0, int global_strategy, int max_depth, int a_creation_ID) throws Exception {   
         PlayerAction pa2;
-        long actionCode;
+        long actionCode;       
 
         // For each unit, rank the unitActions according to preference:
         List<double []> distributions = new LinkedList<double []>();
@@ -277,6 +291,9 @@ public class NaiveMCTSNode extends MCTSNode {
                     }while(!pa2.getResourceUsage().consistentWith(r2, gs));
                 }
 
+                // DEBUG code:
+                if (gs.getUnit(ate.u.getID())==null) throw new Error("Issuing an action to an inexisting unit!!!");
+               
 
                 pa2.getResourceUsage().merge(r2);
                 pa2.addUnitAction(ate.u, ua);
@@ -290,11 +307,11 @@ public class NaiveMCTSNode extends MCTSNode {
 
         NaiveMCTSNode pate = childrenMap.get(actionCode);
         if (pate==null) {
-            actions.add(pa2);
+            actions.add(pa2);            
             GameState gs2 = gs.cloneIssue(pa2);
             NaiveMCTSNode node = new NaiveMCTSNode(maxplayer, minplayer, gs2.clone(), this, evaluation_bound, a_creation_ID);
             childrenMap.put(actionCode,node);
-            children.add(node);
+            children.add(node);          
             return node;                
         }
 
@@ -306,9 +323,9 @@ public class NaiveMCTSNode extends MCTSNode {
         for(UnitActionTableEntry e:unitActionTable) {
             if (e.u == u) return e;
         }
-        return null;
+        throw new Error("Could not find Action Table Entry!");
     }
-            
+
 
     public void propagateEvaluation(double evaluation, NaiveMCTSNode child) {
         accum_evaluation += evaluation;

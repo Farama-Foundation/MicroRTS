@@ -27,8 +27,10 @@ public class ContinuingAI extends AI {
     {
         if (gs.canExecuteAnyAction(player)) {
             if (DEBUG>=1) System.out.println("ContinuingAI: this cycle we need an action");
-            PlayerAction action = m_AI.getAction(player,gs);
-            return action;
+            if (!m_isThereAComputationGoingOn) m_AI.startNewComputation(player, gs.clone());
+            m_AI.computeDuringOneGameFrame();
+            m_isThereAComputationGoingOn = false;
+            return m_AI.getBestActionSoFar();
         } else {
             if (!m_isThereAComputationGoingOn) {
                 GameState gs2 = gs.clone();

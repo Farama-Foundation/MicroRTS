@@ -248,6 +248,12 @@ public class Unit {
         return new Unit(this);
     }
     
+    /*
+    public boolean equals(Object o) {
+        return ID == ((Unit)o).ID;
+    }
+    */
+    
     public int hashCode() {
         return (int)ID;
     }    
