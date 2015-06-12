@@ -6,6 +6,7 @@
 
 package ai;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,6 +17,7 @@ import rts.PlayerActionGenerator;
 import rts.ResourceUsage;
 import rts.UnitAction;
 import rts.units.Unit;
+import util.Pair;
 
 
 /**
@@ -61,7 +63,12 @@ public class BranchingFactorCalculator {
         do{
             pa = pag.getNextAction(-1);
             if (pa!=null) {
-                n[(pa.getResourceUsage()).getResourcesUsed(player)]++;
+                int r = 0;
+                for(Pair<Unit,UnitAction> tmp:pa.getActions()) {
+                    r+=tmp.m_b.resourceUsage(tmp.m_a, gs.getPhysicalGameState()).getResourcesUsed(player);
+                }
+//                n[(pa.getResourceUsage()).getResourcesUsed(player)]++;
+                n[r]++;
             }
         }while(pa!=null);
         return n;
@@ -184,7 +191,7 @@ public class BranchingFactorCalculator {
         
         long branching = 0;
         for(int i = 0;i<playerResources+1;i++) branching+=n[i];
-        
+                
         return branching;
     }
     
@@ -241,11 +248,13 @@ public class BranchingFactorCalculator {
                 for(UnitAction ua:ual) {
                     ResourceUsage ru = ua.resourceUsage(u, pgs2);
                     unitBranching[ru.getResourcesUsed(player)]++;
+//                    System.out.println("  " + ua + " -> " + ru.getResourcesUsed(player));
                     for(Integer pos:ru.getPositionsUsed()) {
 //                        if (DEBUG>=1) System.out.println("    " + pos);
                         if (positionsUsed.contains(pos)) positionConflict = true;
                     }
                 }
+//                System.out.println("  branching("+positionConflict+"): " + Arrays.toString(unitBranching));
                 if (!positionConflict) {
                     unitsToSeparate.add(u);
                     branchingOfSeparatedUnits.add(unitBranching);
@@ -261,21 +270,19 @@ public class BranchingFactorCalculator {
         
         if (!unitsThatCannotBeSeparated.isEmpty()) {
             // consider the rest of the board as a single unit:
+//            System.out.println("  recursive call...");
             long n[] = branchingFactorByResourceUsage(gs2,player);
+//            System.out.println("  branching of non separated: " + Arrays.toString(n));
             branchingOfSeparatedUnits.add(n);
         }
         
         // accumulate:
         long n[] = branchingOfSeparatedUnits.remove(0);
         
-//        System.out.print("INITIAL [ ");
-//        for(int i = 0;i<playerResources+1;i++) System.out.print(n[i] + " ");
-//        System.out.println(" ]");
+//        System.out.println("INITIAL " + Arrays.toString(n));
 
         for(long n2[]:branchingOfSeparatedUnits) {
-//            System.out.print("NEW [ ");
-//            for(int i = 0;i<playerResources+1;i++) System.out.print(n2[i] + " ");
-//            System.out.println(" ]");
+//            System.out.println("NEW " + Arrays.toString(n2));
             long n_tmp[] = new long[playerResources+1];
             for(int i = 0;i<playerResources+1;i++) {
                 for(int j = 0;j<(playerResources-i)+1;j++) {
@@ -284,9 +291,7 @@ public class BranchingFactorCalculator {
             }
             n = n_tmp;
             
-//            System.out.print("ACCUM [ ");
-//            for(int i = 0;i<playerResources+1;i++) System.out.print(n[i] + " ");
-//            System.out.println(" ]");
+//            System.out.println("ACCUM " + Arrays.toString(n));
         }
         return n;        
     }

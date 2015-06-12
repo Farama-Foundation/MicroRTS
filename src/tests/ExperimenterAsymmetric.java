@@ -4,6 +4,7 @@
  */
 package tests;
 
+import ai.BranchingFactorCalculator;
 import ai.core.AI;
 import gui.PhysicalGameStatePanel;
 import java.io.PrintStream;
@@ -19,6 +20,7 @@ import rts.units.UnitTypeTable;
  * @author santi
  */
 public class ExperimenterAsymmetric {
+    public static boolean PRINT_BRANCHING_AT_EACH_MOVE = false;
 
     public static void runExperiments(List<AI> bots1, List<AI> bots2, List<PhysicalGameState> maps, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize, PrintStream out) throws Exception {
         int wins[][] = new int[bots1.size()][bots2.size()];
@@ -52,6 +54,13 @@ public class ExperimenterAsymmetric {
                         
                         boolean gameover = false;
                         do {
+                            if (PRINT_BRANCHING_AT_EACH_MOVE) {
+                                String bf1 = (gs.canExecuteAnyAction(0) ? ""+BranchingFactorCalculator.branchingFactorByResourceUsageSeparatingFast(gs, 0):"-");
+                                String bf2 = (gs.canExecuteAnyAction(1) ? ""+BranchingFactorCalculator.branchingFactorByResourceUsageSeparatingFast(gs, 1):"-");
+                                if (!bf1.equals("-") || !bf2.equals("-")) {
+                                    out.print("branching\t" + bf1 + "\t" + bf2 + "\n");
+                                }
+                            }
                             PlayerAction pa1 = ai1.getAction(0, gs);
                             PlayerAction pa2 = ai2.getAction(1, gs);
                             if (gs.issueSafe(pa1)) lastTimeActionIssued = gs.getTime();
