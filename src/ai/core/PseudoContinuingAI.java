@@ -64,4 +64,10 @@ public class PseudoContinuingAI extends AI {
     {
         return new PseudoContinuingAI((AIWithComputationBudget) m_AI.clone());
     }
+    
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return m_AI.toString();
+	}    
 }
