@@ -103,7 +103,7 @@ public class UCT extends InterruptibleAIWithComputationBudget {
 //        System.out.println(start + " + " + available_time + " = " + cutOffTime);
 
         while(true) {
-            if (cutOffTime>0 && System.currentTimeMillis() < cutOffTime) break;
+            if (cutOffTime>0 && System.currentTimeMillis() > cutOffTime) break;
             if (MAX_ITERATIONS>0 && nPlayouts>MAX_ITERATIONS) break;
             monteCarloRun(playerForThisComputation, cutOffTime);
             nPlayouts++;
