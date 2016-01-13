@@ -64,7 +64,7 @@ public class PhysicalGameState {
     }
     
     public void addPlayer(Player p) {
-        if (p.getID()!=players.size()) System.err.println("PhysicalGameState.addPlayer: player added in the wrong order.");
+        if (p.getID()!=players.size()) throw new IllegalArgumentException("PhysicalGameState.addPlayer: player added in the wrong order.");
         players.add(p);
     }
     
@@ -234,7 +234,7 @@ public class PhysicalGameState {
         
         for(Object o:players_e.getChildren()) {
             Element player_e = (Element)o;
-            players.add(new Player(player_e));
+            addPlayer(new Player(player_e));
         }
         for(Object o:units_e.getChildren()) {
             Element unit_e = (Element)o;
