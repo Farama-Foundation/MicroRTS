@@ -66,11 +66,13 @@ public class ExperimenterAsymmetric {
                             if (gs.issueSafe(pa1)) lastTimeActionIssued = gs.getTime();
                             if (gs.issueSafe(pa2)) lastTimeActionIssued = gs.getTime();
                             gameover = gs.cycle();
-                            if (w!=null) w.repaint();
-                            try {
-                                Thread.sleep(1);    // give time to the window to repaint
-                            } catch (Exception e) {
-                                e.printStackTrace();
+                            if (w!=null){ 
+                            	w.repaint();
+                            	try {
+                            		Thread.sleep(1);    // give time to the window to repaint
+                            	} catch (Exception e) {
+                            		e.printStackTrace();
+                            	}
                             }
                         } while (!gameover && 
                                  (gs.getTime() < max_cycles) && 

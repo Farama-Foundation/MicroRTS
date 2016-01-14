@@ -104,12 +104,12 @@ public class Experimenter {
                             if (w!=null) {
                                 w.setState(gs.clone());
                                 w.repaint();
-                            }
-//                            if (DEBUG>=1) {System.out.println("repaint done.");out.flush();}
-                            try {
-                                Thread.sleep(1);    // give time to the window to repaint
-                            } catch (Exception e) {
-                                e.printStackTrace();
+                                try {
+                                    Thread.sleep(1);    // give time to the window to repaint
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+//                              if (DEBUG>=1) {System.out.println("repaint done.");out.flush();}
                             }
                         } while (!gameover && 
                                  (gs.getTime() < max_cycles) && 
