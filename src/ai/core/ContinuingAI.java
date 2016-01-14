@@ -67,5 +67,12 @@ public class ContinuingAI extends AI {
     public AI clone()
     {
         return new ContinuingAI((InterruptibleAIWithComputationBudget) m_AI.clone());
-    }    
+    }
+
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return m_AI.toString();
+	}    
+    
 }
