@@ -287,7 +287,7 @@ public class NaiveMCTS extends InterruptibleAIWithComputationBudget {
         return "Total runs: " + total_runs + 
                ", runs per action: " + (total_runs/(float)total_actions_issued) + 
                ", runs per cycle: " + (total_runs/(float)total_cycles_executed) + 
-               ", averate time per cycle: " + (total_time/(float)total_cycles_executed) + 
+               ", average time per cycle: " + (total_time/(float)total_cycles_executed) + 
                ", max branching factor: " + max_actions_so_far;
     }
     

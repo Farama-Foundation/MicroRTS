@@ -41,9 +41,13 @@ public class Experimenter {
         runExperiments(bots, maps, iterations, max_cycles, max_inactive_cycles, visualize, out, -1, true);
     }
 
-    
     public static void runExperiments(List<AI> bots, List<PhysicalGameState> maps, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize, PrintStream out, 
                                       int run_only_those_involving_this_AI, boolean partiallyObservable) throws Exception {
+        runExperiments(bots, maps, iterations, max_cycles, max_inactive_cycles, visualize, out, run_only_those_involving_this_AI, false, partiallyObservable);
+    }
+
+    public static void runExperiments(List<AI> bots, List<PhysicalGameState> maps, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize, PrintStream out, 
+                                      int run_only_those_involving_this_AI, boolean skip_self_play, boolean partiallyObservable) throws Exception {
         int wins[][] = new int[bots.size()][bots.size()];
         int ties[][] = new int[bots.size()][bots.size()];
         int loses[][] = new int[bots.size()][bots.size()];
@@ -52,7 +56,7 @@ public class Experimenter {
         double tie_time[][] = new double[bots.size()][bots.size()];
         double lose_time[][] = new double[bots.size()][bots.size()];
 
-        List<AI> bots2 = new LinkedList<AI>();
+        List<AI> bots2 = new LinkedList<>();
         for(AI bot:bots) bots2.add(bot.clone());
         
         for (int ai1_idx = 0; ai1_idx < bots.size(); ai1_idx++) 
@@ -63,6 +67,7 @@ public class Experimenter {
                     ai1_idx!=run_only_those_involving_this_AI &&
                     ai2_idx!=run_only_those_involving_this_AI) continue;
 //                if (ai1_idx==0 && ai2_idx==0) continue;
+                if (skip_self_play && ai1_idx==ai2_idx) continue;
                 
                 for(PhysicalGameState pgs:maps) {
                     
