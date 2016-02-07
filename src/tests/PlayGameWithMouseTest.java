@@ -23,10 +23,11 @@ import rts.units.UnitTypeTable;
  */
 public class PlayGameWithMouseTest {
     public static void main(String args[]) throws Exception {
-        PhysicalGameState pgs = PhysicalGameState.load("maps/basesWorkers16x16.xml", UnitTypeTable.utt);
-//        PhysicalGameState pgs = PhysicalGameState.load("maps/basesWorkers8x8.xml", UnitTypeTable.utt);
+        UnitTypeTable utt = new UnitTypeTable();
+        PhysicalGameState pgs = PhysicalGameState.load("maps/basesWorkers16x16.xml", utt);
+//        PhysicalGameState pgs = PhysicalGameState.load("maps/basesWorkers8x8.xml", utt);
 
-        GameState gs = new GameState(pgs, UnitTypeTable.utt);
+        GameState gs = new GameState(pgs, utt);
         int MAXCYCLES = 10000;
         int PERIOD = 100;
         boolean gameover = false;
@@ -38,7 +39,7 @@ public class PlayGameWithMouseTest {
         AI ai1 = new MouseController(w);
 //        AI ai2 = new PassiveAI();
 //        AI ai2 = new RandomBiasedAI();
-//        AI ai2 = new LightRush(UnitTypeTable.utt, new AStarPathFinding());
+//        AI ai2 = new LightRush(utt, new AStarPathFinding());
         AI ai2 = new ContinuingAI(new NaiveMCTS(PERIOD, -1, 100, 20, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
 
         long nextTimeToUpdate = System.currentTimeMillis() + PERIOD;

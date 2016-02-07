@@ -15,14 +15,30 @@ public class UnitTypeTable {
     public static final int VERSION_ORIGINAL = 1;
     public static final int VERSION_ORIGINAL_FINETUNED = 2;
     
-    List<UnitType> unitTypes = new ArrayList<UnitType>();
+    public static final int MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH = 1;   // (default)
+    public static final int MOVE_CONFLICT_RESOLUTION_CANCEL_RANDOM = 2;   // (makes game non-deterministic)
+    public static final int MOVE_CONFLICT_RESOLUTION_CANCEL_ALTERNATING = 3;   
     
-    // This is just a convenience variable, so that it can be used by other classes if the standard 
-    // unitTypeTable is desired:
-    public static UnitTypeTable utt = new UnitTypeTable(VERSION_ORIGINAL);
-//    public static UnitTypeTable utt = new UnitTypeTable(VERSION_ORIGINAL_FINETUNED);
+    List<UnitType> unitTypes = new ArrayList<UnitType>();
+    int moveConflictResolutionStrategy = MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH;
+        
+    public UnitTypeTable() {
+        setUnitTypeTable(VERSION_ORIGINAL, MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH);
+    }
     
     public UnitTypeTable(int version) {
+        setUnitTypeTable(version, MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH);
+    }
+        
+    public UnitTypeTable(int version, int crs) {
+        setUnitTypeTable(version, crs);
+    }
+    
+    
+    public void setUnitTypeTable(int version, int crs) {
+        
+        moveConflictResolutionStrategy = crs;
+        
         // Create the unit types:
         // RESOURCE:
         UnitType resource = new UnitType();
@@ -181,6 +197,10 @@ public class UnitTypeTable {
 
     public List<UnitType> getUnitTypes() {
         return unitTypes;
+    }
+    
+    public int getMoveConflictResolutionStrategy() {
+        return moveConflictResolutionStrategy;
     }
     
     

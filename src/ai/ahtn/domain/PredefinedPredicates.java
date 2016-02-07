@@ -212,7 +212,7 @@ public class PredefinedPredicates {
                         public List<Binding> firstMatch(Term term, GameState gs) throws Exception {
                             Parameter p = term.parameters[0];
                             if (p instanceof SymbolConstant) {
-                                UnitType ut = UnitTypeTable.utt.getUnitType(p.toString());
+                                UnitType ut = gs.getUnitTypeTable().getUnitType(p.toString());
                                 if (ut!=null && ut.canMove) return new LinkedList<>();
                             }
                             return null;
@@ -234,7 +234,7 @@ public class PredefinedPredicates {
                         public List<Binding> firstMatch(Term term, GameState gs) throws Exception {
                             Parameter p = term.parameters[0];
                             if (p instanceof SymbolConstant) {
-                                UnitType ut = UnitTypeTable.utt.getUnitType(p.toString());
+                                UnitType ut = gs.getUnitTypeTable().getUnitType(p.toString());
                                 if (ut!=null && ut.canAttack) return new LinkedList<>();
                             }
                             return null;
@@ -256,7 +256,7 @@ public class PredefinedPredicates {
                         public List<Binding> firstMatch(Term term, GameState gs) throws Exception {
                             Parameter p = term.parameters[0];
                             if (p instanceof SymbolConstant) {
-                                UnitType ut = UnitTypeTable.utt.getUnitType(p.toString());
+                                UnitType ut = gs.getUnitTypeTable().getUnitType(p.toString());
                                 if (ut!=null && ut.canHarvest) return new LinkedList<>();
                             }
                             return null;
@@ -280,10 +280,10 @@ public class PredefinedPredicates {
                             Parameter p1 = term.parameters[0];
                             Parameter p2 = term.parameters[1];
                             if ((p1 instanceof SymbolConstant)) {
-                                UnitType ut1 = UnitTypeTable.utt.getUnitType(p1.toString());
+                                UnitType ut1 = gs.getUnitTypeTable().getUnitType(p1.toString());
                                 if (ut1!=null) {
                                     if ((p2 instanceof SymbolConstant)) {
-                                        UnitType ut2 = UnitTypeTable.utt.getUnitType(p1.toString());
+                                        UnitType ut2 = gs.getUnitTypeTable().getUnitType(p1.toString());
                                         if (ut1!=null && ut2!=null && ut1.produces.contains(ut2)) return new LinkedList<>();
                                     } else if ((p2 instanceof Variable)) {
                                         for(UnitType t:ut1.produces) {
@@ -297,8 +297,8 @@ public class PredefinedPredicates {
                                 }
                             } else if ((p1 instanceof Variable)) {
                                 if ((p2 instanceof SymbolConstant)) {
-                                    UnitType ut2 = UnitTypeTable.utt.getUnitType(p1.toString());
-                                    for(UnitType t:UnitTypeTable.utt.getUnitTypes()) {
+                                    UnitType ut2 = gs.getUnitTypeTable().getUnitType(p1.toString());
+                                    for(UnitType t:gs.getUnitTypeTable().getUnitTypes()) {
                                         if (t.produces.contains(ut2)) {
                                             List<Binding> l = new LinkedList<>();
                                             if (!((Variable)p1).ignore()) {
@@ -308,7 +308,7 @@ public class PredefinedPredicates {
                                         }
                                     }
                                 } else if ((p2 instanceof Variable)) {
-                                    for(UnitType t:UnitTypeTable.utt.getUnitTypes()) {
+                                    for(UnitType t:gs.getUnitTypeTable().getUnitTypes()) {
                                         for(UnitType t2:t.produces) {
                                             List<Binding> l = new LinkedList<>();
                                             if (!((Variable)p1).ignore()) {
@@ -330,10 +330,10 @@ public class PredefinedPredicates {
                             Parameter p1 = term.parameters[0];
                             Parameter p2 = term.parameters[1];
                             if ((p1 instanceof SymbolConstant)) {
-                                UnitType ut1 = UnitTypeTable.utt.getUnitType(p1.toString());
+                                UnitType ut1 = gs.getUnitTypeTable().getUnitType(p1.toString());
                                 if (ut1!=null) {
                                     if ((p2 instanceof SymbolConstant)) {
-                                        UnitType ut2 = UnitTypeTable.utt.getUnitType(p1.toString());
+                                        UnitType ut2 = gs.getUnitTypeTable().getUnitType(p1.toString());
                                         if (ut1!=null && ut2!=null && ut1.produces.contains(ut2)) ll.add(new LinkedList<>());
                                     } else if ((p2 instanceof Variable)) {
                                         for(UnitType t:ut1.produces) {
@@ -347,8 +347,8 @@ public class PredefinedPredicates {
                                 }
                             } else if ((p1 instanceof Variable)) {
                                 if ((p2 instanceof SymbolConstant)) {
-                                    UnitType ut2 = UnitTypeTable.utt.getUnitType(p1.toString());
-                                    for(UnitType t:UnitTypeTable.utt.getUnitTypes()) {
+                                    UnitType ut2 = gs.getUnitTypeTable().getUnitType(p1.toString());
+                                    for(UnitType t:gs.getUnitTypeTable().getUnitTypes()) {
                                         if (t.produces.contains(ut2)) {
                                             List<Binding> l = new LinkedList<>();
                                             if (!((Variable)p1).ignore()) {
@@ -358,7 +358,7 @@ public class PredefinedPredicates {
                                         }
                                     }
                                 } else if ((p2 instanceof Variable)) {
-                                    for(UnitType t:UnitTypeTable.utt.getUnitTypes()) {
+                                    for(UnitType t:gs.getUnitTypeTable().getUnitTypes()) {
                                         for(UnitType t2:t.produces) {
                                             List<Binding> l = new LinkedList<>();
                                             if (!((Variable)p1).ignore()) {
@@ -470,7 +470,7 @@ public class PredefinedPredicates {
                             if ((p1 instanceof IntegerConstant) &&
                                 (p2 instanceof SymbolConstant)) {
                                 Player player1 = gs.getPlayer(((IntegerConstant)p1).value);
-                                UnitType ut = UnitTypeTable.utt.getUnitType(((SymbolConstant)p2).toString());
+                                UnitType ut = gs.getUnitTypeTable().getUnitType(((SymbolConstant)p2).toString());
                                 ResourceUsage ru = gs.getResourceUsage();
                                 if (player1.getResources()-ru.getResourcesUsed(player1.getID())>=ut.cost) return new LinkedList<>();
                             }

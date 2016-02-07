@@ -24,18 +24,19 @@ import util.XMLWriter;
  */
 public class POGameVisualSimulationTest {
     public static void main(String args[]) throws Exception {
-        PhysicalGameState pgs = PhysicalGameState.load("maps/basesWorkers16x16.xml", UnitTypeTable.utt);
+        UnitTypeTable utt = new UnitTypeTable();
+        PhysicalGameState pgs = PhysicalGameState.load("maps/basesWorkers16x16.xml", utt);
 //        PhysicalGameState pgs = PhysicalGameState.load("maps/steven/RandomBiasedAIMediumMap.xml", UnitTypeTable.utt);
 //        PhysicalGameState pgs = MapGenerator.basesWorkers8x8Obstacle();
 
-        GameState gs = new GameState(pgs, UnitTypeTable.utt);
+        GameState gs = new GameState(pgs, utt);
         int MAXCYCLES = 5000;
         int PERIOD = 20;
         boolean gameover = false;
         
 //        AI ai1 = new RandomAI();
 //        AI ai1 = new WorkerRush(UnitTypeTable.utt, new BFSPathFinding());
-        AI ai1 = new LightRush(UnitTypeTable.utt, new BFSPathFinding());
+        AI ai1 = new LightRush(utt, new BFSPathFinding());
 //        AI ai1 = new RangedRush(UnitTypeTable.utt, new GreedyPathFinding());
 //        AI ai1 = new ContinuingNaiveMC(PERIOD, 200, 0.33f, 0.2f, new RandomBiasedAI(), new SimpleEvaluationFunction());
 

@@ -145,7 +145,7 @@ public class FEStatePane extends JPanel {
     public FEStatePane() {
         currentGameState = new GameState(MapGenerator.bases8x8(), currentUtt);
 
-        currentUtt = UnitTypeTable.utt;
+        currentUtt = new UnitTypeTable();
 
         setLayout(new BorderLayout());
 
@@ -460,7 +460,7 @@ public class FEStatePane extends JPanel {
 
                                     Trace trace = null;
                                     if (saveTraceBox.isSelected()) {
-                                        trace = new Trace();
+                                        trace = new Trace(currentUtt);
                                         TraceEntry te = new TraceEntry(gs.getPhysicalGameState().clone(),gs.getTime());
                                         trace.addEntry(te);
                                     }
@@ -627,7 +627,7 @@ public class FEStatePane extends JPanel {
                                     new boolean[]{true,true,true,false},
                                     TIME, MAX_PLAYOUTS, PLAYOUT_TIME, ef);
         } else if (AIs[idx]==PGSAI.class) {
-            return new PGSAI(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 1, 5, ef, UnitTypeTable.utt, pf);
+            return new PGSAI(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 1, 5, ef, currentUtt, pf);
         } else if (AIs[idx]==IDRTMinimax.class) {
             return new IDRTMinimax(TIME, ef);
         } else if (AIs[idx]==IDRTMinimaxRandomized.class) {

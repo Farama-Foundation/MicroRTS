@@ -114,7 +114,7 @@ public class PGSMouseListener implements MouseListener, MouseMotionListener, Key
             } else if (button!=null) {
                 selectedButton = button;  
                 if (!selectedUnit.getType().canMove) {
-                    UnitType ut = UnitTypeTable.utt.getUnitType(selectedButton);
+                    UnitType ut = gs.getUnitTypeTable().getUnitType(selectedButton);
                     if (ut!=null) {
                         AI.train(selectedUnit, ut);
                         selectedButton = null;
@@ -160,7 +160,7 @@ public class PGSMouseListener implements MouseListener, MouseMotionListener, Key
                             // Ignore
                         }
                     } else {
-                        UnitType ut = UnitTypeTable.utt.getUnitType(selectedButton);
+                        UnitType ut = gs.getUnitTypeTable().getUnitType(selectedButton);
                         if (ut==null) {                        
                             // If the unit can move, then move:
                             if (selectedUnit.getType().canMove) {
@@ -244,7 +244,7 @@ public class PGSMouseListener implements MouseListener, MouseMotionListener, Key
             // some unit type selected:
             selectedButton = button;
             if (!selectedUnit.getType().canMove) {
-                UnitType ut = UnitTypeTable.utt.getUnitType(selectedButton);
+                UnitType ut = gs.getUnitTypeTable().getUnitType(selectedButton);
                 if (ut!=null) {
                     AI.train(selectedUnit, ut);
                     selectedButton = null;

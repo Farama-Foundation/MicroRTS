@@ -244,7 +244,7 @@ public class PredefinedOperators {
 //                                System.out.println("PRODUCE working fine for "  + uID1 + "!");
                                 int direction = ((IntegerConstant)t.parameters[1]).value;
                                 String type = ((SymbolConstant)t.parameters[2]).get();
-                                UnitType ut = UnitTypeTable.utt.getUnitType(type);
+                                UnitType ut = gs.getUnitTypeTable().getUnitType(type);
                                 ResourceUsage ru = gs.getResourceUsage();
                                 int posx = u1.getX() + UnitAction.DIRECTION_OFFSET_X[direction];
                                 int posy = u1.getY() + UnitAction.DIRECTION_OFFSET_Y[direction];

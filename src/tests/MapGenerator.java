@@ -19,14 +19,14 @@ import util.XMLWriter;
  * 
  */
 public class MapGenerator {
-    
-    static UnitType resourceType = UnitTypeTable.utt.getUnitType("Resource");
-    static UnitType baseType = UnitTypeTable.utt.getUnitType("Base");
-    static UnitType barracksType = UnitTypeTable.utt.getUnitType("Barracks");
-    static UnitType workerType = UnitTypeTable.utt.getUnitType("Worker");
-    static UnitType lightType = UnitTypeTable.utt.getUnitType("Light");
-    static UnitType heavyType = UnitTypeTable.utt.getUnitType("Heavy");
-    static UnitType rangedType = UnitTypeTable.utt.getUnitType("Ranged");
+    static UnitTypeTable utt = new UnitTypeTable();
+    static UnitType resourceType = utt.getUnitType("Resource");
+    static UnitType baseType = utt.getUnitType("Base");
+    static UnitType barracksType = utt.getUnitType("Barracks");
+    static UnitType workerType = utt.getUnitType("Worker");
+    static UnitType lightType = utt.getUnitType("Light");
+    static UnitType heavyType = utt.getUnitType("Heavy");
+    static UnitType rangedType = utt.getUnitType("Ranged");
     
     public static void main(String args[]) throws IOException {
         // Complete game maps:

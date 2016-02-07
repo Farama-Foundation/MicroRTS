@@ -25,7 +25,7 @@ import util.XMLWriter;
     public static void main(String args[]) throws Exception {
         String scenarioFileName = "maps/basesWorkers8x8.xml";
 
-        UnitTypeTable utt = UnitTypeTable.utt; // original game (NOOP length = move length)
+        UnitTypeTable utt = new UnitTypeTable(); // original game (NOOP length = move length)
 
         int MAX_GAME_CYCLES = 3000; // game time
         int SIMULATION_BUDGET = 1000; // count per decision
@@ -35,9 +35,9 @@ import util.XMLWriter;
 
 //        AI ai1 = new RandomAI();
 //        AI ai1 = new RandomBiasedAI();
-//        AI ai1 = new WorkerRush(UnitTypeTable.utt, new AStarPathFinding());
-//        AI ai1 = new LightRush(UnitTypeTable.utt, new AStarPathFinding());
-//        AI ai1 = new RangedRush(UnitTypeTable.utt, new GreedyPathFinding());
+//        AI ai1 = new WorkerRush(utt, new AStarPathFinding());
+//        AI ai1 = new LightRush(utt, new AStarPathFinding());
+//        AI ai1 = new RangedRush(utt, new GreedyPathFinding());
 //        AI ai1 = new NaiveMonteCarlo(SIMULATION_COUNT, LOOKAHEAD_TIME, 0.33f, 0.2f, simulationAi, evalFunction);
 //        AI ai1 = new LinearMonteCarlo(SIMULATION_COUNT, LOOKAHEAD_TIME, simulationAi, evalFunction);
 //        AI ai1 = new LocalLinearMonteCarlo(SIMULATION_COUNT, LOOKAHEAD_TIME, simulationAi, evalFunction);
@@ -52,8 +52,8 @@ import util.XMLWriter;
 //        HumanAI ai2 = new HumanAI();
 //        AI ai2 = new RandomBiasedAI();
 //        AI ai2 = new WorkerRush(utt, new AStarPathFinding());
-//        AI ai2 = new LightRush(UnitTypeTable.utt, new AStarPathFinding());
-//        AI ai2 = new RangedRush(UnitTypeTable.utt, new AStarPathFinding());
+//        AI ai2 = new LightRush(utt, new AStarPathFinding());
+//        AI ai2 = new RangedRush(utt, new AStarPathFinding());
         // by setting "MAX_DEPTH = 1" in the next bot, this effectively makes it Monte Carlo search, instead of Monte Carlo Tree Search
         AI ai2 = new NaiveMCTS(-1, SIMULATION_BUDGET, LOOKAHEAD_CYCLES, 1, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), evalFunction);
 //        AI ai2 = new GenerateEvaluateMonteCarlo(SIMULATION_BUDGET, LOOKAHEAD_CYCLES,

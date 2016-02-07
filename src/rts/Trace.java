@@ -19,10 +19,6 @@ public class Trace {
     UnitTypeTable utt = null;
     List<TraceEntry> entries = new LinkedList<TraceEntry>();
     
-    public Trace() {
-        utt = UnitTypeTable.utt;
-    }
-    
     public Trace(UnitTypeTable a_utt) {
         utt = a_utt;
     }

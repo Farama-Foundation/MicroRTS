@@ -46,7 +46,7 @@ public class FETracePane extends JPanel {
     FEStatePane stateTab = null;
     
     public FETracePane(FEStatePane a_stateTab) {
-        currentUtt = UnitTypeTable.utt;
+        currentUtt = new UnitTypeTable();
         stateTab = a_stateTab;
         
         setLayout(new BorderLayout());

@@ -19,7 +19,8 @@ import rts.units.UnitTypeTable;
 public class TraceVisualizationTest {
 
   public static void main(String []args) throws JDOMException, IOException, Exception {
-      Trace t = new Trace(new SAXBuilder().build("trace.xml").getRootElement(), UnitTypeTable.utt);
+      UnitTypeTable utt = new UnitTypeTable();
+      Trace t = new Trace(new SAXBuilder().build("trace.xml").getRootElement(), utt);
       JFrame tv = TraceVisualizer.newWindow("Demo", 800, 600, t, 1);
       tv.show();
   }    

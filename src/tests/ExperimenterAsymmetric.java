@@ -22,7 +22,7 @@ import rts.units.UnitTypeTable;
 public class ExperimenterAsymmetric {
     public static boolean PRINT_BRANCHING_AT_EACH_MOVE = false;
 
-    public static void runExperiments(List<AI> bots1, List<AI> bots2, List<PhysicalGameState> maps, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize, PrintStream out) throws Exception {
+    public static void runExperiments(List<AI> bots1, List<AI> bots2, List<PhysicalGameState> maps, UnitTypeTable utt, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize, PrintStream out) throws Exception {
         int wins[][] = new int[bots1.size()][bots2.size()];
         int ties[][] = new int[bots1.size()][bots2.size()];
         int loses[][] = new int[bots1.size()][bots2.size()];
@@ -45,7 +45,7 @@ public class ExperimenterAsymmetric {
                         ai1.reset();
                         ai2.reset();
 
-                        GameState gs = new GameState(pgs.clone(),UnitTypeTable.utt);
+                        GameState gs = new GameState(pgs.clone(),utt);
                         JFrame w = null;
                         if (visualize) w = PhysicalGameStatePanel.newVisualizer(gs, 600, 600);
 

@@ -15,11 +15,12 @@ import rts.units.UnitTypeTable;
  */
 public class PlayerActionGenerationTest {
     public static void main(String args[]) {
+        UnitTypeTable utt = new UnitTypeTable();
 //        PhysicalGameState pgs = MapGenerator.bases8x8();        
 //        PhysicalGameState pgs = MapGenerator.basesWorkers8x8();
 //        PhysicalGameState pgs = MapGenerator.basesWorkersBarracks8x8();        
         PhysicalGameState pgs = MapGenerator.melee8x8light4();        
-        GameState gs = new GameState(pgs, UnitTypeTable.utt);
+        GameState gs = new GameState(pgs, utt);
         
         for(Player p:pgs.getPlayers()) {
             List<PlayerAction> pal = gs.getPlayerActions(p.getID());

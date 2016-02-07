@@ -14,6 +14,9 @@ import util.Pair;
  * @author santi
  */
 public class GameState {
+    static Random r = new Random();         // only used if the action conflict resolution strategy is set to random
+    static int unitCancelationCounter = 0;  // only used if the action conflict resolution strategy is set to alternating
+    
     int time = 0;
     PhysicalGameState pgs = null;
     HashMap<Unit,UnitActionAssignment> unitActions = new LinkedHashMap<Unit,UnitActionAssignment>();
@@ -147,19 +150,39 @@ public class GameState {
                     if (!uaa.action.resourceUsage(uaa.unit, pgs).consistentWith(ru, this)) {
                         // conflicting actions, cancelling both, and replacing them by "NONE":
                         if (uaa.time==time) {
+                            // The actions were issued in the same game cycle, so it's normal
+                            boolean cancel_old = false;
+                            boolean cancel_new = false;
+                            switch(utt.getMoveConflictResolutionStrategy()) {
+                                default:
+                                    System.err.println("Unknown move conflict resolution strategy in the UnitTypeTable!: " + utt.getMoveConflictResolutionStrategy());
+                                    System.err.println("Defaulting to MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH");
+                                case UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH:
+                                    cancel_old = cancel_new = true;
+                                    break;
+                                case UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_RANDOM:
+                                    if (r.nextInt(2)==0) cancel_new = true;
+                                                    else cancel_old = true;
+                                    break;
+                                case UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_ALTERNATING:
+                                    if ((unitCancelationCounter%2)==0) cancel_new = true;
+                                                                  else cancel_old = true;
+                                    unitCancelationCounter++;
+                                    break;
+                            }
                             int duration1 = uaa.action.ETA(uaa.unit);
                             int duration2 = p.m_b.ETA(p.m_a);
-                            // The actions were issued in the same game cycle, so it's normal
-                            uaa.action = new UnitAction(UnitAction.TYPE_NONE,Math.min(duration1,duration2));
-                            p.m_b = new UnitAction(UnitAction.TYPE_NONE,Math.min(duration1,duration2));
+                            if (cancel_old) uaa.action = new UnitAction(UnitAction.TYPE_NONE,Math.min(duration1,duration2));
+                            if (cancel_new) p.m_b = new UnitAction(UnitAction.TYPE_NONE,Math.min(duration1,duration2));
                         } else {
                             // This is more a problem, since it means there is a bug somewhere...
+                            // (probably in one of the AIs)
                             System.err.println("Inconsistent actions were executed!");
                             System.err.println(uaa);
                             System.err.println(p.m_a + " assigned action " + p.m_b + " at time " + time);
                             
                             try {
-                                throw new Exception("dummy");
+                                throw new Exception("dummy");   // just to be able to print the stack trace
                             }catch(Exception e) {
                                 e.printStackTrace();
                             }

@@ -19,9 +19,10 @@ import util.XMLWriter;
  */
 public class MapVisualizationTest {
     public static void main(String args[]) throws Exception {
-        PhysicalGameState pgs = PhysicalGameState.load("maps/basesWorkers8x8Obstacle.xml", UnitTypeTable.utt);
+        UnitTypeTable utt = new UnitTypeTable();
+        PhysicalGameState pgs = PhysicalGameState.load("maps/basesWorkers8x8Obstacle.xml", utt);
 
-        GameState gs = new GameState(pgs, UnitTypeTable.utt);
+        GameState gs = new GameState(pgs, utt);
                 
         XMLWriter xml = new XMLWriter(new OutputStreamWriter(System.out));
         pgs.toxml(xml);

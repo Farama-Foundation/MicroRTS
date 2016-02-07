@@ -20,15 +20,16 @@ import util.XMLWriter;
  */
 public class TraceGenerationTest {
     public static void main(String args[]) throws IOException, Exception {
+        UnitTypeTable utt = new UnitTypeTable();
         PhysicalGameState pgs = MapGenerator.basesWorkers8x8Obstacle();
-        GameState gs = new GameState(pgs, UnitTypeTable.utt);
+        GameState gs = new GameState(pgs, utt);
         int MAXCYCLES = 5000;
         boolean gameover = false;
         
         AI ai1 = new RandomBiasedAI();
-        AI ai2 = new WorkerRush(UnitTypeTable.utt, new BFSPathFinding());
+        AI ai2 = new WorkerRush(utt, new BFSPathFinding());
         
-        Trace trace = new Trace();
+        Trace trace = new Trace(utt);
         TraceEntry te = new TraceEntry(gs.getPhysicalGameState().clone(),gs.getTime());
         trace.addEntry(te);
         

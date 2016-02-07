@@ -25,28 +25,28 @@ import rts.units.UnitTypeTable;
 public class Experimenter {
     public static int DEBUG = 0;
     
-    public static void runExperiments(List<AI> bots, List<PhysicalGameState> maps, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize) throws Exception {
-        runExperiments(bots, maps, iterations, max_cycles, max_inactive_cycles, visualize, System.out, -1, false);
+    public static void runExperiments(List<AI> bots, List<PhysicalGameState> maps, UnitTypeTable utt, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize) throws Exception {
+        runExperiments(bots, maps, utt,iterations, max_cycles, max_inactive_cycles, visualize, System.out, -1, false);
     }
 
-    public static void runExperimentsPartiallyObservable(List<AI> bots, List<PhysicalGameState> maps, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize) throws Exception {
-        runExperiments(bots, maps, iterations, max_cycles, max_inactive_cycles, visualize, System.out, -1, true);
+    public static void runExperimentsPartiallyObservable(List<AI> bots, List<PhysicalGameState> maps, UnitTypeTable utt, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize) throws Exception {
+        runExperiments(bots, maps, utt, iterations, max_cycles, max_inactive_cycles, visualize, System.out, -1, true);
     }
 
-    public static void runExperiments(List<AI> bots, List<PhysicalGameState> maps, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize, PrintStream out) throws Exception {
-        runExperiments(bots, maps, iterations, max_cycles, max_inactive_cycles, visualize, out, -1, false);
+    public static void runExperiments(List<AI> bots, List<PhysicalGameState> maps, UnitTypeTable utt, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize, PrintStream out) throws Exception {
+        runExperiments(bots, maps, utt, iterations, max_cycles, max_inactive_cycles, visualize, out, -1, false);
     }
 
-    public static void runExperimentsPartiallyObservable(List<AI> bots, List<PhysicalGameState> maps, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize, PrintStream out) throws Exception {
-        runExperiments(bots, maps, iterations, max_cycles, max_inactive_cycles, visualize, out, -1, true);
+    public static void runExperimentsPartiallyObservable(List<AI> bots, List<PhysicalGameState> maps, UnitTypeTable utt, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize, PrintStream out) throws Exception {
+        runExperiments(bots, maps, utt, iterations, max_cycles, max_inactive_cycles, visualize, out, -1, true);
     }
 
-    public static void runExperiments(List<AI> bots, List<PhysicalGameState> maps, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize, PrintStream out, 
+    public static void runExperiments(List<AI> bots, List<PhysicalGameState> maps, UnitTypeTable utt, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize, PrintStream out, 
                                       int run_only_those_involving_this_AI, boolean partiallyObservable) throws Exception {
-        runExperiments(bots, maps, iterations, max_cycles, max_inactive_cycles, visualize, out, run_only_those_involving_this_AI, false, partiallyObservable);
+        runExperiments(bots, maps, utt, iterations, max_cycles, max_inactive_cycles, visualize, out, run_only_those_involving_this_AI, false, partiallyObservable);
     }
 
-    public static void runExperiments(List<AI> bots, List<PhysicalGameState> maps, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize, PrintStream out, 
+    public static void runExperiments(List<AI> bots, List<PhysicalGameState> maps, UnitTypeTable utt, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize, PrintStream out, 
                                       int run_only_those_involving_this_AI, boolean skip_self_play, boolean partiallyObservable) throws Exception {
         int wins[][] = new int[bots.size()][bots.size()];
         int ties[][] = new int[bots.size()][bots.size()];
@@ -79,7 +79,7 @@ public class Experimenter {
                         ai1.reset();
                         ai2.reset();
 
-                        GameState gs = new GameState(pgs.clone(),UnitTypeTable.utt);
+                        GameState gs = new GameState(pgs.clone(),utt);
                         PhysicalGameStateJFrame w = null;
                         if (visualize) w = PhysicalGameStatePanel.newVisualizer(gs, 600, 600, partiallyObservable);
 

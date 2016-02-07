@@ -51,22 +51,23 @@ public class CompareAllAIsObservable {
         int RANDOMIZED_AB_REPEATS = 10;
         
         List<AI> bots = new LinkedList<>();
-
+        UnitTypeTable utt = new UnitTypeTable();
+        
         bots.add(new RandomAI());
         bots.add(new RandomBiasedAI());
-        bots.add(new LightRush(UnitTypeTable.utt, new BFSPathFinding()));
-        bots.add(new RangedRush(UnitTypeTable.utt, new BFSPathFinding()));
-        bots.add(new WorkerRush(UnitTypeTable.utt, new BFSPathFinding()));
-        bots.add(new PortfolioAI(new AI[]{new WorkerRush(UnitTypeTable.utt, new BFSPathFinding()),
-                                          new LightRush(UnitTypeTable.utt, new BFSPathFinding()),
-                                          new RangedRush(UnitTypeTable.utt, new BFSPathFinding()),
+        bots.add(new LightRush(utt, new BFSPathFinding()));
+        bots.add(new RangedRush(utt, new BFSPathFinding()));
+        bots.add(new WorkerRush(utt, new BFSPathFinding()));
+        bots.add(new PortfolioAI(new AI[]{new WorkerRush(utt, new BFSPathFinding()),
+                                          new LightRush(utt, new BFSPathFinding()),
+                                          new RangedRush(utt, new BFSPathFinding()),
                                           new RandomBiasedAI()}, 
                                  new boolean[]{true,true,true,false}, 
                                  TIME, MAX_PLAYOUTS, PLAYOUT_TIME*4, new SimpleSqrtEvaluationFunction3()));
         
         bots.add(new IDRTMinimax(TIME, new SimpleSqrtEvaluationFunction3()));
         bots.add(new IDRTMinimaxRandomized(TIME, RANDOMIZED_AB_REPEATS, new SimpleSqrtEvaluationFunction3()));
-        bots.add(new IDABCD(TIME, MAX_PLAYOUTS, new LightRush(UnitTypeTable.utt, new GreedyPathFinding()), PLAYOUT_TIME, new SimpleSqrtEvaluationFunction3(), false));
+        bots.add(new IDABCD(TIME, MAX_PLAYOUTS, new LightRush(utt, new GreedyPathFinding()), PLAYOUT_TIME, new SimpleSqrtEvaluationFunction3(), false));
 
         bots.add(new MonteCarlo(TIME, PLAYOUT_TIME, MAX_PLAYOUTS, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
         bots.add(new MonteCarlo(TIME, PLAYOUT_TIME, MAX_PLAYOUTS, MAX_ACTIONS, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
@@ -103,20 +104,20 @@ public class CompareAllAIsObservable {
         List<PhysicalGameState> maps = new LinkedList<PhysicalGameState>();        
 
         maps.clear();
-        maps.add(PhysicalGameState.load("maps/basesWorkers8x8.xml",UnitTypeTable.utt));
+        maps.add(PhysicalGameState.load("maps/basesWorkers8x8.xml",utt));
 //        Experimenter.runExperimentsPartiallyObservable(bots, maps, 10, 3000, 300, true, out);
-        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true, out);
+        Experimenter.runExperiments(bots, maps, utt, 10, 3000, 300, true, out);
       
         maps.clear();
-        maps.add(PhysicalGameState.load("maps/melee12x12mixed12.xml",UnitTypeTable.utt));
-        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true, out);
+        maps.add(PhysicalGameState.load("maps/melee12x12mixed12.xml",utt));
+        Experimenter.runExperiments(bots, maps, utt, 10, 3000, 300, true, out);
 
         maps.clear();
-        maps.add(PhysicalGameState.load("maps/melee8x8mixed6.xml",UnitTypeTable.utt));
-        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true, out);
+        maps.add(PhysicalGameState.load("maps/melee8x8mixed6.xml",utt));
+        Experimenter.runExperiments(bots, maps, utt, 10, 3000, 300, true, out);
 
         maps.clear();
-        maps.add(PhysicalGameState.load("maps/melee4x4light2.xml",UnitTypeTable.utt));
-        Experimenter.runExperiments(bots, maps, 10, 3000, 300, true, out);
+        maps.add(PhysicalGameState.load("maps/melee4x4light2.xml",utt));
+        Experimenter.runExperiments(bots, maps, utt, 10, 3000, 300, true, out);
     }
 }
