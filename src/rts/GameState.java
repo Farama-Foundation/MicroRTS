@@ -15,7 +15,8 @@ import util.Pair;
  */
 public class GameState {
     static Random r = new Random();         // only used if the action conflict resolution strategy is set to random
-    static int unitCancelationCounter = 0;  // only used if the action conflict resolution strategy is set to alternating
+    
+    int unitCancelationCounter = 0;  // only used if the action conflict resolution strategy is set to alternating
     
     int time = 0;
     PhysicalGameState pgs = null;
@@ -386,6 +387,7 @@ public class GameState {
     public GameState clone() {
         GameState gs = new GameState(pgs.clone(), utt);
         gs.time = time;
+        gs.unitCancelationCounter = unitCancelationCounter;
         for(UnitActionAssignment uaa:unitActions.values()) {
             Unit u = uaa.unit;
             int idx = pgs.getUnits().indexOf(u);
@@ -407,6 +409,7 @@ public class GameState {
     public GameState cloneIssue(PlayerAction pa) {
         GameState gs = new GameState(pgs, utt);
         gs.time = time;
+        gs.unitCancelationCounter = unitCancelationCounter;
 //        if (!integrityCheck()) throw new Error("Game State inconsistent before adding action");
         gs.unitActions.putAll(unitActions);
 /*
