@@ -146,15 +146,7 @@ public class Unit {
 
     public List<UnitAction> getUnitActions(GameState s, int duration) {
         List<UnitAction> l = new LinkedList<UnitAction>();
-/*        
-    public static final int TYPE_MOVE = 1;
-    public static final int TYPE_ATTACK = 2;
-    public static final int TYPE_HARVEST = 3;
-    public static final int TYPE_RETURN = 4;
-    public static final int TYPE_PRODUCE = 5;
-    public static final int TYPE_ATTACK_LOCATION = 6;   // direction is "x", unit_Type is "y"
-  */
-        UnitTypeTable utt = s.getUnitTypeTable();
+
         PhysicalGameState pgs = s.getPhysicalGameState();
         Player p = pgs.getPlayer(player);
 
