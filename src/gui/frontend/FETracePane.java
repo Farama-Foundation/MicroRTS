@@ -223,7 +223,7 @@ public class FETracePane extends JPanel {
                         u1.getY()==u2.getY() &&
                         u1.getType() == u2.getType() &&
                         u1.getID() != u2.getID()) {
-                        System.out.println("changing ID " + u1.getID() + " -> " + u2.getID());
+//                        System.out.println("changing ID " + u1.getID() + " -> " + u2.getID());
                         u1.setID(u2.getID());
                     }
                 }
@@ -237,9 +237,9 @@ public class FETracePane extends JPanel {
             }
             gs.issueSafe(pa0);
             gs.issueSafe(pa1);
-            System.out.println("time " + gs.getTime());
-            System.out.println("  pa0: " + pa0);
-            System.out.println("  pa1: " + pa1);
+//            System.out.println("time " + gs.getTime());
+//            System.out.println("  pa0: " + pa0);
+//            System.out.println("  pa1: " + pa1);
         }
         while(gs.getTime()<cycle) gs.cycle();
         
