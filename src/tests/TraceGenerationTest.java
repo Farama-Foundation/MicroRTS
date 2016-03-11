@@ -36,15 +36,16 @@ public class TraceGenerationTest {
         do{
             PlayerAction pa1 = ai1.getAction(0, gs);
             PlayerAction pa2 = ai2.getAction(1, gs);
-            gs.issueSafe(pa1);
-            gs.issueSafe(pa2);
-
+            
             if (!pa1.isEmpty() || !pa2.isEmpty()) {
                 te = new TraceEntry(gs.getPhysicalGameState().clone(),gs.getTime());
                 te.addPlayerAction(pa1);
                 te.addPlayerAction(pa2);
                 trace.addEntry(te);
             }
+
+            gs.issueSafe(pa1);
+            gs.issueSafe(pa2);
 
             // simulate:
             gameover = gs.cycle();

@@ -21,6 +21,7 @@ public class PlayerAction {
         
     }
     
+
     public boolean equals(Object o) {
         if (!(o instanceof PlayerAction)) return false;
         PlayerAction a = (PlayerAction)o;

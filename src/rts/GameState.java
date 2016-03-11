@@ -477,7 +477,14 @@ public class GameState {
     public String toString() {
         String tmp = "ObservableGameState: " + time + "\n";
         for(Player p:pgs.getPlayers()) tmp += "player " + p.ID + ": " + p.getResources() + "\n";
-        for(Unit u:unitActions.keySet()) tmp += "    " + u + " -> " + unitActions.get(u).time + " " + unitActions.get(u).action + "\n";
+        for(Unit u:unitActions.keySet()) {
+            UnitActionAssignment ua = unitActions.get(u);
+            if (ua==null) {
+                tmp += "    " + u + " -> null (ERROR!)\n";
+            } else {
+                tmp += "    " + u + " -> " + ua.time + " " + ua.action + "\n";
+            }
+        }
         tmp += pgs;
         return tmp;
     }

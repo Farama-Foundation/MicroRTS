@@ -14,7 +14,8 @@ import java.util.List;
 public class ResourceUsage {
     List<Integer> positionsUsed = new LinkedList<Integer>();
     int []resourcesUsed = new int[2];   // 2 players is hardcoded here! FIX!!!
-    
+
+
     public boolean consistentWith(ResourceUsage u, GameState gs) {
         for(Integer pos:positionsUsed) 
             if (u.positionsUsed.contains(pos)) return false;

@@ -215,6 +215,20 @@ public class FETracePane extends JPanel {
                 if (gs.getTime()==cycle) return gs;
                 gs.cycle();
             }
+
+            // synchronize the traces (some times the unit IDs might go off):
+            for(Unit u1:gs.getUnits()) {
+                for(Unit u2:te.getPhysicalGameState().getUnits()) {
+                    if (u1.getX()==u2.getX() &&
+                        u1.getY()==u2.getY() &&
+                        u1.getType() == u2.getType() &&
+                        u1.getID() != u2.getID()) {
+                        System.out.println("changing ID " + u1.getID() + " -> " + u2.getID());
+                        u1.setID(u2.getID());
+                    }
+                }
+            }
+
             PlayerAction pa0 = new PlayerAction();
             PlayerAction pa1 = new PlayerAction();
             for(Pair<Unit,UnitAction> tmp:te.getActions()) {
@@ -223,6 +237,9 @@ public class FETracePane extends JPanel {
             }
             gs.issueSafe(pa0);
             gs.issueSafe(pa1);
+            System.out.println("time " + gs.getTime());
+            System.out.println("  pa0: " + pa0);
+            System.out.println("  pa1: " + pa1);
         }
         while(gs.getTime()<cycle) gs.cycle();
         
