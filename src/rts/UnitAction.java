@@ -58,6 +58,14 @@ public class UnitAction {
         y = a_y;
     }
     
+    public UnitAction(UnitAction ua) {
+        type = ua.type;
+        parameter = ua.parameter;
+        x = ua.x;
+        y = ua.y;
+        unitType = ua.unitType;
+    }
+    
     public boolean equals(Object o) {
         if (!(o instanceof UnitAction)) return false;
         UnitAction a = (UnitAction)o;

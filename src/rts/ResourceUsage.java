@@ -15,6 +15,19 @@ public class ResourceUsage {
     List<Integer> positionsUsed = new LinkedList<Integer>();
     int []resourcesUsed = new int[2];   // 2 players is hardcoded here! FIX!!!
 
+    
+    public ResourceUsage() {
+        
+    }
+    
+    
+    public ResourceUsage(ResourceUsage r) {
+        positionsUsed.addAll(r.positionsUsed);
+        for(int i = 0;i<resourcesUsed.length;i++) {
+            resourcesUsed[i] = r.resourcesUsed[i];
+        }
+    }
+    
 
     public boolean consistentWith(ResourceUsage u, GameState gs) {
         for(Integer pos:positionsUsed) 

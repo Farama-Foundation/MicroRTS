@@ -22,6 +22,15 @@ public class PlayerAction {
     }
     
 
+    public PlayerAction(PlayerAction pa) {
+        for(Pair<Unit,UnitAction> p:pa.actions) {
+            Pair<Unit,UnitAction> p2 = new Pair<>(p.m_a, new UnitAction(p.m_b));
+            actions.add(p2);
+        }
+        r = new ResourceUsage(r);
+    }
+
+    
     public boolean equals(Object o) {
         if (!(o instanceof PlayerAction)) return false;
         PlayerAction a = (PlayerAction)o;

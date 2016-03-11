@@ -39,8 +39,8 @@ public class TraceGenerationTest {
             
             if (!pa1.isEmpty() || !pa2.isEmpty()) {
                 te = new TraceEntry(gs.getPhysicalGameState().clone(),gs.getTime());
-                te.addPlayerAction(pa1);
-                te.addPlayerAction(pa2);
+                te.addPlayerAction(new PlayerAction(pa1));
+                te.addPlayerAction(new PlayerAction(pa2));
                 trace.addEntry(te);
             }
 
