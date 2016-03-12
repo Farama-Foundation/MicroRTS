@@ -164,7 +164,10 @@ public class PlayerAction {
     
     public PlayerAction clone() {
         PlayerAction clone = new PlayerAction();
-        clone.actions = (LinkedList<Pair<Unit,UnitAction>>) ((LinkedList<Pair<Unit,UnitAction>>) actions).clone();
+        clone.actions = new LinkedList<>();
+        for(Pair<Unit,UnitAction> tmp:actions) {
+            clone.actions.add(new Pair<Unit,UnitAction>(tmp.m_a, tmp.m_b));
+        }
         clone.r = r.clone();
         return clone;
     }

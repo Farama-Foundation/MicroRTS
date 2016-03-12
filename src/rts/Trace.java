@@ -9,6 +9,7 @@ import java.util.List;
 import org.jdom.Element;
 import rts.units.Unit;
 import rts.units.UnitTypeTable;
+import util.Pair;
 import util.XMLWriter;
 
 /**
@@ -43,7 +44,8 @@ public class Trace {
        w.tag("/" + this.getClass().getName());
     }
         
-    public Trace(Element e, UnitTypeTable utt) {
+    public Trace(Element e, UnitTypeTable a_utt) {
+        utt = a_utt;
         Element entries_e = e.getChild("entries");
         
         for(Object o:entries_e.getChildren()) {
@@ -52,5 +54,46 @@ public class Trace {
         }
     }    
     
+    
+    public GameState getGameStateAtCycle(int cycle) {
+        GameState gs = null;
+        for(TraceEntry te:getEntries()) {
+            if (gs==null) gs = new GameState(te.getPhysicalGameState().clone(), utt);
+            if (gs.getTime()==cycle) return gs;
+            
+            while(gs.getTime()<te.getTime()) {
+                if (gs.getTime()==cycle) return gs;
+                gs.cycle();
+            }
+
+            // synchronize the traces (some times the unit IDs might go off):
+            for(Unit u1:gs.getUnits()) {
+                for(Unit u2:te.getPhysicalGameState().getUnits()) {
+                    if (u1.getX()==u2.getX() &&
+                        u1.getY()==u2.getY() &&
+                        u1.getType() == u2.getType() &&
+                        u1.getID() != u2.getID()) {
+//                        System.out.println("changing ID " + u1.getID() + " -> " + u2.getID());
+                        u1.setID(u2.getID());
+                    }
+                }
+            }
+
+            PlayerAction pa0 = new PlayerAction();
+            PlayerAction pa1 = new PlayerAction();
+            for(Pair<Unit,UnitAction> tmp:te.getActions()) {
+                if (tmp.m_a.getPlayer()==0) pa0.addUnitAction(tmp.m_a, tmp.m_b);
+                if (tmp.m_a.getPlayer()==1) pa1.addUnitAction(tmp.m_a, tmp.m_b);
+            }
+            gs.issueSafe(pa0);
+            gs.issueSafe(pa1);
+//            System.out.println("time " + gs.getTime());
+//            System.out.println("  pa0: " + pa0);
+//            System.out.println("  pa1: " + pa1);
+        }
+        while(gs.getTime()<cycle) gs.cycle();
+        
+        return gs;
+    }    
     
 }

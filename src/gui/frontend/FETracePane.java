@@ -69,7 +69,7 @@ public class FETracePane extends JPanel {
                         try {
                             currentTrace = new Trace(new SAXBuilder().build(file.getAbsolutePath()).getRootElement(), currentUtt);
                             currentGameCycle = 0;
-                            statePanel.setState(getGameStateAtCycle(currentTrace, currentGameCycle));
+                            statePanel.setState(currentTrace.getGameStateAtCycle(currentGameCycle));
                             statePanel.repaint();
                         } catch (Exception ex) {
                             ex.printStackTrace();
@@ -124,7 +124,7 @@ public class FETracePane extends JPanel {
                 {
                     if (!statePanel.getState().gameover()) {
                         currentGameCycle++;
-                        statePanel.setState(getGameStateAtCycle(currentTrace, currentGameCycle));
+                        statePanel.setState(currentTrace.getGameStateAtCycle(currentGameCycle));
                         statePanel.repaint();
                     }
                 }
@@ -140,7 +140,7 @@ public class FETracePane extends JPanel {
                 {
                     if (currentGameCycle>0) {
                         currentGameCycle--;
-                        statePanel.setState(getGameStateAtCycle(currentTrace, currentGameCycle));
+                        statePanel.setState(currentTrace.getGameStateAtCycle(currentGameCycle));
                         statePanel.repaint();
                     }
                 }
@@ -157,7 +157,7 @@ public class FETracePane extends JPanel {
                     for(TraceEntry te:currentTrace.getEntries()) {
                         if (te.getTime()>currentGameCycle) {
                             currentGameCycle = te.getTime();
-                            statePanel.setState(getGameStateAtCycle(currentTrace, currentGameCycle));
+                            statePanel.setState(currentTrace.getGameStateAtCycle(currentGameCycle));
                             statePanel.repaint();
                             break;
                         }
@@ -183,7 +183,7 @@ public class FETracePane extends JPanel {
                     }
                     if (target!=null) {
                         currentGameCycle = target.getTime();
-                        statePanel.setState(getGameStateAtCycle(currentTrace, currentGameCycle));
+                        statePanel.setState(currentTrace.getGameStateAtCycle(currentGameCycle));
                         statePanel.repaint();
                     }
                 }
@@ -204,45 +204,4 @@ public class FETracePane extends JPanel {
         add(p2, BorderLayout.SOUTH);    
     }
     
-    
-    public GameState getGameStateAtCycle(Trace t, int cycle) {
-        GameState gs = null;
-        for(TraceEntry te:t.getEntries()) {
-            if (gs==null) gs = new GameState(te.getPhysicalGameState().clone(), currentUtt);
-            if (gs.getTime()==cycle) return gs;
-            
-            while(gs.getTime()<te.getTime()) {
-                if (gs.getTime()==cycle) return gs;
-                gs.cycle();
-            }
-
-            // synchronize the traces (some times the unit IDs might go off):
-            for(Unit u1:gs.getUnits()) {
-                for(Unit u2:te.getPhysicalGameState().getUnits()) {
-                    if (u1.getX()==u2.getX() &&
-                        u1.getY()==u2.getY() &&
-                        u1.getType() == u2.getType() &&
-                        u1.getID() != u2.getID()) {
-//                        System.out.println("changing ID " + u1.getID() + " -> " + u2.getID());
-                        u1.setID(u2.getID());
-                    }
-                }
-            }
-
-            PlayerAction pa0 = new PlayerAction();
-            PlayerAction pa1 = new PlayerAction();
-            for(Pair<Unit,UnitAction> tmp:te.getActions()) {
-                if (tmp.m_a.getPlayer()==0) pa0.addUnitAction(tmp.m_a, tmp.m_b);
-                if (tmp.m_a.getPlayer()==1) pa1.addUnitAction(tmp.m_a, tmp.m_b);
-            }
-            gs.issueSafe(pa0);
-            gs.issueSafe(pa1);
-//            System.out.println("time " + gs.getTime());
-//            System.out.println("  pa0: " + pa0);
-//            System.out.println("  pa1: " + pa1);
-        }
-        while(gs.getTime()<cycle) gs.cycle();
-        
-        return gs;
-    }
 }
