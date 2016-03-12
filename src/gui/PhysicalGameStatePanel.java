@@ -122,7 +122,7 @@ public class PhysicalGameStatePanel extends JPanel {
     }
     
     public void setState(GameState a_gs) {
-        gs = a_gs;
+        gs = a_gs.clone();
         pgs = gs.getPhysicalGameState();
         if (pogs[0]!=null) {
             pogs[0] = new PartiallyObservableGameState(a_gs, 0);

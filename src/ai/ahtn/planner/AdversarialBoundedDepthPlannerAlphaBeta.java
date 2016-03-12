@@ -16,6 +16,7 @@ import ai.evaluation.EvaluationFunction;
 import java.util.LinkedList;
 import java.util.List;
 import rts.GameState;
+import rts.PlayerAction;
 import util.Pair;
 
 /**
@@ -604,12 +605,18 @@ public class AdversarialBoundedDepthPlannerAlphaBeta {
             ai2.reset();
             int timeLimit = gs2.getTime() + PLAYOUT_LOOKAHEAD;
             boolean gameover = false;
+                        
             while(!gameover && gs2.getTime()<timeLimit) {
                 if (gs2.isComplete()) {
                     gameover = gs2.cycle();
                 } else {
-                    gs2.issue(ai1.getAction(player, gs2));
-                    gs2.issue(ai2.getAction(1-player, gs2));
+                    PlayerAction pa1 = ai1.getAction(player, gs2);
+                    PlayerAction pa2 = ai2.getAction(1-player, gs2);
+//                    System.out.println("time: " + gs2.getTime() + " resources: " + gs2.getPlayer(0).getResources() + "/" + gs2.getPlayer(1).getResources());
+//                    System.out.println("  pa1: " + pa1);
+//                    System.out.println("  pa2: " + pa2);
+                    gs2.issue(pa1);
+                    gs2.issue(pa2);
                 }
             }        
         } 

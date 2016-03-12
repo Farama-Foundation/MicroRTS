@@ -209,7 +209,11 @@ public class UnitAction {
                     newUnit = new Unit(u.getPlayer(), unitType, targetx, targety, 0);
                     pgs.addUnit(newUnit);
                     Player p = pgs.getPlayer(u.getPlayer());
-                    p.setResources(p.getResources() - newUnit.getCost());                    
+                    p.setResources(p.getResources() - newUnit.getCost());
+                    if (p.getResources()<0) {
+                        System.err.print("Illegal action executed! resources of player " + p.ID + " are now " + p.getResources() + "\n");
+                        System.err.print(s);
+                    }
                 }
                 break;
         }        

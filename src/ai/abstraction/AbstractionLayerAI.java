@@ -53,7 +53,7 @@ public abstract class AbstractionLayerAI extends AI {
                 toDelete.add(aa.unit);
             } else {
                 if (aa.completed(gs)) {
-                    // the action is compelte:
+                    // the action is complete:
                     toDelete.add(aa.unit);
                 } else {
                     if (gs.getActionAssignment(aa.unit)==null) {

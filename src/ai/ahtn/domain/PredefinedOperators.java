@@ -19,6 +19,7 @@ import rts.UnitAction;
 import rts.units.Unit;
 import rts.units.UnitType;
 import rts.units.UnitTypeTable;
+import util.Pair;
 
 /**
  *
@@ -59,10 +60,10 @@ public class PredefinedOperators {
                     new OperatorExecutor() {
                         public boolean execute(Term t, MethodDecomposition state, GameState gs, PlayerAction pa) throws Exception {
                             int player = ((IntegerConstant)t.parameters[0]).value;
-                            boolean anyunit = false;
+ //                           boolean anyunit = false;
                             for(Unit u:gs.getUnits()) {
                                 if (u.getPlayer()==player) {
-                                    anyunit = true;
+//                                    anyunit = true;
                                     if (gs.getUnitAction(u)==null) return true;
                                 }
                             }
@@ -246,6 +247,11 @@ public class PredefinedOperators {
                                 String type = ((SymbolConstant)t.parameters[2]).get();
                                 UnitType ut = gs.getUnitTypeTable().getUnitType(type);
                                 ResourceUsage ru = gs.getResourceUsage();
+                                if (pa!=null) {
+                                    for(Pair<Unit, UnitAction> tmp:pa.getActions()) {
+                                        ru.merge(tmp.m_b.resourceUsage(tmp.m_a, gs.getPhysicalGameState()));
+                                    }
+                                }
                                 int posx = u1.getX() + UnitAction.DIRECTION_OFFSET_X[direction];
                                 int posy = u1.getY() + UnitAction.DIRECTION_OFFSET_Y[direction];
                                 if (posx>=0 && posx<gs.getPhysicalGameState().getWidth() &&
@@ -274,8 +280,12 @@ public class PredefinedOperators {
             operators.put(new Symbol("!move"),
                     new OperatorExecutor() {
                         public boolean execute(Term t, MethodDecomposition state, GameState gs, PlayerAction pa) throws Exception {
-                            ResourceUsage ru = null;
-                            if (pa!=null) ru = pa.getResourceUsage();
+                            ResourceUsage ru = gs.getResourceUsage();
+                            if (pa!=null) {
+                                for(Pair<Unit, UnitAction> tmp:pa.getActions()) {
+                                    ru.merge(tmp.m_b.resourceUsage(tmp.m_a, gs.getPhysicalGameState()));
+                                }
+                            }
                             int uID1 = ((IntegerConstant)t.parameters[0]).value;
                             Unit u1 = gs.getUnit(uID1);
                             // if u1 == null, the unit is dead, so the action is over:
@@ -308,8 +318,12 @@ public class PredefinedOperators {
             operators.put(new Symbol("!move-into-attack-range"),
                     new OperatorExecutor() {
                         public boolean execute(Term t, MethodDecomposition state, GameState gs, PlayerAction pa) throws Exception {
-                            ResourceUsage ru = null;
-                            if (pa!=null) ru = pa.getResourceUsage();
+                            ResourceUsage ru = gs.getResourceUsage();
+                            if (pa!=null) {
+                                for(Pair<Unit, UnitAction> tmp:pa.getActions()) {
+                                    ru.merge(tmp.m_b.resourceUsage(tmp.m_a, gs.getPhysicalGameState()));
+                                }
+                            }
                             int uID1 = ((IntegerConstant)t.parameters[0]).value;
                             Unit u1 = gs.getUnit(uID1);
                             // if u1 == null, the unit is dead, so the action is over:
@@ -345,8 +359,12 @@ public class PredefinedOperators {
             operators.put(new Symbol("!move-into-harvest-range"),
                     new OperatorExecutor() {
                         public boolean execute(Term t, MethodDecomposition state, GameState gs, PlayerAction pa) throws Exception {
-                            ResourceUsage ru = null;
-                            if (pa!=null) ru = pa.getResourceUsage();
+                            ResourceUsage ru = gs.getResourceUsage();
+                            if (pa!=null) {
+                                for(Pair<Unit, UnitAction> tmp:pa.getActions()) {
+                                    ru.merge(tmp.m_b.resourceUsage(tmp.m_a, gs.getPhysicalGameState()));
+                                }
+                            }
                             int uID1 = ((IntegerConstant)t.parameters[0]).value;
                             Unit u1 = gs.getUnit(uID1);
                             // if u1 == null, the unit is dead, so the action is over:
@@ -381,8 +399,12 @@ public class PredefinedOperators {
             operators.put(new Symbol("!move-into-return-range"),
                     new OperatorExecutor() {
                         public boolean execute(Term t, MethodDecomposition state, GameState gs, PlayerAction pa) throws Exception {
-                            ResourceUsage ru = null;
-                            if (pa!=null) ru = pa.getResourceUsage();
+                            ResourceUsage ru = gs.getResourceUsage();
+                            if (pa!=null) {
+                                for(Pair<Unit, UnitAction> tmp:pa.getActions()) {
+                                    ru.merge(tmp.m_b.resourceUsage(tmp.m_a, gs.getPhysicalGameState()));
+                                }
+                            }
                             int uID1 = ((IntegerConstant)t.parameters[0]).value;
                             Unit u1 = gs.getUnit(uID1);
                             // if u1 == null, the unit is dead, so the action is over:

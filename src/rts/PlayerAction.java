@@ -21,15 +21,6 @@ public class PlayerAction {
         
     }
     
-
-    public PlayerAction(PlayerAction pa) {
-        for(Pair<Unit,UnitAction> p:pa.actions) {
-            Pair<Unit,UnitAction> p2 = new Pair<>(p.m_a, new UnitAction(p.m_b));
-            actions.add(p2);
-        }
-        r = new ResourceUsage(r);
-    }
-
     
     public boolean equals(Object o) {
         if (!(o instanceof PlayerAction)) return false;
@@ -156,7 +147,7 @@ public class PlayerAction {
     
     public boolean integrityCheck() {
         int player = -1;
-        List<Unit> alreadyUsed = new LinkedList<Unit>();
+//        List<Unit> alreadyUsed = new LinkedList<Unit>();
         for(Pair<Unit,UnitAction> uaa:actions) {
             Unit u = uaa.m_a;
             if (player==-1) {
@@ -171,8 +162,8 @@ public class PlayerAction {
         return true;
     }
     
-    public PlayerAction clone() throws CloneNotSupportedException {
-        PlayerAction clone = (PlayerAction) super.clone();
+    public PlayerAction clone() {
+        PlayerAction clone = new PlayerAction();
         clone.actions = (LinkedList<Pair<Unit,UnitAction>>) ((LinkedList<Pair<Unit,UnitAction>>) actions).clone();
         clone.r = r.clone();
         return clone;
