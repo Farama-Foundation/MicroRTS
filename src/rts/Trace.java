@@ -58,14 +58,28 @@ public class Trace {
     // Note: this function is slow, since it has to simulate the game from the very beginning
     //       in order to get the appropriate unit actions. So, do not use in the internal loop
     //       of any AI!
+    GameState getGameStateAtCycle_cache = null; // this accelerates the function below if traversing a trace sequentially
     public GameState getGameStateAtCycle(int cycle) {
         GameState gs = null;
         for(TraceEntry te:getEntries()) {
-            if (gs==null) gs = new GameState(te.getPhysicalGameState().clone(), utt);
-            if (gs.getTime()==cycle) return gs;
+            if (gs==null) {
+                if (getGameStateAtCycle_cache != null && cycle >= getGameStateAtCycle_cache.getTime()) {
+                    if (te.getTime() < getGameStateAtCycle_cache.getTime()) {
+                        continue;
+                    } else {
+                        gs = getGameStateAtCycle_cache.clone();
+                    }
+                } else {
+                    gs = new GameState(te.getPhysicalGameState().clone(), utt);            
+                }
+            }
+            
+            if (gs.getTime()==cycle) {
+                getGameStateAtCycle_cache = gs;
+                return gs;
+            }
             
             while(gs.getTime()<te.getTime()) {
-                if (gs.getTime()==cycle) return gs;
                 gs.cycle();
             }
 
@@ -81,6 +95,11 @@ public class Trace {
                 }
             }
 
+            if (gs.getTime()==cycle) {
+                getGameStateAtCycle_cache = gs;
+                return gs;
+            }
+
             PlayerAction pa0 = new PlayerAction();
             PlayerAction pa1 = new PlayerAction();
             for(Pair<Unit,UnitAction> tmp:te.getActions()) {
@@ -92,6 +111,7 @@ public class Trace {
         }
         while(gs.getTime()<cycle) gs.cycle();
         
+        getGameStateAtCycle_cache = gs;
         return gs;
     }    
     
