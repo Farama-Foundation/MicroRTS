@@ -5,11 +5,8 @@
 package ai;
 
 import ai.core.AI;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import rts.*;
 import rts.units.Unit;
 import util.Sampler;
@@ -18,7 +15,7 @@ import util.Sampler;
  *
  * @author santi
  * 
- * This AI is similar to the RandomBiasedAI, btu instead of discarting "move" actions when there is an
+ * This AI is similar to the RandomBiasedAI, but instead of discarding "move" actions when there is an
  * attack available, it simply lowers the probability of a move.
  * 
  */
