@@ -70,11 +70,15 @@ public class UnitAction {
         if (!(o instanceof UnitAction)) return false;
         UnitAction a = (UnitAction)o;
         
-        if (a.type!=type ||
-            a.parameter!=parameter ||
-            a.x!=x ||
-            a.y!=y ||
-            a.unitType!=unitType) return false;
+        if (a.type!=type) return false;
+        if (type==TYPE_NONE || type==TYPE_MOVE || type==TYPE_HARVEST || type==TYPE_RETURN) {
+            if (a.parameter != parameter) return false;
+        } else if (type==TYPE_ATTACK_LOCATION) {
+            if (a.x != x || a.y != y) return false;
+        } else {
+            if (a.parameter != parameter ||
+                a.unitType != unitType) return false;
+        }
         
         return true;
     }

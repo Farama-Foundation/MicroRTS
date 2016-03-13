@@ -70,7 +70,7 @@ public class UnitTypeTable {
         base.sightRadius = 5;
         addUnitType(base);
 
-        // BARRACKS: ID = 1
+        // BARRACKS: 
         UnitType barracks = new UnitType();
         barracks.name = "Barracks";
         barracks.cost = 5;
@@ -89,7 +89,7 @@ public class UnitTypeTable {
         barracks.sightRadius = 3;
         addUnitType(barracks);
         
-        // WORKER: ID = 2
+        // WORKER: 
         UnitType worker = new UnitType();
         worker.name = "Worker";
         worker.cost = 1;
@@ -109,7 +109,7 @@ public class UnitTypeTable {
         worker.sightRadius = 3;
         addUnitType(worker);   
         
-        // LIGHT: ID = 3
+        // LIGHT: 
         UnitType light = new UnitType();
         light.name = "Light";
         light.cost = 2;
@@ -127,7 +127,7 @@ public class UnitTypeTable {
         light.sightRadius = 2;
         addUnitType(light);           
 
-        // HEAVY: ID = 4
+        // HEAVY: 
         UnitType heavy = new UnitType();
         heavy.name = "Heavy";
         heavy.damage = 4;
@@ -152,7 +152,7 @@ public class UnitTypeTable {
         heavy.sightRadius = 2;
         addUnitType(heavy);           
 
-        // RANGED: ID = 5
+        // RANGED: 
         UnitType ranged = new UnitType();
         ranged.name = "Ranged";
         ranged.cost = 2;

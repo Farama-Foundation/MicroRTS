@@ -32,6 +32,10 @@ public class Trace {
         return utt;
     }
     
+    public int getLength() {
+        return entries.get(entries.size()-1).getTime();
+    }
+    
     public void addEntry(TraceEntry te) {
         entries.add(te);
     }
