@@ -19,8 +19,9 @@ public class UnitAction {
     public static final int TYPE_RETURN = 3;
     public static final int TYPE_PRODUCE = 4;
     public static final int TYPE_ATTACK_LOCATION = 5;
+    public static final int NUMBER_OF_ACTION_TYPES = 6;
 
-    String actionName[] ={"none","move","harvest","return","produce","attack_location"};
+    public static String actionName[] ={"none","move","harvest","return","produce","attack_location"};
     
     public static final int DIRECTION_NONE = -1;
     public static final int DIRECTION_UP = 0;
