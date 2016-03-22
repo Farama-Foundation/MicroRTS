@@ -127,9 +127,9 @@ public class XMLWriter {
 	 * @param xml string to write
 	 */
 	public void rawXML(String xml) {
-		indent();
+		//indent();
 		try {
-			writer.write(xml + "\n");
+			writer.write(xml);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

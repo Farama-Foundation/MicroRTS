@@ -83,7 +83,7 @@ public class Experimenter {
                         PhysicalGameStateJFrame w = null;
                         if (visualize) w = PhysicalGameStatePanel.newVisualizer(gs, 600, 600, partiallyObservable);
 
-                        out.println("MATCH UP: " + ai1+ " vs " + ai2);
+                        out.println("MATCH UP: " + ai1 + " vs " + ai2);
                         
                         boolean gameover = false;
                         do {

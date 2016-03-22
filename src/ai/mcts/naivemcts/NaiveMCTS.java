@@ -21,7 +21,7 @@ public class NaiveMCTS extends InterruptibleAIWithComputationBudget {
     public EvaluationFunction ef = null;
        
     Random r = new Random();
-    public AI randomAI = new RandomBiasedAI();
+    public AI playoutPolicy = new RandomBiasedAI();
     long max_actions_so_far = 0;
     
     GameState gs_to_start_from = null;
@@ -62,7 +62,7 @@ public class NaiveMCTS extends InterruptibleAIWithComputationBudget {
                                AI policy, EvaluationFunction a_ef) {
         super(available_time, max_playouts);
         MAXSIMULATIONTIME = lookahead;
-        randomAI = policy;
+        playoutPolicy = policy;
         MAX_TREE_DEPTH = max_depth;
         initial_epsilon_l = epsilon_l = e1;
         initial_epsilon_g = epsilon_g = e2;
@@ -76,7 +76,7 @@ public class NaiveMCTS extends InterruptibleAIWithComputationBudget {
     public NaiveMCTS(int available_time, int max_playouts, int lookahead, int max_depth, float e1, float e2, float e3, AI policy, EvaluationFunction a_ef) {
         super(available_time, max_playouts);
         MAXSIMULATIONTIME = lookahead;
-        randomAI = policy;
+        playoutPolicy = policy;
         MAX_TREE_DEPTH = max_depth;
         initial_epsilon_l = epsilon_l = e1;
         initial_epsilon_g = epsilon_g = e2;
@@ -90,7 +90,7 @@ public class NaiveMCTS extends InterruptibleAIWithComputationBudget {
     public NaiveMCTS(int available_time, int max_playouts, int lookahead, int max_depth, float e1, float e2, float e3, int a_global_strategy, AI policy, EvaluationFunction a_ef) {
         super(available_time, max_playouts);
         MAXSIMULATIONTIME = lookahead;
-        randomAI = policy;
+        playoutPolicy = policy;
         MAX_TREE_DEPTH = max_depth;
         initial_epsilon_l = epsilon_l = e1;
         initial_epsilon_g = epsilon_g = e2;
@@ -114,7 +114,7 @@ public class NaiveMCTS extends InterruptibleAIWithComputationBudget {
         
     
     public AI clone() {
-        return new NaiveMCTS(MAX_TIME, MAX_ITERATIONS, MAXSIMULATIONTIME, MAX_TREE_DEPTH, epsilon_l, discount_l, epsilon_g, discount_g, epsilon_0, discount_0, randomAI, ef);
+        return new NaiveMCTS(MAX_TIME, MAX_ITERATIONS, MAXSIMULATIONTIME, MAX_TREE_DEPTH, epsilon_l, discount_l, epsilon_g, discount_g, epsilon_0, discount_0, playoutPolicy, ef);
     }    
     
     
@@ -264,8 +264,8 @@ public class NaiveMCTS extends InterruptibleAIWithComputationBudget {
             if (gs.isComplete()) {
                 gameover = gs.cycle();
             } else {
-                gs.issue(randomAI.getAction(0, gs));
-                gs.issue(randomAI.getAction(1, gs));
+                gs.issue(playoutPolicy.getAction(0, gs));
+                gs.issue(playoutPolicy.getAction(1, gs));
             }
         }while(!gameover && gs.getTime()<time);   
     }
@@ -280,7 +280,7 @@ public class NaiveMCTS extends InterruptibleAIWithComputationBudget {
     
     
     public String toString() {
-        return "NaiveMCTS(" + MAXSIMULATIONTIME + "," + MAX_TIME + "," + MAX_ITERATIONS + "," + MAX_TREE_DEPTH + "," + epsilon_l + "," + epsilon_g + "," + epsilon_0 + ")";
+        return "NaiveMCTS(" + MAXSIMULATIONTIME + "," + MAX_TIME + "," + MAX_ITERATIONS + "," + MAX_TREE_DEPTH + "," + epsilon_l + "," + epsilon_g + "," + epsilon_0 + "," + playoutPolicy + ")";
     }
     
     public String statisticsString() {
