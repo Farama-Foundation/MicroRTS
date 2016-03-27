@@ -340,22 +340,34 @@ public class AdversarialBoundedDepthPlannerAlphaBeta {
     The search will end when:
         - the tree is searched to the maximum depth
         - or when System.currentTimeMillis() is larger or equal than timeLimit
-        - or when nLeaves is larger or equal to maxLeaves
+        - or when int is larger or equal to maxPlayouts
     */
-    public static Pair<MethodDecomposition,MethodDecomposition> getBestPlanIterativeDeepening(Term goalPlayerMax, Term goalPlayerMin, int a_maxPlayer, int timeout, int maxLeaves, int a_playoutLookahead, GameState a_gs, DomainDefinition a_dd, EvaluationFunction a_f, AI a_playoutAI) throws Exception {
+    public static Pair<MethodDecomposition,MethodDecomposition> getBestPlanIterativeDeepening(Term goalPlayerMax, Term goalPlayerMin, int a_maxPlayer, int timeout, int maxPlayouts, int a_playoutLookahead, GameState a_gs, DomainDefinition a_dd, EvaluationFunction a_f, AI a_playoutAI) throws Exception {
         long start = System.currentTimeMillis();
         long timeLimit = start + timeout;
         if (timeout<=0) timeLimit = 0;
         Pair<MethodDecomposition,MethodDecomposition> bestLastDepth = null;
         double tmp_leaves = 0, tmp_nodes = 0, tmp_depth = 0, tmp_time = 0;
+        int nPlayoutsBeforeStartingLastTime = 0, nPlayoutsUSedLastTime = 0;
         nPlayouts = 0;
         for(int depth = 1;;depth++) {
 //        for(int depth = 6;depth<7;depth++) {
             Pair<MethodDecomposition,MethodDecomposition> best = null;
             long currentTime = System.currentTimeMillis();
-            if (DEBUG>=1) System.out.println("Iterative Deepening depth: " + depth + " (total time so far: " + (currentTime - start) + "/" + timeout + ")" + " (total playouts so far: " + nPlayouts + "/" + maxLeaves + ")");
+            if (DEBUG>=1) System.out.println("Iterative Deepening depth: " + depth + " (total time so far: " + (currentTime - start) + "/" + timeout + ")" + " (total playouts so far: " + nPlayouts + "/" + maxPlayouts + ")");
             AdversarialBoundedDepthPlannerAlphaBeta planner = new AdversarialBoundedDepthPlannerAlphaBeta(goalPlayerMax, goalPlayerMin, a_maxPlayer, depth, a_playoutLookahead, a_gs, a_dd, a_f, a_playoutAI);
-            if (depth<=MAX_TREE_DEPTH) best = planner.getBestPlan(timeLimit, maxLeaves, (bestLastDepth==null ? true:false));
+            nPlayoutsBeforeStartingLastTime = nPlayouts;
+            if (depth<=MAX_TREE_DEPTH) {
+                int nPlayoutsleft = maxPlayouts - nPlayouts;
+                if (maxPlayouts>0 && nPlayoutsleft>nPlayoutsUSedLastTime) {
+                    if (DEBUG>=1) System.out.println("last time we used " + nPlayoutsUSedLastTime + ", and there are " + nPlayoutsleft + " left, trying one more depth!");
+                    best = planner.getBestPlan(timeLimit, maxPlayouts, (bestLastDepth==null ? true:false));                
+                } else {
+                    if (DEBUG>=1) System.out.println("last time we used " + nPlayoutsUSedLastTime + ", and there are only " + nPlayoutsleft + " left..., canceling search");
+                }
+                
+            }
+            nPlayoutsUSedLastTime = nPlayouts - nPlayoutsBeforeStartingLastTime;
             if (DEBUG>=1) System.out.println("    time taken: " + (System.currentTimeMillis() - currentTime));
 
             // print best plan:
