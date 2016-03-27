@@ -6,7 +6,6 @@
 
 package ai.ahtn.domain;
 
-import java.util.HashMap;
 import java.util.List;
 import rts.GameState;
 

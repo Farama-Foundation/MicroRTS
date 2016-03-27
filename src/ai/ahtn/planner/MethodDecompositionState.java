@@ -6,9 +6,8 @@
 
 package ai.ahtn.planner;
 
-import ai.ahtn.domain.HTNMethod;
 import ai.ahtn.domain.MethodDecomposition;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,7 +23,7 @@ public class MethodDecompositionState {
         executionState = md.getExecutionState();
         operatorExecutingState = md.getOperatorExecutingState();
         if (md.getOperatorsBeingExecuted()!=null) {
-            operatorsBeingExecuted = new LinkedList<>();            
+            operatorsBeingExecuted = new ArrayList<>();            
             operatorsBeingExecuted.addAll(md.getOperatorsBeingExecuted());
         }
     }
@@ -37,7 +36,7 @@ public class MethodDecompositionState {
         } else {
             List<MethodDecomposition> l = md.getOperatorsBeingExecuted();
             if (l==null) {
-                l = new LinkedList<>();
+                l = new ArrayList<>();
                 md.setOperatorsBeingExecuted(l);
             }
             l.clear();

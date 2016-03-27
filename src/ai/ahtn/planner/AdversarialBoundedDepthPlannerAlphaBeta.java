@@ -13,7 +13,7 @@ import ai.ahtn.domain.PredefinedOperators;
 import ai.ahtn.domain.Term;
 import ai.core.AI;
 import ai.evaluation.EvaluationFunction;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import rts.GameState;
 import rts.PlayerAction;
@@ -130,11 +130,11 @@ public class AdversarialBoundedDepthPlannerAlphaBeta {
 
         if (stack==null) {
             if (DEBUG>=1) System.out.println("AdversarialBoundedDepthPlanner.getBestPlan: first time, initializing stack");
-            stack = new LinkedList<>();
+            stack = new ArrayList<>();
             stack.add(0,new AdversarialChoicePoint(maxPlanRoot, minPlanRoot, maxPlanRoot, minPlanRoot, gs,0,-1,-EvaluationFunction.VICTORY,EvaluationFunction.VICTORY,false));
-            trail = new LinkedList<>();
+            trail = new ArrayList<>();
             trail.add(0,0);
-            bindings = new LinkedList<>();
+            bindings = new ArrayList<>();
         }
 
         last_tree_leaves = 0;
@@ -440,10 +440,10 @@ public class AdversarialBoundedDepthPlannerAlphaBeta {
                     return new AdversarialChoicePoint(null,null,previous_cp.maxPlanRoot,previous_cp.minPlanRoot, gs2,operatorDepth,lastTimeOperatorsIssued,previous_cp.getAlpha(),previous_cp.getBeta(),false);
                 }
             }
-            List<MethodDecomposition> actions1 = new LinkedList<>();
-            List<MethodDecomposition> actions2 = new LinkedList<>();
-            List<MethodDecomposition> choicePoints1 = new LinkedList<>();
-            List<MethodDecomposition> choicePoints2 = new LinkedList<>();
+            List<MethodDecomposition> actions1 = new ArrayList<>();
+            List<MethodDecomposition> actions2 = new ArrayList<>();
+            List<MethodDecomposition> choicePoints1 = new ArrayList<>();
+            List<MethodDecomposition> choicePoints2 = new ArrayList<>();
             int er1 = previous_cp.maxPlanRoot.executionCycle(gs2, actions1, choicePoints1, previous_cp);
             int er2 = previous_cp.minPlanRoot.executionCycle(gs2, actions2, choicePoints2, previous_cp);
             if (SIMULATE_UNTIL_NEXT_CHOICEPOINT) {
@@ -498,7 +498,7 @@ public class AdversarialBoundedDepthPlannerAlphaBeta {
                             gs2.getTime()>md.getUpdatedTermCycle()+operatorExecutionTimeout) {
 //                            if (gs2.getTime()>md.getUpdatedTermCycle()+operatorExecutionTimeout) System.out.println("operator timed out: " + md.getUpdatedTerm());
                             md.setExecutionState(2);
-                            if (toDelete==null) toDelete = new LinkedList<>();
+                            if (toDelete==null) toDelete = new ArrayList<>();
                             toDelete.add(md);
                             if (DEBUG>=2) System.out.println("AdversarialBoundedDepthPlanner.simulateUntilNextChoicePoint: operator complete (1).");
                         } else {
@@ -517,7 +517,7 @@ public class AdversarialBoundedDepthPlannerAlphaBeta {
                             gs2.getTime()>md.getUpdatedTermCycle()+operatorExecutionTimeout) {
 //                            if (gs2.getTime()>md.getUpdatedTermCycle()+operatorExecutionTimeout) System.out.println("operator timed out: " + md.getUpdatedTerm());
                             md.setExecutionState(2);
-                            if (toDelete==null) toDelete = new LinkedList<>();
+                            if (toDelete==null) toDelete = new ArrayList<>();
                             toDelete.add(md);
                             if (DEBUG>=2) System.out.println("AdversarialBoundedDepthPlanner.simulateUntilNextChoicePoint: operator complete (2).");
                         } else {
@@ -552,7 +552,7 @@ public class AdversarialBoundedDepthPlannerAlphaBeta {
                     } else {
                         md.setExecutionState(1);
                         if (previous_cp.maxPlanRoot.getOperatorsBeingExecuted()==null) {
-                            previous_cp.maxPlanRoot.setOperatorsBeingExecuted(new LinkedList<>());
+                            previous_cp.maxPlanRoot.setOperatorsBeingExecuted(new ArrayList<>());
                         }
                         previous_cp.maxPlanRoot.getOperatorsBeingExecuted().add(md);
                     }
@@ -573,7 +573,7 @@ public class AdversarialBoundedDepthPlannerAlphaBeta {
                     } else {
                         md.setExecutionState(1);
                         if (previous_cp.minPlanRoot.getOperatorsBeingExecuted()==null) {
-                            previous_cp.minPlanRoot.setOperatorsBeingExecuted(new LinkedList<>());
+                            previous_cp.minPlanRoot.setOperatorsBeingExecuted(new ArrayList<>());
                         }
                         previous_cp.minPlanRoot.getOperatorsBeingExecuted().add(md);
                     }

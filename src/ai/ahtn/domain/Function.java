@@ -7,7 +7,6 @@
 package ai.ahtn.domain;
 
 import ai.ahtn.domain.LispParser.LispElement;
-import java.util.HashMap;
 import java.util.List;
 import rts.GameState;
 
@@ -59,7 +58,7 @@ public class Function extends Term implements Parameter {
     
     public Parameter resolveParameter(List<Binding> l, GameState gs) throws Exception {
         Function f = this;
-        if (!l.isEmpty()) {
+        if (l!=null && !l.isEmpty()) {
             f = new Function();
             f.functor = functor;
             f.parameters = new Parameter[parameters.length];

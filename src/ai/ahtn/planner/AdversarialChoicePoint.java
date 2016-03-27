@@ -12,7 +12,7 @@ import ai.ahtn.domain.DomainDefinition;
 import ai.ahtn.domain.HTNMethod;
 import ai.ahtn.domain.MethodDecomposition;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import rts.GameState;
 
@@ -220,30 +220,7 @@ public class AdversarialChoicePoint {
         }
     }
     
-    
-    boolean nextExpansion(DomainDefinition dd, List<Binding> bindings, int renamingIndex) throws Exception {
-        if (choicePointPlayerMax!=null) {
-            if (choicePointPlayerMax.getType() == MethodDecomposition.METHOD_METHOD) {
-                return nextMethodExpansion(choicePointPlayerMax, gs, dd, bindings, renamingIndex);
-            } else if (choicePointPlayerMax.getType() == MethodDecomposition.METHOD_CONDITION ||
-                       choicePointPlayerMax.getType() == MethodDecomposition.METHOD_NON_BRANCHING_CONDITION) {
-                return nextConditionExpansion(choicePointPlayerMax, bindings);
-            } else {
-                throw new Exception("Wrong MethodDecomposition in choicePoint!");
-            }
-        } else {
-            if (choicePointPlayerMin.getType() == MethodDecomposition.METHOD_METHOD) {
-                return nextMethodExpansion(choicePointPlayerMin, gs, dd, bindings, renamingIndex);
-            } else if (choicePointPlayerMin.getType() == MethodDecomposition.METHOD_CONDITION ||
-                       choicePointPlayerMin.getType() == MethodDecomposition.METHOD_NON_BRANCHING_CONDITION) {
-                return nextConditionExpansion(choicePointPlayerMin, bindings);
-            } else {
-                throw new Exception("Wrong MethodDecomposition in choicePoint!");
-            }
-        }
-    }
-    
-    
+    // "previous_cp" is usually == this, and it is the choice point where the state should be saved for restoring it later when backtracking
     public boolean nextExpansion(DomainDefinition dd, List<Binding> bindings, int renamingIndex, AdversarialChoicePoint previous_cp) throws Exception {
         if (choicePointPlayerMax!=null) {
             previous_cp.captureExecutionStateNonRecursive(choicePointPlayerMax);
@@ -300,7 +277,7 @@ public class AdversarialChoicePoint {
                 } else {
 //                    System.out.println(this.hashCode() + " - ok " + l);
                 }
-                lastBindings = new LinkedList<>();
+                lastBindings = new ArrayList<>();
                 lastBindings.addAll(l);
 
                 updatedClauseHadAnyMatches = true;
@@ -322,7 +299,7 @@ public class AdversarialChoicePoint {
 
             List<HTNMethod> methods = dd.getMethodsForGoal(choicePoint.getTerm().getFunctor());
             if (methods==null) throw new Exception("No methods for: " + choicePoint.getTerm().getFunctor());
-            possibleMethods = new LinkedList<>();
+            possibleMethods = new ArrayList<>();
             possibleMethods.addAll(methods);
             if (DEBUG>=1) System.out.println("AdversarialChoicePoint.nextMethodExpansion: Goal: " + choicePoint.getTerm());        
             if (DEBUG>=1) System.out.println("AdversarialChoicePoint.nextMethodExpansion: Methods found: " + methods.size());

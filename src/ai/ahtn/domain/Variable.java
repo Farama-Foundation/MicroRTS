@@ -17,7 +17,7 @@ import rts.GameState;
  * 
  */
 public class Variable implements Parameter {
-    public static Symbol variable_to_ignore;    // this is the name of the "_" variable in prolog, for which no bindings should be kept
+    static Symbol variable_to_ignore;    // this is the name of the "_" variable in prolog, for which no bindings should be kept
 
     Symbol name;
     int renaming = 0;   // this is used to differenciate variables when cloning terms/clauses
@@ -65,6 +65,7 @@ public class Variable implements Parameter {
 
     
     public Parameter resolveParameter(List<Binding> l, GameState gs) throws Exception {
+        if (l==null) return this;
         return applyBindingsParameter(l);
     }
     

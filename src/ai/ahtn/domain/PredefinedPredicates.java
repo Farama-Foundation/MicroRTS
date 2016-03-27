@@ -44,18 +44,18 @@ public class PredefinedPredicates {
                     new PredicateTester() {
                         public List<Binding> firstMatch(Term term, GameState gs) throws Exception {
                             List<Binding> l = new LinkedList<>();
-                            Parameter p1 = term.parameters[0].resolveParameter(l, gs);
-                            Parameter p2 = term.parameters[1].resolveParameter(l, gs);
+                            Parameter p1 = term.parameters[0].resolveParameter(null, gs);
+                            Parameter p2 = term.parameters[1].resolveParameter(null, gs);
 
                             if (p1 instanceof Variable) {
                                 if (!((p2 instanceof Variable) &&
                                       p2.equals(p1))) {
-                                    if (!((Variable)p1).getName().equals(Variable.variable_to_ignore))
+                                    if (!((Variable)p1).ignore())
                                         l.add(new Binding((Variable)p1, p2));
                                 }
                             } else {
                                 if (p2 instanceof Variable) {
-                                    if (!((Variable)p2).getName().equals(Variable.variable_to_ignore))
+                                    if (!((Variable)p2).ignore())
                                         l.add(new Binding((Variable)p2, p1));
                                 } else {
                                     // otherwise, they are constants, and must be identical:

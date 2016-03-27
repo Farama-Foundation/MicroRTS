@@ -11,14 +11,13 @@ import ai.abstraction.pathfinding.BFSPathFinding;
 import ai.abstraction.pathfinding.GreedyPathFinding;
 import ai.abstraction.pathfinding.PathFinding;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import rts.GameState;
 import rts.PlayerAction;
 import rts.ResourceUsage;
 import rts.UnitAction;
 import rts.units.Unit;
 import rts.units.UnitType;
-import rts.units.UnitTypeTable;
 import util.Pair;
 
 /**
@@ -291,7 +290,7 @@ public class PredefinedOperators {
                             // if u1 == null, the unit is dead, so the action is over:
                             if (u1==null) return true;
                             if (gs.getUnitAction(u1)==null) {
-                                Parameter p = t.parameters[1].resolveParameter(new LinkedList<>(), gs);
+                                Parameter p = t.parameters[1].resolveParameter(null, gs);
                                 int pos2 = ((IntegerConstant)p).value;
                                 UnitAction ua = pf.findPath(u1, pos2, gs, ru);
                                 if (ua!=null) {

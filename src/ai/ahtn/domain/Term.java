@@ -120,8 +120,6 @@ public class Term {
         List<Binding> bindings = new LinkedList<>();
         Parameter resolved[] = new Parameter[parameters.length];
         
-        if (Variable.variable_to_ignore==null) Variable.variable_to_ignore = new Symbol("?_");
-        
         for(int i = 0;i<parameters.length;i++) {
             Parameter p1 = parameters[i].resolveParameter(bindings, gs);
             Parameter p2 =t. parameters[i].resolveParameter(bindings, gs);
@@ -132,12 +130,12 @@ public class Term {
             if (p1 instanceof Variable) {
                 if (!((p2 instanceof Variable) &&
                       p2.equals(p1))) {
-                    if (!((Variable)p1).getName().equals(Variable.variable_to_ignore))
+                    if (!((Variable)p1).ignore())
                         bindings.add(new Binding((Variable)p1, p2));
                 }
             } else {
                 if (p2 instanceof Variable) {
-                    if (!((Variable)p2).getName().equals(Variable.variable_to_ignore))
+                    if (!((Variable)p2).ignore())
                         bindings.add(new Binding((Variable)p2, p1));
                 } else {
                     // otherwise, they are constants, and must be identical:

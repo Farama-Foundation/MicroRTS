@@ -6,8 +6,7 @@
 
 package ai.ahtn.domain;
 
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import rts.GameState;
 
@@ -27,7 +26,7 @@ public class IntegerConstant implements Parameter {
     }
     
     public List<Binding> match(int v) {
-        if (value==v) return new LinkedList<>();
+        if (value==v) return new ArrayList<>();
         return null;
     }
     

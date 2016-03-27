@@ -7,7 +7,7 @@
 package ai.ahtn.domain;
 
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import rts.GameState;
@@ -193,10 +193,10 @@ public class Clause {
                 return matches_left.remove(0);
             case CLAUSE_AND:
                 {
-                    matches_left = new LinkedList<>();
+                    matches_left = new ArrayList<>();
                     matches_current = 0;
                     matches_previous = -1;
-                    matches_l = new LinkedList<>();
+                    matches_l = new ArrayList<>();
                     matches_resolved = new Clause[clauses.length];
                     matches_trail = new int[clauses.length];
                     while(true) {
@@ -239,7 +239,7 @@ public class Clause {
                 }
             case CLAUSE_OR:
                 {
-                    matches_left = new LinkedList<>();
+                    matches_left = new ArrayList<>();
                     matches_current = 0;
                     for(;matches_current<clauses.length;matches_current++) {
                         List<Binding> l = clauses[matches_current].firstMatch(gs);
@@ -250,17 +250,17 @@ public class Clause {
                 }
             case CLAUSE_NOT:
                 List<Binding> l = clauses[0].firstMatch(gs);
-                matches_left = new LinkedList<>();
+                matches_left = new ArrayList<>();
                 if (l==null) {
-                    return new LinkedList<>();
+                    return new ArrayList<>();
                 } else {
                     return null;
                 }
             case CLAUSE_TRUE:
-                matches_left = new LinkedList<>();
-                return new LinkedList<>();
+                matches_left = new ArrayList<>();
+                return new ArrayList<>();
             case CLAUSE_FALSE:
-                matches_left = new LinkedList<>();
+                matches_left = new ArrayList<>();
                 return null;
         }
         

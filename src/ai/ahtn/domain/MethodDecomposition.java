@@ -11,7 +11,7 @@ import ai.ahtn.planner.AdversarialChoicePoint;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import rts.GameState;
 import util.Pair;
@@ -291,7 +291,7 @@ public class MethodDecomposition {
         
     
     public List<MethodDecomposition> getLeaves() {
-        List<MethodDecomposition> l = new LinkedList<>();
+        List<MethodDecomposition> l = new ArrayList<>();
         if (subelements==null) {
             if (method!=null) {
                 l.addAll(method.getDecomposition().getLeaves());
@@ -533,7 +533,7 @@ public class MethodDecomposition {
     
 
     public List<Pair<Integer,List<Term>>> convertToOperatorList() throws Exception {
-        List<Pair<Integer,List<Term>>> l = new LinkedList<>();
+        List<Pair<Integer,List<Term>>> l = new ArrayList<>();
         convertToOperatorList(l);
         // sort the list:
         Collections.sort(l, new Comparator<Pair<Integer,List<Term>>>() {
@@ -554,7 +554,7 @@ public class MethodDecomposition {
             case METHOD_OPERATOR:
                 if (updatedTerm!=null) {
                     if (l.isEmpty()) {
-                        Pair<Integer,List<Term>> tmp = new Pair<>(updatedTermCycle, new LinkedList<>());
+                        Pair<Integer,List<Term>> tmp = new Pair<>(updatedTermCycle, new ArrayList<>());
                         tmp.m_b.add(updatedTerm);
                         l.add(tmp);
                     } else {
@@ -562,7 +562,7 @@ public class MethodDecomposition {
                         if (tmp.m_a == updatedTermCycle) {
                             tmp.m_b.add(updatedTerm);
                         } else {
-                            tmp = new Pair<>(updatedTermCycle, new LinkedList<>());
+                            tmp = new Pair<>(updatedTermCycle, new ArrayList<>());
                             tmp.m_b.add(updatedTerm);
                             l.add(tmp);
                         }

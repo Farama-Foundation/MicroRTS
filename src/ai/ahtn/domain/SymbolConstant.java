@@ -6,8 +6,7 @@
 
 package ai.ahtn.domain;
 
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import rts.GameState;
 
@@ -31,7 +30,7 @@ public class SymbolConstant extends Symbol implements Parameter {
     
     
     public List<Binding> match(String s) {
-        if (this.equals(s)) return new LinkedList<>();
+        if (this.equals(s)) return new ArrayList<>();
         return null;
     }
     

@@ -9,7 +9,7 @@ package ai.ahtn.domain;
 import ai.ahtn.domain.LispParser.LispElement;
 import ai.ahtn.planner.AdversarialChoicePoint;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import rts.GameState;
 
@@ -91,7 +91,7 @@ public class HTNMethod {
         HashMap<Symbol,Integer> appearances = new HashMap<>();
         countVariableAppearances(appearances);
         
-        List<Symbol> l = new LinkedList<>();
+        List<Symbol> l = new ArrayList<>();
         for(Symbol v:appearances.keySet()) {
             if (appearances.get(v)==1) l.add(v);
         }
