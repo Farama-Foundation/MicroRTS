@@ -6,9 +6,9 @@ package ai.abstraction;
 
 import ai.core.AI;
 import ai.abstraction.pathfinding.PathFinding;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import rts.*;
 import rts.units.Unit;
@@ -20,6 +20,10 @@ import util.Pair;
  * @author santi
  */
 public abstract class AbstractionLayerAI extends AI {
+    // set this to true, if you believe there is a bug, and want to verify that actions
+    // being generated are actually possible before sending to the game.
+    public static boolean VERIFY_ACTION_CORRECTNESS = false;
+    
     // functionality that this abstraction layer offers:
     // 1) You can forget about issuing actions to all units, just issue the ones you want, the rest are set to NONE automatically
     // 2) High level actions (using A*):
@@ -43,10 +47,10 @@ public abstract class AbstractionLayerAI extends AI {
     public PlayerAction translateActions(int player, GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         PlayerAction pa = new PlayerAction();
-        List<Pair<Unit,UnitAction>> desires = new LinkedList<Pair<Unit,UnitAction>>();
+        List<Pair<Unit,UnitAction>> desires = new ArrayList<>();
         
         // Execute abstract actions:
-        List<Unit> toDelete = new LinkedList<Unit>();
+        List<Unit> toDelete = new ArrayList<>();
         for(AbstractAction aa:actions.values()) {
             if (!pgs.getUnits().contains(aa.unit)) {
                 // The unit is dead:
@@ -58,7 +62,16 @@ public abstract class AbstractionLayerAI extends AI {
                 } else {
                     if (gs.getActionAssignment(aa.unit)==null) {
                         UnitAction ua = aa.execute(gs);
-                        if (ua!=null) desires.add(new Pair<Unit,UnitAction>(aa.unit,ua));
+                        if (ua!=null) {
+                            if (VERIFY_ACTION_CORRECTNESS) {
+                                // verify that the action is actually feasible:
+                                List<UnitAction> ual = aa.unit.getUnitActions(gs);
+                                if (ual.contains(ua)) desires.add(new Pair<>(aa.unit,ua));
+                            } else { 
+                                desires.add(new Pair<>(aa.unit,ua));
+                            }
+                        }
+                        
                     }
                 }
             }

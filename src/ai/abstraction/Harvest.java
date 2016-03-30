@@ -6,7 +6,6 @@ package ai.abstraction;
 
 import ai.abstraction.pathfinding.PathFinding;
 import rts.GameState;
-import rts.PhysicalGameState;
 import rts.UnitAction;
 import rts.units.Unit;
 
@@ -27,13 +26,13 @@ public class Harvest extends AbstractAction  {
     }
     
     public boolean completed(GameState gs) {
-        if (!gs.getPhysicalGameState().getUnits().contains(target)) return true;
+        if (!gs.getPhysicalGameState().getUnits().contains(target) ||
+            !gs.getPhysicalGameState().getUnits().contains(base)) return true;
         return false;
     }
 
     
     public UnitAction execute(GameState gs) {
-        PhysicalGameState pgs = gs.getPhysicalGameState();
         if (unit.getResources()==0) {
             // go get resources:
 //            System.out.println("findPathToAdjacentPosition from Harvest: (" + target.getX() + "," + target.getY() + ")");
