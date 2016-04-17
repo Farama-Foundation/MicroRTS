@@ -21,7 +21,8 @@ import util.XMLWriter;
 public class TraceGenerationTest {
     public static void main(String args[]) throws IOException, Exception {
         UnitTypeTable utt = new UnitTypeTable();
-        PhysicalGameState pgs = MapGenerator.basesWorkers8x8Obstacle();
+        MapGenerator mg = new MapGenerator(utt);
+        PhysicalGameState pgs = mg.basesWorkers8x8Obstacle();
         GameState gs = new GameState(pgs, utt);
         int MAXCYCLES = 5000;
         boolean gameover = false;

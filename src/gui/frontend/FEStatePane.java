@@ -143,9 +143,10 @@ public class FEStatePane extends JPanel {
     FEStateMouseListener mouseListener = null;
 
     public FEStatePane() {
-        currentGameState = new GameState(MapGenerator.bases8x8(), currentUtt);
-
         currentUtt = new UnitTypeTable();
+        MapGenerator mg = new MapGenerator(currentUtt);
+        
+        currentGameState = new GameState(mg.bases8x8(), currentUtt);
 
         setLayout(new BorderLayout());
 

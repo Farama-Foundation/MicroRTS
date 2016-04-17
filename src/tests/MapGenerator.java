@@ -19,81 +19,94 @@ import util.XMLWriter;
  * 
  */
 public class MapGenerator {
-    static UnitTypeTable utt = new UnitTypeTable();
-    static UnitType resourceType = utt.getUnitType("Resource");
-    static UnitType baseType = utt.getUnitType("Base");
-    static UnitType barracksType = utt.getUnitType("Barracks");
-    static UnitType workerType = utt.getUnitType("Worker");
-    static UnitType lightType = utt.getUnitType("Light");
-    static UnitType heavyType = utt.getUnitType("Heavy");
-    static UnitType rangedType = utt.getUnitType("Ranged");
+    static UnitTypeTable utt = null;
+    
+    UnitType resourceType = null;
+    UnitType baseType = null;
+    UnitType barracksType = null;
+    UnitType workerType = null;
+    UnitType lightType = null;
+    UnitType heavyType = null;
+    UnitType rangedType = null;
+    
+    public MapGenerator(UnitTypeTable a_utt) {
+        utt = a_utt;
+        resourceType = utt.getUnitType("Resource");
+        baseType = utt.getUnitType("Base");
+        barracksType = utt.getUnitType("Barracks");
+        workerType = utt.getUnitType("Worker");
+        lightType = utt.getUnitType("Light");
+        heavyType = utt.getUnitType("Heavy");
+        rangedType = utt.getUnitType("Ranged");
+    }
     
     public static void main(String args[]) throws IOException {
+        MapGenerator mg = new MapGenerator(new UnitTypeTable());
         // Complete game maps:
         XMLWriter xml = new XMLWriter(new FileWriter("maps/bases8x8.xml"));
-        bases8x8().toxml(xml);
+        mg.bases8x8().toxml(xml);
         xml.flush();
 
         xml = new XMLWriter(new FileWriter("maps/basesWorkers8x8.xml"));
-        basesWorkers8x8().toxml(xml);
+        mg.basesWorkers8x8().toxml(xml);
         xml.flush();
 
         xml = new XMLWriter(new FileWriter("maps/basesWorkers8x8Obstacle.xml"));
-        basesWorkers8x8Obstacle().toxml(xml);
+        mg.basesWorkers8x8Obstacle().toxml(xml);
         xml.flush();
         
         xml = new XMLWriter(new FileWriter("maps/basesWorkers12x12.xml"));
-        basesWorkers12x12().toxml(xml);
+        mg.basesWorkers12x12().toxml(xml);
         xml.flush();
 
         xml = new XMLWriter(new FileWriter("maps/complexBasesWorkers12x12.xml"));
-        complexBasesWorkers12x12().toxml(xml);
+        mg.complexBasesWorkers12x12().toxml(xml);
         xml.flush();        
 
         xml = new XMLWriter(new FileWriter("maps/basesWorkers16x16.xml"));
-        basesWorkers16x16().toxml(xml);
+        mg.basesWorkers16x16().toxml(xml);
         xml.flush();
         
         xml = new XMLWriter(new FileWriter("maps/basesWorkersBarracks8x8.xml"));
-        basesWorkersBarracks8x8().toxml(xml);
+        mg.basesWorkersBarracks8x8().toxml(xml);
         xml.flush();
         
         // MELEE maps:
         xml = new XMLWriter(new FileWriter("maps/melee4x4light2.xml"));
-        melee4x4light2().toxml(xml);
+        mg.melee4x4light2().toxml(xml);
         xml.flush();
         
         xml = new XMLWriter(new FileWriter("maps/melee8x8light4.xml"));
-        melee8x8light4().toxml(xml);
+        mg.melee8x8light4().toxml(xml);
         xml.flush();
         
         xml = new XMLWriter(new FileWriter("maps/melee8x8Mixed4.xml"));
-        melee8x8Mixed4().toxml(xml);
+        mg.melee8x8Mixed4().toxml(xml);
         xml.flush();
         
         xml = new XMLWriter(new FileWriter("maps/melee8x8Mixed6.xml"));
-        melee8x8Mixed6().toxml(xml);
+        mg.melee8x8Mixed6().toxml(xml);
         xml.flush();
 
         xml = new XMLWriter(new FileWriter("maps/melee16x16Mixed8.xml"));
-        melee16x16Mixed8().toxml(xml);
+        mg.melee16x16Mixed8().toxml(xml);
         xml.flush();
 
         xml = new XMLWriter(new FileWriter("maps/melee12x12Mixed12.xml"));
-        melee12x12Mixed12().toxml(xml);
+        mg.melee12x12Mixed12().toxml(xml);
         xml.flush();
 
         xml = new XMLWriter(new FileWriter("maps/melee16x16Mixed12.xml"));
-        melee16x16Mixed12().toxml(xml);
+        mg.melee16x16Mixed12().toxml(xml);
         xml.flush();
         
         xml = new XMLWriter(new FileWriter("maps/melee14x12Mixed18.xml"));
-        melee14x12Mixed18().toxml(xml);
+        mg.melee14x12Mixed18().toxml(xml);
         xml.flush();
     }
 
     
-    public static PhysicalGameState bases8x8() {
+    public PhysicalGameState bases8x8() {
         PhysicalGameState pgs = new PhysicalGameState(8,8);
         
         Player p0 = new Player(0,5);
@@ -114,7 +127,7 @@ public class MapGenerator {
         return pgs;
     }
     
-    public static PhysicalGameState basesWorkers8x8() {
+    public PhysicalGameState basesWorkers8x8() {
         PhysicalGameState pgs = new PhysicalGameState(8,8);
         
         Player p0 = new Player(0,5);
@@ -141,7 +154,7 @@ public class MapGenerator {
     }  
     
     
-    public static PhysicalGameState basesWorkers8x8Obstacle() {
+    public PhysicalGameState basesWorkers8x8Obstacle() {
         PhysicalGameState pgs = new PhysicalGameState(8,8);
         
         Player p0 = new Player(0,5);
@@ -177,7 +190,7 @@ public class MapGenerator {
     }  
     
     
-    public static PhysicalGameState basesWorkers12x12() {
+    public PhysicalGameState basesWorkers12x12() {
         PhysicalGameState pgs = new PhysicalGameState(12,12);
         
         Player p0 = new Player(0,5);
@@ -208,7 +221,7 @@ public class MapGenerator {
     }     
     
     
-    public static PhysicalGameState complexBasesWorkers12x12() {
+    public PhysicalGameState complexBasesWorkers12x12() {
         PhysicalGameState pgs = new PhysicalGameState(12,12);
         
         Player p0 = new Player(0,5);
@@ -247,7 +260,7 @@ public class MapGenerator {
     }     
     
     
-    public static PhysicalGameState basesWorkers16x16() {
+    public PhysicalGameState basesWorkers16x16() {
         PhysicalGameState pgs = new PhysicalGameState(16,16);
         
         Player p0 = new Player(0,5);
@@ -278,7 +291,7 @@ public class MapGenerator {
     }    
     
         
-    public static PhysicalGameState basesWorkersBarracks8x8() {
+    public PhysicalGameState basesWorkersBarracks8x8() {
         PhysicalGameState pgs = new PhysicalGameState(8,8);
         
         Player p0 = new Player(0,5);
@@ -311,7 +324,7 @@ public class MapGenerator {
     
     
 
-    public static PhysicalGameState melee4x4light2() {
+    public PhysicalGameState melee4x4light2() {
         PhysicalGameState pgs = new PhysicalGameState(4,4);
         
         Player p0 = new Player(0,0);
@@ -332,7 +345,7 @@ public class MapGenerator {
     }       
     
     
-    public static PhysicalGameState melee8x8light4() {
+    public PhysicalGameState melee8x8light4() {
         PhysicalGameState pgs = new PhysicalGameState(8,8);
         
         Player p0 = new Player(0,0);
@@ -361,7 +374,7 @@ public class MapGenerator {
     }       
     
     
-    public static PhysicalGameState melee8x8Mixed4() {
+    public PhysicalGameState melee8x8Mixed4() {
         PhysicalGameState pgs = new PhysicalGameState(8,8);
         
         Player p0 = new Player(0,0);
@@ -390,7 +403,7 @@ public class MapGenerator {
     }     
     
     
-    public static PhysicalGameState melee8x8Mixed6() {
+    public PhysicalGameState melee8x8Mixed6() {
         PhysicalGameState pgs = new PhysicalGameState(8,8);
         
         Player p0 = new Player(0,0);
@@ -416,7 +429,7 @@ public class MapGenerator {
     }        
       
     
-    public static PhysicalGameState melee16x16Mixed8() {
+    public PhysicalGameState melee16x16Mixed8() {
         PhysicalGameState pgs = new PhysicalGameState(16,16);
         
         Player p0 = new Player(0,0);
@@ -445,7 +458,7 @@ public class MapGenerator {
         return pgs;
     }    
     
-    public static PhysicalGameState melee12x12Mixed12() {
+    public PhysicalGameState melee12x12Mixed12() {
         PhysicalGameState pgs = new PhysicalGameState(12,12);
         
         Player p0 = new Player(0,0);
@@ -482,7 +495,7 @@ public class MapGenerator {
         return pgs;
     }            
     
-    public static PhysicalGameState melee16x16Mixed12() {
+    public PhysicalGameState melee16x16Mixed12() {
         PhysicalGameState pgs = new PhysicalGameState(16,16);
         
         Player p0 = new Player(0,0);
@@ -520,7 +533,7 @@ public class MapGenerator {
     }        
     
 
-    public static PhysicalGameState melee14x12Mixed18() {
+    public PhysicalGameState melee14x12Mixed18() {
         PhysicalGameState pgs = new PhysicalGameState(14,12);
         
         Player p0 = new Player(0,0);
