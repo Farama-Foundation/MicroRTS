@@ -121,7 +121,7 @@ public class PhysicalGameStatePanel extends JPanel {
         return colorScheme;
     }
     
-    public void setState(GameState a_gs) {
+    public void setStateCloning(GameState a_gs) {
         gs = a_gs.clone();
         pgs = gs.getPhysicalGameState();
         if (pogs[0]!=null) {
@@ -130,6 +130,17 @@ public class PhysicalGameStatePanel extends JPanel {
         }        
     }
     
+    
+    public void setStateDirect(GameState a_gs) {
+        gs = a_gs;
+        pgs = gs.getPhysicalGameState();
+        if (pogs[0]!=null) {
+            pogs[0] = new PartiallyObservableGameState(a_gs, 0);
+            pogs[1] = new PartiallyObservableGameState(a_gs, 1);
+        }        
+    }
+
+
     public GameState getState() {
         return gs;
     }

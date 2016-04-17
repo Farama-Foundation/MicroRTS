@@ -30,8 +30,11 @@ public class PhysicalGameStateJFrame extends JFrame {
         return panel;
     }
     
-    public void setState(GameState gs) {
-        panel.setState(gs);
+    public void setStateCloning(GameState gs) {
+        panel.setStateCloning(gs);
     }
             
+    public void setStateDirect(GameState gs) {
+        panel.setStateDirect(gs);
+    }
 }

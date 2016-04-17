@@ -98,7 +98,7 @@ public class TraceVisualizer extends JPanel implements ListSelectionListener {
   public void valueChanged(ListSelectionEvent e) {
     int selection = Selector.getSelectedIndex();
 
-    ((PhysicalGameStatePanel)statePanel).setState(states.get(selection));
+    ((PhysicalGameStatePanel)statePanel).setStateDirect(states.get(selection));
     this.repaint();
   }
 

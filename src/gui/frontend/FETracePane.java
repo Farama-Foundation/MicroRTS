@@ -69,7 +69,7 @@ public class FETracePane extends JPanel {
                         try {
                             currentTrace = new Trace(new SAXBuilder().build(file.getAbsolutePath()).getRootElement(), currentUtt);
                             currentGameCycle = 0;
-                            statePanel.setState(currentTrace.getGameStateAtCycle(currentGameCycle));
+                            statePanel.setStateDirect(currentTrace.getGameStateAtCycle(currentGameCycle));
                             statePanel.repaint();
                         } catch (Exception ex) {
                             ex.printStackTrace();
@@ -124,7 +124,7 @@ public class FETracePane extends JPanel {
                 {
                     if (!statePanel.getState().gameover()) {
                         currentGameCycle++;
-                        statePanel.setState(currentTrace.getGameStateAtCycle(currentGameCycle));
+                        statePanel.setStateDirect(currentTrace.getGameStateAtCycle(currentGameCycle));
                         statePanel.repaint();
                     }
                 }
@@ -140,7 +140,7 @@ public class FETracePane extends JPanel {
                 {
                     if (currentGameCycle>0) {
                         currentGameCycle--;
-                        statePanel.setState(currentTrace.getGameStateAtCycle(currentGameCycle));
+                        statePanel.setStateDirect(currentTrace.getGameStateAtCycle(currentGameCycle));
                         statePanel.repaint();
                     }
                 }
@@ -157,7 +157,7 @@ public class FETracePane extends JPanel {
                     for(TraceEntry te:currentTrace.getEntries()) {
                         if (te.getTime()>currentGameCycle) {
                             currentGameCycle = te.getTime();
-                            statePanel.setState(currentTrace.getGameStateAtCycle(currentGameCycle));
+                            statePanel.setStateDirect(currentTrace.getGameStateAtCycle(currentGameCycle));
                             statePanel.repaint();
                             break;
                         }
@@ -183,7 +183,7 @@ public class FETracePane extends JPanel {
                     }
                     if (target!=null) {
                         currentGameCycle = target.getTime();
-                        statePanel.setState(currentTrace.getGameStateAtCycle(currentGameCycle));
+                        statePanel.setStateDirect(currentTrace.getGameStateAtCycle(currentGameCycle));
                         statePanel.repaint();
                     }
                 }

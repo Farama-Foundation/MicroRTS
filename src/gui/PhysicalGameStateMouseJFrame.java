@@ -46,8 +46,8 @@ public class PhysicalGameStateMouseJFrame extends JFrame {
         return mousePanel;
     }
     
-    public void setState(GameState gs) {
-        panel.setState(gs);
+    public void setStateDirect(GameState gs) {
+        panel.setStateDirect(gs);
     }
     
     

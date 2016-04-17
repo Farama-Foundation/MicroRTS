@@ -107,7 +107,7 @@ public class Experimenter {
                             gameover = gs.cycle();
                             if (DEBUG>=1) {System.out.println("cycle done.");out.flush();}
                             if (w!=null) {
-                                w.setState(gs.clone());
+                                w.setStateCloning(gs);
                                 w.repaint();
                                 try {
                                     Thread.sleep(1);    // give time to the window to repaint
