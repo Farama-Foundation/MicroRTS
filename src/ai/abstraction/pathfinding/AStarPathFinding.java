@@ -77,6 +77,15 @@ public class AStarPathFinding extends PathFinding {
         int sq_range = range*range;
         int startPos = start.getY()*w + start.getX();
         
+        assert(targetx>=0);
+        assert(targetx<w);
+        assert(targety>=0);
+        assert(targety<h);
+        assert(start.getX()>=0);
+        assert(start.getX()<w);
+        assert(start.getY()>=0);
+        assert(start.getY()<h);
+        
         openinsert = 0;
         open[openinsert] = startPos;
         heuristic[openinsert] = manhattanDistance(start.getX(), start.getY(), targetx, targety);
@@ -142,24 +151,28 @@ public class AStarPathFinding extends PathFinding {
             }
             if (y>0 && inOpenOrClosed[pos-w] == 0) {
                 if (free[x][y-1]==null) free[x][y-1]=gs.free(x, y-1);
+                assert(free[x][y-1]!=null);
                 if (free[x][y-1]) {
                     addToOpen(x,y-1,pos-w,pos,manhattanDistance(x, y-1, targetx, targety));
                 }
             }
             if (x<pgs.getWidth()-1 && inOpenOrClosed[pos+1] == 0) {
                 if (free[x+1][y]==null) free[x+1][y]=gs.free(x+1, y);
+                assert(free[x+1][y]!=null);
                 if (free[x+1][y]) {
                     addToOpen(x+1,y,pos+1,pos,manhattanDistance(x+1, y, targetx, targety));
                 }
             }
             if (y<pgs.getHeight()-1 && inOpenOrClosed[pos+w] == 0) {
                 if (free[x][y+1]==null) free[x][y+1]=gs.free(x, y+1);
+                assert(free[x][y+1]!=null);
                 if (free[x][y+1]) {
                     addToOpen(x,y+1,pos+w,pos,manhattanDistance(x, y+1, targetx, targety));
                 }
             }
             if (x>0 && inOpenOrClosed[pos-1] == 0) {
                 if (free[x-1][y]==null) free[x-1][y]=gs.free(x-1, y);
+                assert(free[x-1][y]!=null);
                 if (free[x-1][y]) {
                     addToOpen(x-1,y,pos-1,pos,manhattanDistance(x-1, y, targetx, targety));
                 }

@@ -487,6 +487,7 @@ public class FEStatePane extends JPanel {
                                         } else {
                                             Thread.sleep(1);
                                         }
+                                        if (!w.isVisible()) break;  // if the user has closed the window
                                     }while(!gameover && gs.getTime()<MAXCYCLES);
                                     
                                     if (trace!=null) {
