@@ -9,18 +9,48 @@ import ai.core.AI;
 import gui.PhysicalGameStatePanel;
 import java.io.PrintStream;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import javax.swing.JFrame;
 import rts.GameState;
 import rts.PhysicalGameState;
 import rts.PlayerAction;
 import rts.units.UnitTypeTable;
+import util.RunnableWithTimeOut;
 
 /**
  *
  * @author santi
  */
 public class ExperimenterAsymmetric {
+    public static long BRANCHING_CALCULATION_TIMEOUT = 7200000;
     public static boolean PRINT_BRANCHING_AT_EACH_MOVE = false;
+    
+    static class BranchingCalculatorWithTimeOut {
+        static double branching = 0;
+        static boolean running = false;
+        static double branching(GameState gs, int player, long timeOutMillis) throws Exception {
+            if (running) throw new Exception("Two calls to BranchingCalculatorWithTimeOut in parallel!");
+            branching = 0;
+            running = true;
+            try {
+                RunnableWithTimeOut.runWithTimeout(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            branching = BranchingFactorCalculatorDouble.branchingFactorByResourceUsageSeparatingFast(gs, player);
+                        }catch(Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, timeOutMillis, TimeUnit.MILLISECONDS);
+            } catch (TimeoutException e) {
+//                System.out.println("BranchingCalculatorWithTimeOut: timeout!");
+            }    
+            running = false;
+            return branching;
+        }
+    }
 
     public static void runExperiments(List<AI> bots1, List<AI> bots2, List<PhysicalGameState> maps, UnitTypeTable utt, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize, PrintStream out) throws Exception {
         int wins[][] = new int[bots1.size()][bots2.size()];
@@ -55,8 +85,8 @@ public class ExperimenterAsymmetric {
                         boolean gameover = false;
                         do {
                             if (PRINT_BRANCHING_AT_EACH_MOVE) {
-                                String bf1 = (gs.canExecuteAnyAction(0) ? ""+BranchingFactorCalculatorDouble.branchingFactorByResourceUsageSeparatingFast(gs, 0):"-");
-                                String bf2 = (gs.canExecuteAnyAction(1) ? ""+BranchingFactorCalculatorDouble.branchingFactorByResourceUsageSeparatingFast(gs, 1):"-");
+                                String bf1 = (gs.canExecuteAnyAction(0) ? ""+BranchingCalculatorWithTimeOut.branching(gs, 0, BRANCHING_CALCULATION_TIMEOUT):"-");
+                                String bf2 = (gs.canExecuteAnyAction(1) ? ""+BranchingCalculatorWithTimeOut.branching(gs, 1, BRANCHING_CALCULATION_TIMEOUT):"-");
                                 if (!bf1.equals("-") || !bf2.equals("-")) {
                                     out.print("branching\t" + bf1 + "\t" + bf2 + "\n");
                                 }
