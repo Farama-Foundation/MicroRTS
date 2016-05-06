@@ -16,7 +16,7 @@ import rts.PlayerAction;
  *
  * @author santi
  */
-public class TwoPhaseNaiveMCTS extends InterruptibleAIWithComputationBudget {
+public class TwoPhaseNaiveMCTSPerNode extends InterruptibleAIWithComputationBudget {
     public static int DEBUG = 0;
     public EvaluationFunction ef = null;
        
@@ -25,10 +25,8 @@ public class TwoPhaseNaiveMCTS extends InterruptibleAIWithComputationBudget {
     long max_actions_so_far = 0;
     
     GameState gs_to_start_from = null;
-    NaiveMCTSNode tree = null;
+    TwoPhaseNaiveMCTSNode tree = null;
     int node_creation_ID = 0;
-    int n_phase1_iterations_left = -1;      // this is set in the first cycle of execution for each action
-    int n_phase1_milliseconds_left = -1;      // this is set in the first cycle of execution for each action
             
     public int MAXSIMULATIONTIME = 1024;
     public int MAX_TREE_DEPTH = 10;
@@ -41,7 +39,7 @@ public class TwoPhaseNaiveMCTS extends InterruptibleAIWithComputationBudget {
     public float phase2_epsilon_l = 0.3f;
     public float phase2_epsilon_g = 0.0f;
     public float phase2_epsilon_0 = 0.0f;
-    public float phase1_ratio = 0.5f;
+    public int phase1_budget = 100;
     
     public int phase1_global_strategy = NaiveMCTSNode.E_GREEDY;
     public int phase2_global_strategy = NaiveMCTSNode.E_GREEDY;
@@ -53,10 +51,10 @@ public class TwoPhaseNaiveMCTS extends InterruptibleAIWithComputationBudget {
     public long total_time = 0;
     
     
-    public TwoPhaseNaiveMCTS(int available_time, int max_playouts, int lookahead, int max_depth, 
+    public TwoPhaseNaiveMCTSPerNode(int available_time, int max_playouts, int lookahead, int max_depth, 
                                float el1, float eg1, float e01,
                                float el2, float eg2, float e02,
-                               float p1_ratio,
+                               int p1_budget,
                                AI policy, EvaluationFunction a_ef) {
         super(available_time, max_playouts);
         MAXSIMULATIONTIME = lookahead;
@@ -68,14 +66,14 @@ public class TwoPhaseNaiveMCTS extends InterruptibleAIWithComputationBudget {
         phase2_epsilon_l = el2;
         phase2_epsilon_g = eg2;
         phase2_epsilon_0 = e02;
-        phase1_ratio = p1_ratio;
+        phase1_budget = p1_budget;
         ef = a_ef;
     }    
     
-    public TwoPhaseNaiveMCTS(int available_time, int max_playouts, int lookahead, int max_depth, 
+    public TwoPhaseNaiveMCTSPerNode(int available_time, int max_playouts, int lookahead, int max_depth, 
                                float el1, float eg1, float e01, int a_gs1,
                                float el2, float eg2, float e02, int a_gs2,
-                               float p1_ratio,
+                               int p1_budget,
                                AI policy, EvaluationFunction a_ef) {
         super(available_time, max_playouts);
         MAXSIMULATIONTIME = lookahead;
@@ -91,7 +89,7 @@ public class TwoPhaseNaiveMCTS extends InterruptibleAIWithComputationBudget {
         phase2_epsilon_0 = e02;
         phase2_global_strategy = a_gs2;
         
-        phase1_ratio = p1_ratio;
+        phase1_budget = p1_budget;
         ef = a_ef;
     }        
 
@@ -103,31 +101,24 @@ public class TwoPhaseNaiveMCTS extends InterruptibleAIWithComputationBudget {
         total_actions_issued = 0;
         total_time = 0;
         node_creation_ID = 0;
-        n_phase1_iterations_left = -1;
-        n_phase1_milliseconds_left = -1;
     }    
         
     
     public AI clone() {
-        return new TwoPhaseNaiveMCTS(MAX_TIME, MAX_ITERATIONS, MAXSIMULATIONTIME, MAX_TREE_DEPTH, 
+        return new TwoPhaseNaiveMCTSPerNode(MAX_TIME, MAX_ITERATIONS, MAXSIMULATIONTIME, MAX_TREE_DEPTH, 
                                              phase1_epsilon_l, phase1_epsilon_g, phase1_epsilon_0,
                                              phase2_epsilon_l, phase2_epsilon_g, phase2_epsilon_0,
-                                             phase1_ratio, randomAI, ef);
+                                             phase1_budget, randomAI, ef);
     }    
     
     
     public void startNewComputation(int a_player, GameState gs) throws Exception {
     	playerForThisComputation = a_player;
         node_creation_ID = 0;
-        tree = new NaiveMCTSNode(playerForThisComputation, 1-playerForThisComputation, gs, null, ef.upperBound(gs), node_creation_ID++);
+        tree = new TwoPhaseNaiveMCTSNode(playerForThisComputation, 1-playerForThisComputation, gs, null, ef.upperBound(gs), node_creation_ID++);
         
         max_actions_so_far = Math.max(tree.moveGenerator.getSize(),max_actions_so_far);
         gs_to_start_from = gs;
-
-        n_phase1_iterations_left = -1;
-        n_phase1_milliseconds_left = -1;
-        if (MAX_ITERATIONS>0) n_phase1_iterations_left = (int)(phase1_ratio * MAX_ITERATIONS);
-        if (MAX_TIME>0) n_phase1_milliseconds_left = (int)(phase1_ratio * MAX_TIME);
     }    
     
     
@@ -135,8 +126,6 @@ public class TwoPhaseNaiveMCTS extends InterruptibleAIWithComputationBudget {
         if (DEBUG>=2) System.out.println("Resetting search...");
         tree = null;
         gs_to_start_from = null;
-        n_phase1_iterations_left = -1;
-        n_phase1_milliseconds_left = -1;
     }
     
 
@@ -145,16 +134,13 @@ public class TwoPhaseNaiveMCTS extends InterruptibleAIWithComputationBudget {
         long start = System.currentTimeMillis();
         long end = start;
         long count = 0;
-        int n_phase1_milliseconds_left_initial = n_phase1_milliseconds_left;
         while(true) {
-            if (n_phase1_milliseconds_left>0) n_phase1_milliseconds_left = n_phase1_milliseconds_left_initial - (int)(end - start);
             if (!iteration(playerForThisComputation)) break;
             count++;
             end = System.currentTimeMillis();
             if (MAX_TIME>=0 && (end - start)>=MAX_TIME) break; 
             if (MAX_ITERATIONS>=0 && count>=MAX_ITERATIONS) break;             
         }
-            if (n_phase1_milliseconds_left>0) n_phase1_milliseconds_left = n_phase1_milliseconds_left_initial - (int)(end - start);
 //        System.out.println("HL: " + count + " time: " + (System.currentTimeMillis() - start) + " (" + available_time + "," + max_playouts + ")");
         total_time += (end - start);
         total_cycles_executed++;
@@ -162,14 +148,12 @@ public class TwoPhaseNaiveMCTS extends InterruptibleAIWithComputationBudget {
     
     
     public boolean iteration(int player) throws Exception {
-        NaiveMCTSNode leaf;
+        TwoPhaseNaiveMCTSNode leaf;
 //        System.out.println("  " + n_phase1_iterations_left);
-        if (n_phase1_iterations_left>0 || n_phase1_milliseconds_left>0) {
-            leaf = tree.selectLeaf(player, 1-player, phase1_epsilon_l, phase1_epsilon_g, phase1_epsilon_0, phase1_global_strategy, MAX_TREE_DEPTH, node_creation_ID++);
-            n_phase1_iterations_left--;
-        } else {
-            leaf = tree.selectLeaf(player, 1-player, phase2_epsilon_l, phase2_epsilon_g, phase2_epsilon_0, phase2_global_strategy, MAX_TREE_DEPTH, node_creation_ID++);
-        }
+        leaf = tree.selectLeaf(player, 1-player, phase1_epsilon_l, phase1_epsilon_g, phase1_epsilon_0, phase1_global_strategy, 
+                                                 phase2_epsilon_l, phase2_epsilon_g, phase2_epsilon_0, phase2_global_strategy, 
+                                                 phase1_budget,
+                                                 MAX_TREE_DEPTH, node_creation_ID++);
 
         if (leaf!=null) {            
             GameState gs2 = leaf.gs.clone();
@@ -286,7 +270,7 @@ public class TwoPhaseNaiveMCTS extends InterruptibleAIWithComputationBudget {
     
     
     public String toString() {
-        return "TwoPhaseNaiveMCTS(" + MAXSIMULATIONTIME + "," + MAX_TIME + "," + MAX_ITERATIONS + "," + MAX_TREE_DEPTH + "," + phase1_epsilon_l +","+ phase1_epsilon_g +","+phase1_epsilon_0+","+phase2_epsilon_l+","+phase2_epsilon_g+","+phase2_epsilon_0+","+phase1_ratio + ")";
+        return getClass().getSimpleName() + "(" + MAXSIMULATIONTIME + "," + MAX_TIME + "," + MAX_ITERATIONS + "," + MAX_TREE_DEPTH + "," + phase1_epsilon_l +","+ phase1_epsilon_g +","+phase1_epsilon_0+","+phase2_epsilon_l+","+phase2_epsilon_g+","+phase2_epsilon_0+","+phase1_budget + ")";
     }
     
     public String statisticsString() {
