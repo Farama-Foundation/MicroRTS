@@ -24,6 +24,7 @@ import rts.units.UnitTypeTable;
  */
 public class Experimenter {
     public static int DEBUG = 0;
+    public static boolean GC_EACH_FRAME = true;
     
     public static void runExperiments(List<AI> bots, List<PhysicalGameState> maps, UnitTypeTable utt, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize) throws Exception {
         runExperiments(bots, maps, utt,iterations, max_cycles, max_inactive_cycles, visualize, System.out, -1, false);
@@ -87,7 +88,7 @@ public class Experimenter {
                         
                         boolean gameover = false;
                         do {
-                            System.gc();
+                            if (GC_EACH_FRAME) System.gc();
                             PlayerAction pa1 = null, pa2 = null;
                             if (partiallyObservable) {
                                 pa1 = ai1.getAction(0, new PartiallyObservableGameState(gs,0));
