@@ -214,7 +214,13 @@ public class LightRush extends AbstractionLayerAI {
                 }
             }
             if (closestResource != null && closestBase != null) {
-                harvest(u, closestResource, closestBase);
+                AbstractAction aa = getAbstractAction(u);
+                if (aa instanceof Harvest) {
+                    Harvest h_aa = (Harvest)aa;
+                    if (h_aa.target != closestResource || h_aa.base!=closestBase) harvest(u, closestResource, closestBase);
+                } else {
+                    harvest(u, closestResource, closestBase);
+                }
             }
         }
     }
