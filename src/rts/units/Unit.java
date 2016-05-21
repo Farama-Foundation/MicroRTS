@@ -4,11 +4,8 @@
  */
 package rts.units;
 
-import java.lang.reflect.Constructor;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jdom.Element;
 import rts.GameState;
 import rts.PhysicalGameState;
@@ -150,15 +147,36 @@ public class Unit {
     }
 
     public List<UnitAction> getUnitActions(GameState s, int duration) {
-        List<UnitAction> l = new LinkedList<UnitAction>();
+        List<UnitAction> l = new ArrayList<UnitAction>();
 
         PhysicalGameState pgs = s.getPhysicalGameState();
         Player p = pgs.getPlayer(player);
 
+        /*
         Unit uup = pgs.getUnitAt(x,y-1);
         Unit uright = pgs.getUnitAt(x+1,y);
         Unit udown = pgs.getUnitAt(x,y+1);
         Unit uleft = pgs.getUnitAt(x-1,y);
+        */
+        
+        Unit uup = null, uright = null, udown = null, uleft = null;
+        for(Unit u:pgs.getUnits()) {
+            if (u.x==x) {
+                if (u.y==y-1) {
+                    uup = u;
+                } else if (u.y==y+1) {
+                    udown = u;
+                }
+            } else {
+                if (u.y==y) {
+                    if (u.x==x-1) {
+                        uleft = u;
+                    } else if (u.x==x+1) {
+                        uright = u;
+                    }
+                }
+            }
+        }
         
         if (type.canAttack) {
             if (type.attackRange==1) {
@@ -168,20 +186,12 @@ public class Unit {
                 if (x>0 && uleft!=null && uleft.player!=player && uleft.player>=0) l.add(new UnitAction(UnitAction.TYPE_ATTACK_LOCATION,uleft.x,uleft.y));                
             } else {
                 int sqrange = type.attackRange*type.attackRange;
-                int sq_dy;
-                for(int dy = -type.attackRange;dy<=type.attackRange;dy++) {
-                    if (y+dy>=0 && y+dy<pgs.getHeight()) {
-                        sq_dy = dy*dy;
-                        for(int dx = -type.attackRange;dx<=type.attackRange;dx++) {
-                            if (x+dx>=0 && x+dx<pgs.getWidth()) {
-                                if (dx*dx + sq_dy <= sqrange) {
-                                    Unit tgt = pgs.getUnitAt(x+dx,y+dy);
-                                    if (tgt!=null && tgt.player!=player && tgt.player>=0) {
-                                        l.add(new UnitAction(UnitAction.TYPE_ATTACK_LOCATION,tgt.x,tgt.y));
-                                    }
-                                }
-                            }
-                        }            
+                for(Unit u:pgs.getUnits()) {
+                    if (u.player<0 || u.player==player) continue;
+                    int sq_dx = (u.x - x)*(u.x - x);
+                    int sq_dy = (u.y - y)*(u.y - y);
+                    if (sq_dx+sq_dy<=sqrange) {
+                        l.add(new UnitAction(UnitAction.TYPE_ATTACK_LOCATION,u.x,u.y));
                     }
                 }
             }
@@ -230,7 +240,7 @@ public class Unit {
             if (tleft==PhysicalGameState.TERRAIN_NONE && uleft == null) l.add(new UnitAction(UnitAction.TYPE_MOVE,UnitAction.DIRECTION_LEFT));
         }
         
-       // units can always stay idle:
+        // units can always stay idle:
         l.add(new UnitAction(UnitAction.TYPE_NONE, duration));
                         
         return l;

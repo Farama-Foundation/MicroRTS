@@ -108,21 +108,6 @@ public class GameState {
                 if (ua.action.getDirection()==UnitAction.DIRECTION_LEFT && u.getX()==x+1 && u.getY()==y) return false;
             }
         }
-        /*        
-        for(Unit u:pgs.units) {
-            if (u.getX()==x && u.getY()==y) return false;
-            UnitActionAssignment ua = unitActions.get(u);
-            if (ua!=null) {
-                if (ua.action.type==UnitAction.TYPE_MOVE ||
-                    ua.action.type==UnitAction.TYPE_PRODUCE) {
-                    if (ua.action.getDirection()==UnitAction.DIRECTION_UP && u.getX()==x && u.getY()==y+1) return false;
-                    if (ua.action.getDirection()==UnitAction.DIRECTION_RIGHT && u.getX()==x-1 && u.getY()==y) return false;
-                    if (ua.action.getDirection()==UnitAction.DIRECTION_DOWN && u.getX()==x && u.getY()==y-1) return false;
-                    if (ua.action.getDirection()==UnitAction.DIRECTION_LEFT && u.getX()==x+1 && u.getY()==y) return false;
-                }
-            }
-        }
-        */
         return true;
     }
     
@@ -137,35 +122,20 @@ public class GameState {
     public boolean issue(PlayerAction pa) {
         boolean returnValue = false;
         
-        // debug:
-        /*
-        {
-            ResourceUsage pa_ru = new ResourceUsage();
-            for(Pair<Unit,UnitAction> tmp:pa.getActions()) {
-                ResourceUsage ua_ru = tmp.m_b.resourceUsage(tmp.m_a, pgs);
-                pa_ru.merge(ua_ru);
-            }
-            pa_ru.positionsUsed.clear();
-            ResourceUsage gs_ru = getResourceUsage();
-            if (!pa_ru.consistentWith(gs_ru, this)) {
-                System.err.println("issuing conflicting player action!");
-            }  
-        }
-        */
-        
         for(Pair<Unit,UnitAction> p:pa.actions) {
-            if (p.m_a==null) {
-                System.err.println("Issuing an action to a null unit!!!");
-                System.exit(1);
-            }
-            if (unitActions.get(p)!=null) {
-                System.err.println("Issuing an action to a unit with another action!");
-            } else {
+//            if (p.m_a==null) {
+//                System.err.println("Issuing an action to a null unit!!!");
+//                System.exit(1);
+//            }
+//            if (unitActions.get(p.m_a)!=null) {
+//                System.err.println("Issuing an action to a unit with another action!");
+//            } else 
+//            {
                 // check for conflicts:
                 ResourceUsage ru = p.m_b.resourceUsage(p.m_a, pgs);
                 for(UnitActionAssignment uaa:unitActions.values()) {
                     if (!uaa.action.resourceUsage(uaa.unit, pgs).consistentWith(ru, this)) {
-                        // conflicting actions, cancelling both, and replacing them by "NONE":
+                        // conflicting actions:
                         if (uaa.time==time) {
                             // The actions were issued in the same game cycle, so it's normal
                             boolean cancel_old = false;
@@ -211,8 +181,6 @@ public class GameState {
                             // only the newly issued action is cancelled, since it's the problematic one...
                             p.m_b = new UnitAction(UnitAction.TYPE_NONE);
                         }
-                        
-                        
                     }
                 }
                 
@@ -220,7 +188,7 @@ public class GameState {
                 unitActions.put(p.m_a,uaa);
                 if (p.m_b.type!=UnitAction.TYPE_NONE) returnValue = true;
 //                System.out.println("Issuing action " + p.m_b + " to " + p.m_a);                
-            }
+//            }
         }
         return returnValue;
     }

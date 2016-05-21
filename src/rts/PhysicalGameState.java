@@ -239,7 +239,6 @@ public class PhysicalGameState {
         for(Object o:units_e.getChildren()) {
             Element unit_e = (Element)o;
             Unit u = new Unit(unit_e, utt);
-//            System.out.println(u);
             units.add(u);
         }
     }    
