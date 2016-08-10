@@ -11,8 +11,8 @@ import ai.core.AIWithComputationBudget;
 import ai.core.ContinuingAI;
 import ai.core.InterruptibleAIWithComputationBudget;
 import ai.core.PseudoContinuingAI;
-import ai.BranchingFactorCalculator;
 import ai.BranchingFactorCalculatorDouble;
+import ai.BranchingFactorCalculatorLong;
 import ai.PassiveAI;
 import ai.RandomAI;
 import ai.RandomBiasedAI;
@@ -237,8 +237,8 @@ public class FEStatePane extends JPanel {
 
                             // Branching:
                             textArea.append("Braching Factor (long, might overflow):\n");
-                            textArea.append("  - player 0: " + BranchingFactorCalculator.branchingFactorByResourceUsageSeparatingFast(currentGameState, 0) + "\n");
-                            textArea.append("  - player 1: " + BranchingFactorCalculator.branchingFactorByResourceUsageSeparatingFast(currentGameState, 1) + "\n");
+                            textArea.append("  - player 0: " + BranchingFactorCalculatorLong.branchingFactorByResourceUsageSeparatingFast(currentGameState, 0) + "\n");
+                            textArea.append("  - player 1: " + BranchingFactorCalculatorLong.branchingFactorByResourceUsageSeparatingFast(currentGameState, 1) + "\n");
                             textArea.append("\n");
                             textArea.append("Braching Factor (double):\n");
                             textArea.append("  - player 0: " + BranchingFactorCalculatorDouble.branchingFactorByResourceUsageSeparatingFast(currentGameState, 0) + "\n");

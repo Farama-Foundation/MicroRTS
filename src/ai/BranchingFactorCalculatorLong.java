@@ -38,7 +38,7 @@ import util.Pair;
  * 
  * All the methods (Except for branchingFactorUpperBound) should return the same value
  */
-public class BranchingFactorCalculator {
+public class BranchingFactorCalculatorLong {
     public static int DEBUG = 0;
     
     
