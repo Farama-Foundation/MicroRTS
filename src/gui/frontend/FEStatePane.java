@@ -24,12 +24,18 @@ import ai.abstraction.pathfinding.AStarPathFinding;
 import ai.abstraction.pathfinding.BFSPathFinding;
 import ai.abstraction.pathfinding.GreedyPathFinding;
 import ai.abstraction.pathfinding.PathFinding;
+import ai.ahtn.AHTNAI;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.EvaluationFunctionForwarding;
 import ai.evaluation.SimpleEvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction2;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
+import ai.machinelearning.bayes.ActionInterdependenceModel;
+import ai.machinelearning.bayes.BayesianModelByUnitTypeWithDefaultModel;
+import ai.machinelearning.bayes.featuregeneration.FeatureGenerator;
+import ai.machinelearning.bayes.featuregeneration.FeatureGeneratorSimple;
+import ai.mcts.informedmcts.InformedNaiveMCTS;
 import ai.mcts.naivemcts.NaiveMCTS;
 import ai.mcts.uct.UCT;
 import ai.mcts.uct.UCTFirstPlayUrgency;
@@ -42,6 +48,8 @@ import ai.montecarlo.lsi.LSI;
 import ai.montecarlo.lsi.Sampling;
 import ai.portfolio.PortfolioAI;
 import ai.portfolio.portfoliogreedysearch.PGSAI;
+import ai.stochastic.UnitActionProbabilityDistribution;
+import ai.stochastic.UnitActionProbabilityDistributionAI;
 import gui.MouseController;
 import gui.PhysicalGameStateMouseJFrame;
 import gui.PhysicalGameStatePanel;
@@ -68,6 +76,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
+import org.jdom.input.SAXBuilder;
 
 import rts.GameState;
 import rts.PhysicalGameState;
@@ -119,7 +128,9 @@ public class FEStatePane extends JPanel {
                    UCTUnitActions.class,
                    UCTFirstPlayUrgency.class,
                    NaiveMCTS.class,
-                   MouseController.class
+                   MouseController.class,
+                   AHTNAI.class,
+                   InformedNaiveMCTS.class
                   };
 
     PathFinding pathFinders[] = {new AStarPathFinding(),
@@ -282,7 +293,7 @@ public class FEStatePane extends JPanel {
                 b.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e)
                     {
-                        AI ai = createAI(aiComboBox[0].getSelectedIndex(), 0);
+                        AI ai = createAI(aiComboBox[0].getSelectedIndex(), 0, currentUtt);
                         if (ai instanceof MouseController) {
                             textArea.setText("Mouse controller is not allowed for this function.");
                             return;
@@ -313,7 +324,7 @@ public class FEStatePane extends JPanel {
                 b.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e)
                     {
-                        AI ai = createAI(aiComboBox[1].getSelectedIndex(), 1);
+                        AI ai = createAI(aiComboBox[1].getSelectedIndex(), 1, currentUtt);
                         if (ai instanceof MouseController) {
                             textArea.setText("Mouse controller is not allowed for this function.");
                             return;
@@ -441,8 +452,8 @@ public class FEStatePane extends JPanel {
                         Runnable r = new Runnable() {
                              public void run() {
                                 try {
-                                    AI ai1 = createAI(aiComboBox[0].getSelectedIndex(), 0);
-                                    AI ai2 = createAI(aiComboBox[1].getSelectedIndex(), 1);
+                                    AI ai1 = createAI(aiComboBox[0].getSelectedIndex(), 0, currentUtt);
+                                    AI ai2 = createAI(aiComboBox[1].getSelectedIndex(), 1, currentUtt);
                                     int PERIOD = Integer.parseInt(cpuTimeField[0].getText()) + Integer.parseInt(cpuTimeField[1].getText());
                                     if (!slowDownBox.isSelected()) {
                                         PERIOD = 1;
@@ -583,25 +594,30 @@ public class FEStatePane extends JPanel {
     }
 
 
-    public AI createAI(int idx, int player) {
-    	AI ai = createAIInternal(idx, player);
-    	if (continuingBox[player].isSelected()) {
-    		// If the user wants a "continuous" AI, check if we can wrap it around a continuing decorator:
-    		if (ai instanceof AIWithComputationBudget) {
-    			if (ai instanceof InterruptibleAIWithComputationBudget) {
-    				ai = new ContinuingAI((InterruptibleAIWithComputationBudget)ai);
-    			} else {
-    				ai = new PseudoContinuingAI((AIWithComputationBudget)ai);        				
-    			}
-    		}
-    	}
-    	return ai;
+    public AI createAI(int idx, int player, UnitTypeTable utt) {
+        try {
+            AI ai = createAIInternal(idx, player, utt);
+            if (continuingBox[player].isSelected()) {
+                    // If the user wants a "continuous" AI, check if we can wrap it around a continuing decorator:
+                    if (ai instanceof AIWithComputationBudget) {
+                            if (ai instanceof InterruptibleAIWithComputationBudget) {
+                                    ai = new ContinuingAI((InterruptibleAIWithComputationBudget)ai);
+                            } else {
+                                    ai = new PseudoContinuingAI((AIWithComputationBudget)ai);        				
+                            }
+                    }
+            }
+            return ai;
+        }catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
     
-    public AI createAIInternal(int idx, int player) {
+    public AI createAIInternal(int idx, int player, UnitTypeTable utt) throws Exception {
         int TIME = Integer.parseInt(cpuTimeField[player].getText());
         int MAX_PLAYOUTS = Integer.parseInt(maxPlayoutsField[player].getText());
-        int PLAYOUT_TIME = Integer.parseInt(playoutTimeField[player].getText());
+        int PLAYOUT_LOOKAHEAD = Integer.parseInt(playoutTimeField[player].getText());
         int MAX_ACTIONS = Integer.parseInt(maxActionsField[player].getText());
         double LSI_SPLIT = Double.parseDouble(LSIsplitField[player].getText());
         double fpu_value = Double.parseDouble(fpuField[player].getText());
@@ -632,19 +648,19 @@ public class FEStatePane extends JPanel {
                                             new RangedRush(currentUtt, pf),
                                             new RandomBiasedAI()},
                                     new boolean[]{true,true,true,false},
-                                    TIME, MAX_PLAYOUTS, PLAYOUT_TIME, ef);
+                                    TIME, MAX_PLAYOUTS, PLAYOUT_LOOKAHEAD, ef);
         } else if (AIs[idx]==PGSAI.class) {
-            return new PGSAI(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 1, 5, ef, currentUtt, pf);
+            return new PGSAI(TIME, MAX_PLAYOUTS, PLAYOUT_LOOKAHEAD, 1, 5, ef, currentUtt, pf);
         } else if (AIs[idx]==IDRTMinimax.class) {
             return new IDRTMinimax(TIME, ef);
         } else if (AIs[idx]==IDRTMinimaxRandomized.class) {
             return new IDRTMinimaxRandomized(TIME, RANDOMIZED_AB_REPEATS, ef);
         } else if (AIs[idx]==IDABCD.class) {
-            return new IDABCD(TIME, MAX_PLAYOUTS, new LightRush(currentUtt, pf), PLAYOUT_TIME, ef, false);
+            return new IDABCD(TIME, MAX_PLAYOUTS, new LightRush(currentUtt, pf), PLAYOUT_LOOKAHEAD, ef, false);
         } else if (AIs[idx]==MonteCarlo.class) {
-            return new MonteCarlo(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_ACTIONS, playout_policy, ef);
+            return new MonteCarlo(TIME, MAX_PLAYOUTS, PLAYOUT_LOOKAHEAD, MAX_ACTIONS, playout_policy, ef);
         } else if (AIs[idx]==LSI.class) {
-            return new LSI(MAX_PLAYOUTS, PLAYOUT_TIME, LSI_SPLIT,
+            return new LSI(MAX_PLAYOUTS, PLAYOUT_LOOKAHEAD, LSI_SPLIT,
                 LSI.EstimateType.RANDOM_TAIL, LSI.EstimateReuseType.ALL,
                 LSI.GenerateType.PER_AGENT, Sampling.AgentOrderingType.ENTROPY,
                 LSI.EvaluateType.HALVING, false,
@@ -652,13 +668,30 @@ public class FEStatePane extends JPanel {
                 false,
                 playout_policy, ef);
         } else if (AIs[idx]==UCT.class) {
-            return new UCT(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, new RandomBiasedAI(), ef);
+            return new UCT(TIME, MAX_PLAYOUTS, PLAYOUT_LOOKAHEAD, MAX_DEPTH, new RandomBiasedAI(), ef);
         } else if (AIs[idx]==UCTUnitActions.class) {
-            return new UCTUnitActions(TIME, PLAYOUT_TIME, MAX_DEPTH*10, new RandomBiasedAI(), ef);
+            return new UCTUnitActions(TIME, PLAYOUT_LOOKAHEAD, MAX_DEPTH*10, new RandomBiasedAI(), ef);
         } else if (AIs[idx]==UCTFirstPlayUrgency.class) {
-            return new UCTFirstPlayUrgency(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, new RandomBiasedAI(), ef, fpu_value);
+            return new UCTFirstPlayUrgency(TIME, MAX_PLAYOUTS, PLAYOUT_LOOKAHEAD, MAX_DEPTH, new RandomBiasedAI(), ef, fpu_value);
         } else if (AIs[idx]==NaiveMCTS.class) {
-            return new NaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), ef);
+            return new NaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_LOOKAHEAD, MAX_DEPTH, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), ef);
+        } else if (AIs[idx]==AHTNAI.class) {
+            return new AHTNAI("data/ahtn/microrts-ahtn-definition-flexible-single-target-portfolio.lisp", TIME, MAX_PLAYOUTS, PLAYOUT_LOOKAHEAD, ef, playout_policy);
+        } else if (AIs[idx]==InformedNaiveMCTS.class) {
+            FeatureGenerator fg = new FeatureGeneratorSimple();
+            UnitActionProbabilityDistribution model_wr = 
+                new BayesianModelByUnitTypeWithDefaultModel(new SAXBuilder().build(
+                 "data/bayesianmodels/pretrained/ActionInterdependenceModel-WR.xml").getRootElement(), utt,
+                 new ActionInterdependenceModel(null, 0, 0, 0, utt, fg));
+            /*
+            UnitActionProbabilityDistribution model_nmcts10000 = 
+                new BayesianModelByUnitTypeWithDefaultModel(new SAXBuilder().build(
+                 "data/bayesianmodels/pretrained/ActionInterdependenceModel-NaiveMCTS10000.xml").getRootElement(), utt,
+                 new ActionInterdependenceModel(null, 0, 0, 0, utt, fg));
+            */
+            return new InformedNaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_LOOKAHEAD, 8, 0.33f, 0.0f, 0.4f, 
+                                         new UnitActionProbabilityDistributionAI(model_wr, utt, "NaiveBayesAllowedActionsByUnitTypeWithDefaultModel-nofeatures-Acc-WR"), 
+                                         model_wr, new SimpleSqrtEvaluationFunction3());
         } else if (AIs[idx]==MouseController.class) {
             return new MouseController(null);
         }

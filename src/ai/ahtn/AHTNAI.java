@@ -41,20 +41,20 @@ public class AHTNAI extends AIWithComputationBudget {
     List<MethodDecomposition> actionsBeingExecuted = null;
     
     public AHTNAI(String a_domainFileName, int available_time, int max_playouts, int playoutLookahead, EvaluationFunction a_ef, AI a_playoutAI) throws Exception {
-    	super(available_time, max_playouts);
-       domainFileName = a_domainFileName;
-       dd = DomainDefinition.fromLispFile(domainFileName);
-       PLAYOUT_LOOKAHEAD = playoutLookahead;
-       ef = a_ef;
-       playoutAI = a_playoutAI;
+        super(available_time, max_playouts);
+        domainFileName = a_domainFileName;
+        dd = DomainDefinition.fromLispFile(domainFileName);
+        PLAYOUT_LOOKAHEAD = playoutLookahead;
+        ef = a_ef;
+        playoutAI = a_playoutAI;
        
-       actionsBeingExecuted = new LinkedList<>();
+        actionsBeingExecuted = new LinkedList<>();
     }
     
     
     public void reset() {
-       actionsBeingExecuted = new LinkedList<>();       
-       AdversarialBoundedDepthPlannerAlphaBeta.clearStatistics();
+        actionsBeingExecuted = new LinkedList<>();       
+        AdversarialBoundedDepthPlannerAlphaBeta.clearStatistics();
     }
 
     

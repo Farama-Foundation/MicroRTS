@@ -359,7 +359,7 @@ public class AdversarialBoundedDepthPlannerAlphaBeta {
             nPlayoutsBeforeStartingLastTime = nPlayouts;
             if (depth<=MAX_TREE_DEPTH) {
                 int nPlayoutsleft = maxPlayouts - nPlayouts;
-                if (maxPlayouts>0 && nPlayoutsleft>nPlayoutsUSedLastTime) {
+                if (maxPlayouts<0 || nPlayoutsleft>nPlayoutsUSedLastTime) {
                     if (DEBUG>=1) System.out.println("last time we used " + nPlayoutsUSedLastTime + ", and there are " + nPlayoutsleft + " left, trying one more depth!");
                     best = planner.getBestPlan(timeLimit, maxPlayouts, (bestLastDepth==null ? true:false));                
                 } else {
