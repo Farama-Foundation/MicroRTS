@@ -70,4 +70,9 @@ public class PseudoContinuingAI extends AI {
 		// TODO Auto-generated method stub
 		return m_AI.toString();
 	}    
+	
+	@Override
+	public String statisticsString() {
+		return m_AI.statisticsString();
+	}   
 }
