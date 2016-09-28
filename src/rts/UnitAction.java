@@ -4,6 +4,8 @@
  */
 package rts;
 
+import java.io.Serializable;
+
 import org.jdom.Element;
 import rts.units.*;
 import util.XMLWriter;
@@ -12,7 +14,7 @@ import util.XMLWriter;
  *
  * @author santi
  */
-public class UnitAction {
+public class UnitAction implements Serializable {
     public static final int TYPE_NONE = 0;
     public static final int TYPE_MOVE = 1;
     public static final int TYPE_HARVEST = 2;
@@ -184,7 +186,7 @@ public class UnitAction {
                         case DIRECTION_DOWN:    u2 = pgs.getUnitAt(u.getX(), u.getY()+1); break;
                         case DIRECTION_LEFT:    u2 = pgs.getUnitAt(u.getX()-1, u.getY()); break;
                     }
-                    if (u2!=null) {                    
+                    if (u2!=null&&u.getType().canHarvest&&u.getResources()==0) {                    
                         u2.setResources(u2.getResources() - u.getHarvestAmount());
                         if (u2.getResources()<=0) {
                             s.removeUnit(u2);
@@ -195,9 +197,20 @@ public class UnitAction {
                 break;
             case TYPE_RETURN:
                 {
-                    Player p = pgs.getPlayer(u.getPlayer());
-                    p.setResources(p.getResources() + 1);
-                    u.setResources(0);
+                	Unit base = null;
+                	switch(parameter) {
+                	case DIRECTION_UP:      base = pgs.getUnitAt(u.getX(), u.getY()-1); break;
+                	case DIRECTION_RIGHT:   base = pgs.getUnitAt(u.getX()+1, u.getY()); break;
+                	case DIRECTION_DOWN:    base = pgs.getUnitAt(u.getX(), u.getY()+1); break;
+                	case DIRECTION_LEFT:    base = pgs.getUnitAt(u.getX()-1, u.getY()); break;
+                	}
+                	if (base!=null&&base.getType().isStockpile&&u.getResources()>0) { 
+                		Player p = pgs.getPlayer(u.getPlayer());
+                		p.setResources(p.getResources() + u.getResources());
+                		u.setResources(0);
+                	}else{//base is not there
+                		
+                	}
                 }
                 break;
             case TYPE_PRODUCE:

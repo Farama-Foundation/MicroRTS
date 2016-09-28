@@ -4,6 +4,7 @@
  */
 package rts.units;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import org.jdom.Element;
@@ -17,7 +18,7 @@ import util.XMLWriter;
  *
  * @author santi
  */
-public class Unit {
+public class Unit implements Serializable {
     UnitType type;
     
     public static long next_ID = 0;

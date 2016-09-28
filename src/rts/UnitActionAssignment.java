@@ -4,13 +4,15 @@
  */
 package rts;
 
+import java.io.Serializable;
+
 import rts.units.Unit;
 
 /**
  *
  * @author santi
  */
-public class UnitActionAssignment {
+public class UnitActionAssignment implements Serializable {
     public Unit unit;
     public UnitAction action;
     public int time;

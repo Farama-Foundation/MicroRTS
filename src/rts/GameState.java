@@ -4,6 +4,7 @@
  */
 package rts;
 
+import java.io.Serializable;
 import java.util.*;
 import rts.units.Unit;
 import rts.units.UnitTypeTable;
@@ -13,9 +14,8 @@ import util.Pair;
  *
  * @author santi
  */
-public class GameState {
-    static Random r = new Random();         // only used if the action conflict resolution strategy is set to random
-    
+public class GameState implements Serializable{
+	static Random r = new Random();         // only used if the action conflict resolution strategy is set to random
     int unitCancelationCounter = 0;  // only used if the action conflict resolution strategy is set to alternating
     
     int time = 0;
@@ -109,6 +109,23 @@ public class GameState {
             }
         }
         return true;
+    }
+    
+    // Returns an array with true if there is no unit in the specified position and no unit is executing an action that will use that position
+    public boolean[][] getAllFree() {
+    	
+    	boolean free[][]=pgs.getAllFree();
+        for(UnitActionAssignment ua:unitActions.values()) {
+            if (ua.action.type==UnitAction.TYPE_MOVE ||
+                ua.action.type==UnitAction.TYPE_PRODUCE) {
+                Unit u = ua.unit;
+                if (ua.action.getDirection()==UnitAction.DIRECTION_UP ) free[u.getX()][u.getY()-1]=false;
+                if (ua.action.getDirection()==UnitAction.DIRECTION_RIGHT) free[u.getX()+1][u.getY()]=false;
+                if (ua.action.getDirection()==UnitAction.DIRECTION_DOWN ) free[u.getX()][u.getY()+1]=false;
+                if (ua.action.getDirection()==UnitAction.DIRECTION_LEFT) free[u.getX()-1][u.getY()]=false;
+            }
+        }
+        return free;
     }
     
 

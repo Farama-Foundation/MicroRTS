@@ -1,5 +1,6 @@
 package rts.units;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.jdom.Element;
@@ -9,7 +10,7 @@ import org.jdom.Element;
  * @author santi, inspired in the original UnitDefinitino class by Jeff Bernard
  *
  */
-public class UnitType {
+public class UnitType implements Serializable {
 
     public int ID = 0;          // the type ID of units of this type
     public String name = null;  // unit type name    		
