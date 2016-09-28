@@ -40,7 +40,9 @@ public abstract class AbstractionLayerAI extends AI {
         pf = a_pf;
     }
             
-    public abstract void reset();
+    public void reset(){
+    	actions.clear();
+    }
 
     public abstract AI clone();
     
@@ -51,6 +53,7 @@ public abstract class AbstractionLayerAI extends AI {
         
         // Execute abstract actions:
         List<Unit> toDelete = new ArrayList<>();
+         ResourceUsage ru = new ResourceUsage();
         for(AbstractAction aa:actions.values()) {
             if (!pgs.getUnits().contains(aa.unit)) {
                 // The unit is dead:
@@ -61,7 +64,7 @@ public abstract class AbstractionLayerAI extends AI {
                     toDelete.add(aa.unit);
                 } else {
                     if (gs.getActionAssignment(aa.unit)==null) {
-                        UnitAction ua = aa.execute(gs);
+                        UnitAction ua = aa.execute(gs,ru);
                         if (ua!=null) {
                             if (VERIFY_ACTION_CORRECTNESS) {
                                 // verify that the action is actually feasible:
@@ -70,6 +73,7 @@ public abstract class AbstractionLayerAI extends AI {
                             } else { 
                                 desires.add(new Pair<>(aa.unit,ua));
                             }
+                        	ru.merge(ua.resourceUsage(aa.unit, pgs));
                         }
                         
                     }
@@ -123,5 +127,77 @@ public abstract class AbstractionLayerAI extends AI {
 
     public void idle(Unit u) {
         actions.put(u,new Idle(u));
+    }
+    public int findBuildingPosition(List<Integer> reserved, int desiredX, int desiredY, Player p, PhysicalGameState pgs) {
+
+    	boolean[][] free=pgs.getAllFree();
+        int x,y;
+        for(int l=1;l<Math.max(pgs.getHeight(),pgs.getWidth());l++){
+        	for(int side=0;side<4;side++){
+        		switch(side){
+        		case 0://up
+        			y=desiredY-l;
+        			if(y<0)continue;
+        			for(int dx=-l;dx<=l;dx++){
+        				x=desiredX+dx;
+        				if(x<0||x>=pgs.getWidth())continue;
+        				int pos = x + y * pgs.getWidth();
+        				if (!reserved.contains(pos) && free[x][y]) {
+        	        		return pos;
+        	        	}
+        			}
+        			break;
+        		case 1://right
+        			x=desiredX+l;
+        			if(x>=pgs.getWidth())continue;
+        			for(int dy=-l;dy<=l;dy++){
+        				y=desiredY+dy;
+        				if(y<0||y>=pgs.getHeight())continue;
+        				int pos = x + y * pgs.getWidth();
+        				if (!reserved.contains(pos) && free[x][y]) {
+        	        		return pos;
+        	        	}
+        			}
+        			break;
+        		case 2://down
+        			y=desiredY+l;
+        			if(y>=pgs.getHeight())continue;
+        			for(int dx=-l;dx<=l;dx++){
+        				x=desiredX+dx;
+        				if(x<0||x>=pgs.getWidth())continue;
+        				int pos = x + y * pgs.getWidth();
+        				if (!reserved.contains(pos) && free[x][y]) {
+        	        		return pos;
+        	        	}
+        			}
+        			break;
+        		case 3://left
+        			x=desiredX-l;
+        			if(x<0)continue;
+        			for(int dy=-l;dy<=l;dy++){
+        				y=desiredY+dy;
+        				if(y<0||y>=pgs.getHeight())continue;
+        				int pos = x + y * pgs.getWidth();
+        				if (!reserved.contains(pos) && free[x][y]) {
+        	        		return pos;
+        	        	}
+        			}
+        			break;
+        		}
+        	}
+        }
+        return -1;
+    }
+    
+    public boolean buildIfNotAlreadyBuilding(Unit u, UnitType type, int desiredX, int desiredY, List<Integer> reservedPositions, Player p, PhysicalGameState pgs){
+    	AbstractAction action=getAbstractAction(u);
+    	if(!(action instanceof Build) || ((Build)action).type != type){
+    		int pos = findBuildingPosition(reservedPositions, desiredX, desiredY, p, pgs);
+    		build(u, type, pos % pgs.getWidth(), pos / pgs.getWidth());
+            reservedPositions.add(pos);
+    		return true;
+    	}else{
+    		return false;
+    	}
     }
 }   

@@ -40,6 +40,7 @@ public class WorkerRush extends AbstractionLayerAI {
     }
     
     public void reset() {
+    	super.reset();
     }
     
     public AI clone() {
@@ -86,7 +87,7 @@ public class WorkerRush extends AbstractionLayerAI {
     
     
     public void baseBehavior(Unit u,Player p, PhysicalGameState pgs) {
-        if (p.getResources()>workerType.cost) train(u, workerType);
+        if (p.getResources()>=workerType.cost) train(u, workerType);
     }
     
     public void meleeUnitBehavior(Unit u,Player p, PhysicalGameState pgs) {
@@ -123,12 +124,10 @@ public class WorkerRush extends AbstractionLayerAI {
         List<Integer> reservedPositions = new LinkedList<Integer>();
         if (nbases==0 && !freeWorkers.isEmpty()) {
             // build a base:
-            if (p.getResources()>baseType.cost + resourcesUsed) {
+            if (p.getResources()>=baseType.cost + resourcesUsed) {
                 Unit u = freeWorkers.remove(0);
-                int pos = findBuildingPosition(reservedPositions,u,p,pgs);
-                build(u, baseType, pos%pgs.getWidth(), pos/pgs.getWidth());
+                buildIfNotAlreadyBuilding(u,baseType,u.getX(),u.getY(),reservedPositions,p,pgs);
                 resourcesUsed+=baseType.cost;
-                reservedPositions.add(pos);
             }
         }
         
@@ -173,28 +172,4 @@ public class WorkerRush extends AbstractionLayerAI {
         
     }
     
-    public int findBuildingPosition(List<Integer> reserved, Unit u, Player p, PhysicalGameState pgs) {
-        int bestPos = -1;
-        int bestScore = 0;
-        
-        for(int x = 0;x<pgs.getWidth();x++) {
-            for(int y = 0;y<pgs.getHeight();y++) {
-                int pos = x+y*pgs.getWidth();
-                if (!reserved.contains(pos) && pgs.getUnitAt(x, y)==null) {
-                    int score = 0;
-                    
-                    score = - (Math.abs(u.getX()-x) + Math.abs(u.getY()-y));
-                    
-                    if (bestPos==-1 || score>bestScore) {
-                        bestPos = pos;
-                        bestScore = score;
-                    }
-                }
-            }
-        }
-        
-        return bestPos;
-    }
-    
-
 }

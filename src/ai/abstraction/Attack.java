@@ -7,6 +7,7 @@ package ai.abstraction;
 import ai.abstraction.pathfinding.PathFinding;
 import rts.GameState;
 import rts.PhysicalGameState;
+import rts.ResourceUsage;
 import rts.UnitAction;
 import rts.units.Unit;
 
@@ -30,7 +31,7 @@ public class Attack extends AbstractAction  {
         return false;
     }
 
-    public UnitAction execute(GameState gs) {
+    public UnitAction execute(GameState gs, ResourceUsage ru) {
         
         int dx = target.getX()-unit.getX();
         int dy = target.getY()-unit.getY();
@@ -39,8 +40,8 @@ public class Attack extends AbstractAction  {
             return new UnitAction(UnitAction.TYPE_ATTACK_LOCATION,target.getX(),target.getY());
         } else {
             // move towards the unit:
-            UnitAction move = pf.findPathToAdjacentPosition(unit, target.getX()+target.getY()*gs.getPhysicalGameState().getWidth(), gs, null);
     //        System.out.println("AStarAttak returns: " + move);
+            UnitAction move = pf.findPathToPositionInRange(unit, target.getX()+target.getY()*gs.getPhysicalGameState().getWidth(), unit.getAttackRange(), gs, ru);
             if (move!=null && gs.isUnitActionAllowed(unit, move)) return move;
             return null;
         }        

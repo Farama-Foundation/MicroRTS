@@ -7,6 +7,7 @@ package ai.abstraction;
 import ai.abstraction.pathfinding.PathFinding;
 import rts.GameState;
 import rts.PhysicalGameState;
+import rts.ResourceUsage;
 import rts.UnitAction;
 import rts.units.Unit;
 import rts.units.UnitType;
@@ -35,10 +36,10 @@ public class Build extends AbstractAction  {
         return false;
     }
 
-    public UnitAction execute(GameState gs) {
+    public UnitAction execute(GameState gs, ResourceUsage ru) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
 //        System.out.println("findPathToAdjacentPosition from Build: (" + x + "," + y + ")");
-        UnitAction move = pf.findPathToAdjacentPosition(unit, x+y*pgs.getWidth(), gs, null);
+        UnitAction move = pf.findPathToAdjacentPosition(unit, x+y*pgs.getWidth(), gs, ru);
         if (move!=null) {
             if (gs.isUnitActionAllowed(unit, move)) return move;
             return null;

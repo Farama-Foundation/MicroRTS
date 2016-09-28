@@ -46,6 +46,7 @@ public class HeavyRush extends AbstractionLayerAI {
     }
 
     public void reset() {
+    	super.reset();
     }
 
     public AI clone() {
@@ -116,7 +117,7 @@ public class HeavyRush extends AbstractionLayerAI {
                 nworkers++;
             }
         }
-        if (nworkers < 1 && p.getResources() > workerType.cost) {
+        if (nworkers < 1 && p.getResources() >= workerType.cost) {
             train(u, workerType);
         }
     }
@@ -171,22 +172,19 @@ public class HeavyRush extends AbstractionLayerAI {
         List<Integer> reservedPositions = new LinkedList<Integer>();
         if (nbases == 0 && !freeWorkers.isEmpty()) {
             // build a base:
-            if (p.getResources() > baseType.cost + resourcesUsed) {
+            if (p.getResources() >= baseType.cost + resourcesUsed) {
                 Unit u = freeWorkers.remove(0);
-                int pos = findBuildingPosition(reservedPositions, u, p, pgs);
-                build(u, baseType, pos % pgs.getWidth(), pos / pgs.getWidth());
+                buildIfNotAlreadyBuilding(u,baseType,u.getX(),u.getY(),reservedPositions,p,pgs);
                 resourcesUsed += baseType.cost;
-                reservedPositions.add(pos);
             }
         }
 
         if (nbarracks == 0) {
             // build a barracks:
-            if (p.getResources() > barracksType.cost + resourcesUsed && !freeWorkers.isEmpty()) {
+            if (p.getResources() >= barracksType.cost + resourcesUsed && !freeWorkers.isEmpty()) {
                 Unit u = freeWorkers.remove(0);
-                int pos = findBuildingPosition(reservedPositions, u, p, pgs);
-                build(u, barracksType, pos % pgs.getWidth(), pos / pgs.getWidth());
-                resourcesUsed += baseType.cost;
+                buildIfNotAlreadyBuilding(u,barracksType,u.getX(),u.getY(),reservedPositions,p,pgs);
+            	resourcesUsed += barracksType.cost;
             }
         }
 
@@ -227,27 +225,5 @@ public class HeavyRush extends AbstractionLayerAI {
         }
     }
 
-    // Finds the nearest available location at which a building can be placed:
-    public int findBuildingPosition(List<Integer> reserved, Unit u, Player p, PhysicalGameState pgs) {
-        int bestPos = -1;
-        int bestScore = 0;
 
-        for (int x = 0; x < pgs.getWidth(); x++) {
-            for (int y = 0; y < pgs.getHeight(); y++) {
-                int pos = x + y * pgs.getWidth();
-                if (!reserved.contains(pos) && pgs.getUnitAt(x, y) == null) {
-                    int score = 0;
-
-                    score = -(Math.abs(u.getX() - x) + Math.abs(u.getY() - y));
-
-                    if (bestPos == -1 || score > bestScore) {
-                        bestPos = pos;
-                        bestScore = score;
-                    }
-                }
-            }
-        }
-
-        return bestPos;
-    }
 }
