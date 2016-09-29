@@ -111,6 +111,7 @@ public class FEStatePane extends JPanel {
                                 new EvaluationFunctionForwarding(new SimpleEvaluationFunction())};
 
     Class AIs[] = {PassiveAI.class,
+                   MouseController.class,
                    RandomAI.class,
                    RandomBiasedAI.class,
                    WorkerRush.class,
@@ -128,7 +129,6 @@ public class FEStatePane extends JPanel {
                    UCTUnitActions.class,
                    UCTFirstPlayUrgency.class,
                    NaiveMCTS.class,
-                   MouseController.class,
                    AHTNAI.class,
                    InformedNaiveMCTS.class
                   };
