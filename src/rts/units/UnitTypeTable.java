@@ -4,6 +4,7 @@
  */
 package rts.units;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +12,7 @@ import java.util.List;
  *
  * @author santi
  */
-public class UnitTypeTable {
+public class UnitTypeTable implements Serializable {
     public static final int VERSION_ORIGINAL = 1;
     public static final int VERSION_ORIGINAL_FINETUNED = 2;
     

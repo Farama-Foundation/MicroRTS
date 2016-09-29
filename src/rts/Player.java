@@ -4,6 +4,8 @@
  */
 package rts;
 
+import java.io.Serializable;
+
 import org.jdom.Element;
 import rts.units.Unit;
 import util.XMLWriter;
@@ -12,7 +14,7 @@ import util.XMLWriter;
  *
  * @author santi
  */
-public class Player {
+public class Player  implements Serializable {
     int ID = 0;
     int resources = 0;
     

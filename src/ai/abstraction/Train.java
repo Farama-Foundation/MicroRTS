@@ -6,6 +6,7 @@ package ai.abstraction;
 
 import rts.GameState;
 import rts.PhysicalGameState;
+import rts.ResourceUsage;
 import rts.UnitAction;
 import rts.units.Unit;
 import rts.units.UnitType;
@@ -28,7 +29,7 @@ public class Train extends AbstractAction {
         return completed;
     }
 
-    public UnitAction execute(GameState gs) {
+    public UnitAction execute(GameState gs, ResourceUsage ru) {
         // find the best location for the unit:
         PhysicalGameState pgs = gs.getPhysicalGameState();
         int x = unit.getX();

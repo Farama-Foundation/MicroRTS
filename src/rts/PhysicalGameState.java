@@ -5,7 +5,10 @@
 package rts;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+
 import rts.units.Unit;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,7 +23,7 @@ import rts.units.UnitTypeTable;
  *
  * @author santi
  */
-public class PhysicalGameState {
+public class PhysicalGameState implements Serializable {
     public static final int TERRAIN_NONE = 0;
     public static final int TERRAIN_WALL = 1;
     
@@ -32,7 +35,11 @@ public class PhysicalGameState {
     
     
     public static PhysicalGameState load(String fileName, UnitTypeTable utt) throws JDOMException, IOException {
-        return new PhysicalGameState(new SAXBuilder().build(fileName).getRootElement(), utt);        
+        try{
+        	return new PhysicalGameState(new SAXBuilder().build(fileName).getRootElement(), utt);        
+        }catch(IllegalArgumentException ex){
+        	throw new IllegalArgumentException("Error loading map: "+fileName,ex);
+        }
     }
     
     public PhysicalGameState(int a_width, int a_height) {
@@ -69,6 +76,12 @@ public class PhysicalGameState {
     }
     
     public void addUnit(Unit u) {
+    	for(Unit u2:units){
+    		if(u.getX()==u2.getX() && u.getY()==u2.getY() ){
+    			throw new IllegalArgumentException("PhysicalGameState.addUnit: added two units in position: ("
+    					+u.getX()+", "+u.getY()+")");
+    		}
+    	}
         units.add(u);
     }
     
@@ -98,6 +111,16 @@ public class PhysicalGameState {
             if (u.getX()==x && u.getY()==y) return u;
         }
         return null;
+    }
+    
+    public Collection<Unit> getUnitsAround(int x, int y, int squareRange) {
+    	List<Unit> closeUnits = new LinkedList<Unit>();
+        for(Unit u:units) {
+        	if((Math.abs(u.getX() - x)<=squareRange &&  Math.abs(u.getY() - y)<=squareRange)){
+        		closeUnits.add(u);
+        	}
+        }
+        return closeUnits;
     }
     
     int winner() {
@@ -238,9 +261,22 @@ public class PhysicalGameState {
         }
         for(Object o:units_e.getChildren()) {
             Element unit_e = (Element)o;
-            Unit u = new Unit(unit_e, utt);
-            units.add(u);
+            addUnit(new Unit(unit_e, utt));
+
         }
     }    
-    
+ public boolean[][] getAllFree() {
+    	
+    	boolean free[][]=new boolean[getWidth()][getHeight()];
+    	for(int x=0;x<getWidth();x++){
+    		for(int y=0;y<getHeight();y++){
+    			free[x][y]=(getTerrain(x, y)==PhysicalGameState.TERRAIN_NONE);
+    		}
+    	}
+        for(Unit u:units) {
+        	free[u.getX()][u.getY()]=false;
+        }
+      
+        return free;
+    }
 }

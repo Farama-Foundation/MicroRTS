@@ -5,6 +5,7 @@
 package ai.abstraction;
 
 import rts.GameState;
+import rts.ResourceUsage;
 import rts.UnitAction;
 import rts.units.Unit;
 
@@ -24,5 +25,10 @@ public abstract class AbstractAction {
         return unit;
     }
     public abstract boolean completed(GameState pgs);
-    public abstract UnitAction execute(GameState pgs);
+    
+    public UnitAction execute(GameState pgs){
+    	return execute(pgs,null);
+    };
+    
+    public abstract UnitAction execute(GameState pgs, ResourceUsage ru);
 }

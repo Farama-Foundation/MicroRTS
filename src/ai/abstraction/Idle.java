@@ -6,6 +6,7 @@ package ai.abstraction;
 
 import rts.GameState;
 import rts.PhysicalGameState;
+import rts.ResourceUsage;
 import rts.UnitAction;
 import rts.units.Unit;
 
@@ -23,7 +24,7 @@ public class Idle extends AbstractAction  {
         return false;
     }
 
-    public UnitAction execute(GameState gs) {
+    public UnitAction execute(GameState gs, ResourceUsage ru) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         if (!unit.getType().canAttack) return null;
         for(Unit target:pgs.getUnits()) {
