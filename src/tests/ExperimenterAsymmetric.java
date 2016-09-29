@@ -7,16 +7,25 @@ package tests;
 import ai.BranchingFactorCalculatorDouble;
 import ai.core.AI;
 import gui.PhysicalGameStatePanel;
+
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 import javax.swing.JFrame;
 import rts.GameState;
 import rts.PhysicalGameState;
 import rts.PlayerAction;
+import rts.Trace;
+import rts.TraceEntry;
 import rts.units.UnitTypeTable;
 import util.RunnableWithTimeOut;
+import util.XMLWriter;
 
 /**
  *
@@ -53,7 +62,12 @@ public class ExperimenterAsymmetric {
     }
 
     public static void runExperiments(List<AI> bots1, List<AI> bots2, List<PhysicalGameState> maps, UnitTypeTable utt, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize, PrintStream out) throws Exception {
-        int wins[][] = new int[bots1.size()][bots2.size()];
+    	runExperiments(bots1, bots2, maps, utt, iterations, max_cycles, max_inactive_cycles, visualize, out, false, false, "");
+        	
+    }
+        
+    public static void runExperiments(List<AI> bots1, List<AI> bots2, List<PhysicalGameState> maps, UnitTypeTable utt, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize, PrintStream out, boolean saveTrace, boolean saveZip, String traceDir) throws Exception {
+    	int wins[][] = new int[bots1.size()][bots2.size()];
         int ties[][] = new int[bots1.size()][bots2.size()];
         int loses[][] = new int[bots1.size()][bots2.size()];
         
@@ -65,11 +79,16 @@ public class ExperimenterAsymmetric {
         {
             for (int ai2_idx = 0; ai2_idx < bots2.size(); ai2_idx++) 
             {
+            	int m=0;
                 for(PhysicalGameState pgs:maps) {
                     
                     for (int i = 0; i < iterations; i++) {
-                        AI ai1 = bots1.get(ai1_idx);
-                        AI ai2 = bots2.get(ai2_idx);
+                    	//cloning just in case an AI has a memory leak
+                    	//by using a clone, it is discarded, along with the leaked memory,
+                    	//after each game, rather than accumulating
+                    	//over several games
+                        AI ai1 = bots1.get(ai1_idx).clone();
+                        AI ai2 = bots2.get(ai2_idx).clone();
                         long lastTimeActionIssued = 0;
 
                         ai1.reset();
@@ -83,6 +102,13 @@ public class ExperimenterAsymmetric {
                         System.gc();
                         
                         boolean gameover = false;
+                        Trace trace = null;
+                        TraceEntry te;
+                        if(saveTrace){
+                        	trace = new Trace(utt);
+                        	te = new TraceEntry(gs.getPhysicalGameState().clone(),gs.getTime());
+                            trace.addEntry(te);
+                        }
                         do {
                             if (PRINT_BRANCHING_AT_EACH_MOVE) {
                                 String bf1 = (gs.canExecuteAnyAction(0) ? ""+BranchingCalculatorWithTimeOut.branching(gs, 0, BRANCHING_CALCULATION_TIMEOUT):"-");
@@ -93,6 +119,14 @@ public class ExperimenterAsymmetric {
                             }
                             PlayerAction pa1 = ai1.getAction(0, gs);
                             PlayerAction pa2 = ai2.getAction(1, gs);
+                            
+                            if (saveTrace && (!pa1.isEmpty() || !pa2.isEmpty())) {
+                                te = new TraceEntry(gs.getPhysicalGameState().clone(),gs.getTime());
+                                te.addPlayerAction(pa1.clone());
+                                te.addPlayerAction(pa2.clone());
+                                trace.addEntry(te);
+                            }
+                            
                             if (gs.issueSafe(pa1)) lastTimeActionIssued = gs.getTime();
                             if (gs.issueSafe(pa2)) lastTimeActionIssued = gs.getTime();
                             gameover = gs.cycle();
@@ -107,6 +141,30 @@ public class ExperimenterAsymmetric {
                         } while (!gameover && 
                                  (gs.getTime() < max_cycles) && 
                                  (gs.getTime() - lastTimeActionIssued < max_inactive_cycles));
+                        if(saveTrace){
+                        	te = new TraceEntry(gs.getPhysicalGameState().clone(), gs.getTime());
+                        	trace.addEntry(te);
+                        	XMLWriter xml;
+                        	ZipOutputStream zip = null;
+                        	String filename=ai1.toString()+"Vs"+ai2.toString()+"-"+m+"-"+i;
+                        	filename=filename.replace("/", "");
+                        	filename=filename.replace(")", "");
+                        	filename=filename.replace("(", "");
+                        	filename=traceDir+"/"+filename;
+                        	if(saveZip){
+                        		zip=new ZipOutputStream(new FileOutputStream(filename+".zip"));
+                        		zip.putNextEntry(new ZipEntry("game.xml"));
+                        		xml = new XMLWriter(new OutputStreamWriter(zip));
+                        	}else{
+                        		xml = new XMLWriter(new FileWriter(filename+".xml"));
+                        	}
+                        	trace.toxml(xml);
+                        	xml.flush();
+                        	if(saveZip){
+                        		zip.closeEntry();
+                        		zip.close();
+                        	}
+                        }
                         if (w!=null) w.dispose();
                         int winner = gs.winner();
                         out.println("Winner: " + winner + "  in " + gs.getTime() + " cycles");
@@ -123,7 +181,8 @@ public class ExperimenterAsymmetric {
                             loses[ai1_idx][ai2_idx]++;
                             lose_time[ai1_idx][ai2_idx]+=gs.getTime();
                         }                        
-                    }                    
+                    }
+                    m++;
                 }
             }
         }
