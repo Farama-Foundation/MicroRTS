@@ -355,7 +355,7 @@ public class RunConfigurableExperiments {
 			bots.addAll(botstemp);
 		}
 	}
-	//Arguments: bots1file (bots2file|-) mapsfile resultsfile iterations 
+	//Arguments: bots1file (bots2file|-) mapsfile resultsfile iterations (traceDir)
     public static void main(String args[]) throws Exception 
     { 
     	boolean asymetric=!args[1].equals("-");
@@ -366,24 +366,31 @@ public class RunConfigurableExperiments {
         loadMaps(args[2]);
         PrintStream out = new PrintStream(new File(args[3]));
         int iterations = Integer.parseInt(args[4]);
-
+        String traceDir=null;
+        boolean saveTrace=false;
+        boolean saveZip= false;
+        if(args.length>=6){
+        	saveTrace=true;
+        	saveZip=true;
+        	traceDir=args[5];
+        }
         if(true){
         	if(asymetric){
         		ExperimenterAsymmetric.runExperiments(bots1,bots2,
-        				maps, utt, iterations, 3000, 300, true, out);
+        				maps, utt, iterations, 3000, 300, false, out, saveTrace, saveZip, traceDir);
         	}else{
         		Experimenter.runExperiments(bots1, maps, utt, iterations, 3000, 300, false, out, 
-                        -1, true, false);
+                        -1, true, false, saveTrace, saveZip, traceDir);
         	}
         }else{// Separate the matches by map:
         	for(PhysicalGameState map:maps){
         		if(asymetric){
         			ExperimenterAsymmetric.runExperiments(bots1,bots2,
-        					Collections.singletonList(map), utt, iterations, 3000, 300, true, out);
+        					Collections.singletonList(map), utt, iterations, 3000, 300, false, out, saveTrace, saveZip, traceDir);
         		}else{  
         			Experimenter.runExperiments(bots1, 
-        					Collections.singletonList(map), utt, iterations, 3000, 300, true, out,
-        					-1, true, false);
+        					Collections.singletonList(map), utt, iterations, 3000, 300, false, out,
+        					-1, true, false, saveTrace, saveZip, traceDir);
         		}
         	}
         }
