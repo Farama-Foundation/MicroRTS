@@ -18,29 +18,14 @@ public class PartiallyObservableGameState extends GameState {
     int player;   // the observer player
     
     // creates a partially observable game state, from the point of view of 'player':
-    public PartiallyObservableGameState(PhysicalGameState a_pgs, UnitTypeTable a_utt, int a_player) {
-        super(a_pgs, a_utt);
-        player = a_player;
-    }
-    
     public PartiallyObservableGameState(GameState gs, int a_player) {
-        super(gs.getPhysicalGameState().cloneIncludingTerrain(), gs.getUnitTypeTable());
+        super(gs.getPhysicalGameState().cloneKeepingUnits(), gs.getUnitTypeTable());
+        unitCancelationCounter = gs.unitCancelationCounter;
         time = gs.time;
+
         player = a_player;
-        for(UnitActionAssignment uaa:gs.unitActions.values()) {
-            Unit u = uaa.unit;
-            int idx = gs.pgs.getUnits().indexOf(u);
-            if (idx==-1) {
-                System.out.println("Problematic game state:");
-                System.out.println(this);
-                System.out.println("Problematic action:");
-                System.out.println(uaa);
-                throw new Error("Inconsistent game state in the constructor of PartiallyObservableGameState...");
-            } else {
-                Unit u2 = pgs.getUnits().get(idx);
-                unitActions.put(u2,new UnitActionAssignment(u2, uaa.action, uaa.time));
-            }                
-        }    
+
+        unitActions.putAll(gs.unitActions);
         
         List<Unit> toDelete = new LinkedList<Unit>();
         for(Unit u:pgs.getUnits()) {

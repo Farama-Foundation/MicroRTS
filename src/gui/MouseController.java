@@ -16,7 +16,6 @@ import java.util.List;
 
 import rts.*;
 import rts.units.Unit;
-import util.Pair;
 
 /**
  *
@@ -77,7 +76,9 @@ public class MouseController extends AbstractionLayerAI {
                 AbstractAction aa = actions.get(u);
                 if (aa == null) {
                     idle(u);
-                } else if (aa.completed(gs)) idle(u);
+                } else if (aa.completed(gs)) {
+                    idle(u);
+                }
             }
 
         }
@@ -95,6 +96,15 @@ public class MouseController extends AbstractionLayerAI {
         ResourceUsage r = gs.getResourceUsage();
         List<Unit> toDelete = new LinkedList<Unit>();
         for(AbstractAction aa:actions.values()) {
+//            Unit u = null;
+//            for(Unit u2:pgs.getUnits()) {
+//                if (u2.getID() == aa.getUnit().getID()) {
+//                    u = u2;
+//                    aa.setUnit(u);  // replace the unit by the right one
+//                    break;
+//                }
+//            }
+//            if (u==null) {
             if (!pgs.getUnits().contains(aa.getUnit())) {
                 // The unit is dead:
                 toDelete.add(aa.getUnit());

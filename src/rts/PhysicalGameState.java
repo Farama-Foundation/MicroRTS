@@ -198,6 +198,18 @@ public class PhysicalGameState implements Serializable {
         return pgs;
     }
 
+
+    public PhysicalGameState cloneKeepingUnits() {
+        PhysicalGameState pgs = new PhysicalGameState(width, height, terrain);  // The terrain is shared amongst all instances, since it never changes
+        for(Player p:players) {
+            pgs.players.add(p);
+        }
+        for(Unit u:units) {
+            pgs.units.add(u);
+        }
+        return pgs;
+    }
+
     
     public PhysicalGameState cloneIncludingTerrain() {
         int new_terrain[] = new int[terrain.length];

@@ -196,7 +196,7 @@ public class FETracePane extends JPanel {
         
         JPanel p2 = new JPanel();
         p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));
-        statePanel = new PhysicalGameStatePanel(null);
+        statePanel = new PhysicalGameStatePanel((GameState)null);
         statePanel.setPreferredSize(new Dimension(512, 512));
         p2.add(statePanel);
         

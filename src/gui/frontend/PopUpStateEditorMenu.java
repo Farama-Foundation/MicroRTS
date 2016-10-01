@@ -36,6 +36,7 @@ public class PopUpStateEditorMenu extends JPopupMenu {
                 i1.addActionListener(new ActionListener() {
                      public void actionPerformed(ActionEvent event) {
                        pgs.setTerrain(x, y, PhysicalGameState.TERRAIN_WALL);
+                       panel.gameStateUpdated();
                        panel.repaint();
                      }
                    });                        
@@ -47,6 +48,7 @@ public class PopUpStateEditorMenu extends JPopupMenu {
                         i2.addActionListener(new ActionListener() {
                              public void actionPerformed(ActionEvent event) {
                                 pgs.addUnit(new Unit(-1, ut, x, y, 10));
+                                panel.gameStateUpdated();
                                 panel.repaint();
                              }
                            });                        
@@ -56,6 +58,7 @@ public class PopUpStateEditorMenu extends JPopupMenu {
                         i2.addActionListener(new ActionListener() {
                              public void actionPerformed(ActionEvent event) {
                                 pgs.addUnit(new Unit(0, ut, x, y, 0));
+                                panel.gameStateUpdated();
                                 panel.repaint();
                              }
                            });                        
@@ -64,6 +67,7 @@ public class PopUpStateEditorMenu extends JPopupMenu {
                         i3.addActionListener(new ActionListener() {
                              public void actionPerformed(ActionEvent event) {
                                 pgs.addUnit(new Unit(1, ut, x, y, 0));
+                                panel.gameStateUpdated();
                                 panel.repaint();
                              }
                            });                        
@@ -75,6 +79,7 @@ public class PopUpStateEditorMenu extends JPopupMenu {
                 i1.addActionListener(new ActionListener() {
                      public void actionPerformed(ActionEvent event) {
                        pgs.setTerrain(x, y, PhysicalGameState.TERRAIN_NONE);
+                       panel.gameStateUpdated();
                        panel.repaint();
                      }
                    });                        
@@ -85,6 +90,7 @@ public class PopUpStateEditorMenu extends JPopupMenu {
             i1.addActionListener(new ActionListener() {
                  public void actionPerformed(ActionEvent event) {
                     pgs.removeUnit(u);
+                    panel.gameStateUpdated();
                     panel.repaint();
                  }
                });                        
@@ -95,6 +101,7 @@ public class PopUpStateEditorMenu extends JPopupMenu {
                     i2.addActionListener(new ActionListener() {
                          public void actionPerformed(ActionEvent event) {
                             u.setResources(u.getResources()-1);
+                            panel.gameStateUpdated();
                             panel.repaint();
                          }
                        });                        
@@ -105,6 +112,7 @@ public class PopUpStateEditorMenu extends JPopupMenu {
                     i2.addActionListener(new ActionListener() {
                          public void actionPerformed(ActionEvent event) {
                             u.setResources(u.getResources()+1);
+                            panel.gameStateUpdated();
                             panel.repaint();
                          }
                        });                        
@@ -115,6 +123,7 @@ public class PopUpStateEditorMenu extends JPopupMenu {
                     i2.addActionListener(new ActionListener() {
                          public void actionPerformed(ActionEvent event) {
                             u.setResources(u.getResources()-10);
+                            panel.gameStateUpdated();
                             panel.repaint();
                          }
                        });                        
@@ -125,6 +134,7 @@ public class PopUpStateEditorMenu extends JPopupMenu {
                     i2.addActionListener(new ActionListener() {
                          public void actionPerformed(ActionEvent event) {
                             u.setResources(u.getResources()+10);
+                            panel.gameStateUpdated();
                             panel.repaint();
                          }
                        });                        
@@ -141,6 +151,7 @@ public class PopUpStateEditorMenu extends JPopupMenu {
                                 PlayerAction pa = new PlayerAction();
                                 pa.addUnitAction(u, ua);
                                 gs.issue(pa);
+                                panel.gameStateUpdated();
                                 panel.repaint();
                              }
                            });                        
@@ -152,6 +163,7 @@ public class PopUpStateEditorMenu extends JPopupMenu {
                 i2.addActionListener(new ActionListener() {
                      public void actionPerformed(ActionEvent event) {
                         gs.getUnitActions().remove(u);
+                        panel.gameStateUpdated();
                         panel.repaint();
                      }
                    });                        

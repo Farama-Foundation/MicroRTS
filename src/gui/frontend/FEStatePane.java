@@ -80,6 +80,7 @@ import javax.swing.SwingConstants;
 import org.jdom.input.SAXBuilder;
 
 import rts.GameState;
+import rts.PartiallyObservableGameState;
 import rts.PhysicalGameState;
 import rts.PlayerAction;
 import rts.PlayerActionGenerator;
@@ -97,8 +98,6 @@ import util.XMLWriter;
  * @author santi
  */
 public class FEStatePane extends JPanel {
-
-    GameState currentGameState = null;
     PhysicalGameStatePanel statePanel = null;
     JTextArea textArea = null;
     UnitTypeTable currentUtt = null;
@@ -142,6 +141,7 @@ public class FEStatePane extends JPanel {
     JFormattedTextField mapWidthField = null;
     JFormattedTextField mapHeightField = null;
     JFormattedTextField maxCyclesField = null;
+    JCheckBox fullObservabilityBox = null;
     JCheckBox saveTraceBox = null;
     JCheckBox slowDownBox = null;    
     
@@ -162,7 +162,7 @@ public class FEStatePane extends JPanel {
         currentUtt = new UnitTypeTable();
         MapGenerator mg = new MapGenerator(currentUtt);
         
-        currentGameState = new GameState(mg.bases8x8(), currentUtt);
+        GameState currentGameState = new GameState(mg.bases8x8(), currentUtt);
 
         setLayout(new BorderLayout());
 
@@ -204,7 +204,7 @@ public class FEStatePane extends JPanel {
                             File file = fileChooser.getSelectedFile();
                             try {
                                 PhysicalGameState pgs = PhysicalGameState.load(file.getAbsolutePath(), currentUtt);
-                                currentGameState = new GameState(pgs, currentUtt);
+                                GameState gs = new GameState(pgs, currentUtt);
                                 statePanel.setStateDirect(currentGameState);
                                 statePanel.repaint();
                             } catch (Exception ex) {
@@ -427,7 +427,26 @@ public class FEStatePane extends JPanel {
         
         p1.add(new JSeparator(SwingConstants.HORIZONTAL));
         
-        maxCyclesField = addTextField(p1,"Max Cycles:", "3000", 5);
+        {
+            JPanel ptmp = new JPanel();
+            ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
+            maxCyclesField = addTextField(ptmp,"Max Cycles:", "3000", 5);
+            {
+                fullObservabilityBox = new JCheckBox("Full Obsservability");
+                fullObservabilityBox.setSelected(true);
+                fullObservabilityBox.setAlignmentX(Component.CENTER_ALIGNMENT);
+                fullObservabilityBox.setAlignmentY(Component.TOP_ALIGNMENT);
+                fullObservabilityBox.setMaximumSize(new Dimension(120,20));
+                fullObservabilityBox.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        statePanel.setFullObservability(fullObservabilityBox.isSelected());
+                        statePanel.repaint();
+                    }
+                });
+                ptmp.add(fullObservabilityBox);
+            }
+            p1.add(ptmp);
+        }
 
         {
             JPanel ptmp = new JPanel();
@@ -439,7 +458,6 @@ public class FEStatePane extends JPanel {
                 b.setMaximumSize(new Dimension(120,20));
                 b.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        //SwingUtilities.invokeLater(
                         Runnable r = new Runnable() {
                              public void run() {
                                 try {
@@ -450,20 +468,31 @@ public class FEStatePane extends JPanel {
                                         PERIOD = 1;
                                     }
                                     int MAXCYCLES = Integer.parseInt(maxCyclesField.getText());
-                                    GameState gs = currentGameState.clone();
+                                    GameState gs = statePanel.getState().clone();
                                     boolean gameover = false;
 
                                     JFrame w = null;
 
                                     if (ai1 instanceof MouseController ||
                                         ai2 instanceof MouseController) {
-                                        PhysicalGameStatePanel pgsp = new PhysicalGameStatePanel(gs);
-                                        pgsp.setColorScheme(statePanel.getColorScheme());
+                                        PhysicalGameStatePanel pgsp = new PhysicalGameStatePanel(statePanel);
+                                        pgsp.setStateDirect(gs);
                                         w = new PhysicalGameStateMouseJFrame("Game State Visuakizer (Mouse)",640,640,pgsp);
-                                        if (ai1 instanceof MouseController) ((MouseController)ai1).setFrame((PhysicalGameStateMouseJFrame)w);
-                                        if (ai2 instanceof MouseController) ((MouseController)ai2).setFrame((PhysicalGameStateMouseJFrame)w);
+                                        
+                                        boolean mousep1 = false;
+                                        boolean mousep2 = false;
+                                        if (ai1 instanceof MouseController) {
+                                            ((MouseController)ai1).setFrame((PhysicalGameStateMouseJFrame)w);
+                                            mousep1 = true;
+                                        }
+                                        if (ai2 instanceof MouseController) {
+                                            ((MouseController)ai2).setFrame((PhysicalGameStateMouseJFrame)w);
+                                            mousep2 = true;
+                                        }
+                                        if (mousep1 && !mousep2) pgsp.setDrawFromPerspectiveOfPlayer(0);
+                                        if (!mousep1 && mousep2) pgsp.setDrawFromPerspectiveOfPlayer(1);
                                     } else {
-                                        w = PhysicalGameStatePanel.newVisualizer(gs,640,640,false,statePanel.getColorScheme());
+                                        w = PhysicalGameStatePanel.newVisualizer(gs,640,640,!fullObservabilityBox.isSelected(),statePanel.getColorScheme());
                                     }
 
                                     Trace trace = null;
@@ -476,8 +505,15 @@ public class FEStatePane extends JPanel {
                                     long nextTimeToUpdate = System.currentTimeMillis() + PERIOD;
                                     do{
                                         if (System.currentTimeMillis()>=nextTimeToUpdate) {
-                                            PlayerAction pa1 = ai1.getAction(0, gs);
-                                            PlayerAction pa2 = ai2.getAction(1, gs);
+                                            PlayerAction pa1 = null;
+                                            PlayerAction pa2 = null;
+                                            if (fullObservabilityBox.isSelected()) {
+                                                pa1 = ai1.getAction(0, gs);
+                                                pa2 = ai2.getAction(1, gs);
+                                            } else {
+                                                pa1 = ai1.getAction(0, new PartiallyObservableGameState(gs,0));
+                                                pa2 = ai2.getAction(1, new PartiallyObservableGameState(gs,1));
+                                            }
                                             gs.issueSafe(pa1);
                                             gs.issueSafe(pa2);
                                             if (trace!=null && (!pa1.isEmpty() || !pa2.isEmpty())) {
@@ -513,7 +549,6 @@ public class FEStatePane extends JPanel {
                                 }
                              }
                         };
-                        //);
                         (new Thread(r)).start();
                     }
                 });
@@ -617,8 +652,7 @@ public class FEStatePane extends JPanel {
     }
 
     public void setState(GameState gs) {
-        currentGameState = gs;
-        statePanel.setStateDirect(currentGameState);
+        statePanel.setStateDirect(gs);
         statePanel.repaint();
     }    
     
