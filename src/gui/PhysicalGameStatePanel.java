@@ -10,6 +10,7 @@ import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JPanel;
@@ -397,4 +398,24 @@ public class PhysicalGameStatePanel extends JPanel {
             }
         }
     }    
+
+    public void resizeGameState(int width, int height) {
+        if (width>=1 && height>=1) {
+            int newTerrain[] = new int[width*height];
+            for(int i = 0;i<width*height;i++) newTerrain[i] = PhysicalGameState.TERRAIN_NONE;
+            for(int i = 0;i<height && i<pgs.getHeight();i++) {
+                for(int j = 0;j<width && j<pgs.getWidth();j++) {
+                    newTerrain[j+i*width] = pgs.getTerrain(j, i);
+                }
+            }
+            List<Unit> toDelete = new ArrayList<>();
+            for(Unit u:pgs.getUnits()) {
+                if (u.getX()>=width || u.getY()>=height) toDelete.add(u);
+            }
+            for(Unit u:toDelete) gs.removeUnit(u);
+            pgs.setTerrain(newTerrain);
+            pgs.setWidth(width);
+            pgs.setHeight(height);
+        }
+    }
 }

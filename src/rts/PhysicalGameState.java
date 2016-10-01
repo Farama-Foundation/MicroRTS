@@ -62,12 +62,28 @@ public class PhysicalGameState implements Serializable {
         return height;
     }
     
+    // note: these functions do not change the terrain array, remember to change that when
+    //       you change the map width or height
+    public void setWidth(int w) {
+        width = w;
+    }
+    
+    // note: these functions do not change the terrain array, remember to change that when
+    //       you change the map width or height
+    public void setHeight(int h) {
+        height = h;
+    }      
+    
     public int getTerrain(int x,int y) {
         return terrain[x+y*width];
     }
     
     public void setTerrain(int x,int y, int v) {
         terrain[x+y*width] = v;
+    }
+    
+    public void setTerrain(int t[]){
+        terrain = t;
     }
     
     public void addPlayer(Player p) {

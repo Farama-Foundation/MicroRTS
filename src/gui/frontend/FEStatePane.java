@@ -22,6 +22,7 @@ import ai.abstraction.RangedRush;
 import ai.abstraction.WorkerRush;
 import ai.abstraction.pathfinding.AStarPathFinding;
 import ai.abstraction.pathfinding.BFSPathFinding;
+import ai.abstraction.pathfinding.FloodFillPathFinding;
 import ai.abstraction.pathfinding.GreedyPathFinding;
 import ai.abstraction.pathfinding.PathFinding;
 import ai.ahtn.AHTNAI;
@@ -135,8 +136,15 @@ public class FEStatePane extends JPanel {
 
     PathFinding pathFinders[] = {new AStarPathFinding(),
                                  new BFSPathFinding(),
-                                 new GreedyPathFinding()};
+                                 new GreedyPathFinding(),
+                                 new FloodFillPathFinding()};
 
+    JFormattedTextField mapWidthField = null;
+    JFormattedTextField mapHeightField = null;
+    JFormattedTextField maxCyclesField = null;
+    JCheckBox saveTraceBox = null;
+    JCheckBox slowDownBox = null;    
+    
     JComboBox aiComboBox[] = {null,null};    
     JComboBox pfComboBox[] = {null,null};    
     JComboBox efComboBox[] = {null,null};    
@@ -147,10 +155,6 @@ public class FEStatePane extends JPanel {
     JFormattedTextField LSIsplitField[] = {null,null};    
     JFormattedTextField fpuField[] = {null,null};    
     JCheckBox continuingBox[] = {null,null};
-
-    JFormattedTextField maxCyclesField = null;
-    JCheckBox saveTraceBox = null;
-    JCheckBox slowDownBox = null;
     
     FEStateMouseListener mouseListener = null;
 
@@ -168,6 +172,27 @@ public class FEStatePane extends JPanel {
             JPanel ptmp = new JPanel();
             ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
             {
+                JButton b = new JButton("Clear");
+                b.setAlignmentX(Component.CENTER_ALIGNMENT);
+                b.setAlignmentY(Component.TOP_ALIGNMENT);
+                b.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        GameState gs = statePanel.getState();
+                        gs.getUnitActions().clear();
+                        PhysicalGameState pgs = gs.getPhysicalGameState();
+                        for(int i = 0;i<pgs.getHeight();i++) {
+                            for(int j = 0;j<pgs.getWidth();j++) {
+                                pgs.setTerrain(j,i,PhysicalGameState.TERRAIN_NONE);
+                            }
+                        }
+                        pgs.getUnits().clear();
+                        statePanel.repaint();
+                    }
+                });
+                ptmp.add(b);
+            }
+            {
                 JButton b = new JButton("Load");
                 b.setAlignmentX(Component.CENTER_ALIGNMENT);
                 b.setAlignmentY(Component.TOP_ALIGNMENT);
@@ -181,6 +206,7 @@ public class FEStatePane extends JPanel {
                                 PhysicalGameState pgs = PhysicalGameState.load(file.getAbsolutePath(), currentUtt);
                                 currentGameState = new GameState(pgs, currentUtt);
                                 statePanel.setStateDirect(currentGameState);
+                                statePanel.repaint();
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
@@ -190,7 +216,7 @@ public class FEStatePane extends JPanel {
                 ptmp.add(b);
             }
             {
-                JButton b = new JButton("Save PGS");
+                JButton b = new JButton("Save");
                 b.setAlignmentX(Component.CENTER_ALIGNMENT);
                 b.setAlignmentY(Component.TOP_ALIGNMENT);
                 b.addActionListener(new ActionListener() {
@@ -208,6 +234,100 @@ public class FEStatePane extends JPanel {
                                     ex.printStackTrace();
                                 }
                             }
+                        }
+                    }
+                });
+                ptmp.add(b);
+            }
+            p1.add(ptmp);
+        }
+        {
+            JPanel ptmp = new JPanel();
+            ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));        
+            mapWidthField = addTextField(ptmp,"Width:", "8", 4);
+            mapWidthField.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        int newWidth = Integer.parseInt(mapWidthField.getText());
+                        statePanel.resizeGameState(newWidth, currentGameState.getPhysicalGameState().getHeight());
+                        statePanel.repaint();
+                    } catch(Exception ex) {
+                    }
+                }            
+            });
+            mapHeightField = addTextField(ptmp,"Height:", "8", 4);
+            mapHeightField.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        int newHeight = Integer.parseInt(mapHeightField.getText());
+                        statePanel.resizeGameState(currentGameState.getPhysicalGameState().getWidth(), newHeight);
+                        statePanel.repaint();
+                    } catch(Exception ex) {
+                    }
+                }            
+            });
+            p1.add(ptmp);
+        }
+        {
+            JPanel ptmp = new JPanel();
+            ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));        
+            {
+                JButton b = new JButton("Move Player 0");
+                b.setAlignmentX(Component.CENTER_ALIGNMENT);
+                b.setAlignmentY(Component.TOP_ALIGNMENT);
+                b.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        AI ai = createAI(aiComboBox[0].getSelectedIndex(), 0, currentUtt);
+                        if (ai instanceof MouseController) {
+                            textArea.setText("Mouse controller is not allowed for this function.");
+                            return;
+                        }
+                        try {
+                            long start = System.currentTimeMillis();
+                            ai.reset();
+                            PlayerAction a = ai.getAction(0, currentGameState);
+                            long end = System.currentTimeMillis();
+                            textArea.setText("Action generated with " + ai.getClass().getSimpleName() + " in " + (end-start) + "ms\n");
+                            textArea.append(ai.statisticsString() + "\n");
+                            textArea.append("Action:\n");
+                            for(Pair<Unit,UnitAction> tmp:a.getActions()) {
+                                textArea.append("    " + tmp.m_a + ": " + tmp.m_b + "\n");
+                            }
+
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                });
+                ptmp.add(b);
+            }
+            {
+                JButton b = new JButton("Move Player 1");
+                b.setAlignmentX(Component.CENTER_ALIGNMENT);
+                b.setAlignmentY(Component.TOP_ALIGNMENT);
+                b.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        AI ai = createAI(aiComboBox[1].getSelectedIndex(), 1, currentUtt);
+                        if (ai instanceof MouseController) {
+                            textArea.setText("Mouse controller is not allowed for this function.");
+                            return;
+                        }
+                        try {
+                            long start = System.currentTimeMillis();
+                            ai.reset();
+                            PlayerAction a = ai.getAction(0, currentGameState);
+                            long end = System.currentTimeMillis();
+                            textArea.setText("Action generated with " + ai.getClass().getSimpleName() + " in " + (end-start) + "ms\n");
+                            textArea.append(ai.statisticsString() + "\n");
+                            textArea.append("Action:\n");
+                            for(Pair<Unit,UnitAction> tmp:a.getActions()) {
+                                textArea.append("    " + tmp.m_a + ": " + tmp.m_b + "\n");
+                            }
+
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
                         }
                     }
                 });
@@ -280,74 +400,7 @@ public class FEStatePane extends JPanel {
                     }
                 });
                 ptmp.add(b);
-            }
-            p1.add(ptmp);
-        }
-        {
-            JPanel ptmp = new JPanel();
-            ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));        
-            {
-                JButton b = new JButton("Move Player 0");
-                b.setAlignmentX(Component.CENTER_ALIGNMENT);
-                b.setAlignmentY(Component.TOP_ALIGNMENT);
-                b.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        AI ai = createAI(aiComboBox[0].getSelectedIndex(), 0, currentUtt);
-                        if (ai instanceof MouseController) {
-                            textArea.setText("Mouse controller is not allowed for this function.");
-                            return;
-                        }
-                        try {
-                            long start = System.currentTimeMillis();
-                            ai.reset();
-                            PlayerAction a = ai.getAction(0, currentGameState);
-                            long end = System.currentTimeMillis();
-                            textArea.setText("Action generated with " + ai.getClass().getSimpleName() + " in " + (end-start) + "ms\n");
-                            textArea.append(ai.statisticsString() + "\n");
-                            textArea.append("Action:\n");
-                            for(Pair<Unit,UnitAction> tmp:a.getActions()) {
-                                textArea.append("    " + tmp.m_a + ": " + tmp.m_b + "\n");
-                            }
-
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                });
-                ptmp.add(b);
-            }
-            {
-                JButton b = new JButton("Move Player 1");
-                b.setAlignmentX(Component.CENTER_ALIGNMENT);
-                b.setAlignmentY(Component.TOP_ALIGNMENT);
-                b.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        AI ai = createAI(aiComboBox[1].getSelectedIndex(), 1, currentUtt);
-                        if (ai instanceof MouseController) {
-                            textArea.setText("Mouse controller is not allowed for this function.");
-                            return;
-                        }
-                        try {
-                            long start = System.currentTimeMillis();
-                            ai.reset();
-                            PlayerAction a = ai.getAction(0, currentGameState);
-                            long end = System.currentTimeMillis();
-                            textArea.setText("Action generated with " + ai.getClass().getSimpleName() + " in " + (end-start) + "ms\n");
-                            textArea.append(ai.statisticsString() + "\n");
-                            textArea.append("Action:\n");
-                            for(Pair<Unit,UnitAction> tmp:a.getActions()) {
-                                textArea.append("    " + tmp.m_a + ": " + tmp.m_b + "\n");
-                            }
-
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                });
-                ptmp.add(b);
-            }
+            }            
             p1.add(ptmp);
         }
         {
@@ -371,69 +424,7 @@ public class FEStatePane extends JPanel {
             b.setMaximumSize(new Dimension(300,24));
             p1.add(b);
         }
-
-                
-        for(int player = 0;player<2;player++) {
-            p1.add(new JSeparator(SwingConstants.HORIZONTAL));
-            {
-                JPanel ptmp = new JPanel();
-                ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
-                JLabel l1 = new JLabel("Player "+player+":");
-                l1.setAlignmentX(Component.CENTER_ALIGNMENT);
-                l1.setAlignmentY(Component.TOP_ALIGNMENT);
-                ptmp.add(l1);
-                String AINames[] = new String[AIs.length];
-                for(int i = 0;i<AIs.length;i++) {
-                    AINames[i] = AIs[i].getSimpleName();
-                }
-                aiComboBox[player] = new JComboBox(AINames);
-                aiComboBox[player].setAlignmentX(Component.CENTER_ALIGNMENT);
-                aiComboBox[player].setAlignmentY(Component.TOP_ALIGNMENT);
-                aiComboBox[player].setMaximumSize(new Dimension(300,24));
-                ptmp.add(aiComboBox[player]);
-                p1.add(ptmp);
-            }
-            {
-                String PFNames[] = new String[pathFinders.length];
-                for(int i = 0;i<pathFinders.length;i++) {
-                    PFNames[i] = pathFinders[i].getClass().getSimpleName();
-                }
-                pfComboBox[player] = new JComboBox(PFNames);
-                pfComboBox[player].setAlignmentX(Component.CENTER_ALIGNMENT);
-                pfComboBox[player].setAlignmentY(Component.TOP_ALIGNMENT);
-                pfComboBox[player].setMaximumSize(new Dimension(300,24));
-                p1.add(pfComboBox[player]);
-            }
-            {
-                String EFSNames[] = new String[efs.length];
-                for(int i = 0;i<efs.length;i++) {
-                    EFSNames[i] = efs[i].getClass().getSimpleName();
-                }
-                efComboBox[player] = new JComboBox(EFSNames);
-                efComboBox[player].setAlignmentX(Component.CENTER_ALIGNMENT);
-                efComboBox[player].setAlignmentY(Component.TOP_ALIGNMENT);
-                efComboBox[player].setMaximumSize(new Dimension(300,24));
-                p1.add(efComboBox[player]);
-            }
-            cpuTimeField[player] = addTextField(p1,"CPU time per cycle:", "100", 5);
-            maxPlayoutsField[player] = addTextField(p1,"max playouts (set >0 for LSI!):", "-1", 5);
-            playoutTimeField[player] = addTextField(p1,"playout time:", "100", 5);
-            maxActionsField[player] = addTextField(p1,"max actions (downsampling):", "-1", 5);
-            {
-                JPanel ptmp = new JPanel();
-                ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
-                LSIsplitField[player] = addTextField(ptmp,"split (LSI):", "0.25", 5);
-                fpuField[player] = addTextField(ptmp,"FPU:", "4.9", 5);
-                p1.add(ptmp);
-            }
-            continuingBox[player] = new JCheckBox("Continuing");
-            continuingBox[player].setAlignmentX(Component.CENTER_ALIGNMENT);
-            continuingBox[player].setAlignmentY(Component.TOP_ALIGNMENT);
-            continuingBox[player].setMaximumSize(new Dimension(120,20));
-            continuingBox[player].setSelected(true);
-            p1.add(continuingBox[player]);
-        }
-
+        
         p1.add(new JSeparator(SwingConstants.HORIZONTAL));
         
         maxCyclesField = addTextField(p1,"Max Cycles:", "3000", 5);
@@ -544,7 +535,68 @@ public class FEStatePane extends JPanel {
             }
             p1.add(ptmp);
         }
-
+        
+                
+        for(int player = 0;player<2;player++) {
+            p1.add(new JSeparator(SwingConstants.HORIZONTAL));
+            {
+                JPanel ptmp = new JPanel();
+                ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
+                JLabel l1 = new JLabel("Player "+player+":");
+                l1.setAlignmentX(Component.CENTER_ALIGNMENT);
+                l1.setAlignmentY(Component.TOP_ALIGNMENT);
+                ptmp.add(l1);
+                String AINames[] = new String[AIs.length];
+                for(int i = 0;i<AIs.length;i++) {
+                    AINames[i] = AIs[i].getSimpleName();
+                }
+                aiComboBox[player] = new JComboBox(AINames);
+                aiComboBox[player].setAlignmentX(Component.CENTER_ALIGNMENT);
+                aiComboBox[player].setAlignmentY(Component.TOP_ALIGNMENT);
+                aiComboBox[player].setMaximumSize(new Dimension(300,24));
+                ptmp.add(aiComboBox[player]);
+                p1.add(ptmp);
+            }
+            {
+                String PFNames[] = new String[pathFinders.length];
+                for(int i = 0;i<pathFinders.length;i++) {
+                    PFNames[i] = pathFinders[i].getClass().getSimpleName();
+                }
+                pfComboBox[player] = new JComboBox(PFNames);
+                pfComboBox[player].setAlignmentX(Component.CENTER_ALIGNMENT);
+                pfComboBox[player].setAlignmentY(Component.TOP_ALIGNMENT);
+                pfComboBox[player].setMaximumSize(new Dimension(300,24));
+                p1.add(pfComboBox[player]);
+            }
+            {
+                String EFSNames[] = new String[efs.length];
+                for(int i = 0;i<efs.length;i++) {
+                    EFSNames[i] = efs[i].getClass().getSimpleName();
+                }
+                efComboBox[player] = new JComboBox(EFSNames);
+                efComboBox[player].setAlignmentX(Component.CENTER_ALIGNMENT);
+                efComboBox[player].setAlignmentY(Component.TOP_ALIGNMENT);
+                efComboBox[player].setMaximumSize(new Dimension(300,24));
+                p1.add(efComboBox[player]);
+            }
+            cpuTimeField[player] = addTextField(p1,"CPU time per cycle:", "100", 5);
+            maxPlayoutsField[player] = addTextField(p1,"max playouts (set >0 for LSI!):", "-1", 5);
+            playoutTimeField[player] = addTextField(p1,"playout time:", "100", 5);
+            maxActionsField[player] = addTextField(p1,"max actions (downsampling):", "-1", 5);
+            {
+                JPanel ptmp = new JPanel();
+                ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
+                LSIsplitField[player] = addTextField(ptmp,"split (LSI):", "0.25", 5);
+                fpuField[player] = addTextField(ptmp,"FPU:", "4.9", 5);
+                p1.add(ptmp);
+            }
+            continuingBox[player] = new JCheckBox("Continuing");
+            continuingBox[player].setAlignmentX(Component.CENTER_ALIGNMENT);
+            continuingBox[player].setAlignmentY(Component.TOP_ALIGNMENT);
+            continuingBox[player].setMaximumSize(new Dimension(120,20));
+            continuingBox[player].setSelected(true);
+            p1.add(continuingBox[player]);
+        }
 
         JPanel p2 = new JPanel();
         p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));

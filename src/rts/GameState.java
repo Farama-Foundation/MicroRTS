@@ -15,7 +15,7 @@ import util.Pair;
  * @author santi
  */
 public class GameState implements Serializable{
-	static Random r = new Random();         // only used if the action conflict resolution strategy is set to random
+    static Random r = new Random();         // only used if the action conflict resolution strategy is set to random
     int unitCancelationCounter = 0;  // only used if the action conflict resolution strategy is set to alternating
     
     int time = 0;
