@@ -212,6 +212,10 @@ public class PuppetSearchMCTS extends PuppetBase {
 	}
 	
 	public String toString(){
-		return "PuppetSearchMCTS("+script.toString()+")";
+            return getClass().getSimpleName() + "("+
+                   MAX_TIME + ", " + MAX_ITERATIONS + ", " +
+                   PLAN_TIME + ", " + PLAN_PLAYOUTS + ", " + STEP_PLAYOUT_TIME + ", " + EVAL_PLAYOUT_TIME + ", " +
+                   policy1 + ", " + script + ", " + eval + ")";
+                
 	}
 }

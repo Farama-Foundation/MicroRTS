@@ -37,6 +37,7 @@ import ai.machinelearning.bayes.BayesianModelByUnitTypeWithDefaultModel;
 import ai.machinelearning.bayes.featuregeneration.FeatureGenerator;
 import ai.machinelearning.bayes.featuregeneration.FeatureGeneratorSimple;
 import ai.mcts.informedmcts.InformedNaiveMCTS;
+import ai.mcts.mlps.MLPSMCTS;
 import ai.mcts.naivemcts.NaiveMCTS;
 import ai.mcts.uct.UCT;
 import ai.mcts.uct.UCTFirstPlayUrgency;
@@ -49,6 +50,8 @@ import ai.montecarlo.lsi.LSI;
 import ai.montecarlo.lsi.Sampling;
 import ai.portfolio.PortfolioAI;
 import ai.portfolio.portfoliogreedysearch.PGSAI;
+import ai.puppet.BasicConfigurableScript;
+import ai.puppet.PuppetSearchMCTS;
 import ai.stochastic.UnitActionProbabilityDistribution;
 import ai.stochastic.UnitActionProbabilityDistributionAI;
 import gui.MouseController;
@@ -129,8 +132,10 @@ public class FEStatePane extends JPanel {
                    UCTUnitActions.class,
                    UCTFirstPlayUrgency.class,
                    NaiveMCTS.class,
+                   MLPSMCTS.class,
                    AHTNAI.class,
-                   InformedNaiveMCTS.class
+                   InformedNaiveMCTS.class,
+                   PuppetSearchMCTS.class
                   };
 
     PathFinding pathFinders[] = {new AStarPathFinding(),
@@ -649,8 +654,7 @@ public class FEStatePane extends JPanel {
         
         mouseListener = new FEStateMouseListener(statePanel, currentUtt);
         statePanel.addMouseListener(mouseListener);
-        
-        
+              
 //        for(int i = 0;i<AIs.length;i++) {
 //            AI ai = createAI(i, 0, currentUtt);
 //            System.out.println(ai.getClass().getSimpleName() + ": " + ai.toString());
@@ -761,13 +765,15 @@ public class FEStatePane extends JPanel {
                 false,
                 playout_policy, ef);
         } else if (AIs[idx]==UCT.class) {
-            return new UCT(TIME, MAX_PLAYOUTS, PLAYOUT_LOOKAHEAD, MAX_DEPTH, new RandomBiasedAI(), ef);
+            return new UCT(TIME, MAX_PLAYOUTS, PLAYOUT_LOOKAHEAD, MAX_DEPTH, playout_policy, ef);
         } else if (AIs[idx]==UCTUnitActions.class) {
-            return new UCTUnitActions(TIME, PLAYOUT_LOOKAHEAD, MAX_DEPTH*10, new RandomBiasedAI(), ef);
+            return new UCTUnitActions(TIME, PLAYOUT_LOOKAHEAD, MAX_DEPTH*10, playout_policy, ef);
         } else if (AIs[idx]==UCTFirstPlayUrgency.class) {
-            return new UCTFirstPlayUrgency(TIME, MAX_PLAYOUTS, PLAYOUT_LOOKAHEAD, MAX_DEPTH, new RandomBiasedAI(), ef, fpu_value);
+            return new UCTFirstPlayUrgency(TIME, MAX_PLAYOUTS, PLAYOUT_LOOKAHEAD, MAX_DEPTH, playout_policy, ef, fpu_value);
         } else if (AIs[idx]==NaiveMCTS.class) {
-            return new NaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_LOOKAHEAD, MAX_DEPTH, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), ef);
+            return new NaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_LOOKAHEAD, MAX_DEPTH, 0.33f, 0.0f, 0.75f, playout_policy, ef);
+        } else if (AIs[idx]==MLPSMCTS.class) {
+            return new MLPSMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_LOOKAHEAD, MAX_DEPTH, 0.05, playout_policy, ef);
         } else if (AIs[idx]==AHTNAI.class) {
             return new AHTNAI("data/ahtn/microrts-ahtn-definition-flexible-single-target-portfolio.lisp", TIME, MAX_PLAYOUTS, PLAYOUT_LOOKAHEAD, ef, playout_policy);
         } else if (AIs[idx]==InformedNaiveMCTS.class) {
@@ -776,15 +782,16 @@ public class FEStatePane extends JPanel {
                 new BayesianModelByUnitTypeWithDefaultModel(new SAXBuilder().build(
                  "data/bayesianmodels/pretrained/ActionInterdependenceModel-WR.xml").getRootElement(), utt,
                  new ActionInterdependenceModel(null, 0, 0, 0, utt, fg));
-            /*
-            UnitActionProbabilityDistribution model_nmcts10000 = 
-                new BayesianModelByUnitTypeWithDefaultModel(new SAXBuilder().build(
-                 "data/bayesianmodels/pretrained/ActionInterdependenceModel-NaiveMCTS10000.xml").getRootElement(), utt,
-                 new ActionInterdependenceModel(null, 0, 0, 0, utt, fg));
-            */
             return new InformedNaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_LOOKAHEAD, 8, 0.33f, 0.0f, 0.4f, 
                                          new UnitActionProbabilityDistributionAI(model_wr, utt, "NaiveBayesAllowedActionsByUnitTypeWithDefaultModel-nofeatures-Acc-WR"), 
-                                         model_wr, new SimpleSqrtEvaluationFunction3());
+                                         model_wr, ef);
+        } else if (AIs[idx]==PuppetSearchMCTS.class) {
+			return new PuppetSearchMCTS(TIME, MAX_PLAYOUTS,
+                                                    5000, -1,
+                                                    PLAYOUT_LOOKAHEAD, PLAYOUT_LOOKAHEAD,
+                                                    playout_policy,
+                                                    new BasicConfigurableScript(utt, pf),
+                                                    ef);
         } else if (AIs[idx]==MouseController.class) {
             return new MouseController(null);
         }

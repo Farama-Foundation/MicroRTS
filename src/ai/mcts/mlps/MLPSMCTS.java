@@ -223,7 +223,7 @@ public class MLPSMCTS extends InterruptibleAIWithComputationBudget {
     
     
     public String toString() {
-        return "MLPSMCTS(" + MAXSIMULATIONTIME + "," + MAX_ITERATIONS + "," + MAX_TREE_DEPTH + "," + C + ")";
+        return getClass().getSimpleName() + "(" + MAX_TIME + ", " + MAX_ITERATIONS + ", " + MAXSIMULATIONTIME + ", " + MAX_TREE_DEPTH + ", " + C + ", " + randomAI + ", " + ef + ")";
     }
     
     public String statisticsString() {
