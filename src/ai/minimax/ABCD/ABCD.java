@@ -178,4 +178,10 @@ public class ABCD extends AI {
             return ABCD(gs2, maxplayer, minplayer, alpha, beta, depthLeft, nextPlayerInSimultaneousNode);
         }
     }       
+    
+    
+    public String toString() {
+        return getClass().getSimpleName() + "(" + MAXDEPTH + ", " + playoutAI + ", " + maxPlayoutTime + ", " + ef + ")";
+    }     
+    
 }

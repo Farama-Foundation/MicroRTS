@@ -486,5 +486,10 @@ public class IDABCD extends InterruptibleAIWithComputationBudget {
                " , avg time depth: " + (avg_time_depth_so_far/(double)count_time_depth_so_far) +
                " , max time depth: " + max_time_depth_so_far;
     }
+    
+    
+    public String toString() {
+        return getClass().getSimpleName() + "(" + MAX_TIME + ", " + MAX_ITERATIONS + ", " + playoutAI + ", " + maxPlayoutTime + ", " + ef + ", " + performGreedyActionScan + ")";
+    }     
 
 }

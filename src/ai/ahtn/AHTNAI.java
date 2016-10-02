@@ -137,7 +137,7 @@ public class AHTNAI extends AIWithComputationBudget {
     }
     
     public String toString() {
-        return "AHTNAI(" + domainFileName + "," + MAX_TIME + ")";
+        return getClass().getSimpleName() + "(" + domainFileName + ", " + MAX_TIME + ", " + MAX_ITERATIONS + ", " + PLAYOUT_LOOKAHEAD + ", " + ef + ", " + playoutAI + ")";
     }
     
     public String statisticsString() {

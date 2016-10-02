@@ -204,8 +204,9 @@ public class UCTFirstPlayUrgency extends InterruptibleAIWithComputationBudget {
         }while(!gameover && gs.getTime()<time);   
     }
     
+    
     public String toString() {
-        return "UCTFirstPlayUrgency(" + MAXSIMULATIONTIME + ")";
+        return getClass().getSimpleName() + "(" + MAX_TIME + ", " + MAX_ITERATIONS + ", " + MAXSIMULATIONTIME + ", " + MAX_TREE_DEPTH + ", " + randomAI + ", " + ef + ", " + FPUvalue + ")";
     }
     
 }

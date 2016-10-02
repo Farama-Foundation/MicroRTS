@@ -299,4 +299,9 @@ public class IDRTMinimax extends InterruptibleAIWithComputationBudget {
                " , max consecutive frames: " + max_consecutive_frames_searching_so_far;
     }    
     
+    
+    public String toString() {
+        return getClass().getSimpleName() + "(" + MAX_TIME + ", " + MAX_ITERATIONS + ", " + ef + ")";
+    }     
+    
 }

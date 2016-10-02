@@ -280,7 +280,7 @@ public class NaiveMCTS extends InterruptibleAIWithComputationBudget {
     
     
     public String toString() {
-        return "NaiveMCTS(" + MAXSIMULATIONTIME + "," + MAX_TIME + "," + MAX_ITERATIONS + "," + MAX_TREE_DEPTH + "," + epsilon_l + "," + epsilon_g + "," + epsilon_0 + "," + playoutPolicy + ")";
+        return getClass().getSimpleName() + "(" + MAX_TIME + ", " + MAX_ITERATIONS + ", " + MAXSIMULATIONTIME + "," + MAX_TREE_DEPTH + "," + epsilon_l + ", " + discount_l + ", " + epsilon_g + ", " + discount_g + ", " + epsilon_0 + ", " + discount_0 + ", " + playoutPolicy + ", " + ef + ")";
     }
     
     public String statisticsString() {

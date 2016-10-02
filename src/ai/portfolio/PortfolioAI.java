@@ -155,4 +155,9 @@ public class PortfolioAI extends InterruptibleAIWithComputationBudget {
         return new PortfolioAI(strategies, deterministic, MAX_TIME, MAX_ITERATIONS, LOOKAHEAD, evaluation);
     }
     
+    
+    public String toString() {
+        return getClass().getSimpleName() + "(" + MAX_TIME + ", " + MAX_ITERATIONS + ", " + LOOKAHEAD + ", " + evaluation + ")";
+    }
+    
 }

@@ -145,4 +145,5 @@ public class MouseController extends AbstractionLayerAI {
         pa.fillWithNones(gs,player, 1);
         return pa;
     }
+    
 }

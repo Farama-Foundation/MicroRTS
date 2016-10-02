@@ -295,7 +295,7 @@ public class InformedNaiveMCTS extends InterruptibleAIWithComputationBudget {
     
     
     public String toString() {
-        return "BiasedNaiveMCTS(" + MAXSIMULATIONTIME + "," + MAX_TIME + "," + MAX_ITERATIONS + "," + MAX_TREE_DEPTH + "," + epsilon_l + "," + epsilon_g + "," + epsilon_0 + "," + playoutPolicy + "," + bias + ")";
+        return getClass().getSimpleName() + "(" + MAX_TIME + ", " + MAX_ITERATIONS + ", " + MAXSIMULATIONTIME + ", " + MAX_TREE_DEPTH + ", " + epsilon_l + ", " + discount_l + ", " + epsilon_g + ", " + discount_g + ", " + epsilon_0 + ", " + discount_0 + ", " +  playoutPolicy + ", " + bias + ", " + ef + ")";
     }
     
     public String statisticsString() {

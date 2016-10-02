@@ -158,7 +158,7 @@ public class FEStatePane extends JPanel {
     
     FEStateMouseListener mouseListener = null;
 
-    public FEStatePane() {
+    public FEStatePane() {        
         currentUtt = new UnitTypeTable();
         MapGenerator mg = new MapGenerator(currentUtt);
         
@@ -649,6 +649,13 @@ public class FEStatePane extends JPanel {
         
         mouseListener = new FEStateMouseListener(statePanel, currentUtt);
         statePanel.addMouseListener(mouseListener);
+        
+        
+//        for(int i = 0;i<AIs.length;i++) {
+//            AI ai = createAI(i, 0, currentUtt);
+//            System.out.println(ai.getClass().getSimpleName() + ": " + ai.toString());
+//        }
+        
     }
 
     public void setState(GameState gs) {

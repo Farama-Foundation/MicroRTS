@@ -200,4 +200,10 @@ public abstract class AbstractionLayerAI extends AI {
     		return false;
     	}
     }
+    
+
+    public String toString() {
+        return getClass().getSimpleName() + "(" + pf + ")";
+    }
+    
 }   

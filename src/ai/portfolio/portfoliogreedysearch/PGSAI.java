@@ -252,5 +252,10 @@ public class PGSAI extends AIWithComputationBudget {
     public AI clone() {
         return new PGSAI(MAX_TIME, MAX_ITERATIONS, LOOKAHEAD, I, R, evaluation, utt, pf);
     }
+    
+    
+    public String toString() {
+        return getClass().getSimpleName() + "(" + MAX_TIME + ", " + MAX_ITERATIONS + ", " + LOOKAHEAD + ", " + I + ", " + R + ", " + evaluation + ", " + pf + ")";
+    }
 
 }

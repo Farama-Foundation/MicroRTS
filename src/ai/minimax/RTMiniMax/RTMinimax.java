@@ -42,9 +42,11 @@ public class RTMinimax extends AI {
     public void reset() {
     }
     
+
     public AI clone() {
         return new RTMinimax(LOOKAHEAD, ef);
     }     
+
     
     public PlayerAction getAction(int player, GameState gs) throws Exception {
         
@@ -166,4 +168,10 @@ public class RTMinimax extends AI {
             return realTimeMinimaxAB(gs2, maxplayer, minplayer, alpha, beta, lookAhead, depth+1);
         }
     }    
+
+
+    public String toString() {
+        return getClass().getSimpleName() + "(" + LOOKAHEAD + ", " + ef + ")";
+    }     
+
 }

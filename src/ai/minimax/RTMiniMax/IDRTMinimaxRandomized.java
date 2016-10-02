@@ -268,4 +268,10 @@ public class IDRTMinimaxRandomized extends IDRTMinimax {
         }
         return null;
     }
+    
+    
+    public String toString() {
+        return getClass().getSimpleName() + "(" + MAX_TIME + ", " + MAX_ITERATIONS + ", " + m_repeats + ", " + ef + ")";
+    }     
+    
 }

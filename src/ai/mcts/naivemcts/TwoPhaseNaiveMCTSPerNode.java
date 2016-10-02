@@ -270,7 +270,10 @@ public class TwoPhaseNaiveMCTSPerNode extends InterruptibleAIWithComputationBudg
     
     
     public String toString() {
-        return getClass().getSimpleName() + "(" + MAXSIMULATIONTIME + "," + MAX_TIME + "," + MAX_ITERATIONS + "," + MAX_TREE_DEPTH + "," + phase1_epsilon_l +","+ phase1_epsilon_g +","+phase1_epsilon_0+","+phase2_epsilon_l+","+phase2_epsilon_g+","+phase2_epsilon_0+","+phase1_budget + ")";
+        return getClass().getSimpleName() + "(" + MAX_TIME + ", " + MAX_ITERATIONS + ", " + MAXSIMULATIONTIME + "," + MAX_TREE_DEPTH + "," + 
+                                             phase1_epsilon_l + ", " + phase1_epsilon_g + ", " + phase1_epsilon_0 + ", " + 
+                                             phase2_epsilon_l + ", " + phase2_epsilon_g + ", " + phase2_epsilon_0 + ", " + 
+                                             phase1_budget + ", " + randomAI + ", " + ef  + ")";       
     }
     
     public String statisticsString() {

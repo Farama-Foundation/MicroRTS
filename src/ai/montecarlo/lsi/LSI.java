@@ -1021,8 +1021,10 @@ public class LSI extends AIWithComputationBudget {
         }
     }
 
-    public String toString() {
-        return "LinearMonteCarlo(" + MAX_ITERATIONS + "," + lookAhead + ")";
+    public String toString() {        
+        return getClass().getSimpleName() + "(" + MAX_ITERATIONS + ", " + lookAhead + ", " + split + ", " + 
+               estimateType + ", " + estimateReuseType + ", " + generateType + ", " + agentOrderingType + ", " + evaluateType + ", " + 
+               eliteReuse + ", " + relaxationType + ", " + relaxationLimit + ", " + epochal + ", " + simulationAi + ", " + evalFunction + ")";
     }
 
     public String statisticsString() {

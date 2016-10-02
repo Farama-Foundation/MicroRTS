@@ -206,7 +206,7 @@ public class MonteCarlo extends InterruptibleAIWithComputationBudget {
     }
     
     public String toString() {
-        return "MonteCarlo(" + MAXACTIONS + "," + MAX_TIME + "," +  MAX_ITERATIONS + "," + MAXSIMULATIONTIME + ")";
+        return getClass().getSimpleName() + "(" + MAX_TIME + "," + MAX_ITERATIONS + "," +  MAXSIMULATIONTIME + "," + MAXACTIONS + ", " + randomAI + ", " + ef + ")";
     }
     
 }

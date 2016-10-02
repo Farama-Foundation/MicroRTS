@@ -204,7 +204,7 @@ public class UCT extends InterruptibleAIWithComputationBudget {
     }
     
     public String toString() {
-        return "UCT(" + MAXSIMULATIONTIME + ")";
+        return getClass().getSimpleName() + "(" + MAX_TIME + ", " + MAX_ITERATIONS + ", " + MAXSIMULATIONTIME + ", " + MAX_TREE_DEPTH + ", " + randomAI + ", " + ef + ")";
     }
     
 }

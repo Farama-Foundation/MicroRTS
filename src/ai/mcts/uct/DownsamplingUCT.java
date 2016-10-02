@@ -155,8 +155,10 @@ public class DownsamplingUCT extends InterruptibleAIWithComputationBudget {
         }while(!gameover && gs.getTime()<time);   
     }
     
+    
     public String toString() {
-        return "DownsamplingUCT(" + MAXSIMULATIONTIME + ")";
+        return getClass().getSimpleName() + "(" + MAX_TIME + ", " + MAX_ITERATIONS + ", " + MAXSIMULATIONTIME + ", " + MAXACTIONS + ", " + MAX_TREE_DEPTH + ", " + randomAI + ", " + ef + ")";
     }
+    
     
 }

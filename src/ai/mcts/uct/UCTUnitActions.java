@@ -160,8 +160,9 @@ public class UCTUnitActions extends InterruptibleAIWithComputationBudget {
         }while(!gameover && gs.getTime()<time);   
     }
     
+    
     public String toString() {
-        return "UCTUnitActions(" + MAXSIMULATIONTIME + ")";
+        return getClass().getSimpleName() + "(" + MAX_TIME + ", " + MAX_ITERATIONS + ", " + MAXSIMULATIONTIME + ", " + MAX_TREE_DEPTH + ", " + randomAI + ", " + ef + ")";
     }
     
 }
