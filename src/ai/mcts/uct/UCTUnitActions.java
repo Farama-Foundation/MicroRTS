@@ -7,10 +7,15 @@ package ai.mcts.uct;
 import ai.core.AI;
 import ai.RandomBiasedAI;
 import ai.core.InterruptibleAIWithComputationBudget;
+import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
+import ai.evaluation.SimpleSqrtEvaluationFunction3;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import rts.GameState;
 import rts.PlayerAction;
+import rts.units.UnitTypeTable;
 
 /**
  *
@@ -38,6 +43,13 @@ public class UCTUnitActions extends InterruptibleAIWithComputationBudget {
     int playerForThisComputation;
     
     
+    public UCTUnitActions(UnitTypeTable utt) {
+        this(100,-1,100,
+             new RandomBiasedAI(),
+             new SimpleSqrtEvaluationFunction3());
+    }       
+    
+    
     public UCTUnitActions(int available_time, int lookahead, int max_depth, AI policy, EvaluationFunction a_ef) {
         super(available_time, -1);
         MAXSIMULATIONTIME = lookahead;
@@ -62,7 +74,7 @@ public class UCTUnitActions extends InterruptibleAIWithComputationBudget {
     
     
     public AI clone() {
-        return new UCTUnitActions(MAX_TIME, MAXSIMULATIONTIME, MAX_TREE_DEPTH, randomAI, ef);
+        return new UCTUnitActions(TIME_BUDGET, MAXSIMULATIONTIME, MAX_TREE_DEPTH, randomAI, ef);
     }  
     
     
@@ -86,7 +98,7 @@ public class UCTUnitActions extends InterruptibleAIWithComputationBudget {
         if (DEBUG>=2) System.out.println("Search...");
         long start = System.currentTimeMillis();
         
-        while((System.currentTimeMillis() - start)<MAX_TIME) {
+        while((System.currentTimeMillis() - start)<TIME_BUDGET) {
             UCTUnitActionsNode leaf = tree.UCTSelectLeaf(playerForThisComputation, 1-playerForThisComputation, MAX_TREE_DEPTH);
             
             if (leaf!=null) {
@@ -161,8 +173,24 @@ public class UCTUnitActions extends InterruptibleAIWithComputationBudget {
     }
     
     
+    @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + MAX_TIME + ", " + MAX_ITERATIONS + ", " + MAXSIMULATIONTIME + ", " + MAX_TREE_DEPTH + ", " + randomAI + ", " + ef + ")";
+        return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", " + MAXSIMULATIONTIME + ", " + MAX_TREE_DEPTH + ", " + randomAI + ", " + ef + ")";
     }
     
+    
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+        
+        parameters.add(new ParameterSpecification("TimeBudget",Integer.class,100));
+        parameters.add(new ParameterSpecification("IterationsBudget",Integer.class,-1));
+        parameters.add(new ParameterSpecification("PlayoutLookahead",Integer.class,100));
+        parameters.add(new ParameterSpecification("MaxTreeDepth",Integer.class,10));
+        
+        parameters.add(new ParameterSpecification("DefaultPolicy",AI.class, randomAI));
+        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
+
+        return parameters;
+    }       
 }

@@ -2,6 +2,8 @@ package ai.puppet;
 
 import ai.core.AI;
 import ai.core.InterruptibleAIWithComputationBudget;
+import ai.core.ParameterSpecification;
+import java.util.List;
 import rts.GameState;
 import rts.PlayerAction;
 
@@ -41,11 +43,17 @@ public class PuppetNoPlan extends InterruptibleAIWithComputationBudget {
 	}
 
 	public String toString(){
-		return "PuppetNoPlan("+puppet.toString()+")";
+		return getClass().getSimpleName() + "("+puppet.toString()+")";
 	}
 	
 	@Override
 	public String statisticsString() {
 		return puppet.statisticsString();
 	}   
+        
+        
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        return puppet.getParameters();
+    }          
 }

@@ -6,6 +6,7 @@
 
 package ai.ahtn;
 
+import ai.abstraction.WorkerRush;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,7 +22,11 @@ import ai.ahtn.domain.Term;
 import ai.ahtn.planner.AdversarialBoundedDepthPlannerAlphaBeta;
 import ai.core.AI;
 import ai.core.AIWithComputationBudget;
+import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
+import ai.evaluation.SimpleSqrtEvaluationFunction3;
+import java.util.ArrayList;
+import rts.units.UnitTypeTable;
 
 /**
  *
@@ -39,6 +44,15 @@ public class AHTNAI extends AIWithComputationBudget {
     public int PLAYOUT_LOOKAHEAD = 100;
         
     List<MethodDecomposition> actionsBeingExecuted = null;
+    
+    
+    public AHTNAI(UnitTypeTable utt) throws Exception {
+        this("data/ahtn/microrts-ahtn-definition-flexible-single-target-portfolio.lisp", 
+             100, -1, 100, 
+             new SimpleSqrtEvaluationFunction3(), 
+             new WorkerRush(utt));
+    }
+    
     
     public AHTNAI(String a_domainFileName, int available_time, int max_playouts, int playoutLookahead, EvaluationFunction a_ef, AI a_playoutAI) throws Exception {
         super(available_time, max_playouts);
@@ -62,7 +76,7 @@ public class AHTNAI extends AIWithComputationBudget {
         Term goal1 = Term.fromString("(destroy-player "+player+" "+(1-player)+")");
         Term goal2 = Term.fromString("(destroy-player "+(1-player)+" "+player+")");
         if (gs.canExecuteAnyAction(player)) {
-            Pair<MethodDecomposition,MethodDecomposition> plan = AdversarialBoundedDepthPlannerAlphaBeta.getBestPlanIterativeDeepening(goal1, goal2, player, MAX_TIME, MAX_ITERATIONS, PLAYOUT_LOOKAHEAD, gs, dd, ef, playoutAI);
+            Pair<MethodDecomposition,MethodDecomposition> plan = AdversarialBoundedDepthPlannerAlphaBeta.getBestPlanIterativeDeepening(goal1, goal2, player, TIME_BUDGET, ITERATIONS_BUDGET, PLAYOUT_LOOKAHEAD, gs, dd, ef, playoutAI);
             PlayerAction pa = new PlayerAction();
             if (plan!=null) {
                 MethodDecomposition toExecute = plan.m_a;
@@ -127,17 +141,19 @@ public class AHTNAI extends AIWithComputationBudget {
     }
 
     
+    @Override
     public AI clone() {
         try {
-            return new AHTNAI(domainFileName, MAX_TIME, MAX_ITERATIONS, PLAYOUT_LOOKAHEAD, ef, playoutAI);
+            return new AHTNAI(domainFileName, TIME_BUDGET, ITERATIONS_BUDGET, PLAYOUT_LOOKAHEAD, ef, playoutAI);
         }catch(Exception e) {
             e.printStackTrace();
             return null;
         }
     }
     
+    @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + domainFileName + ", " + MAX_TIME + ", " + MAX_ITERATIONS + ", " + PLAYOUT_LOOKAHEAD + ", " + ef + ", " + playoutAI + ")";
+        return getClass().getSimpleName() + "(" + domainFileName + ", " + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", " + PLAYOUT_LOOKAHEAD + ", " + ef + ", " + playoutAI + ")";
     }
     
     public String statisticsString() {
@@ -153,5 +169,20 @@ public class AHTNAI extends AIWithComputationBudget {
                ", Average time depth: " + (AdversarialBoundedDepthPlannerAlphaBeta.average_time_depth/AdversarialBoundedDepthPlannerAlphaBeta.n_trees);
     }
     
+    
+    @Override
+    public List<ParameterSpecification> getParameters()
+    {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+        
+        parameters.add(new ParameterSpecification("DomainFileName",String.class,"data/ahtn/microrts-ahtn-definition-flexible-single-target-portfolio.lisp"));
+        parameters.add(new ParameterSpecification("TimeBudget",Integer.class,100));
+        parameters.add(new ParameterSpecification("IterationsBudget",Integer.class,-1));
+        parameters.add(new ParameterSpecification("PlayoutLookahead",Integer.class,100));
+        parameters.add(new ParameterSpecification("playoutAI",AI.class, playoutAI));
+        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
+        
+        return parameters;
+    }       
     
 }

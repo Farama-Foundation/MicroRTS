@@ -7,11 +7,16 @@ package ai.mcts.mlps;
 import ai.*;
 import ai.core.AI;
 import ai.core.InterruptibleAIWithComputationBudget;
+import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleEvaluationFunction;
+import ai.evaluation.SimpleSqrtEvaluationFunction3;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import rts.GameState;
 import rts.PlayerAction;
+import rts.units.UnitTypeTable;
 
 /**
  *
@@ -43,6 +48,13 @@ public class MLPSMCTS extends InterruptibleAIWithComputationBudget {
     public long total_time = 0;
     
     
+    public MLPSMCTS(UnitTypeTable utt) {
+        this(100,-1,100,10,0.05,
+             new RandomBiasedAI(),
+             new SimpleSqrtEvaluationFunction3());
+    }
+    
+    
     public MLPSMCTS(int available_time, int max_playouts, int lookahead, int max_depth, 
                                double a_C,
                                AI policy, EvaluationFunction a_ef) {
@@ -67,7 +79,7 @@ public class MLPSMCTS extends InterruptibleAIWithComputationBudget {
         
     
     public AI clone() {
-        return new MLPSMCTS(MAX_TIME, MAX_ITERATIONS, MAXSIMULATIONTIME, MAX_TREE_DEPTH, C, randomAI, ef);
+        return new MLPSMCTS(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME, MAX_TREE_DEPTH, C, randomAI, ef);
     }    
     
     
@@ -98,8 +110,8 @@ public class MLPSMCTS extends InterruptibleAIWithComputationBudget {
             if (!iteration(playerForThisComputation)) break;
             count++;
             end = System.currentTimeMillis();
-            if (MAX_TIME>=0 && (end - start)>=MAX_TIME) break; 
-            if (MAX_ITERATIONS>=0 && count>=MAX_ITERATIONS) break;             
+            if (TIME_BUDGET>=0 && (end - start)>=TIME_BUDGET) break; 
+            if (ITERATIONS_BUDGET>=0 && count>=ITERATIONS_BUDGET) break;             
         }
 //        System.out.println("HL: " + count + " time: " + (System.currentTimeMillis() - start) + " (" + available_time + "," + max_playouts + ")");
         total_time += (end - start);
@@ -222,10 +234,13 @@ public class MLPSMCTS extends InterruptibleAIWithComputationBudget {
     }
     
     
+    @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + MAX_TIME + ", " + MAX_ITERATIONS + ", " + MAXSIMULATIONTIME + ", " + MAX_TREE_DEPTH + ", " + C + ", " + randomAI + ", " + ef + ")";
+        return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", " + MAXSIMULATIONTIME + ", " + MAX_TREE_DEPTH + ", " + C + ", " + randomAI + ", " + ef + ")";
     }
     
+    
+    @Override
     public String statisticsString() {
         return "Total runs: " + total_runs + 
                ", runs per action: " + (total_runs/(float)total_actions_issued) + 
@@ -234,4 +249,21 @@ public class MLPSMCTS extends InterruptibleAIWithComputationBudget {
                ", max branching factor: " + max_actions_so_far;
     }
     
+    
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+        
+        parameters.add(new ParameterSpecification("TimeBudget",Integer.class,100));
+        parameters.add(new ParameterSpecification("IterationsBudget",Integer.class,-1));
+        parameters.add(new ParameterSpecification("PlayoutLookahead",Integer.class,100));
+        parameters.add(new ParameterSpecification("MaxTreeDepth",Integer.class,10));
+        
+        parameters.add(new ParameterSpecification("C",Double.class,0.05));
+                
+        parameters.add(new ParameterSpecification("DefaultPolicy",AI.class, randomAI));
+        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
+
+        return parameters;
+    }    
 }

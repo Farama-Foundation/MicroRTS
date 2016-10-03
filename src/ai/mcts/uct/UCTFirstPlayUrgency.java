@@ -7,10 +7,15 @@ package ai.mcts.uct;
 import ai.core.AI;
 import ai.RandomBiasedAI;
 import ai.core.InterruptibleAIWithComputationBudget;
+import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
+import ai.evaluation.SimpleSqrtEvaluationFunction3;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import rts.GameState;
 import rts.PlayerAction;
+import rts.units.UnitTypeTable;
 
 /**
  *
@@ -42,6 +47,14 @@ public class UCTFirstPlayUrgency extends InterruptibleAIWithComputationBudget {
     double FPUvalue = 0;
         
     
+    public UCTFirstPlayUrgency(UnitTypeTable utt) {
+        this(100,-1,100,10,
+             new RandomBiasedAI(),
+             new SimpleSqrtEvaluationFunction3(),
+             0.0);
+    }    
+    
+    
     public UCTFirstPlayUrgency(int available_time, int max_playouts, int lookahead, int max_depth, AI policy, EvaluationFunction a_ef, double a_FPUvalue) {
         super(available_time, max_playouts);
         MAXSIMULATIONTIME = lookahead;
@@ -68,7 +81,7 @@ public class UCTFirstPlayUrgency extends InterruptibleAIWithComputationBudget {
     
     
     public AI clone() {
-        return new UCTFirstPlayUrgency(MAX_TIME, MAX_ITERATIONS, MAXSIMULATIONTIME, MAX_TREE_DEPTH, randomAI, ef, FPUvalue);
+        return new UCTFirstPlayUrgency(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME, MAX_TREE_DEPTH, randomAI, ef, FPUvalue);
     }  
      
     
@@ -94,16 +107,16 @@ public class UCTFirstPlayUrgency extends InterruptibleAIWithComputationBudget {
         if (DEBUG>=2) System.out.println("Search...");
         long start = System.currentTimeMillis();
         int nPlayouts = 0;
-        long cutOffTime = start + MAX_TIME;
-        if (MAX_TIME<=0) cutOffTime = 0;
+        long cutOffTime = start + TIME_BUDGET;
+        if (TIME_BUDGET<=0) cutOffTime = 0;
 
 //        System.out.println(start + " + " + available_time + " = " + cutOffTime);
 
         while(true) {
 //            System.out.println("time " + System.currentTimeMillis() + " - " + cutOffTime);
-//            System.out.println("playouts " + MAX_ITERATIONS + " - " + nPlayouts);
+//            System.out.println("playouts " + ITERATIONS_BUDGET + " - " + nPlayouts);
             if (cutOffTime>0 && System.currentTimeMillis() >= cutOffTime) break;
-            if (MAX_ITERATIONS>0 && nPlayouts>=MAX_ITERATIONS) break;
+            if (ITERATIONS_BUDGET>0 && nPlayouts>=ITERATIONS_BUDGET) break;
             monteCarloRun(playerForThisComputation, cutOffTime);
             nPlayouts++;
         }
@@ -205,8 +218,26 @@ public class UCTFirstPlayUrgency extends InterruptibleAIWithComputationBudget {
     }
     
     
+    @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + MAX_TIME + ", " + MAX_ITERATIONS + ", " + MAXSIMULATIONTIME + ", " + MAX_TREE_DEPTH + ", " + randomAI + ", " + ef + ", " + FPUvalue + ")";
+        return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", " + MAXSIMULATIONTIME + ", " + MAX_TREE_DEPTH + ", " + randomAI + ", " + ef + ", " + FPUvalue + ")";
     }
     
+    
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+        
+        parameters.add(new ParameterSpecification("TimeBudget", Integer.class, 100));
+        parameters.add(new ParameterSpecification("IterationsBudget", Integer.class, -1));
+        parameters.add(new ParameterSpecification("PlayoutLookahead", Integer.class, 100));
+        parameters.add(new ParameterSpecification("MaxTreeDepth", Integer.class, 10));
+        
+        parameters.add(new ParameterSpecification("DefaultPolicy", AI.class, randomAI));
+        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
+
+        parameters.add(new ParameterSpecification("FPU", Double.class, 0.0));
+
+        return parameters;
+    }       
 }

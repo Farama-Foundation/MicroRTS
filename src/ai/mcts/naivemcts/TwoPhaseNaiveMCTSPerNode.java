@@ -7,10 +7,15 @@ package ai.mcts.naivemcts;
 import ai.*;
 import ai.core.AI;
 import ai.core.InterruptibleAIWithComputationBudget;
+import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
+import ai.evaluation.SimpleSqrtEvaluationFunction3;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import rts.GameState;
 import rts.PlayerAction;
+import rts.units.UnitTypeTable;
 
 /**
  *
@@ -49,6 +54,16 @@ public class TwoPhaseNaiveMCTSPerNode extends InterruptibleAIWithComputationBudg
     public long total_cycles_executed = 0;
     public long total_actions_issued = 0;
     public long total_time = 0;
+    
+    
+    public TwoPhaseNaiveMCTSPerNode(UnitTypeTable utt) {
+        this(100,-1,100,10,
+             0.3f, 0.0f, 1.0f,
+             0.3f, 0.0f, 0.0f,
+             100,
+             new RandomBiasedAI(),
+             new SimpleSqrtEvaluationFunction3());
+    } 
     
     
     public TwoPhaseNaiveMCTSPerNode(int available_time, int max_playouts, int lookahead, int max_depth, 
@@ -105,7 +120,7 @@ public class TwoPhaseNaiveMCTSPerNode extends InterruptibleAIWithComputationBudg
         
     
     public AI clone() {
-        return new TwoPhaseNaiveMCTSPerNode(MAX_TIME, MAX_ITERATIONS, MAXSIMULATIONTIME, MAX_TREE_DEPTH, 
+        return new TwoPhaseNaiveMCTSPerNode(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME, MAX_TREE_DEPTH, 
                                              phase1_epsilon_l, phase1_epsilon_g, phase1_epsilon_0,
                                              phase2_epsilon_l, phase2_epsilon_g, phase2_epsilon_0,
                                              phase1_budget, randomAI, ef);
@@ -138,8 +153,8 @@ public class TwoPhaseNaiveMCTSPerNode extends InterruptibleAIWithComputationBudg
             if (!iteration(playerForThisComputation)) break;
             count++;
             end = System.currentTimeMillis();
-            if (MAX_TIME>=0 && (end - start)>=MAX_TIME) break; 
-            if (MAX_ITERATIONS>=0 && count>=MAX_ITERATIONS) break;             
+            if (TIME_BUDGET>=0 && (end - start)>=TIME_BUDGET) break; 
+            if (ITERATIONS_BUDGET>=0 && count>=ITERATIONS_BUDGET) break;             
         }
 //        System.out.println("HL: " + count + " time: " + (System.currentTimeMillis() - start) + " (" + available_time + "," + max_playouts + ")");
         total_time += (end - start);
@@ -270,7 +285,7 @@ public class TwoPhaseNaiveMCTSPerNode extends InterruptibleAIWithComputationBudg
     
     
     public String toString() {
-        return getClass().getSimpleName() + "(" + MAX_TIME + ", " + MAX_ITERATIONS + ", " + MAXSIMULATIONTIME + "," + MAX_TREE_DEPTH + "," + 
+        return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", " + MAXSIMULATIONTIME + "," + MAX_TREE_DEPTH + "," + 
                                              phase1_epsilon_l + ", " + phase1_epsilon_g + ", " + phase1_epsilon_0 + ", " + 
                                              phase2_epsilon_l + ", " + phase2_epsilon_g + ", " + phase2_epsilon_0 + ", " + 
                                              phase1_budget + ", " + randomAI + ", " + ef  + ")";       
@@ -284,4 +299,29 @@ public class TwoPhaseNaiveMCTSPerNode extends InterruptibleAIWithComputationBudg
                ", max branching factor: " + max_actions_so_far;
     }
     
+    
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+        
+        parameters.add(new ParameterSpecification("TimeBudget",Integer.class,100));
+        parameters.add(new ParameterSpecification("IterationsBudget",Integer.class,-1));
+        parameters.add(new ParameterSpecification("PlayoutLookahead",Integer.class,100));
+        parameters.add(new ParameterSpecification("MaxTreeDepth",Integer.class,10));
+        
+        parameters.add(new ParameterSpecification("e_l",Float.class,0.3));
+        parameters.add(new ParameterSpecification("e_g",Float.class,0.0));
+        parameters.add(new ParameterSpecification("e_0",Float.class,1.0));
+                
+        parameters.add(new ParameterSpecification("e_l",Float.class,0.3));
+        parameters.add(new ParameterSpecification("e_g",Float.class,0.0));
+        parameters.add(new ParameterSpecification("e_0",Float.class,0.0));
+
+        parameters.add(new ParameterSpecification("Phase1_Budget",Integer.class,100));
+
+        parameters.add(new ParameterSpecification("DefaultPolicy",AI.class, randomAI));
+        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
+
+        return parameters;
+    }       
 }

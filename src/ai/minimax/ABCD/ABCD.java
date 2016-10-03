@@ -4,13 +4,19 @@
  */
 package ai.minimax.ABCD;
 
+import ai.abstraction.WorkerRush;
+import ai.abstraction.pathfinding.AStarPathFinding;
 import ai.core.AI;
+import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
+import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import ai.minimax.MiniMaxResult;
+import java.util.ArrayList;
 import java.util.List;
 import rts.GameState;
 import rts.PlayerAction;
 import rts.PlayerActionGenerator;
+import rts.units.UnitTypeTable;
 
 /**
  *
@@ -38,6 +44,14 @@ public class ABCD extends AI {
     int maxPlayoutTime = 100;
     EvaluationFunction ef = null;
     protected int defaultNONEduration = 8;
+    
+    
+    public ABCD(UnitTypeTable utt) {
+        this(4, 
+             new WorkerRush(utt, new AStarPathFinding()), 100, 
+             new SimpleSqrtEvaluationFunction3());
+    }
+    
     
     public ABCD(int md, AI a_playoutAI, int a_maxPlayoutTime, EvaluationFunction a_ef) {
         MAXDEPTH = md;
@@ -180,8 +194,23 @@ public class ABCD extends AI {
     }       
     
     
+    @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + MAXDEPTH + ", " + playoutAI + ", " + maxPlayoutTime + ", " + ef + ")";
     }     
+    
+    
+    @Override
+    public List<ParameterSpecification> getParameters()
+    {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+        
+        parameters.add(new ParameterSpecification("MaxDepth",Integer.class,4));
+        parameters.add(new ParameterSpecification("playoutAI",AI.class, playoutAI));
+        parameters.add(new ParameterSpecification("PlayoutLookahead",Integer.class,100));
+        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
+        
+        return parameters;
+    }       
     
 }

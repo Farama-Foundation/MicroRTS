@@ -1,12 +1,19 @@
 package ai.puppet;
 
+import ai.RandomBiasedAI;
+import ai.abstraction.pathfinding.FloodFillPathFinding;
 import java.util.Collection;
 import java.util.Collections;
 
 import ai.core.AI;
+import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
+import ai.evaluation.SimpleSqrtEvaluationFunction3;
+import java.util.ArrayList;
+import java.util.List;
 import rts.GameState;
 import rts.PlayerAction;
+import rts.units.UnitTypeTable;
 import util.Pair;
 
 public class PuppetSearchMCTS extends PuppetBase {
@@ -49,6 +56,18 @@ public class PuppetSearchMCTS extends PuppetBase {
 	PuppetMCTSNode root;
 	Plan currentPlan;
 	float C;//UCT exploration constant
+        
+        
+        public PuppetSearchMCTS(UnitTypeTable utt) {
+            this(100, -1,
+                 5000, -1,
+                 100, 100,
+                 new RandomBiasedAI(),
+                 new BasicConfigurableScript(utt, new FloodFillPathFinding()),
+                 new SimpleSqrtEvaluationFunction3());
+        }
+        
+        
 	public PuppetSearchMCTS(int max_time_per_frame, int max_playouts_per_frame, 
 			int max_plan_time, int max_plan_playouts,
 			int step_playout_time, int eval_playout_time, 
@@ -211,11 +230,32 @@ public class PuppetSearchMCTS extends PuppetBase {
 		return PLAN && planBudgetExpired();
 	}
 	
+        
+        @Override
 	public String toString(){
             return getClass().getSimpleName() + "("+
                    MAX_TIME + ", " + MAX_ITERATIONS + ", " +
                    PLAN_TIME + ", " + PLAN_PLAYOUTS + ", " + STEP_PLAYOUT_TIME + ", " + EVAL_PLAYOUT_TIME + ", " +
-                   policy1 + ", " + script + ", " + eval + ")";
-                
+                   policy1 + ", " + script + ", " + eval + ")"; 
 	}
+        
+        
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+        
+        parameters.add(new ParameterSpecification("TimeBudget",Integer.class,100));
+        parameters.add(new ParameterSpecification("IterationsBudget",Integer.class,-1));
+        parameters.add(new ParameterSpecification("PlanTimeBudget",Integer.class,5000));
+        parameters.add(new ParameterSpecification("PlanIterationsBudget",Integer.class,-1));
+
+
+        parameters.add(new ParameterSpecification("StepPlayoutTime",Integer.class,100));
+        parameters.add(new ParameterSpecification("EvalPlayoutTime",Integer.class,100));
+        parameters.add(new ParameterSpecification("Policy",AI.class,policy1));
+        parameters.add(new ParameterSpecification("Script",ConfigurableScript.class, script));
+        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));        
+        
+        return parameters;
+    }          
 }

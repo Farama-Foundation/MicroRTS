@@ -6,12 +6,16 @@ package ai.minimax.RTMiniMax;
 
 import ai.evaluation.EvaluationFunctionForwarding;
 import ai.core.AI;
+import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
+import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import ai.minimax.MiniMaxResult;
+import java.util.ArrayList;
 import java.util.List;
 import rts.GameState;
 import rts.PlayerAction;
 import rts.PlayerActionGenerator;
+import rts.units.UnitTypeTable;
 import util.Pair;
 
 /**
@@ -33,21 +37,30 @@ public class RTMinimax extends AI {
     
     EvaluationFunction ef = null;
     
+    
+    public RTMinimax(UnitTypeTable utt) {
+        this(50, new SimpleSqrtEvaluationFunction3());
+    }
+
+    
     public RTMinimax(int la, EvaluationFunction a_ef) {
         LOOKAHEAD = la;
         ef = a_ef;
     }
             
     
+    @Override
     public void reset() {
     }
     
 
+    @Override
     public AI clone() {
         return new RTMinimax(LOOKAHEAD, ef);
     }     
 
     
+    @Override
     public PlayerAction getAction(int player, GameState gs) throws Exception {
         
         if (gs.canExecuteAnyAction(player) && gs.winner()==-1) {
@@ -174,4 +187,15 @@ public class RTMinimax extends AI {
         return getClass().getSimpleName() + "(" + LOOKAHEAD + ", " + ef + ")";
     }     
 
+    
+    @Override
+    public List<ParameterSpecification> getParameters()
+    {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+        
+        parameters.add(new ParameterSpecification("LookAhead",Integer.class,50));
+        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
+        
+        return parameters;
+    }    
 }

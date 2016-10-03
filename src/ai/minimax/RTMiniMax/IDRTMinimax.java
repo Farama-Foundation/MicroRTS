@@ -4,16 +4,22 @@
  */
 package ai.minimax.RTMiniMax;
 
+import ai.abstraction.WorkerRush;
+import ai.abstraction.pathfinding.AStarPathFinding;
 import ai.evaluation.EvaluationFunctionForwarding;
 import ai.core.AI;
 import ai.core.InterruptibleAIWithComputationBudget;
+import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
+import ai.evaluation.SimpleSqrtEvaluationFunction3;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import rts.GameState;
 import rts.PlayerAction;
 import rts.PlayerActionGenerator;
+import rts.units.UnitTypeTable;
 import util.Pair;
 
 /**
@@ -52,6 +58,12 @@ public class IDRTMinimax extends InterruptibleAIWithComputationBudget {
     Random r = new Random();
     int playerForThisComputation;
 
+    
+    public IDRTMinimax(UnitTypeTable utt) {
+        this(100, new SimpleSqrtEvaluationFunction3());
+    }
+
+    
     public IDRTMinimax(int tpc, EvaluationFunction a_ef) {
         super(tpc, -1);
         LOOKAHEAD = 1;
@@ -59,6 +71,7 @@ public class IDRTMinimax extends InterruptibleAIWithComputationBudget {
     }
 
     
+    @Override
     public void reset() {
         gs_to_start_from = null;
         consecutive_frames_searching = 0;
@@ -68,11 +81,13 @@ public class IDRTMinimax extends InterruptibleAIWithComputationBudget {
     }    
     
     
+    @Override
     public AI clone() {
-        return new IDRTMinimax(MAX_TIME, ef);
+        return new IDRTMinimax(TIME_BUDGET, ef);
     }  
     
     
+    @Override
     public void startNewComputation(int a_player, GameState gs) throws Exception
     {
     	playerForThisComputation = a_player;
@@ -88,7 +103,7 @@ public class IDRTMinimax extends InterruptibleAIWithComputationBudget {
         int minplayer = 1 - playerForThisComputation;
         int lookAhead = 1;
         long startTime = System.currentTimeMillis();
-        long cutOffTime = startTime + MAX_TIME;
+        long cutOffTime = startTime + TIME_BUDGET;
                 
         if (bestMove==null) {
             // The first time, we just want to do a quick evaluation of all actions, to have a first idea of what is best:
@@ -133,7 +148,7 @@ public class IDRTMinimax extends InterruptibleAIWithComputationBudget {
             } else {
 //                System.out.println("realTimeMinimaxABIterativeDeepening (lookahead = " + lookAhead + "): " + tmp + " interrupted after " + (System.currentTimeMillis()-runStartTime) + " (" + nLeaves + " leaves)"); System.out.flush();                
             }
-        }while(System.currentTimeMillis() - startTime < MAX_TIME);
+        }while(System.currentTimeMillis() - startTime < TIME_BUDGET);
         last_lookAhead = lookAhead;
 //        return bestMove;
         return;
@@ -301,7 +316,20 @@ public class IDRTMinimax extends InterruptibleAIWithComputationBudget {
     
     
     public String toString() {
-        return getClass().getSimpleName() + "(" + MAX_TIME + ", " + MAX_ITERATIONS + ", " + ef + ")";
+        return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", " + ef + ")";
     }     
+    
+    
+    @Override
+    public List<ParameterSpecification> getParameters()
+    {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+        
+        parameters.add(new ParameterSpecification("TimeBudget",Integer.class,100));
+        parameters.add(new ParameterSpecification("IterationsBudget",Integer.class,-1));
+        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
+        
+        return parameters;
+    }    
     
 }

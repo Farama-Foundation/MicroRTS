@@ -5,6 +5,7 @@
  */
 package ai.core;
 
+import java.util.List;
 import rts.GameState;
 import rts.PlayerAction;
 
@@ -26,13 +27,13 @@ public class PseudoContinuingAI extends AI {
     {
         if (gs.canExecuteAnyAction(player)) {
             if (DEBUG>=1) System.out.println("PseudoContinuingAI: n_cycles_to_think = " + n_cycles_to_think);
-            int MT = m_AI.MAX_TIME;
-            int MI = m_AI.MAX_ITERATIONS;
-            if (MT>0) m_AI.MAX_TIME = MT * n_cycles_to_think;
-            if (MI>0) m_AI.MAX_ITERATIONS = MI * n_cycles_to_think;
+            int MT = m_AI.TIME_BUDGET;
+            int MI = m_AI.ITERATIONS_BUDGET;
+            if (MT>0) m_AI.TIME_BUDGET = MT * n_cycles_to_think;
+            if (MI>0) m_AI.ITERATIONS_BUDGET = MI * n_cycles_to_think;
             PlayerAction action = m_AI.getAction(player,gs);
-            m_AI.MAX_TIME = MT;
-            m_AI.MAX_ITERATIONS = MI;
+            m_AI.TIME_BUDGET = MT;
+            m_AI.ITERATIONS_BUDGET = MI;
             n_cycles_to_think = 1;   
             return action;
         } else {
@@ -64,15 +65,23 @@ public class PseudoContinuingAI extends AI {
     {
         return new PseudoContinuingAI((AIWithComputationBudget) m_AI.clone());
     }
+
     
-	@Override
-	public String toString() {
-		// TODO Auto-generated method stub
-		return m_AI.toString();
-	}    
-	
-	@Override
-	public String statisticsString() {
-		return m_AI.statisticsString();
-	}   
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + m_AI + ")";
+    }    
+
+    
+    @Override
+    public String statisticsString() {
+        return m_AI.statisticsString();
+    }   
+    
+    
+    public List<ParameterSpecification> getParameters()
+    {
+        return m_AI.getParameters();
+    }
+    
 }

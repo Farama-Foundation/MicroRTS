@@ -10,7 +10,9 @@ import ai.core.AI;
 import ai.abstraction.AbstractAction;
 import ai.abstraction.AbstractionLayerAI;
 import ai.abstraction.pathfinding.BFSPathFinding;
+import ai.core.ParameterSpecification;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -146,4 +148,10 @@ public class MouseController extends AbstractionLayerAI {
         return pa;
     }
     
+    
+    @Override
+    public List<ParameterSpecification> getParameters()
+    {
+        return new ArrayList<>();
+    }    
 }

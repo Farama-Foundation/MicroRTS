@@ -3,14 +3,21 @@
  */
 package ai.puppet;
 
+import ai.RandomBiasedAI;
+import ai.abstraction.pathfinding.FloodFillPathFinding;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Stack;
 
 import ai.core.AI;
+import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
+import ai.evaluation.SimpleSqrtEvaluationFunction3;
+import java.util.ArrayList;
+import java.util.List;
 import rts.GameState;
 import rts.PlayerAction;
+import rts.units.UnitTypeTable;
 import util.Pair;
 
 
@@ -136,6 +143,16 @@ public class PuppetSearchAB extends PuppetBase {
 	TranspositionTable TT=new TranspositionTable(100000);
 	CacheTable CT=new CacheTable(100000);
 
+        
+        public PuppetSearchAB(UnitTypeTable utt) {
+            this(100, -1,
+                 5000, -1,
+                 100,
+                 new BasicConfigurableScript(utt, new FloodFillPathFinding()),
+                 new SimpleSqrtEvaluationFunction3());
+        }
+        
+        
 	/**
 	 * @param mt
 	 * @param mi
@@ -413,12 +430,37 @@ public class PuppetSearchAB extends PuppetBase {
 		}
 	}
 
+        /*
+                        int max_time_per_frame, int max_playouts_per_frame, 
+			int max_plan_time, int max_plan_playouts, 
+			int playout_time,
+			ConfigurableScript<?> script, EvaluationFunction evaluation        
+        */
+        
+        @Override
 	public String toString(){
-		return "PuppetSearchAB("+script.toString()+")";
+            return getClass().getSimpleName() + "("+
+                   MAX_TIME + ", " + MAX_ITERATIONS + ", " +
+                   PLAN_TIME + ", " + PLAN_PLAYOUTS + ", " + 
+                   STEP_PLAYOUT_TIME + ", " + 
+                   script + ", " + eval + ")"; 
 	}
+                
 
-
-
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+        
+        parameters.add(new ParameterSpecification("TimeBudget",Integer.class,100));
+        parameters.add(new ParameterSpecification("IterationsBudget",Integer.class,-1));
+        parameters.add(new ParameterSpecification("PlanTimeBudget",Integer.class,5000));
+        parameters.add(new ParameterSpecification("PlanIterationsBudget",Integer.class,-1));
+        parameters.add(new ParameterSpecification("StepPlayoutTime",Integer.class,100));
+        parameters.add(new ParameterSpecification("Script",ConfigurableScript.class, script));
+        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
+        
+        return parameters;
+    }     
 
 
 }

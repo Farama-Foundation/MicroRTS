@@ -7,10 +7,15 @@ package ai.mcts.uct;
 import ai.core.AI;
 import ai.RandomBiasedAI;
 import ai.core.InterruptibleAIWithComputationBudget;
+import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
+import ai.evaluation.SimpleSqrtEvaluationFunction3;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import rts.GameState;
 import rts.PlayerAction;
+import rts.units.UnitTypeTable;
 
 /**
  *
@@ -38,6 +43,13 @@ public class UCT extends InterruptibleAIWithComputationBudget {
     int MAX_TREE_DEPTH = 10;
     
     int playerForThisComputation;
+    
+    
+    public UCT(UnitTypeTable utt) {
+        this(100,-1,100,10,
+             new RandomBiasedAI(),
+             new SimpleSqrtEvaluationFunction3());
+    }      
     
     
     public UCT(int available_time, int max_playouts, int lookahead, int max_depth, AI policy, EvaluationFunction a_ef) {
@@ -71,7 +83,7 @@ public class UCT extends InterruptibleAIWithComputationBudget {
     
     
     public AI clone() {
-        return new UCT(MAX_TIME, MAX_ITERATIONS, MAXSIMULATIONTIME, MAX_TREE_DEPTH, randomAI, ef);
+        return new UCT(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME, MAX_TREE_DEPTH, randomAI, ef);
     }  
     
     
@@ -97,14 +109,14 @@ public class UCT extends InterruptibleAIWithComputationBudget {
         if (DEBUG>=2) System.out.println("Search...");
         long start = System.currentTimeMillis();
         int nPlayouts = 0;
-        long cutOffTime = start + MAX_TIME;
-        if (MAX_TIME<=0) cutOffTime = 0;
+        long cutOffTime = start + TIME_BUDGET;
+        if (TIME_BUDGET<=0) cutOffTime = 0;
 
 //        System.out.println(start + " + " + available_time + " = " + cutOffTime);
 
         while(true) {
             if (cutOffTime>0 && System.currentTimeMillis() > cutOffTime) break;
-            if (MAX_ITERATIONS>0 && nPlayouts>MAX_ITERATIONS) break;
+            if (ITERATIONS_BUDGET>0 && nPlayouts>ITERATIONS_BUDGET) break;
             monteCarloRun(playerForThisComputation, cutOffTime);
             nPlayouts++;
         }
@@ -203,8 +215,25 @@ public class UCT extends InterruptibleAIWithComputationBudget {
         }while(!gameover && gs.getTime()<time);   
     }
     
+    
+    @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + MAX_TIME + ", " + MAX_ITERATIONS + ", " + MAXSIMULATIONTIME + ", " + MAX_TREE_DEPTH + ", " + randomAI + ", " + ef + ")";
+        return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", " + MAXSIMULATIONTIME + ", " + MAX_TREE_DEPTH + ", " + randomAI + ", " + ef + ")";
     }
     
+    
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+        
+        parameters.add(new ParameterSpecification("TimeBudget",Integer.class,100));
+        parameters.add(new ParameterSpecification("IterationsBudget",Integer.class,-1));
+        parameters.add(new ParameterSpecification("PlayoutLookahead",Integer.class,100));
+        parameters.add(new ParameterSpecification("MaxTreeDepth",Integer.class,10));
+        
+        parameters.add(new ParameterSpecification("DefaultPolicy",AI.class, randomAI));
+        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
+
+        return parameters;
+    }        
 }

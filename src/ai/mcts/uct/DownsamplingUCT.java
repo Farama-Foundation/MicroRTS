@@ -7,10 +7,15 @@ package ai.mcts.uct;
 import ai.core.AI;
 import ai.RandomBiasedAI;
 import ai.core.InterruptibleAIWithComputationBudget;
+import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
+import ai.evaluation.SimpleSqrtEvaluationFunction3;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import rts.GameState;
 import rts.PlayerAction;
+import rts.units.UnitTypeTable;
 
 /**
  *
@@ -38,6 +43,14 @@ public class DownsamplingUCT extends InterruptibleAIWithComputationBudget {
     
     int playerForThisComputation;
     
+    
+    public DownsamplingUCT(UnitTypeTable utt) {
+        this(100,-1,100,100,10,
+             new RandomBiasedAI(),
+             new SimpleSqrtEvaluationFunction3());
+    }    
+
+    
     public DownsamplingUCT(int available_time, int max_playouts, int lookahead, long maxactions, int max_depth, AI policy, EvaluationFunction a_ef) {
         super(available_time, max_playouts);
         MAXACTIONS = maxactions;
@@ -63,7 +76,7 @@ public class DownsamplingUCT extends InterruptibleAIWithComputationBudget {
         
     
     public AI clone() {
-        return new DownsamplingUCT(MAX_TIME, MAX_ITERATIONS, MAXSIMULATIONTIME, MAXACTIONS, MAX_TREE_DEPTH, randomAI, ef);
+        return new DownsamplingUCT(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME, MAXACTIONS, MAX_TREE_DEPTH, randomAI, ef);
     }  
     
     
@@ -85,7 +98,7 @@ public class DownsamplingUCT extends InterruptibleAIWithComputationBudget {
     public void computeDuringOneGameFrame() throws Exception {
         if (DEBUG>=2) System.out.println("Search...");
         long start = System.currentTimeMillis();
-        long cutOffTime = (MAX_TIME>0 ? start + MAX_TIME:0);
+        long cutOffTime = (TIME_BUDGET>0 ? start + TIME_BUDGET:0);
         long end = start;
         long count = 0;
         
@@ -112,8 +125,8 @@ public class DownsamplingUCT extends InterruptibleAIWithComputationBudget {
             }
             count++;
             end = System.currentTimeMillis();
-            if (MAX_TIME>=0 && (end - start)>=MAX_TIME) break; 
-            if (MAX_ITERATIONS>=0 && count>=MAX_ITERATIONS) break;            
+            if (TIME_BUDGET>=0 && (end - start)>=TIME_BUDGET) break; 
+            if (ITERATIONS_BUDGET>=0 && count>=ITERATIONS_BUDGET) break;            
         }
         
         total_cycles_executed++;
@@ -156,9 +169,26 @@ public class DownsamplingUCT extends InterruptibleAIWithComputationBudget {
     }
     
     
+    @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + MAX_TIME + ", " + MAX_ITERATIONS + ", " + MAXSIMULATIONTIME + ", " + MAXACTIONS + ", " + MAX_TREE_DEPTH + ", " + randomAI + ", " + ef + ")";
+        return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", " + MAXSIMULATIONTIME + ", " + MAXACTIONS + ", " + MAX_TREE_DEPTH + ", " + randomAI + ", " + ef + ")";
     }
     
+    
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+        
+        parameters.add(new ParameterSpecification("TimeBudget",Integer.class,100));
+        parameters.add(new ParameterSpecification("IterationsBudget",Integer.class,-1));
+        parameters.add(new ParameterSpecification("PlayoutLookahead",Integer.class,100));
+        parameters.add(new ParameterSpecification("MaxActions",Integer.class,100));
+        parameters.add(new ParameterSpecification("MaxTreeDepth",Integer.class,10));
+        
+        parameters.add(new ParameterSpecification("DefaultPolicy",AI.class, randomAI));
+        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
+
+        return parameters;
+    }       
     
 }

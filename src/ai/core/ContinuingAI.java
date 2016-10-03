@@ -5,6 +5,7 @@
  */
 package ai.core;
 
+import java.util.List;
 import rts.GameState;
 import rts.PlayerAction;
 
@@ -69,15 +70,22 @@ public class ContinuingAI extends AI {
         return new ContinuingAI((InterruptibleAIWithComputationBudget) m_AI.clone());
     }
 
-	@Override
-	public String toString() {
-		// TODO Auto-generated method stub
-		return m_AI.toString();
-	}
+    
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + m_AI + ")";
+    }    
 
-	@Override
-	public String statisticsString() {
-		return m_AI.statisticsString();
-	}    
+    
+    @Override
+    public String statisticsString() {
+            return m_AI.statisticsString();
+    }    
+    
+    
+    public List<ParameterSpecification> getParameters()
+    {
+        return m_AI.getParameters();
+    }
     
 }
