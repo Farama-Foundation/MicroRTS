@@ -227,14 +227,53 @@ public class MonteCarlo extends InterruptibleAIWithComputationBudget {
     {
         List<ParameterSpecification> parameters = new ArrayList<>();
         
-        parameters.add(new ParameterSpecification("TimeBudget",Integer.class,100));
-        parameters.add(new ParameterSpecification("IterationsBudget",Integer.class,-1));
-        parameters.add(new ParameterSpecification("PlayoutLookahead",Integer.class,100));
-        parameters.add(new ParameterSpecification("MaxActions",Integer.class,100));
+        parameters.add(new ParameterSpecification("TimeBudget",int.class,100));
+        parameters.add(new ParameterSpecification("IterationsBudget",int.class,-1));
+        parameters.add(new ParameterSpecification("PlayoutLookahead",int.class,100));
+        parameters.add(new ParameterSpecification("MaxActions",long.class,100));
         parameters.add(new ParameterSpecification("playoutAI",AI.class, randomAI));
         parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
         
         return parameters;
     }       
     
+    
+    public int getPlayoutLookahead() {
+        return MAXSIMULATIONTIME;
+    }
+    
+    
+    public void setPlayoutLookahead(int a_pola) {
+        MAXSIMULATIONTIME = a_pola;
+    }
+
+
+    public long getMaxActions() {
+        return MAXACTIONS;
+    }
+    
+    
+    public void setMaxActions(long a_ma) {
+        MAXACTIONS = a_ma;
+    }
+
+
+    public AI getplayoutAI() {
+        return randomAI;
+    }
+    
+    
+    public void setplayoutAI(AI a_dp) {
+        randomAI = a_dp;
+    }
+    
+    
+    public EvaluationFunction getEvaluationFunction() {
+        return ef;
+    }
+    
+    
+    public void setEvaluationFunction(EvaluationFunction a_ef) {
+        ef = a_ef;
+    }      
 }

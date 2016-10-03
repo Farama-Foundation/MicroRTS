@@ -111,9 +111,9 @@ public class UnitActionProbabilityDistributionAI extends AI {
         List<ParameterSpecification> parameters = new ArrayList<>();
         
         try {
-            parameters.add(new ParameterSpecification("model",UnitActionProbabilityDistribution.class,
+            parameters.add(new ParameterSpecification("Model",UnitActionProbabilityDistribution.class,
                            new UnitActionTypeConstantDistribution(utt,new double[]{1.0,1.0,1.0,1.0,1.0,1.0})));
-            parameters.add(new ParameterSpecification("modelName",String.class,"uniformDistribution"));
+            parameters.add(new ParameterSpecification("ModelName",String.class,"uniformDistribution"));
         }catch(Exception e) {
             e.printStackTrace();
         }
@@ -122,4 +122,22 @@ public class UnitActionProbabilityDistributionAI extends AI {
     }
     
     
+    public UnitActionProbabilityDistribution getModel() {
+        return model;
+    }
+    
+    
+    public void setModel(UnitActionProbabilityDistribution a) {
+        model = a;
+    }
+    
+    
+    public String getModelName() {
+        return modelName;
+    }
+    
+    
+    public void setModelName(String a) {
+        modelName = a;
+    }
 }

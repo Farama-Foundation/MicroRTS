@@ -193,9 +193,30 @@ public class RTMinimax extends AI {
     {
         List<ParameterSpecification> parameters = new ArrayList<>();
         
-        parameters.add(new ParameterSpecification("LookAhead",Integer.class,50));
+        parameters.add(new ParameterSpecification("LookAhead",int.class,50));
         parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
         
         return parameters;
+    }    
+    
+    
+    
+    public int getLookAhead() {
+        return LOOKAHEAD;
+    }
+    
+    
+    public void setLookAhead(int a_la) {
+        LOOKAHEAD = a_la;
+    }
+    
+    
+    public EvaluationFunction getEvaluationFunction() {
+        return ef;
+    }
+    
+    
+    public void setEvaluationFunction(EvaluationFunction a_ef) {
+        ef = a_ef;
     }    
 }

@@ -304,24 +304,134 @@ public class TwoPhaseNaiveMCTSPerNode extends InterruptibleAIWithComputationBudg
     public List<ParameterSpecification> getParameters() {
         List<ParameterSpecification> parameters = new ArrayList<>();
         
-        parameters.add(new ParameterSpecification("TimeBudget",Integer.class,100));
-        parameters.add(new ParameterSpecification("IterationsBudget",Integer.class,-1));
-        parameters.add(new ParameterSpecification("PlayoutLookahead",Integer.class,100));
-        parameters.add(new ParameterSpecification("MaxTreeDepth",Integer.class,10));
+        parameters.add(new ParameterSpecification("TimeBudget",int.class,100));
+        parameters.add(new ParameterSpecification("IterationsBudget",int.class,-1));
+        parameters.add(new ParameterSpecification("PlayoutLookahead",int.class,100));
+        parameters.add(new ParameterSpecification("MaxTreeDepth",int.class,10));
         
-        parameters.add(new ParameterSpecification("e_l",Float.class,0.3));
-        parameters.add(new ParameterSpecification("e_g",Float.class,0.0));
-        parameters.add(new ParameterSpecification("e_0",Float.class,1.0));
+        parameters.add(new ParameterSpecification("E1_l",float.class,0.3));
+        parameters.add(new ParameterSpecification("E1_g",float.class,0.0));
+        parameters.add(new ParameterSpecification("E1_0",float.class,1.0));
                 
-        parameters.add(new ParameterSpecification("e_l",Float.class,0.3));
-        parameters.add(new ParameterSpecification("e_g",Float.class,0.0));
-        parameters.add(new ParameterSpecification("e_0",Float.class,0.0));
+        parameters.add(new ParameterSpecification("E2_l",float.class,0.3));
+        parameters.add(new ParameterSpecification("E2_g",float.class,0.0));
+        parameters.add(new ParameterSpecification("E2_0",float.class,0.0));
 
-        parameters.add(new ParameterSpecification("Phase1_Budget",Integer.class,100));
+        parameters.add(new ParameterSpecification("Phase1_Budget",int.class,100));
 
         parameters.add(new ParameterSpecification("DefaultPolicy",AI.class, randomAI));
         parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
 
         return parameters;
-    }       
+    }      
+    
+    
+    public int getPlayoutLookahead() {
+        return MAXSIMULATIONTIME;
+    }
+    
+    
+    public void setPlayoutLookahead(int a_pola) {
+        MAXSIMULATIONTIME = a_pola;
+    }
+
+
+    public int getMaxTreeDepth() {
+        return MAX_TREE_DEPTH;
+    }
+    
+    
+    public void setMaxTreeDepth(int a_mtd) {
+        MAX_TREE_DEPTH = a_mtd;
+    }
+    
+    
+    public float getE1_l() {
+        return phase1_epsilon_l;
+    }
+    
+    
+    public void setE1_l(float a_e1_l) {
+        phase1_epsilon_l = a_e1_l;
+    }
+    
+    
+    public float getE1_g() {
+        return phase1_epsilon_g;
+    }
+    
+    
+    public void setE1_g(float a_e1_g) {
+        phase1_epsilon_g = a_e1_g;
+    }
+
+
+    public float getE1_0() {
+        return phase1_epsilon_0;
+    }
+    
+    
+    public void setE1_0(float a_e1_0) {
+        phase1_epsilon_0 = a_e1_0;
+    }
+        
+    
+    public float getE2_l() {
+        return phase2_epsilon_l;
+    }
+    
+    
+    public void setE2_l(float a_e2_l) {
+        phase2_epsilon_l = a_e2_l;
+    }
+    
+    
+    public float getE2_g() {
+        return phase2_epsilon_g;
+    }
+    
+    
+    public void setE2_g(float a_e2_g) {
+        phase2_epsilon_g = a_e2_g;
+    }
+
+
+    public float getE2_0() {
+        return phase2_epsilon_0;
+    }
+    
+    
+    public void setE2_0(float a_e2_0) {
+        phase2_epsilon_0 = a_e2_0;
+    }
+    
+    
+    public int getPhase1_Budget() {
+        return phase1_budget;
+    }
+    
+    
+    public void setPhase1_Budget(int a_p1b) {
+        phase1_budget = a_p1b;
+    }
+        
+    
+    public AI getDefaultPolicy() {
+        return randomAI;
+    }
+    
+    
+    public void setDefaultPolicy(AI a_dp) {
+        randomAI = a_dp;
+    }
+    
+    
+    public EvaluationFunction getEvaluationFunction() {
+        return ef;
+    }
+    
+    
+    public void setEvaluationFunction(EvaluationFunction a_ef) {
+        ef = a_ef;
+    }    
 }

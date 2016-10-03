@@ -451,16 +451,74 @@ public class PuppetSearchAB extends PuppetBase {
     public List<ParameterSpecification> getParameters() {
         List<ParameterSpecification> parameters = new ArrayList<>();
         
-        parameters.add(new ParameterSpecification("TimeBudget",Integer.class,100));
-        parameters.add(new ParameterSpecification("IterationsBudget",Integer.class,-1));
-        parameters.add(new ParameterSpecification("PlanTimeBudget",Integer.class,5000));
-        parameters.add(new ParameterSpecification("PlanIterationsBudget",Integer.class,-1));
-        parameters.add(new ParameterSpecification("StepPlayoutTime",Integer.class,100));
-        parameters.add(new ParameterSpecification("Script",ConfigurableScript.class, script));
+        parameters.add(new ParameterSpecification("TimeBudget",int.class,100));
+        parameters.add(new ParameterSpecification("IterationsBudget",int.class,-1));
+        parameters.add(new ParameterSpecification("PlanTimeBudget",int.class,5000));
+        parameters.add(new ParameterSpecification("PlanIterationsBudget",int.class,-1));
+        parameters.add(new ParameterSpecification("StepPlayoutTime",int.class,100));
+//        parameters.add(new ParameterSpecification("Script",ConfigurableScript.class, script));
         parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
         
         return parameters;
     }     
 
+    
+    public int getTimeBudget() {
+        return MAX_TIME;
+    }
+    
+    
+    public void setTimeBudget(int a_tb) {
+        MAX_TIME = a_tb;
+    }
 
+
+    public int getIterationsBudget() {
+        return MAX_ITERATIONS;
+    }
+    
+    
+    public void setIterationsBudget(int a_ib) {
+        MAX_ITERATIONS = a_ib;
+    }    
+
+
+    public int getPlanTimeBudget() {
+        return PLAN_TIME;
+    }
+    
+    
+    public void setPlanTimeBudget(int a_ib) {
+        PLAN_TIME = a_ib;
+    }    
+
+
+    public int getPlanIterationsBudget() {
+        return PLAN_PLAYOUTS;
+    }
+    
+    
+    public void setPlanIterationsBudget(int a_ib) {
+        PLAN_PLAYOUTS = a_ib;
+    }    
+
+
+    public int getStepPlayoutTime() {
+        return STEP_PLAYOUT_TIME;
+    }
+    
+    
+    public void setStepPlayoutTime(int a_ib) {
+        STEP_PLAYOUT_TIME = a_ib;
+    }    
+
+
+    public EvaluationFunction getEvaluationFunction() {
+        return eval;
+    }
+    
+    
+    public void setEvaluationFunction(EvaluationFunction a_ef) {
+        eval = a_ef;
+    }      
 }

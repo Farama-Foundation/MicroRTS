@@ -6,8 +6,10 @@ package ai.minimax.RTMiniMax;
 
 import ai.evaluation.EvaluationFunctionForwarding;
 import ai.core.AI;
+import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -282,4 +284,24 @@ public class IDRTMinimaxRandomized extends IDRTMinimax {
         return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", " + m_repeats + ", " + ef + ")";
     }     
     
+    
+    @Override
+    public List<ParameterSpecification> getParameters()
+    {
+        List<ParameterSpecification> parameters = super.getParameters();
+        
+        parameters.add(new ParameterSpecification("Repeats",int.class,10));
+        
+        return parameters;
+    }        
+    
+    
+    public int getRepeats() {
+        return m_repeats;
+    }
+    
+    
+    public void setRepeats(int a_r) {
+        m_repeats = a_r;
+    }
 }

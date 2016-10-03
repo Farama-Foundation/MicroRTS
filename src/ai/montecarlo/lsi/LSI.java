@@ -43,20 +43,20 @@ public class LSI extends AIWithComputationBudget {
 
     private static final double NORMALIZATION_EPSILON = 0.01;
 
-    private final Random rnd = new Random();
-    private final int lookAhead;
-    private final double split;
-    private final EstimateType estimateType;
-    private final EstimateReuseType estimateReuseType;
-    private final GenerateType generateType;
-    private final AgentOrderingType agentOrderingType;
-    private final EvaluateType evaluateType;
-    private final boolean eliteReuse;
-    private final RelaxationType relaxationType;
-    private final int relaxationLimit;
-    private final boolean epochal;
-    private final AI simulationAi;
-    private final EvaluationFunction evalFunction;
+    private Random rnd = new Random();
+    private int lookAhead;
+    private double split;
+    private EstimateType estimateType;
+    private EstimateReuseType estimateReuseType;
+    private GenerateType generateType;
+    private AgentOrderingType agentOrderingType;
+    private EvaluateType evaluateType;
+    private boolean eliteReuse;
+    private RelaxationType relaxationType;
+    private int relaxationLimit;
+    private boolean epochal;
+    private AI simulationAi;
+    private EvaluationFunction evalFunction;
     
     private int nofPlays = 0;
     private int nofNoops = 0;
@@ -64,10 +64,10 @@ public class LSI extends AIWithComputationBudget {
     private int nofPlayedUnits = 0;
     private int nofActions = 0;
 
-    private final Sampling sampling;
+    private Sampling sampling;
 
-    private final LinkedHashMap<PlayerAction, Pair<Double, Integer>> elitePlayerActions = new LinkedHashMap<PlayerAction, Pair<Double, Integer>>();
-    private final Set<Unit> nextEpochUnits = new HashSet<Unit>();
+    private LinkedHashMap<PlayerAction, Pair<Double, Integer>> elitePlayerActions = new LinkedHashMap<PlayerAction, Pair<Double, Integer>>();
+    private Set<Unit> nextEpochUnits = new HashSet<Unit>();
     private Set<Unit> epochUnits = null;
 
     private int actionCount;
@@ -1055,9 +1055,9 @@ public class LSI extends AIWithComputationBudget {
     {
         List<ParameterSpecification> parameters = new ArrayList<>();
         
-        parameters.add(new ParameterSpecification("IterationsBudget",Integer.class,500));
-        parameters.add(new ParameterSpecification("PlayoutLookahead",Integer.class,100));
-        ParameterSpecification ps_split = new ParameterSpecification("Split",Double.class,0.25);
+        parameters.add(new ParameterSpecification("IterationsBudget",int.class,500));
+        parameters.add(new ParameterSpecification("PlayoutLookahead",int.class,100));
+        ParameterSpecification ps_split = new ParameterSpecification("Split",double.class,0.25);
         ps_split.setRange(0.0, 1.0);
         parameters.add(ps_split);
         parameters.add(new ParameterSpecification("EstimateType",EstimateType.class,EstimateType.RANDOM_TAIL));
@@ -1065,11 +1065,11 @@ public class LSI extends AIWithComputationBudget {
         parameters.add(new ParameterSpecification("GenerateType",GenerateType.class,GenerateType.PER_AGENT));
         parameters.add(new ParameterSpecification("AgentOrderingType",Sampling.AgentOrderingType.class,Sampling.AgentOrderingType.ENTROPY));
         parameters.add(new ParameterSpecification("EvaluateType",EvaluateType.class,EvaluateType.HALVING));
-        parameters.add(new ParameterSpecification("EliteReuse",Boolean.class,false));
+        parameters.add(new ParameterSpecification("EliteReuse",boolean.class,false));
         
         parameters.add(new ParameterSpecification("RelaxationType",RelaxationType.class,RelaxationType.NONE));
-        parameters.add(new ParameterSpecification("RelaxationLimit",Integer.class,2));
-        parameters.add(new ParameterSpecification("EpochAI",AI.class,epochal));
+        parameters.add(new ParameterSpecification("RelaxationLimit",int.class,2));
+        parameters.add(new ParameterSpecification("Epochal",boolean.class,epochal));
         parameters.add(new ParameterSpecification("SimulationAI",AI.class,simulationAi));
         parameters.add(new ParameterSpecification("EvaluationFunction",EvaluationFunction.class,new SimpleSqrtEvaluationFunction3()));
         
@@ -1077,7 +1077,136 @@ public class LSI extends AIWithComputationBudget {
     }       
     
     
+    public int getPlayoutLookahead() {
+        return lookAhead;
+    }
+    
+    
+    public void setPlayoutLookahead(int a_pola) {
+        lookAhead = a_pola;
+    }
+    
+    
+    public double getSplit() {
+        return split;
+    }
+    
+    
+    public void setSplit(double a_split) {
+        split = a_split;
+    }
+    
+    
+    public EstimateType getEstimateType() {
+        return estimateType;
+    }
 
+    
+    public void setEstimateType(EstimateType a) {
+        estimateType = a;
+    }
+    
+    
+    public EstimateReuseType getEstimateReuseType() {
+        return estimateReuseType;
+    }
+    
+    
+    public void setEstimateReuseType(EstimateReuseType a){
+        estimateReuseType = a;
+    }
+    
+    
+    public GenerateType getGenerateType() {
+        return generateType;
+    }
+    
+    
+    public void setGenerateType(GenerateType a) {
+        generateType = a;
+    }
+    
+    
+    public AgentOrderingType getAgentOrderingType() {
+        return agentOrderingType;
+    }
+    
+    
+    public void setAgentOrderingType(AgentOrderingType a) {
+        agentOrderingType = a;
+    }
+    
+    
+    public EvaluateType getEvaluateType() {
+        return evaluateType;
+    }
+    
+    
+    public void setEvaluateType(EvaluateType a) {
+        evaluateType = a;
+    }
+    
+    
+    public boolean getEliteReuse() {
+        return eliteReuse;
+    }
+    
+    
+    public void setEliteReuse(boolean a) {
+        eliteReuse = a;
+    }
+    
+    
+    public RelaxationType getRelaxationType() {
+        return relaxationType;
+    }
+     
+    
+    public void setRelaxationType(RelaxationType a) {
+        relaxationType = a;
+    }
+        
+    
+    public int getRelaxationLimit() {
+        return relaxationLimit;
+    }
+    
+    
+    public void setRelaxationLimit(int a) {
+        relaxationLimit = a;
+    }
+    
+    
+    public boolean getEpochal() {
+        return epochal;
+    }
+    
+    
+    public void setEpochal(boolean a) {
+        epochal = a;
+    }
+    
+    
+    public AI getSimulationAI() {
+        return simulationAi;
+    }
+    
+    
+    public void setSimulationAI(AI a) {
+        simulationAi = a;
+    }    
+    
+
+    public EvaluationFunction getEvaluationFunction() {
+        return evalFunction;
+    }
+    
+    
+    public void setEvaluationFunction(EvaluationFunction a_ef) {
+        evalFunction = a_ef;
+    }    
+    
+    
     public enum EstimateType {
         RANDOM_TAIL, RANDOM_TAIL_ELITE, NOOP_TAIL, RANDOM, ALL_COMBINATIONS;
     }

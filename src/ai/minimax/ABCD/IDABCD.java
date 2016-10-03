@@ -513,13 +513,53 @@ public class IDABCD extends InterruptibleAIWithComputationBudget {
     {
         List<ParameterSpecification> parameters = new ArrayList<>();
         
-        parameters.add(new ParameterSpecification("TimeBudget",Integer.class,100));
-        parameters.add(new ParameterSpecification("IterationsBudget",Integer.class,-1));
-        parameters.add(new ParameterSpecification("playoutAI",AI.class, playoutAI));
-        parameters.add(new ParameterSpecification("PlayoutLookahead",Integer.class,100));
+        parameters.add(new ParameterSpecification("TimeBudget",int.class,100));
+        parameters.add(new ParameterSpecification("IterationsBudget",int.class,-1));
+        parameters.add(new ParameterSpecification("PlayoutAI",AI.class, playoutAI));
+        parameters.add(new ParameterSpecification("PlayoutLookahead",int.class,100));
         parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
-        parameters.add(new ParameterSpecification("PerformGreedyActionScan",Boolean.class,true));
+        parameters.add(new ParameterSpecification("PerformGreedyActionScan",boolean.class,true));
         
         return parameters;
-    }       
+    }  
+    
+    
+    public AI getPlayoutAI() {
+        return playoutAI;
+    }
+    
+    
+    public void setPlayoutAI(AI a_dp) {
+        playoutAI = a_dp;
+    }
+    
+    
+    public int getPlayoutLookahead() {
+        return maxPlayoutTime;
+    }
+    
+    
+    public void setPlayoutLookahead(int a_pola) {
+        maxPlayoutTime = a_pola;
+    }
+    
+
+    public EvaluationFunction getEvaluationFunction() {
+        return ef;
+    }
+    
+    
+    public void setEvaluationFunction(EvaluationFunction a_ef) {
+        ef = a_ef;
+    }
+
+
+    public boolean getPerformGreedyActionScan() {
+        return performGreedyActionScan;
+    }
+    
+    
+    public void setPerformGreedyActionScan(boolean a_pgas) {
+        performGreedyActionScan = a_pgas;
+    }
 }

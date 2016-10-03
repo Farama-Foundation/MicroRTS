@@ -278,15 +278,64 @@ public class PGSAI extends AIWithComputationBudget {
     public List<ParameterSpecification> getParameters() {
         List<ParameterSpecification> parameters = new ArrayList<>();
         
-        parameters.add(new ParameterSpecification("TimeBudget",Integer.class,100));
-        parameters.add(new ParameterSpecification("IterationsBudget",Integer.class,-1));
-        parameters.add(new ParameterSpecification("PlayoutLookahead",Integer.class,100));
-        parameters.add(new ParameterSpecification("I", Integer.class, 1));
-        parameters.add(new ParameterSpecification("R", Integer.class, 1));
+        parameters.add(new ParameterSpecification("TimeBudget",int.class,100));
+        parameters.add(new ParameterSpecification("IterationsBudget",int.class,-1));
+        parameters.add(new ParameterSpecification("PlayoutLookahead",int.class,100));
+        parameters.add(new ParameterSpecification("I", int.class, 1));
+        parameters.add(new ParameterSpecification("R", int.class, 1));
         parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
         parameters.add(new ParameterSpecification("PathFinding", PathFinding.class, new AStarPathFinding()));
         
         return parameters;
     }    
+    
+    
+    public int getPlayoutLookahead() {
+        return LOOKAHEAD;
+    }
+    
+    
+    public void setPlayoutLookahead(int a_pola) {
+        LOOKAHEAD = a_pola;
+    }
 
+    
+    public int getI() {
+        return I;
+    }
+    
+    
+    public void setI(int a) {
+        I = a;
+    }
+    
+    
+    public int getR() {
+        return R;
+    }
+    
+    
+    public void setR(int a) {
+        R = a;
+    }
+       
+    
+    public EvaluationFunction getEvaluationFunction() {
+        return evaluation;
+    }
+    
+    
+    public void setEvaluationFunction(EvaluationFunction a_ef) {
+        evaluation = a_ef;
+    }        
+        
+    
+    public PathFinding getPathFinding() {
+        return pf;
+    }
+    
+    
+    public void setPathFinding(PathFinding a_pf) {
+        pf = a_pf;
+    }    
 }

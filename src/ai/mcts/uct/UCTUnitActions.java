@@ -183,14 +183,54 @@ public class UCTUnitActions extends InterruptibleAIWithComputationBudget {
     public List<ParameterSpecification> getParameters() {
         List<ParameterSpecification> parameters = new ArrayList<>();
         
-        parameters.add(new ParameterSpecification("TimeBudget",Integer.class,100));
-        parameters.add(new ParameterSpecification("IterationsBudget",Integer.class,-1));
-        parameters.add(new ParameterSpecification("PlayoutLookahead",Integer.class,100));
-        parameters.add(new ParameterSpecification("MaxTreeDepth",Integer.class,10));
+        parameters.add(new ParameterSpecification("TimeBudget",int.class,100));
+        parameters.add(new ParameterSpecification("IterationsBudget",int.class,-1));
+        parameters.add(new ParameterSpecification("PlayoutLookahead",int.class,100));
+        parameters.add(new ParameterSpecification("MaxTreeDepth",int.class,10));
         
         parameters.add(new ParameterSpecification("DefaultPolicy",AI.class, randomAI));
         parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
 
         return parameters;
-    }       
+    }    
+    
+    
+    public int getPlayoutLookahead() {
+        return MAXSIMULATIONTIME;
+    }
+    
+    
+    public void setPlayoutLookahead(int a_pola) {
+        MAXSIMULATIONTIME = a_pola;
+    }
+
+
+    public int getMaxTreeDepth() {
+        return MAX_TREE_DEPTH;
+    }
+    
+    
+    public void setMaxTreeDepth(int a_mtd) {
+        MAX_TREE_DEPTH = a_mtd;
+    }
+    
+    
+    public AI getDefaultPolicy() {
+        return randomAI;
+    }
+    
+    
+    public void setDefaultPolicy(AI a_dp) {
+        randomAI = a_dp;
+    }
+    
+    
+    public EvaluationFunction getEvaluationFunction() {
+        return ef;
+    }
+    
+    
+    public void setEvaluationFunction(EvaluationFunction a_ef) {
+        ef = a_ef;
+    }
 }

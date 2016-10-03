@@ -194,17 +194,34 @@ public class PortfolioAI extends InterruptibleAIWithComputationBudget {
     public List<ParameterSpecification> getParameters() {
         List<ParameterSpecification> parameters = new ArrayList<>();
         
-        parameters.add(new ParameterSpecification("TimeBudget",Integer.class,100));
-        parameters.add(new ParameterSpecification("IterationsBudget",Integer.class,-1));
-        parameters.add(new ParameterSpecification("PlayoutLookahead",Integer.class,100));
+        parameters.add(new ParameterSpecification("TimeBudget",int.class,100));
+        parameters.add(new ParameterSpecification("IterationsBudget",int.class,-1));
+        parameters.add(new ParameterSpecification("PlayoutLookahead",int.class,100));
         parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
 
-        parameters.add(new ParameterSpecification("Strategies", AI[].class, strategies));
-        parameters.add(new ParameterSpecification("Deterministic", boolean[].class, deterministic));
+//        parameters.add(new ParameterSpecification("Strategies", AI[].class, strategies));
+//        parameters.add(new ParameterSpecification("Deterministic", boolean[].class, deterministic));
         
         return parameters;
     }
     
     
+    public int getPlayoutLookahead() {
+        return LOOKAHEAD;
+    }
     
+    
+    public void setPlayoutLookahead(int a_pola) {
+        LOOKAHEAD = a_pola;
+    }
+       
+    
+    public EvaluationFunction getEvaluationFunction() {
+        return evaluation;
+    }
+    
+    
+    public void setEvaluationFunction(EvaluationFunction a_ef) {
+        evaluation = a_ef;
+    }            
 }

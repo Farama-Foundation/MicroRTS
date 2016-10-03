@@ -205,12 +205,51 @@ public class ABCD extends AI {
     {
         List<ParameterSpecification> parameters = new ArrayList<>();
         
-        parameters.add(new ParameterSpecification("MaxDepth",Integer.class,4));
-        parameters.add(new ParameterSpecification("playoutAI",AI.class, playoutAI));
-        parameters.add(new ParameterSpecification("PlayoutLookahead",Integer.class,100));
+        parameters.add(new ParameterSpecification("MaxDepth",int.class,4));
+        parameters.add(new ParameterSpecification("PlayoutLookahead",int.class,100));
+        parameters.add(new ParameterSpecification("PlayoutAI",AI.class, playoutAI));
         parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
         
         return parameters;
     }       
     
+    
+    public int getMaxDepth() {
+        return MAXDEPTH;
+    }
+    
+    
+    public void setMaxDepth(int a_md) {
+        MAXDEPTH = a_md;
+    }
+    
+    
+    public int getPlayoutLookahead() {
+        return maxPlayoutTime;
+    }
+    
+    
+    public void setPlayoutLookahead(int a_pola) {
+        maxPlayoutTime = a_pola;
+    }
+
+
+    public AI getPlayoutAI() {
+        return playoutAI;
+    }
+    
+    
+    public void setPlayoutAI(AI a_dp) {
+        playoutAI = a_dp;
+    }
+    
+
+    public EvaluationFunction getEvaluationFunction() {
+        return ef;
+    }
+    
+    
+    public void setEvaluationFunction(EvaluationFunction a_ef) {
+        ef = a_ef;
+    }
 }

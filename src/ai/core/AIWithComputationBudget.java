@@ -26,7 +26,24 @@ public abstract class AIWithComputationBudget extends AI {
         ITERATIONS_BUDGET = mi;
     }
     
-    public void setMaxIterations(int mp) {
-        ITERATIONS_BUDGET = mp;
+
+    public int getTimeBudget() {
+        return TIME_BUDGET;
     }
+    
+    
+    public void setTimeBudget(int a_tb) {
+        TIME_BUDGET = a_tb;
+    }
+
+
+    public int getIterationsBudget() {
+        return ITERATIONS_BUDGET;
+    }
+    
+    
+    public void setIterationsBudget(int a_ib) {
+        ITERATIONS_BUDGET = a_ib;
+    }
+    
 }

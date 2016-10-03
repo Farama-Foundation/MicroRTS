@@ -176,13 +176,57 @@ public class AHTNAI extends AIWithComputationBudget {
         List<ParameterSpecification> parameters = new ArrayList<>();
         
         parameters.add(new ParameterSpecification("DomainFileName",String.class,"data/ahtn/microrts-ahtn-definition-flexible-single-target-portfolio.lisp"));
-        parameters.add(new ParameterSpecification("TimeBudget",Integer.class,100));
-        parameters.add(new ParameterSpecification("IterationsBudget",Integer.class,-1));
-        parameters.add(new ParameterSpecification("PlayoutLookahead",Integer.class,100));
-        parameters.add(new ParameterSpecification("playoutAI",AI.class, playoutAI));
+        parameters.add(new ParameterSpecification("TimeBudget",int.class,100));
+        parameters.add(new ParameterSpecification("IterationsBudget",int.class,-1));
+        parameters.add(new ParameterSpecification("PlayoutLookahead",int.class,100));
+        parameters.add(new ParameterSpecification("PlayoutAI",AI.class, playoutAI));
         parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
         
         return parameters;
-    }       
+    }
     
+    
+    public String getDomainFileName()
+    {
+        return domainFileName;
+    }
+    
+    
+    public void setDomainFileName(String a_domainFileName) throws Exception {
+        domainFileName = a_domainFileName;
+        dd = DomainDefinition.fromLispFile(domainFileName);
+    }    
+    
+    
+    public int getPlayoutLookahead() 
+    {
+        return PLAYOUT_LOOKAHEAD;
+    }
+    
+    
+    public void setPlayoutLookahead(int a_pla) {
+        PLAYOUT_LOOKAHEAD = a_pla;
+    }
+    
+    
+    public AI getPlayoutAI()
+    {
+        return playoutAI;
+    }
+    
+    
+    public void setPlayoutAI(AI a_poAI) {
+        playoutAI = a_poAI;
+    }
+
+
+    public EvaluationFunction getEvaluationFunction()
+    {
+        return ef;
+    }
+    
+    
+    public void setEvaluationFunction(EvaluationFunction a_ef) {
+        ef = a_ef;
+    }
 }
