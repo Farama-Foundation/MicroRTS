@@ -26,6 +26,7 @@ import ai.abstraction.pathfinding.FloodFillPathFinding;
 import ai.abstraction.pathfinding.GreedyPathFinding;
 import ai.abstraction.pathfinding.PathFinding;
 import ai.ahtn.AHTNAI;
+import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.EvaluationFunctionForwarding;
 import ai.evaluation.SimpleEvaluationFunction;
@@ -65,12 +66,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
+import java.lang.reflect.Constructor;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
@@ -138,6 +142,16 @@ public class FEStatePane extends JPanel {
                    PuppetSearchMCTS.class
                   };
 
+    
+    Class PlayoutAIs[] = {
+                   RandomAI.class,
+                   RandomBiasedAI.class,
+                   WorkerRush.class,
+                   LightRush.class,
+                   HeavyRush.class,
+                   RangedRush.class,
+                  };
+    
     PathFinding pathFinders[] = {new AStarPathFinding(),
                                  new BFSPathFinding(),
                                  new GreedyPathFinding(),
@@ -151,6 +165,8 @@ public class FEStatePane extends JPanel {
     JCheckBox slowDownBox = null;    
     
     JComboBox aiComboBox[] = {null,null};    
+    JCheckBox continuingBox[] = {null,null};
+    /*
     JComboBox pfComboBox[] = {null,null};    
     JComboBox efComboBox[] = {null,null};    
     JFormattedTextField cpuTimeField[] = {null,null};    
@@ -159,11 +175,14 @@ public class FEStatePane extends JPanel {
     JFormattedTextField maxActionsField[] = {null,null};    
     JFormattedTextField LSIsplitField[] = {null,null};    
     JFormattedTextField fpuField[] = {null,null};    
-    JCheckBox continuingBox[] = {null,null};
+    */
+    JPanel AIOptionsPanel[] = {null, null};
+    HashMap AIOptionsPanelComponents[] = {new HashMap<String, JComponent>(), new HashMap<String, JComponent>()};
+    
     
     FEStateMouseListener mouseListener = null;
 
-    public FEStatePane() {        
+    public FEStatePane() throws Exception {        
         currentUtt = new UnitTypeTable();
         MapGenerator mg = new MapGenerator(currentUtt);
         
@@ -468,7 +487,14 @@ public class FEStatePane extends JPanel {
                                 try {
                                     AI ai1 = createAI(aiComboBox[0].getSelectedIndex(), 0, currentUtt);
                                     AI ai2 = createAI(aiComboBox[1].getSelectedIndex(), 1, currentUtt);
-                                    int PERIOD = Integer.parseInt(cpuTimeField[0].getText()) + Integer.parseInt(cpuTimeField[1].getText());
+                                    int PERIOD1 = 100;
+                                    int PERIOD2 = 100;
+                                    JFormattedTextField t1 = (JFormattedTextField)AIOptionsPanelComponents[0].get("TimeBudget");
+                                    JFormattedTextField t2 = (JFormattedTextField)AIOptionsPanelComponents[1].get("TimeBudget");
+                                    if (t1!=null) PERIOD1 = Integer.parseInt(t1.getText());
+                                    if (t2!=null) PERIOD2 = Integer.parseInt(t2.getText());
+                                    
+                                    int PERIOD = PERIOD1 + PERIOD2;
                                     if (!slowDownBox.isSelected()) {
                                         PERIOD = 1;
                                     }
@@ -482,7 +508,7 @@ public class FEStatePane extends JPanel {
                                         ai2 instanceof MouseController) {
                                         PhysicalGameStatePanel pgsp = new PhysicalGameStatePanel(statePanel);
                                         pgsp.setStateDirect(gs);
-                                        w = new PhysicalGameStateMouseJFrame("Game State Visuakizer (Mouse)",640,640,pgsp);
+                                        w = new PhysicalGameStateMouseJFrame("Game State Visualizer (Mouse)",640,640,pgsp);
                                         
                                         boolean mousep1 = false;
                                         boolean mousep2 = false;
@@ -597,6 +623,21 @@ public class FEStatePane extends JPanel {
                 ptmp.add(aiComboBox[player]);
                 p1.add(ptmp);
             }
+            continuingBox[player] = new JCheckBox("Continuing");
+            continuingBox[player].setAlignmentX(Component.CENTER_ALIGNMENT);
+            continuingBox[player].setAlignmentY(Component.TOP_ALIGNMENT);
+            continuingBox[player].setMaximumSize(new Dimension(120,20));
+            continuingBox[player].setSelected(true);
+            p1.add(continuingBox[player]);
+            
+            AIOptionsPanel[player] = new JPanel();
+            AIOptionsPanel[player].setLayout(new BoxLayout(AIOptionsPanel[player], BoxLayout.Y_AXIS));
+            p1.add(AIOptionsPanel[player]);
+
+            updateAIOptions(AIOptionsPanel[player], player);
+            
+            
+            /*
             {
                 String PFNames[] = new String[pathFinders.length];
                 for(int i = 0;i<pathFinders.length;i++) {
@@ -630,13 +671,31 @@ public class FEStatePane extends JPanel {
                 fpuField[player] = addTextField(ptmp,"FPU:", "4.9", 5);
                 p1.add(ptmp);
             }
-            continuingBox[player] = new JCheckBox("Continuing");
-            continuingBox[player].setAlignmentX(Component.CENTER_ALIGNMENT);
-            continuingBox[player].setAlignmentY(Component.TOP_ALIGNMENT);
-            continuingBox[player].setMaximumSize(new Dimension(120,20));
-            continuingBox[player].setSelected(true);
-            p1.add(continuingBox[player]);
+            */
         }
+        
+        aiComboBox[0].addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    updateAIOptions(AIOptionsPanel[0], 0);
+                }catch(Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+
+        });
+        aiComboBox[1].addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    updateAIOptions(AIOptionsPanel[1], 1);
+                }catch(Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+
+        });        
 
         JPanel p2 = new JPanel();
         p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));
@@ -653,13 +712,7 @@ public class FEStatePane extends JPanel {
         add(p2, BorderLayout.EAST);
         
         mouseListener = new FEStateMouseListener(statePanel, currentUtt);
-        statePanel.addMouseListener(mouseListener);
-              
-//        for(int i = 0;i<AIs.length;i++) {
-//            AI ai = createAI(i, 0, currentUtt);
-//            System.out.println(ai.getClass().getSimpleName() + ": " + ai.toString());
-//        }
-        
+        statePanel.addMouseListener(mouseListener);              
     }
 
     public void setState(GameState gs) {
@@ -683,7 +736,7 @@ public class FEStatePane extends JPanel {
         ptmp.add(new JLabel(name));
         JFormattedTextField f = new JFormattedTextField();
         f.setValue(defaultValue);
-        f.setColumns(columns);
+//        f.setColumns(columns);
         f.setMaximumSize(new Dimension(80,20));
         ptmp.add(f);
         p.add(ptmp);
@@ -712,6 +765,16 @@ public class FEStatePane extends JPanel {
     }
     
     public AI createAIInternal(int idx, int player, UnitTypeTable utt) throws Exception {
+
+        if (AIs[idx]==MouseController.class) {
+            return new MouseController(null);
+        } else {
+            Constructor cons = AIs[idx].getConstructor(UnitTypeTable.class);
+            AI AI_instance = (AI)cons.newInstance(utt);
+            return AI_instance;
+        }
+        
+        /*
         int TIME = Integer.parseInt(cpuTimeField[player].getText());
         int MAX_PLAYOUTS = Integer.parseInt(maxPlayoutsField[player].getText());
         int PLAYOUT_LOOKAHEAD = Integer.parseInt(playoutTimeField[player].getText());
@@ -796,5 +859,262 @@ public class FEStatePane extends JPanel {
             return new MouseController(null);
         }
         return null;
+        */
+    }
+
+    private void updateAIOptions(JPanel jPanel, int player) throws Exception {
+        // clear previous components:
+        HashMap<String, JComponent> components = AIOptionsPanelComponents[player];
+        jPanel.removeAll();
+        components.clear();
+        
+        AI AIInstance = createAIInternal(aiComboBox[player].getSelectedIndex(), 0, currentUtt);
+        List<ParameterSpecification> parameters = AIInstance.getParameters();
+        for(ParameterSpecification p:parameters) {
+            if (p.type == int.class ||
+                p.type == long.class ||
+                p.type == float.class ||
+                p.type == double.class ||
+                p.type == String.class) {
+                JComponent c = addTextField(jPanel,p.name, p.defaultValue.toString(), p.defaultValue.toString().length()+1);
+                components.put(p.name, c);
+                
+            } else if (p.type == boolean.class) {
+                JCheckBox c = new JCheckBox(p.name);
+                c.setAlignmentX(Component.CENTER_ALIGNMENT);
+                c.setAlignmentY(Component.TOP_ALIGNMENT);
+                c.setMaximumSize(new Dimension(120,20));
+                c.setSelected((Boolean)p.defaultValue);
+                jPanel.add(c);
+                components.put(p.name, c);
+
+            } else if (p.type == PathFinding.class) {
+                JPanel ptmp = new JPanel();
+                ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
+                ptmp.add(new JLabel(p.name));
+                int defaultValue = 0;
+                
+                String PFSNames[] = new String[pathFinders.length];
+                for(int i = 0;i<pathFinders.length;i++) {
+                    PFSNames[i] = pathFinders[i].getClass().getSimpleName();
+                    if (pathFinders[i].getClass() == p.defaultValue.getClass()) defaultValue = i;
+                }
+                JComboBox c = new JComboBox(PFSNames);
+                c.setAlignmentX(Component.CENTER_ALIGNMENT);
+                c.setAlignmentY(Component.TOP_ALIGNMENT);
+                c.setMaximumSize(new Dimension(300,24));
+                c.setSelectedIndex(defaultValue);
+                
+                ptmp.add(c);
+                jPanel.add(ptmp);
+                components.put(p.name, c);
+                
+            } else if (p.type == EvaluationFunction.class) {
+                JPanel ptmp = new JPanel();
+                ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
+                ptmp.add(new JLabel(p.name));
+                int defaultValue = 0;
+                
+                String EFSNames[] = new String[efs.length];
+                for(int i = 0;i<efs.length;i++) {
+                    EFSNames[i] = efs[i].getClass().getSimpleName();
+                    if (efs[i].getClass() == p.defaultValue.getClass()) defaultValue = i;
+                }
+                JComboBox c = new JComboBox(EFSNames);
+                c.setAlignmentX(Component.CENTER_ALIGNMENT);
+                c.setAlignmentY(Component.TOP_ALIGNMENT);
+                c.setMaximumSize(new Dimension(300,24));
+                c.setSelectedIndex(defaultValue);
+                
+                ptmp.add(c);
+                jPanel.add(ptmp);
+                components.put(p.name, c);
+
+            } else if (p.type == AI.class) {
+                // we are assuming this is a simple playout AI (so, a smaller list is used here):
+                JPanel ptmp = new JPanel();
+                ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
+                ptmp.add(new JLabel(p.name));
+                int defaultValue = 0;
+                
+                String AINames[] = null;
+                if (p.possibleValues==null) {                
+                    AINames= new String[PlayoutAIs.length];
+                    for(int i = 0;i<PlayoutAIs.length;i++) {
+                        AINames[i] = PlayoutAIs[i].getSimpleName();
+                        if (PlayoutAIs[i] == p.defaultValue.getClass()) defaultValue = i;
+                    }
+                } else {
+                    AINames= new String[p.possibleValues.size()];
+                    for(int i = 0;i<p.possibleValues.size();i++) {
+                        AINames[i] = p.possibleValues.get(i).toString();
+                        if (p.possibleValues.get(i) == p.defaultValue) defaultValue = i;
+                    }
+                }
+                JComboBox c = new JComboBox(AINames);
+                c.setAlignmentX(Component.CENTER_ALIGNMENT);
+                c.setAlignmentY(Component.TOP_ALIGNMENT);
+                c.setMaximumSize(new Dimension(300,24));
+                c.setSelectedIndex(defaultValue);
+               
+                ptmp.add(c);
+                jPanel.add(ptmp);
+                components.put(p.name, c);
+            
+            } else if (p.type == UnitActionProbabilityDistribution.class) {
+                JPanel ptmp = new JPanel();
+                ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
+                ptmp.add(new JLabel(p.name));
+                int defaultValue = 0;
+                
+                String names[] = null;
+                names= new String[p.possibleValues.size()];
+                for(int i = 0;i<p.possibleValues.size();i++) {
+                    names[i] = p.possibleValues.get(i).toString();
+                    if (p.possibleValues.get(i) == p.defaultValue) defaultValue = i;
+                }
+                JComboBox c = new JComboBox(names);
+                c.setAlignmentX(Component.CENTER_ALIGNMENT);
+                c.setAlignmentY(Component.TOP_ALIGNMENT);
+                c.setMaximumSize(new Dimension(300,24));
+                c.setSelectedIndex(defaultValue);
+               
+                ptmp.add(c);
+                jPanel.add(ptmp);
+                components.put(p.name, c);                
+
+            } else if (p.type == LSI.EstimateType.class) {
+                JPanel ptmp = new JPanel();
+                ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
+                ptmp.add(new JLabel(p.name));
+                int defaultValue = 0;
+                
+                String names[] = new String[LSI.EstimateType.values().length];
+                for(int i = 0;i<LSI.EstimateType.values().length;i++) {
+                    names[i] = LSI.EstimateType.values()[i].toString();
+                    if (LSI.EstimateType.values()[i] == (LSI.EstimateType)p.defaultValue) defaultValue = i;
+                }
+                JComboBox c = new JComboBox(names);
+                c.setAlignmentX(Component.CENTER_ALIGNMENT);
+                c.setAlignmentY(Component.TOP_ALIGNMENT);
+                c.setMaximumSize(new Dimension(300,24));
+                c.setSelectedIndex(defaultValue);
+               
+                ptmp.add(c);
+                jPanel.add(ptmp);
+                components.put(p.name, c);
+
+            } else if (p.type == LSI.EstimateReuseType.class) {
+                JPanel ptmp = new JPanel();
+                ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
+                ptmp.add(new JLabel(p.name));
+                int defaultValue = 0;
+                
+                String names[] = new String[LSI.EstimateReuseType.values().length];
+                for(int i = 0;i<LSI.EstimateReuseType.values().length;i++) {
+                    names[i] = LSI.EstimateReuseType.values()[i].toString();
+                    if (LSI.EstimateReuseType.values()[i] == (LSI.EstimateReuseType)p.defaultValue) defaultValue = i;
+                }
+                JComboBox c = new JComboBox(names);
+                c.setAlignmentX(Component.CENTER_ALIGNMENT);
+                c.setAlignmentY(Component.TOP_ALIGNMENT);
+                c.setMaximumSize(new Dimension(300,24));
+                c.setSelectedIndex(defaultValue);
+               
+                ptmp.add(c);
+                jPanel.add(ptmp);
+                components.put(p.name, c);
+
+            } else if (p.type == LSI.GenerateType.class) {
+                JPanel ptmp = new JPanel();
+                ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
+                ptmp.add(new JLabel(p.name));
+                int defaultValue = 0;
+                
+                String names[] = new String[LSI.GenerateType.values().length];
+                for(int i = 0;i<LSI.GenerateType.values().length;i++) {
+                    names[i] = LSI.GenerateType.values()[i].toString();
+                    if (LSI.GenerateType.values()[i] == (LSI.GenerateType)p.defaultValue) defaultValue = i;
+                }
+                JComboBox c = new JComboBox(names);
+                c.setAlignmentX(Component.CENTER_ALIGNMENT);
+                c.setAlignmentY(Component.TOP_ALIGNMENT);
+                c.setMaximumSize(new Dimension(300,24));
+                c.setSelectedIndex(defaultValue);
+               
+                ptmp.add(c);
+                jPanel.add(ptmp);
+                components.put(p.name, c);                
+
+            } else if (p.type == LSI.EvaluateType.class) {
+                JPanel ptmp = new JPanel();
+                ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
+                ptmp.add(new JLabel(p.name));
+                int defaultValue = 0;
+                
+                String names[] = new String[LSI.EvaluateType.values().length];
+                for(int i = 0;i<LSI.EvaluateType.values().length;i++) {
+                    names[i] = LSI.EvaluateType.values()[i].toString();
+                    if (LSI.EvaluateType.values()[i] == (LSI.EvaluateType)p.defaultValue) defaultValue = i;
+                }
+                JComboBox c = new JComboBox(names);
+                c.setAlignmentX(Component.CENTER_ALIGNMENT);
+                c.setAlignmentY(Component.TOP_ALIGNMENT);
+                c.setMaximumSize(new Dimension(300,24));
+                c.setSelectedIndex(defaultValue);
+               
+                ptmp.add(c);
+                jPanel.add(ptmp);
+                components.put(p.name, c); 
+
+
+            } else if (p.type == LSI.RelaxationType.class) {
+                JPanel ptmp = new JPanel();
+                ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
+                ptmp.add(new JLabel(p.name));
+                int defaultValue = 0;
+                
+                String names[] = new String[LSI.RelaxationType.values().length];
+                for(int i = 0;i<LSI.RelaxationType.values().length;i++) {
+                    names[i] = LSI.RelaxationType.values()[i].toString();
+                    if (LSI.RelaxationType.values()[i] == (LSI.RelaxationType)p.defaultValue) defaultValue = i;
+                }
+                JComboBox c = new JComboBox(names);
+                c.setAlignmentX(Component.CENTER_ALIGNMENT);
+                c.setAlignmentY(Component.TOP_ALIGNMENT);
+                c.setMaximumSize(new Dimension(300,24));
+                c.setSelectedIndex(defaultValue);
+               
+                ptmp.add(c);
+                jPanel.add(ptmp);
+                components.put(p.name, c); 
+                
+            } else if (p.type == Sampling.AgentOrderingType.class) {
+                JPanel ptmp = new JPanel();
+                ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
+                ptmp.add(new JLabel(p.name));
+                int defaultValue = 0;
+                
+                String names[] = new String[Sampling.AgentOrderingType.values().length];
+                for(int i = 0;i<Sampling.AgentOrderingType.values().length;i++) {
+                    names[i] = Sampling.AgentOrderingType.values()[i].toString();
+                    if (Sampling.AgentOrderingType.values()[i] == (Sampling.AgentOrderingType)p.defaultValue) defaultValue = i;
+                }
+                JComboBox c = new JComboBox(names);
+                c.setAlignmentX(Component.CENTER_ALIGNMENT);
+                c.setAlignmentY(Component.TOP_ALIGNMENT);
+                c.setMaximumSize(new Dimension(300,24));
+                c.setSelectedIndex(defaultValue);
+               
+                ptmp.add(c);
+                jPanel.add(ptmp);
+                components.put(p.name, c);                 
+
+            } else {
+                throw new Exception("Cannot create GUI component for class" + p.type.getName());
+            }
+        }
+        
+        jPanel.revalidate();
     }
 }

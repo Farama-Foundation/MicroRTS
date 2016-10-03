@@ -16,8 +16,8 @@ public class ParameterSpecification {
     public String name = null;
     public Class type = null;
     public Object defaultValue = null;
-    List<Object> possibleValues = null;     // used only if not-null
-    Double minValue = null, maxValue = null; // for parameters with a range
+    public List<Object> possibleValues = null;     // used only if not-null
+    public Double minValue = null, maxValue = null; // for parameters with a range
     
     
     public ParameterSpecification(String n, Class t, Object dv) {

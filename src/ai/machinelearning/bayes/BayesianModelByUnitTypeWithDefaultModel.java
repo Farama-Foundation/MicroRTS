@@ -213,4 +213,8 @@ public class BayesianModelByUnitTypeWithDefaultModel extends BayesianModel {
         defaultModel.load((Element)dm_xml.getChildren().get(0));
     }    
 
+    
+    public String toString() {
+        return getClass().getSimpleName();
+    }
 }

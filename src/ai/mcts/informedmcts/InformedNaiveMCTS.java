@@ -30,6 +30,7 @@ import rts.units.UnitTypeTable;
 public class InformedNaiveMCTS extends InterruptibleAIWithComputationBudget {
     public static int DEBUG = 0;
     public EvaluationFunction ef = null;
+    UnitTypeTable utt = null;
        
     Random r = new Random();
     public AI playoutPolicy = new RandomBiasedAI();
@@ -67,18 +68,18 @@ public class InformedNaiveMCTS extends InterruptibleAIWithComputationBudget {
     public long total_time = 0;
     
     
-    public InformedNaiveMCTS(UnitTypeTable utt) throws Exception {
+    public InformedNaiveMCTS(UnitTypeTable a_utt) throws Exception {
         this(100,-1,100,10,
              0.3f,0.0f,0.4f,
              new UnitActionProbabilityDistributionAI(
                     new BayesianModelByUnitTypeWithDefaultModel(new SAXBuilder().build(
-                        "data/bayesianmodels/pretrained/ActionInterdependenceModel-WR.xml").getRootElement(), utt,
-                        new ActionInterdependenceModel(null, 0, 0, 0, utt, new FeatureGeneratorSimple())), 
-                     utt, "NaiveBayesAllowedActionsByUnitTypeWithDefaultModel-nofeatures-Acc-WR"), 
+                        "data/bayesianmodels/pretrained/ActionInterdependenceModel-WR.xml").getRootElement(), a_utt,
+                        new ActionInterdependenceModel(null, 0, 0, 0, a_utt, new FeatureGeneratorSimple())), 
+                     a_utt, "ActionInterdependenceModel-Acc-WR"), 
              new BayesianModelByUnitTypeWithDefaultModel(new SAXBuilder().build(
-                    "data/bayesianmodels/pretrained/ActionInterdependenceModel-WR.xml").getRootElement(), utt,
-                    new ActionInterdependenceModel(null, 0, 0, 0, utt, new FeatureGeneratorSimple())), 
-             new SimpleSqrtEvaluationFunction3());
+                    "data/bayesianmodels/pretrained/ActionInterdependenceModel-WR.xml").getRootElement(), a_utt,
+                    new ActionInterdependenceModel(null, 0, 0, 0, a_utt, new FeatureGeneratorSimple())), 
+             new SimpleSqrtEvaluationFunction3(), a_utt);
     }
     
     
@@ -88,8 +89,10 @@ public class InformedNaiveMCTS extends InterruptibleAIWithComputationBudget {
                            float e3, float discout3, 
                            AI policy, 
                            UnitActionProbabilityDistribution a_bias,
-                           EvaluationFunction a_ef) {
+                           EvaluationFunction a_ef,
+                           UnitTypeTable a_utt) {
         super(available_time, max_playouts);
+        utt = a_utt;
         MAXSIMULATIONTIME = lookahead;
         playoutPolicy = policy;
         bias = a_bias;
@@ -107,8 +110,10 @@ public class InformedNaiveMCTS extends InterruptibleAIWithComputationBudget {
                            float e1, float e2, float e3, 
                            AI policy, 
                            UnitActionProbabilityDistribution a_bias,
-                           EvaluationFunction a_ef) {
+                           EvaluationFunction a_ef,
+                           UnitTypeTable a_utt) {
         super(available_time, max_playouts);
+        utt = a_utt;
         MAXSIMULATIONTIME = lookahead;
         playoutPolicy = policy;
         bias = a_bias;
@@ -154,7 +159,7 @@ public class InformedNaiveMCTS extends InterruptibleAIWithComputationBudget {
         
     
     public AI clone() {
-        return new InformedNaiveMCTS(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME, MAX_TREE_DEPTH, epsilon_l, discount_l, epsilon_g, discount_g, epsilon_0, discount_0, playoutPolicy, bias, ef);
+        return new InformedNaiveMCTS(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME, MAX_TREE_DEPTH, epsilon_l, discount_l, epsilon_g, discount_g, epsilon_0, discount_0, playoutPolicy, bias, ef, utt);
     }    
     
     
@@ -350,9 +355,56 @@ public class InformedNaiveMCTS extends InterruptibleAIWithComputationBudget {
         parameters.add(new ParameterSpecification("Discount_g",float.class,1.0));
         parameters.add(new ParameterSpecification("E_0",float.class,0.4));
         parameters.add(new ParameterSpecification("Discount_0",float.class,1.0));
-                
-        parameters.add(new ParameterSpecification("DefaultPolicy",AI.class, playoutPolicy));
-        parameters.add(new ParameterSpecification("TreePolicyBias",UnitActionProbabilityDistribution.class, bias));
+
+        try {
+            String biasNames[] = {
+                "AIM-WR",
+                "AIM-LR",
+                "AIM-HR",
+                "AIM-RR",
+                "AIM-LSI500",
+                "AIM-LSI10000",
+                "AIM-NaiveMCTS500",
+                "AIM-NaiveMCTS10000",                
+            };
+            UnitActionProbabilityDistribution biasOptions[] = {
+                   new BayesianModelByUnitTypeWithDefaultModel(new SAXBuilder().build(
+                       "data/bayesianmodels/pretrained/ActionInterdependenceModel-WR.xml").getRootElement(), utt,
+                       new ActionInterdependenceModel(null, 0, 0, 0, utt, new FeatureGeneratorSimple())),
+                   new BayesianModelByUnitTypeWithDefaultModel(new SAXBuilder().build(
+                       "data/bayesianmodels/pretrained/ActionInterdependenceModel-LR.xml").getRootElement(), utt,
+                       new ActionInterdependenceModel(null, 0, 0, 0, utt, new FeatureGeneratorSimple())),
+                   new BayesianModelByUnitTypeWithDefaultModel(new SAXBuilder().build(
+                       "data/bayesianmodels/pretrained/ActionInterdependenceModel-HR.xml").getRootElement(), utt,
+                       new ActionInterdependenceModel(null, 0, 0, 0, utt, new FeatureGeneratorSimple())),
+                   new BayesianModelByUnitTypeWithDefaultModel(new SAXBuilder().build(
+                       "data/bayesianmodels/pretrained/ActionInterdependenceModel-RR.xml").getRootElement(), utt,
+                       new ActionInterdependenceModel(null, 0, 0, 0, utt, new FeatureGeneratorSimple())),
+                   new BayesianModelByUnitTypeWithDefaultModel(new SAXBuilder().build(
+                       "data/bayesianmodels/pretrained/ActionInterdependenceModel-LSI500.xml").getRootElement(), utt,
+                       new ActionInterdependenceModel(null, 0, 0, 0, utt, new FeatureGeneratorSimple())),
+                   new BayesianModelByUnitTypeWithDefaultModel(new SAXBuilder().build(
+                       "data/bayesianmodels/pretrained/ActionInterdependenceModel-LSI10000.xml").getRootElement(), utt,
+                       new ActionInterdependenceModel(null, 0, 0, 0, utt, new FeatureGeneratorSimple())),
+                   new BayesianModelByUnitTypeWithDefaultModel(new SAXBuilder().build(
+                       "data/bayesianmodels/pretrained/ActionInterdependenceModel-NaiveMCTS500.xml").getRootElement(), utt,
+                       new ActionInterdependenceModel(null, 0, 0, 0, utt, new FeatureGeneratorSimple())),
+                   new BayesianModelByUnitTypeWithDefaultModel(new SAXBuilder().build(
+                       "data/bayesianmodels/pretrained/ActionInterdependenceModel-NaiveMCTS10000.xml").getRootElement(), utt,
+                       new ActionInterdependenceModel(null, 0, 0, 0, utt, new FeatureGeneratorSimple())),
+            }; 
+        
+            ParameterSpecification dp_ps = new ParameterSpecification("DefaultPolicy",AI.class, playoutPolicy);
+            ParameterSpecification tpb_ps = new ParameterSpecification("TreePolicyBias",UnitActionProbabilityDistribution.class, bias);
+            for(int i = 0;i<biasOptions.length;i++) {
+                dp_ps.addPossibleValue(new UnitActionProbabilityDistributionAI(biasOptions[i], utt, biasNames[i]));
+                tpb_ps.addPossibleValue(biasOptions[i]);
+            }
+            parameters.add(dp_ps);
+            parameters.add(tpb_ps);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
         parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
 
         return parameters;
