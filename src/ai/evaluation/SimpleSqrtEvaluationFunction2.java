@@ -36,7 +36,7 @@ public class SimpleSqrtEvaluationFunction2 extends EvaluationFunction {
             if (u.getPlayer()==player) {
                 anyunit = true;
                 score += u.getResources() * RESOURCE_IN_WORKER;
-                score += UNIT_BONUS_MULTIPLIER * (u.getCost()*Math.sqrt(u.getHitPoints()))/(float)u.getMaxHitPoints();
+                score += UNIT_BONUS_MULTIPLIER * (u.getCost()*Math.sqrt( u.getHitPoints()) / u.getMaxHitPoints() );
             }
         }
         if (!anyunit) return 0;
