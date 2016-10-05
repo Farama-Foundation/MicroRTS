@@ -1060,14 +1060,54 @@ public class LSI extends AIWithComputationBudget {
         ParameterSpecification ps_split = new ParameterSpecification("Split",double.class,0.25);
         ps_split.setRange(0.0, 1.0);
         parameters.add(ps_split);
-        parameters.add(new ParameterSpecification("EstimateType",EstimateType.class,EstimateType.RANDOM_TAIL));
-        parameters.add(new ParameterSpecification("EstimateReuseType",EstimateReuseType.class,EstimateReuseType.ALL));
-        parameters.add(new ParameterSpecification("GenerateType",GenerateType.class,GenerateType.PER_AGENT));
-        parameters.add(new ParameterSpecification("AgentOrderingType",Sampling.AgentOrderingType.class,Sampling.AgentOrderingType.ENTROPY));
-        parameters.add(new ParameterSpecification("EvaluateType",EvaluateType.class,EvaluateType.HALVING));
+
+        ParameterSpecification ps_et = new ParameterSpecification("EstimateType",EstimateType.class,EstimateType.RANDOM_TAIL);
+        ps_et.addPossibleValue(EstimateType.RANDOM_TAIL);
+        ps_et.addPossibleValue(EstimateType.RANDOM_TAIL_ELITE);
+        ps_et.addPossibleValue(EstimateType.NOOP_TAIL);
+        ps_et.addPossibleValue(EstimateType.RANDOM);
+        ps_et.addPossibleValue(EstimateType.ALL_COMBINATIONS);
+        parameters.add(ps_et);
+
+        ParameterSpecification ert_et = new ParameterSpecification("EstimateReuseType",EstimateReuseType.class,EstimateReuseType.ALL);        
+        ert_et.addPossibleValue(EstimateReuseType.ALL);
+        ert_et.addPossibleValue(EstimateReuseType.SINGLE);
+        parameters.add(ert_et);
+        
+        ParameterSpecification gt_et = new ParameterSpecification("GenerateType",GenerateType.class,GenerateType.PER_AGENT);        
+        gt_et.addPossibleValue(GenerateType.ONE_DIST);
+        gt_et.addPossibleValue(GenerateType.PER_AGENT);
+        parameters.add(gt_et);
+
+        ParameterSpecification aot_et = new ParameterSpecification("AgentOrderingType",Sampling.AgentOrderingType.class,Sampling.AgentOrderingType.ENTROPY);        
+        aot_et.addPossibleValue(Sampling.AgentOrderingType.RANDOM);
+        aot_et.addPossibleValue(Sampling.AgentOrderingType.ENTROPY);
+        parameters.add(aot_et);
+
+        ParameterSpecification et_et = new ParameterSpecification("EvaluateType",EvaluateType.class,EvaluateType.HALVING);        
+        et_et.addPossibleValue(EvaluateType.HALVING);
+        et_et.addPossibleValue(EvaluateType.HALVING_ELITE);
+        et_et.addPossibleValue(EvaluateType.BEST);
+        parameters.add(et_et);
+
         parameters.add(new ParameterSpecification("EliteReuse",boolean.class,false));
         
-        parameters.add(new ParameterSpecification("RelaxationType",RelaxationType.class,RelaxationType.NONE));
+        ParameterSpecification rt_et = new ParameterSpecification("RelaxationType",RelaxationType.class,RelaxationType.NONE);
+        rt_et.addPossibleValue(RelaxationType.NONE);
+        rt_et.addPossibleValue(RelaxationType.PRE_RANDOM);
+        rt_et.addPossibleValue(RelaxationType.EPOCH);
+        rt_et.addPossibleValue(RelaxationType.MAX);
+        rt_et.addPossibleValue(RelaxationType.MEAN);
+        rt_et.addPossibleValue(RelaxationType.MEDIAN);
+        rt_et.addPossibleValue(RelaxationType.MAX_ENT);
+        rt_et.addPossibleValue(RelaxationType.MIN_ENT);
+        rt_et.addPossibleValue(RelaxationType.POST_RANDOM);
+        rt_et.addPossibleValue(RelaxationType.POST_ENTROPY_MAX);
+        rt_et.addPossibleValue(RelaxationType.POST_ENTROPY_MIN);
+        rt_et.addPossibleValue(RelaxationType.POST_MAX_DIFF);
+        rt_et.addPossibleValue(RelaxationType.POST_MAX_TIME_NORMALIZE);
+        parameters.add(rt_et);
+        
         parameters.add(new ParameterSpecification("RelaxationLimit",int.class,2));
         parameters.add(new ParameterSpecification("Epochal",boolean.class,epochal));
         parameters.add(new ParameterSpecification("SimulationAI",AI.class,simulationAi));

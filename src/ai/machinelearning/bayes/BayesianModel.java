@@ -30,11 +30,13 @@ public abstract class BayesianModel extends UnitActionProbabilityDistribution {
     
     protected List<UnitAction> allPossibleActions = null;
     protected FeatureGenerator featureGenerator = null;
+    protected String name = null;
     
-    public BayesianModel(UnitTypeTable utt, FeatureGenerator fg) {
+    public BayesianModel(UnitTypeTable utt, FeatureGenerator fg, String a_name) {
         super(utt);
         allPossibleActions = generateAllPossibleUnitActions(utt);
         featureGenerator = fg;
+        name = a_name;
     }
 
 
@@ -165,4 +167,7 @@ public abstract class BayesianModel extends UnitActionProbabilityDistribution {
     public abstract void save(XMLWriter w) throws Exception;
     public abstract void load(Element e) throws Exception;
     
+    public String toString() {
+        return name;
+    }
 }

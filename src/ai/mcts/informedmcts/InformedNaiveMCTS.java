@@ -74,11 +74,11 @@ public class InformedNaiveMCTS extends InterruptibleAIWithComputationBudget {
              new UnitActionProbabilityDistributionAI(
                     new BayesianModelByUnitTypeWithDefaultModel(new SAXBuilder().build(
                         "data/bayesianmodels/pretrained/ActionInterdependenceModel-WR.xml").getRootElement(), a_utt,
-                        new ActionInterdependenceModel(null, 0, 0, 0, a_utt, new FeatureGeneratorSimple())), 
+                        new ActionInterdependenceModel(null, 0, 0, 0, a_utt, new FeatureGeneratorSimple(), ""), "AIM-WR"), 
                      a_utt, "ActionInterdependenceModel-Acc-WR"), 
              new BayesianModelByUnitTypeWithDefaultModel(new SAXBuilder().build(
                     "data/bayesianmodels/pretrained/ActionInterdependenceModel-WR.xml").getRootElement(), a_utt,
-                    new ActionInterdependenceModel(null, 0, 0, 0, a_utt, new FeatureGeneratorSimple())), 
+                    new ActionInterdependenceModel(null, 0, 0, 0, a_utt, new FeatureGeneratorSimple(), ""), "AIM-WR"), 
              new SimpleSqrtEvaluationFunction3(), a_utt);
     }
     
@@ -370,28 +370,28 @@ public class InformedNaiveMCTS extends InterruptibleAIWithComputationBudget {
             UnitActionProbabilityDistribution biasOptions[] = {
                    new BayesianModelByUnitTypeWithDefaultModel(new SAXBuilder().build(
                        "data/bayesianmodels/pretrained/ActionInterdependenceModel-WR.xml").getRootElement(), utt,
-                       new ActionInterdependenceModel(null, 0, 0, 0, utt, new FeatureGeneratorSimple())),
+                       new ActionInterdependenceModel(null, 0, 0, 0, utt, new FeatureGeneratorSimple(), ""), "AIM-WR"),
                    new BayesianModelByUnitTypeWithDefaultModel(new SAXBuilder().build(
                        "data/bayesianmodels/pretrained/ActionInterdependenceModel-LR.xml").getRootElement(), utt,
-                       new ActionInterdependenceModel(null, 0, 0, 0, utt, new FeatureGeneratorSimple())),
+                       new ActionInterdependenceModel(null, 0, 0, 0, utt, new FeatureGeneratorSimple(), ""), "AIM-LR"),
                    new BayesianModelByUnitTypeWithDefaultModel(new SAXBuilder().build(
                        "data/bayesianmodels/pretrained/ActionInterdependenceModel-HR.xml").getRootElement(), utt,
-                       new ActionInterdependenceModel(null, 0, 0, 0, utt, new FeatureGeneratorSimple())),
+                       new ActionInterdependenceModel(null, 0, 0, 0, utt, new FeatureGeneratorSimple(), ""), "AIM-HR"),
                    new BayesianModelByUnitTypeWithDefaultModel(new SAXBuilder().build(
                        "data/bayesianmodels/pretrained/ActionInterdependenceModel-RR.xml").getRootElement(), utt,
-                       new ActionInterdependenceModel(null, 0, 0, 0, utt, new FeatureGeneratorSimple())),
+                       new ActionInterdependenceModel(null, 0, 0, 0, utt, new FeatureGeneratorSimple(), ""), "AIM-RR"),
                    new BayesianModelByUnitTypeWithDefaultModel(new SAXBuilder().build(
                        "data/bayesianmodels/pretrained/ActionInterdependenceModel-LSI500.xml").getRootElement(), utt,
-                       new ActionInterdependenceModel(null, 0, 0, 0, utt, new FeatureGeneratorSimple())),
+                       new ActionInterdependenceModel(null, 0, 0, 0, utt, new FeatureGeneratorSimple(), ""), "AIM-LSI500"),
                    new BayesianModelByUnitTypeWithDefaultModel(new SAXBuilder().build(
                        "data/bayesianmodels/pretrained/ActionInterdependenceModel-LSI10000.xml").getRootElement(), utt,
-                       new ActionInterdependenceModel(null, 0, 0, 0, utt, new FeatureGeneratorSimple())),
+                       new ActionInterdependenceModel(null, 0, 0, 0, utt, new FeatureGeneratorSimple(), ""), "AIM-LSI10000"),
                    new BayesianModelByUnitTypeWithDefaultModel(new SAXBuilder().build(
                        "data/bayesianmodels/pretrained/ActionInterdependenceModel-NaiveMCTS500.xml").getRootElement(), utt,
-                       new ActionInterdependenceModel(null, 0, 0, 0, utt, new FeatureGeneratorSimple())),
+                       new ActionInterdependenceModel(null, 0, 0, 0, utt, new FeatureGeneratorSimple(), ""), "AIM-NaiveMCTS500"),
                    new BayesianModelByUnitTypeWithDefaultModel(new SAXBuilder().build(
                        "data/bayesianmodels/pretrained/ActionInterdependenceModel-NaiveMCTS10000.xml").getRootElement(), utt,
-                       new ActionInterdependenceModel(null, 0, 0, 0, utt, new FeatureGeneratorSimple())),
+                       new ActionInterdependenceModel(null, 0, 0, 0, utt, new FeatureGeneratorSimple(), ""), "AIM-NaiveMCTS10000"),
             }; 
         
             ParameterSpecification dp_ps = new ParameterSpecification("DefaultPolicy",AI.class, playoutPolicy);

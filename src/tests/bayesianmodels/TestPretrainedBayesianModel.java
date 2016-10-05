@@ -39,7 +39,7 @@ public class TestPretrainedBayesianModel {
 //             "data/bayesianmodels/trainingdata/learning-traces-500","AI0", utt, fg);
         test(new BayesianModelByUnitTypeWithDefaultModel(new SAXBuilder().build(
              "data/bayesianmodels/pretrained/ActionInterdependenceModel-WR.xml").getRootElement(), utt,
-             new ActionInterdependenceModel(null, 0, 0, 0, utt, fg)), 
+             new ActionInterdependenceModel(null, 0, 0, 0, utt, fg, ""), "AIM_WR"), 
              "data/bayesianmodels/trainingdata/learning-traces-500","AI0", utt, fg);
     }    
     

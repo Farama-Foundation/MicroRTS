@@ -37,8 +37,8 @@ public class CalibratedNaiveBayes extends BayesianModel {
     int Xsizes[];
    
 
-    public CalibratedNaiveBayes(int a_Xsizes[], int a_Ysize, int estimation, double a_correctionFactor, UnitTypeTable utt, FeatureGenerator fg) {
-        super(utt, fg);
+    public CalibratedNaiveBayes(int a_Xsizes[], int a_Ysize, int estimation, double a_correctionFactor, UnitTypeTable utt, FeatureGenerator fg, String a_name) {
+        super(utt, fg, a_name);
         Ysize = a_Ysize;
         Xsizes = a_Xsizes;
         estimationMethod = estimation;
@@ -49,7 +49,7 @@ public class CalibratedNaiveBayes extends BayesianModel {
     
     
     public Object clone() {
-        CalibratedNaiveBayes c = new CalibratedNaiveBayes(Xsizes, Ysize, estimationMethod, calibrationFactor, utt, featureGenerator);
+        CalibratedNaiveBayes c = new CalibratedNaiveBayes(Xsizes, Ysize, estimationMethod, calibrationFactor, utt, featureGenerator, name);
         return c;
     }
     
@@ -256,8 +256,8 @@ public class CalibratedNaiveBayes extends BayesianModel {
     }
     
     
-    public CalibratedNaiveBayes(Element e, UnitTypeTable utt) throws Exception {
-        super(utt, null);
+    public CalibratedNaiveBayes(Element e, UnitTypeTable utt, String a_name) throws Exception {
+        super(utt, null, a_name);
         load(e);
     }
     

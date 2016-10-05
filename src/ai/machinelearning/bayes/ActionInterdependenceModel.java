@@ -46,8 +46,8 @@ public class ActionInterdependenceModel extends BayesianModel {
     boolean consider_individual_actions = false;
     boolean consider_action_types = true;
     
-    public ActionInterdependenceModel(int a_Xsizes[], int a_Ysize, int estimation, double a_correctionFactor, UnitTypeTable utt, FeatureGenerator fg) {
-        super(utt, fg);
+    public ActionInterdependenceModel(int a_Xsizes[], int a_Ysize, int estimation, double a_correctionFactor, UnitTypeTable utt, FeatureGenerator fg, String a_name) {
+        super(utt, fg, a_name);
         Ysize = a_Ysize;
         Xsizes = a_Xsizes;
         estimationMethod = estimation;
@@ -65,7 +65,7 @@ public class ActionInterdependenceModel extends BayesianModel {
     
     
     public Object clone() {
-        ActionInterdependenceModel c = new ActionInterdependenceModel(Xsizes, Ysize, estimationMethod, calibrationFactor, utt, featureGenerator);
+        ActionInterdependenceModel c = new ActionInterdependenceModel(Xsizes, Ysize, estimationMethod, calibrationFactor, utt, featureGenerator, name);
         return c;
     }
 
@@ -383,8 +383,8 @@ public class ActionInterdependenceModel extends BayesianModel {
     }
     
     
-    public ActionInterdependenceModel(Element e, UnitTypeTable utt) throws Exception {
-        super(utt, null);
+    public ActionInterdependenceModel(Element e, UnitTypeTable utt, String a_name) throws Exception {
+        super(utt, null, a_name);
         load(e);
     }
     

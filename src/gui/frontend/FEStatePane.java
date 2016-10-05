@@ -67,6 +67,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 
@@ -747,15 +748,60 @@ public class FEStatePane extends JPanel {
     public AI createAI(int idx, int player, UnitTypeTable utt) {
         try {
             AI ai = createAIInternal(idx, player, utt);
+
+            // set parameters:
+            List<ParameterSpecification> parameters = ai.getParameters();
+            for(ParameterSpecification p:parameters) {
+                if (p.type == int.class) {
+                    JFormattedTextField f = (JFormattedTextField)AIOptionsPanelComponents[player].get(p.name);
+                    int v = Integer.parseInt(f.getText());
+                    Method setter = ai.getClass().getMethod("set" + p.name, p.type);
+                    setter.invoke(ai, v);
+                    
+                } else if (p.type == long.class) {
+                    JFormattedTextField f = (JFormattedTextField)AIOptionsPanelComponents[player].get(p.name);
+                    long v = Long.parseLong(f.getText());
+                    Method setter = ai.getClass().getMethod("set" + p.name, p.type);
+                    setter.invoke(ai, v);
+                    
+                } else if (p.type == float.class) {
+                    JFormattedTextField f = (JFormattedTextField)AIOptionsPanelComponents[player].get(p.name);
+                    float v = Float.parseFloat(f.getText());
+                    Method setter = ai.getClass().getMethod("set" + p.name, p.type);
+                    setter.invoke(ai, v);
+                    
+                } else if (p.type == double.class) {
+                    JFormattedTextField f = (JFormattedTextField)AIOptionsPanelComponents[player].get(p.name);
+                    double v = Double.parseDouble(f.getText());
+                    Method setter = ai.getClass().getMethod("set" + p.name, p.type);
+                    setter.invoke(ai, v);
+                    
+                } else if (p.type == String.class) {
+                    JFormattedTextField f = (JFormattedTextField)AIOptionsPanelComponents[player].get(p.name);
+                    Method setter = ai.getClass().getMethod("set" + p.name, p.type);
+                    setter.invoke(ai, f.getText());
+
+                } else if (p.type == boolean.class) {
+                    JCheckBox f = (JCheckBox)AIOptionsPanelComponents[player].get(p.name);
+                    Method setter = ai.getClass().getMethod("set" + p.name, p.type);
+                    setter.invoke(ai, f.isSelected());
+                    
+                } else {
+                    JComboBox f = (JComboBox)AIOptionsPanelComponents[player].get(p.name);
+                    Method setter = ai.getClass().getMethod("set" + p.name, p.type);
+                    setter.invoke(ai, f.getSelectedItem());
+                }
+            }
+
             if (continuingBox[player].isSelected()) {
-                    // If the user wants a "continuous" AI, check if we can wrap it around a continuing decorator:
-                    if (ai instanceof AIWithComputationBudget) {
-                            if (ai instanceof InterruptibleAIWithComputationBudget) {
-                                    ai = new ContinuingAI((InterruptibleAIWithComputationBudget)ai);
-                            } else {
-                                    ai = new PseudoContinuingAI((AIWithComputationBudget)ai);        				
-                            }
+                // If the user wants a "continuous" AI, check if we can wrap it around a continuing decorator:
+                if (ai instanceof AIWithComputationBudget) {
+                    if (ai instanceof InterruptibleAIWithComputationBudget) {
+                        ai = new ContinuingAI((InterruptibleAIWithComputationBudget)ai);
+                    } else {
+                        ai = new PseudoContinuingAI((AIWithComputationBudget)ai);        				
                     }
+                }
             }
             return ai;
         }catch(Exception e) {
@@ -771,95 +817,9 @@ public class FEStatePane extends JPanel {
         } else {
             Constructor cons = AIs[idx].getConstructor(UnitTypeTable.class);
             AI AI_instance = (AI)cons.newInstance(utt);
+
             return AI_instance;
         }
-        
-        /*
-        int TIME = Integer.parseInt(cpuTimeField[player].getText());
-        int MAX_PLAYOUTS = Integer.parseInt(maxPlayoutsField[player].getText());
-        int PLAYOUT_LOOKAHEAD = Integer.parseInt(playoutTimeField[player].getText());
-        int MAX_ACTIONS = Integer.parseInt(maxActionsField[player].getText());
-        double LSI_SPLIT = Double.parseDouble(LSIsplitField[player].getText());
-        double fpu_value = Double.parseDouble(fpuField[player].getText());
-        AI playout_policy = new RandomBiasedAI();
-
-        int RANDOMIZED_AB_REPEATS = 5;
-        int MAX_DEPTH = 10;
-        EvaluationFunction ef = efs[efComboBox[player].getSelectedIndex()];
-        PathFinding pf = pathFinders[pfComboBox[player].getSelectedIndex()];
-
-        if (AIs[idx]==PassiveAI.class) {
-            return new PassiveAI();
-        } else if (AIs[idx]==RandomAI.class) {
-            return new RandomAI();
-        } else if (AIs[idx]==RandomBiasedAI.class) {
-            return new RandomBiasedAI();
-        } else if (AIs[idx]==WorkerRush.class) {
-            return new WorkerRush(currentUtt, pf);
-        } else if (AIs[idx]==LightRush.class) {
-            return new LightRush(currentUtt, pf);
-        } else if (AIs[idx]==HeavyRush.class) {
-            return new HeavyRush(currentUtt, pf);
-        } else if (AIs[idx]==RangedRush.class) {
-            return new RangedRush(currentUtt, pf);
-        } else if (AIs[idx]==PortfolioAI.class) {
-            return new PortfolioAI(new AI[]{new WorkerRush(currentUtt, pf),
-                                            new LightRush(currentUtt, pf),
-                                            new RangedRush(currentUtt, pf),
-                                            new RandomBiasedAI()},
-                                    new boolean[]{true,true,true,false},
-                                    TIME, MAX_PLAYOUTS, PLAYOUT_LOOKAHEAD, ef);
-        } else if (AIs[idx]==PGSAI.class) {
-            return new PGSAI(TIME, MAX_PLAYOUTS, PLAYOUT_LOOKAHEAD, 1, 5, ef, currentUtt, pf);
-        } else if (AIs[idx]==IDRTMinimax.class) {
-            return new IDRTMinimax(TIME, ef);
-        } else if (AIs[idx]==IDRTMinimaxRandomized.class) {
-            return new IDRTMinimaxRandomized(TIME, RANDOMIZED_AB_REPEATS, ef);
-        } else if (AIs[idx]==IDABCD.class) {
-            return new IDABCD(TIME, MAX_PLAYOUTS, new LightRush(currentUtt, pf), PLAYOUT_LOOKAHEAD, ef, false);
-        } else if (AIs[idx]==MonteCarlo.class) {
-            return new MonteCarlo(TIME, MAX_PLAYOUTS, PLAYOUT_LOOKAHEAD, MAX_ACTIONS, playout_policy, ef);
-        } else if (AIs[idx]==LSI.class) {
-            return new LSI(MAX_PLAYOUTS, PLAYOUT_LOOKAHEAD, LSI_SPLIT,
-                LSI.EstimateType.RANDOM_TAIL, LSI.EstimateReuseType.ALL,
-                LSI.GenerateType.PER_AGENT, Sampling.AgentOrderingType.ENTROPY,
-                LSI.EvaluateType.HALVING, false,
-                LSI.RelaxationType.NONE, 2,
-                false,
-                playout_policy, ef);
-        } else if (AIs[idx]==UCT.class) {
-            return new UCT(TIME, MAX_PLAYOUTS, PLAYOUT_LOOKAHEAD, MAX_DEPTH, playout_policy, ef);
-        } else if (AIs[idx]==UCTUnitActions.class) {
-            return new UCTUnitActions(TIME, PLAYOUT_LOOKAHEAD, MAX_DEPTH*10, playout_policy, ef);
-        } else if (AIs[idx]==UCTFirstPlayUrgency.class) {
-            return new UCTFirstPlayUrgency(TIME, MAX_PLAYOUTS, PLAYOUT_LOOKAHEAD, MAX_DEPTH, playout_policy, ef, fpu_value);
-        } else if (AIs[idx]==NaiveMCTS.class) {
-            return new NaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_LOOKAHEAD, MAX_DEPTH, 0.33f, 0.0f, 0.75f, playout_policy, ef);
-        } else if (AIs[idx]==MLPSMCTS.class) {
-            return new MLPSMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_LOOKAHEAD, MAX_DEPTH, 0.05, playout_policy, ef);
-        } else if (AIs[idx]==AHTNAI.class) {
-            return new AHTNAI("data/ahtn/microrts-ahtn-definition-flexible-single-target-portfolio.lisp", TIME, MAX_PLAYOUTS, PLAYOUT_LOOKAHEAD, ef, playout_policy);
-        } else if (AIs[idx]==InformedNaiveMCTS.class) {
-            FeatureGenerator fg = new FeatureGeneratorSimple();
-            UnitActionProbabilityDistribution model_wr = 
-                new BayesianModelByUnitTypeWithDefaultModel(new SAXBuilder().build(
-                 "data/bayesianmodels/pretrained/ActionInterdependenceModel-WR.xml").getRootElement(), utt,
-                 new ActionInterdependenceModel(null, 0, 0, 0, utt, fg));
-            return new InformedNaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_LOOKAHEAD, 8, 0.33f, 0.0f, 0.4f, 
-                                         new UnitActionProbabilityDistributionAI(model_wr, utt, "NaiveBayesAllowedActionsByUnitTypeWithDefaultModel-nofeatures-Acc-WR"), 
-                                         model_wr, ef);
-        } else if (AIs[idx]==PuppetSearchMCTS.class) {
-			return new PuppetSearchMCTS(TIME, MAX_PLAYOUTS,
-                                                    5000, -1,
-                                                    PLAYOUT_LOOKAHEAD, PLAYOUT_LOOKAHEAD,
-                                                    playout_policy,
-                                                    new BasicConfigurableScript(utt, pf),
-                                                    ef);
-        } else if (AIs[idx]==MouseController.class) {
-            return new MouseController(null);
-        }
-        return null;
-        */
     }
 
     private void updateAIOptions(JPanel jPanel, int player) throws Exception {
@@ -894,9 +854,9 @@ public class FEStatePane extends JPanel {
                 ptmp.add(new JLabel(p.name));
                 int defaultValue = 0;
                 
-                String PFSNames[] = new String[pathFinders.length];
+                PathFinding PFSNames[] = new PathFinding[pathFinders.length];
                 for(int i = 0;i<pathFinders.length;i++) {
-                    PFSNames[i] = pathFinders[i].getClass().getSimpleName();
+                    PFSNames[i] = pathFinders[i];
                     if (pathFinders[i].getClass() == p.defaultValue.getClass()) defaultValue = i;
                 }
                 JComboBox c = new JComboBox(PFSNames);
@@ -915,9 +875,9 @@ public class FEStatePane extends JPanel {
                 ptmp.add(new JLabel(p.name));
                 int defaultValue = 0;
                 
-                String EFSNames[] = new String[efs.length];
+                EvaluationFunction EFSNames[] = new EvaluationFunction[efs.length];
                 for(int i = 0;i<efs.length;i++) {
-                    EFSNames[i] = efs[i].getClass().getSimpleName();
+                    EFSNames[i] = efs[i];
                     if (efs[i].getClass() == p.defaultValue.getClass()) defaultValue = i;
                 }
                 JComboBox c = new JComboBox(EFSNames);
@@ -937,17 +897,17 @@ public class FEStatePane extends JPanel {
                 ptmp.add(new JLabel(p.name));
                 int defaultValue = 0;
                 
-                String AINames[] = null;
+                AI AINames[] = null;
                 if (p.possibleValues==null) {                
-                    AINames= new String[PlayoutAIs.length];
+                    AINames= new AI[PlayoutAIs.length];
                     for(int i = 0;i<PlayoutAIs.length;i++) {
-                        AINames[i] = PlayoutAIs[i].getSimpleName();
+                        AINames[i] = (AI)PlayoutAIs[i].getConstructor(UnitTypeTable.class).newInstance(currentUtt);
                         if (PlayoutAIs[i] == p.defaultValue.getClass()) defaultValue = i;
                     }
                 } else {
-                    AINames= new String[p.possibleValues.size()];
+                    AINames = new AI[p.possibleValues.size()];
                     for(int i = 0;i<p.possibleValues.size();i++) {
-                        AINames[i] = p.possibleValues.get(i).toString();
+                        AINames[i] = (AI)p.possibleValues.get(i);
                         if (p.possibleValues.get(i) == p.defaultValue) defaultValue = i;
                     }
                 }
@@ -967,10 +927,10 @@ public class FEStatePane extends JPanel {
                 ptmp.add(new JLabel(p.name));
                 int defaultValue = 0;
                 
-                String names[] = null;
-                names= new String[p.possibleValues.size()];
+                UnitActionProbabilityDistribution names[] = null;
+                names= new UnitActionProbabilityDistribution[p.possibleValues.size()];
                 for(int i = 0;i<p.possibleValues.size();i++) {
-                    names[i] = p.possibleValues.get(i).toString();
+                    names[i] = (UnitActionProbabilityDistribution)p.possibleValues.get(i);
                     if (p.possibleValues.get(i) == p.defaultValue) defaultValue = i;
                 }
                 JComboBox c = new JComboBox(names);
@@ -983,18 +943,18 @@ public class FEStatePane extends JPanel {
                 jPanel.add(ptmp);
                 components.put(p.name, c);                
 
-            } else if (p.type == LSI.EstimateType.class) {
+            } else if (p.possibleValues!=null) {
                 JPanel ptmp = new JPanel();
                 ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
                 ptmp.add(new JLabel(p.name));
                 int defaultValue = 0;
                 
-                String names[] = new String[LSI.EstimateType.values().length];
-                for(int i = 0;i<LSI.EstimateType.values().length;i++) {
-                    names[i] = LSI.EstimateType.values()[i].toString();
-                    if (LSI.EstimateType.values()[i] == (LSI.EstimateType)p.defaultValue) defaultValue = i;
+                Object []options = new Object[p.possibleValues.size()];
+                for(int i = 0;i<p.possibleValues.size();i++) {
+                    options[i] = p.possibleValues.get(i);
+                    if (p.possibleValues.get(i).equals(p.defaultValue)) defaultValue = i;
                 }
-                JComboBox c = new JComboBox(names);
+                JComboBox c = new JComboBox(options);
                 c.setAlignmentX(Component.CENTER_ALIGNMENT);
                 c.setAlignmentY(Component.TOP_ALIGNMENT);
                 c.setMaximumSize(new Dimension(300,24));
@@ -1003,113 +963,7 @@ public class FEStatePane extends JPanel {
                 ptmp.add(c);
                 jPanel.add(ptmp);
                 components.put(p.name, c);
-
-            } else if (p.type == LSI.EstimateReuseType.class) {
-                JPanel ptmp = new JPanel();
-                ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
-                ptmp.add(new JLabel(p.name));
-                int defaultValue = 0;
                 
-                String names[] = new String[LSI.EstimateReuseType.values().length];
-                for(int i = 0;i<LSI.EstimateReuseType.values().length;i++) {
-                    names[i] = LSI.EstimateReuseType.values()[i].toString();
-                    if (LSI.EstimateReuseType.values()[i] == (LSI.EstimateReuseType)p.defaultValue) defaultValue = i;
-                }
-                JComboBox c = new JComboBox(names);
-                c.setAlignmentX(Component.CENTER_ALIGNMENT);
-                c.setAlignmentY(Component.TOP_ALIGNMENT);
-                c.setMaximumSize(new Dimension(300,24));
-                c.setSelectedIndex(defaultValue);
-               
-                ptmp.add(c);
-                jPanel.add(ptmp);
-                components.put(p.name, c);
-
-            } else if (p.type == LSI.GenerateType.class) {
-                JPanel ptmp = new JPanel();
-                ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
-                ptmp.add(new JLabel(p.name));
-                int defaultValue = 0;
-                
-                String names[] = new String[LSI.GenerateType.values().length];
-                for(int i = 0;i<LSI.GenerateType.values().length;i++) {
-                    names[i] = LSI.GenerateType.values()[i].toString();
-                    if (LSI.GenerateType.values()[i] == (LSI.GenerateType)p.defaultValue) defaultValue = i;
-                }
-                JComboBox c = new JComboBox(names);
-                c.setAlignmentX(Component.CENTER_ALIGNMENT);
-                c.setAlignmentY(Component.TOP_ALIGNMENT);
-                c.setMaximumSize(new Dimension(300,24));
-                c.setSelectedIndex(defaultValue);
-               
-                ptmp.add(c);
-                jPanel.add(ptmp);
-                components.put(p.name, c);                
-
-            } else if (p.type == LSI.EvaluateType.class) {
-                JPanel ptmp = new JPanel();
-                ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
-                ptmp.add(new JLabel(p.name));
-                int defaultValue = 0;
-                
-                String names[] = new String[LSI.EvaluateType.values().length];
-                for(int i = 0;i<LSI.EvaluateType.values().length;i++) {
-                    names[i] = LSI.EvaluateType.values()[i].toString();
-                    if (LSI.EvaluateType.values()[i] == (LSI.EvaluateType)p.defaultValue) defaultValue = i;
-                }
-                JComboBox c = new JComboBox(names);
-                c.setAlignmentX(Component.CENTER_ALIGNMENT);
-                c.setAlignmentY(Component.TOP_ALIGNMENT);
-                c.setMaximumSize(new Dimension(300,24));
-                c.setSelectedIndex(defaultValue);
-               
-                ptmp.add(c);
-                jPanel.add(ptmp);
-                components.put(p.name, c); 
-
-
-            } else if (p.type == LSI.RelaxationType.class) {
-                JPanel ptmp = new JPanel();
-                ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
-                ptmp.add(new JLabel(p.name));
-                int defaultValue = 0;
-                
-                String names[] = new String[LSI.RelaxationType.values().length];
-                for(int i = 0;i<LSI.RelaxationType.values().length;i++) {
-                    names[i] = LSI.RelaxationType.values()[i].toString();
-                    if (LSI.RelaxationType.values()[i] == (LSI.RelaxationType)p.defaultValue) defaultValue = i;
-                }
-                JComboBox c = new JComboBox(names);
-                c.setAlignmentX(Component.CENTER_ALIGNMENT);
-                c.setAlignmentY(Component.TOP_ALIGNMENT);
-                c.setMaximumSize(new Dimension(300,24));
-                c.setSelectedIndex(defaultValue);
-               
-                ptmp.add(c);
-                jPanel.add(ptmp);
-                components.put(p.name, c); 
-                
-            } else if (p.type == Sampling.AgentOrderingType.class) {
-                JPanel ptmp = new JPanel();
-                ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
-                ptmp.add(new JLabel(p.name));
-                int defaultValue = 0;
-                
-                String names[] = new String[Sampling.AgentOrderingType.values().length];
-                for(int i = 0;i<Sampling.AgentOrderingType.values().length;i++) {
-                    names[i] = Sampling.AgentOrderingType.values()[i].toString();
-                    if (Sampling.AgentOrderingType.values()[i] == (Sampling.AgentOrderingType)p.defaultValue) defaultValue = i;
-                }
-                JComboBox c = new JComboBox(names);
-                c.setAlignmentX(Component.CENTER_ALIGNMENT);
-                c.setAlignmentY(Component.TOP_ALIGNMENT);
-                c.setMaximumSize(new Dimension(300,24));
-                c.setSelectedIndex(defaultValue);
-               
-                ptmp.add(c);
-                jPanel.add(ptmp);
-                components.put(p.name, c);                 
-
             } else {
                 throw new Exception("Cannot create GUI component for class" + p.type.getName());
             }
