@@ -14,7 +14,7 @@ Santiago Ontañón (2013) The Combinatorial Multi-Armed Bandit Problem and its A
 
 ## Contributions:
 
-The LSI AI was contributed by Alexander Shleyfman, Antonin Komenda and Carmel Domshlak (the theory behind the AI is described in this [paper](http://iew3.technion.ac.il/~dcarmel/Papers/Sources/ecai14c.pdf).
+The LSI AI was contributed by Alexander Shleyfman, Antonin Komenda and Carmel Domshlak (the theory behind the AI is described in this [paper](https://www.researchgate.net/publication/282075129_On_Combinatorial_Actions_and_CMABs_with_Linear_Side_Information).
 
 ## Instructions:
 
