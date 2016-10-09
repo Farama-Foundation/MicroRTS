@@ -10,6 +10,7 @@ import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,6 +39,12 @@ public class PhysicalGameStatePanel extends JPanel {
     // to give feedback to the human, on which units are selectable.
     List<Unit> toHighLight = new LinkedList<Unit>();
     EvaluationFunction evalFunction = null;
+    
+    // area to highlight: this can be used to highlight a rectangle of the game:
+    int m_mouse_selection_x0 = -1;
+    int m_mouse_selection_x1 = -1;
+    int m_mouse_selection_y0 = -1;
+    int m_mouse_selection_y1 = -1;    
     
     // the state observed by each player:
     PartiallyObservableGameState pogs[] = new PartiallyObservableGameState[2];
@@ -187,11 +194,36 @@ public class PhysicalGameStatePanel extends JPanel {
     }
     
 
+    public Pair<Integer,Integer> getContentAtCoordinatesBounded(int x, int y) {
+        // return the map coordiantes over which the coordinates are:
+        // System.out.println(x + ", " + y + " -> last start: " + last_start_x + ", " + last_start_y);
+        if (x<last_start_x) x = last_start_x;
+        if (y<last_start_y) y = last_start_y;
+        
+        int cellx = (x - last_start_x)/last_grid;
+        int celly = (y - last_start_y)/last_grid;
+        
+        if (cellx>=gs.getPhysicalGameState().getWidth()) cellx = gs.getPhysicalGameState().getWidth()-1;
+        if (celly>=gs.getPhysicalGameState().getHeight()) celly = gs.getPhysicalGameState().getHeight()-1;
+        
+        return new Pair<Integer,Integer>(cellx,celly);
+    }
+    
+    
     public void paint(Graphics g) {
         super.paint(g);
         Graphics2D g2d = (Graphics2D)g;
         synchronized(this) {
             draw(g2d, this, this.getWidth(), this.getHeight(), gs, pogs, colorScheme, fullObservability, drawFromPerspectiveOfPlayer, evalFunction);
+
+            if (m_mouse_selection_x0>=0) {
+                g.setColor(Color.green);
+                int x0 = Math.min(m_mouse_selection_x0, m_mouse_selection_x1);
+                int x1 = Math.max(m_mouse_selection_x0, m_mouse_selection_x1);
+                int y0 = Math.min(m_mouse_selection_y0, m_mouse_selection_y1);
+                int y1 = Math.max(m_mouse_selection_y0, m_mouse_selection_y1);
+                g.drawRect(x0, y0, x1 - x0, y1 - y0);
+            }        
         }
     }
     
@@ -205,6 +237,7 @@ public class PhysicalGameStatePanel extends JPanel {
                             boolean fullObservability,
                             int drawFromPerspectiveOfPlayer,
                             EvaluationFunction evalFunction) {
+        if (gs==null) return;
         PhysicalGameState pgs = gs.getPhysicalGameState();
         if (pgs==null) return;
         int gridx = (dx-64)/pgs.getWidth();
@@ -243,9 +276,10 @@ public class PhysicalGameStatePanel extends JPanel {
         String info = "T: " + gs.getTime() + ", P₀: " + unitCount0 + " (" + eval0 + "), P₁: " + unitCount1 + " (" + eval1 + ")";
         g2d.drawString(info, 10, dy-15);
         
-        
 //        g.drawString(gs.getTime() + "", 10, getHeight()-15);
-        
+
+        AffineTransform t = g2d.getTransform();
+
         if (panel!=null) {
             panel.last_start_x = dx/2 - sizex/2;
             panel.last_start_y = dy/2 - sizey/2;
@@ -428,8 +462,12 @@ public class PhysicalGameStatePanel extends JPanel {
                 g2d.setColor(Color.GREEN);
                 g2d.fillRect(u.getX()*grid+reduction, u.getY()*grid+reduction, (int)(grid*(((float)u.getHitPoints())/u.getMaxHitPoints())), 2);
             }
-        }
+        }  
+        
+        g2d.setTransform(t);
+
     }    
+    
 
     public void resizeGameState(int width, int height) {
         if (width>=1 && height>=1) {

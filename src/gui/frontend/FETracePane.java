@@ -124,7 +124,8 @@ public class FETracePane extends JPanel {
                 {
                     if (!statePanel.getState().gameover()) {
                         currentGameCycle++;
-                        statePanel.setStateDirect(currentTrace.getGameStateAtCycle(currentGameCycle));
+                        GameState tmp_gs = currentTrace.getGameStateAtCycle(currentGameCycle);
+                        statePanel.setStateDirect(tmp_gs);
                         statePanel.repaint();
                     }
                 }

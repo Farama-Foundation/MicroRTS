@@ -6,8 +6,11 @@
 
 package gui;
 
+import java.awt.Insets;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import rts.GameState;
 import rts.UnitAction;
@@ -26,7 +29,7 @@ public class PGSMouseListener implements MouseListener, MouseMotionListener, Key
     GameState gs = null;
     int playerID = -1;
     
-    Unit selectedUnit = null;
+    List<Unit> selectedUnits = new ArrayList<>();
     String selectedButton = null;
 
     HashMap<Character,String> unitTypeQuickKeys = new HashMap<Character,String>();
@@ -100,35 +103,31 @@ public class PGSMouseListener implements MouseListener, MouseMotionListener, Key
         if (e.getButton()==MouseEvent.BUTTON1) {
             // left click (select/deselect units):
             if (unit!=null) {
-                selectedUnit = unit;
+                selectedUnits.clear();
+                selectedUnits.add(unit);
                 selectedButton = null;
-                if (selectedUnit!=null) {
-                    mousePanel.clearButtons();
-                    clearQuickKeys();
-                    for(UnitType ut:selectedUnit.getType().produces) {
-                        // Add a quick Key:
-                        Character qk = addQuickKey(ut.name);
-                        mousePanel.addButton(ut.name, qk);
-                    }
-                }
+                
+                updateButtons();
             } else if (button!=null) {
-                selectedButton = button;  
-                if (!selectedUnit.getType().canMove) {
-                    UnitType ut = gs.getUnitTypeTable().getUnitType(selectedButton);
-                    if (ut!=null) {
-                        AI.train(selectedUnit, ut);
-                        selectedButton = null;
+                selectedButton = button;
+                for(Unit selectedUnit:selectedUnits) {
+                    if (!selectedUnit.getType().canMove) {
+                        UnitType ut = gs.getUnitTypeTable().getUnitType(selectedButton);
+                        if (ut!=null) {
+                            AI.train(selectedUnit, ut);
+                            selectedButton = null;
+                        }
                     }
                 }
             } else {
-                selectedUnit = null;
+                selectedUnits.clear();
                 selectedButton = null;
                 mousePanel.clearButtons();
                 clearQuickKeys();
             }
         } else if (e.getButton()==MouseEvent.BUTTON3) {
             // right click (execute actions):
-            if (selectedUnit!=null) {
+            for(Unit selectedUnit:selectedUnits) {
                 if (coordinates!=null) {
                     // If the unit can move and the cell is empty: send action
                     if (rawUnit!=null) {
@@ -179,16 +178,64 @@ public class PGSMouseListener implements MouseListener, MouseMotionListener, Key
         
         panel.clearHighlights();
         mousePanel.clearHighlight();
-        if (selectedUnit!=null) panel.highlight(selectedUnit);
+        for(Unit selectedUnit:selectedUnits) { 
+            panel.highlight(selectedUnit);
+        }
         if (unit!=null) panel.highlight(unit);
         if (selectedButton!=null) mousePanel.highlight(selectedButton);
         if (button!=null) mousePanel.highlight(button);
     }
 
     public void mousePressed(MouseEvent e) {
+        if (e.getButton()==MouseEvent.BUTTON1) {
+            Insets insets = frame.getInsets();
+            frame.panel.m_mouse_selection_x0 = frame.panel.m_mouse_selection_x1 = e.getX() - insets.left;
+            frame.panel.m_mouse_selection_y0 = frame.panel.m_mouse_selection_y1 = e.getY() - insets.top;
+            frame.repaint();
+        }
     }
 
     public void mouseReleased(MouseEvent e) {
+        // identify the units to be selected:
+        if (e.getButton()==MouseEvent.BUTTON1) {
+            int x0 = Math.min(frame.panel.m_mouse_selection_x0, frame.panel.m_mouse_selection_x1);
+            int x1 = Math.max(frame.panel.m_mouse_selection_x0, frame.panel.m_mouse_selection_x1);
+            int y0 = Math.min(frame.panel.m_mouse_selection_y0, frame.panel.m_mouse_selection_y1);
+            int y1 = Math.max(frame.panel.m_mouse_selection_y0, frame.panel.m_mouse_selection_y1);
+            Pair<Integer,Integer> tmp0 = frame.panel.getContentAtCoordinatesBounded(x0, y0);
+            Pair<Integer,Integer> tmp1 = frame.panel.getContentAtCoordinatesBounded(x1, y1);
+    //        System.out.println(tmp0 + " - " + tmp1);
+
+            frame.panel.m_mouse_selection_x0 = frame.panel.m_mouse_selection_x1 = -1;
+            frame.panel.m_mouse_selection_y0 = frame.panel.m_mouse_selection_y1 = -1;
+
+            if (tmp0!=null && tmp1!=null) {
+                PhysicalGameStatePanel panel = frame.getPanel();
+                MouseControllerPanel mousePanel = frame.getMousePanel();
+                panel.clearHighlights();
+                mousePanel.clearHighlight();
+                selectedUnits.clear();
+
+                Pair<Integer,Integer> coordinates0 = (Pair<Integer,Integer>)tmp0;
+                Pair<Integer,Integer> coordinates1 = (Pair<Integer,Integer>)tmp1;
+
+                for(int i = coordinates0.m_b;i<=coordinates1.m_b;i++) {
+                    for(int j = coordinates0.m_a;j<=coordinates1.m_a;j++) {
+                        Unit u = gs.getPhysicalGameState().getUnitAt(j,i);
+                        if (u!=null) {
+                            if (u.getPlayer()==playerID) {
+                                panel.highlight(u);
+                                selectedUnits.add(u);
+                            }
+                        }
+                    }
+                }
+
+                updateButtons();
+            }
+
+            frame.repaint();
+        }
     }
 
     public void mouseEntered(MouseEvent e) {
@@ -198,6 +245,12 @@ public class PGSMouseListener implements MouseListener, MouseMotionListener, Key
     }
 
     public void mouseDragged(MouseEvent e) {
+        if (e.getButton()==MouseEvent.BUTTON1) {
+            Insets insets = frame.getInsets();
+            frame.panel.m_mouse_selection_x1 = e.getX() - insets.left;
+            frame.panel.m_mouse_selection_y1 = e.getY() - insets.top;
+            frame.repaint();
+        }
     }
 
     public void mouseMoved(MouseEvent e) {
@@ -210,7 +263,7 @@ public class PGSMouseListener implements MouseListener, MouseMotionListener, Key
         MouseControllerPanel mousePanel = frame.getMousePanel();
         panel.clearHighlights();
         mousePanel.clearHighlight();
-        if (selectedUnit!=null) panel.highlight(selectedUnit);
+        for(Unit selectedUnit:selectedUnits) panel.highlight(selectedUnit);
         if (selectedButton!=null) mousePanel.highlight(selectedButton);
         Object tmp = frame.getContentAtCoordinates(x,y);
         if (tmp!=null) {
@@ -243,13 +296,15 @@ public class PGSMouseListener implements MouseListener, MouseMotionListener, Key
         if (button!=null) {
             // some unit type selected:
             selectedButton = button;
-            if (!selectedUnit.getType().canMove) {
-                UnitType ut = gs.getUnitTypeTable().getUnitType(selectedButton);
-                if (ut!=null) {
-                    AI.train(selectedUnit, ut);
-                    selectedButton = null;
+            for(Unit selectedUnit:selectedUnits) {
+                if (!selectedUnit.getType().canMove) {
+                    UnitType ut = gs.getUnitTypeTable().getUnitType(selectedButton);
+                    if (ut!=null) {
+                        AI.train(selectedUnit, ut);
+                    }
                 }
             }
+            selectedButton = null;
         }
 
         MouseControllerPanel mousePanel = frame.getMousePanel();
@@ -258,5 +313,35 @@ public class PGSMouseListener implements MouseListener, MouseMotionListener, Key
         if (button!=null) mousePanel.highlight(button);
         mousePanel.repaint();
 
+    }
+
+    private void updateButtons() {
+        MouseControllerPanel mousePanel = frame.getMousePanel();
+        mousePanel.clearButtons();
+        clearQuickKeys();
+
+        List<UnitType> shared = null;
+        for(Unit u:selectedUnits) {
+            if (shared==null) {
+                shared = new ArrayList<>();
+                shared.addAll(u.getType().produces);
+            } else {
+                List<UnitType> toDelete = new ArrayList<>();
+                for(UnitType ut:shared) {
+                    if (!u.getType().produces.contains(ut)) {
+                        toDelete.add(ut);
+                    }
+                }
+                shared.removeAll(toDelete);
+            }
+        }
+        
+        if (shared!=null) {
+            for(UnitType ut:shared) {
+                // Add a quick Key:
+                Character qk = addQuickKey(ut.name);
+                mousePanel.addButton(ut.name, qk);
+            }
+        }
     }
 }

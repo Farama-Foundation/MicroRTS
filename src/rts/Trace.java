@@ -78,15 +78,15 @@ public class Trace {
                 }
             }
             
+            while(gs.getTime()<te.getTime() && gs.getTime()<cycle) {
+                gs.cycle();
+            }
+
             if (gs.getTime()==cycle) {
                 getGameStateAtCycle_cache = gs;
                 return gs;
             }
             
-            while(gs.getTime()<te.getTime()) {
-                gs.cycle();
-            }
-
             // synchronize the traces (some times the unit IDs might go off):
             for(Unit u1:gs.getUnits()) {
                 for(Unit u2:te.getPhysicalGameState().getUnits()) {
