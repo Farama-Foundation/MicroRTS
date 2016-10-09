@@ -304,7 +304,6 @@ public class PGSMouseListener implements MouseListener, MouseMotionListener, Key
                     }
                 }
             }
-            selectedButton = null;
         }
 
         MouseControllerPanel mousePanel = frame.getMousePanel();
