@@ -7,6 +7,7 @@ package rts;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import rts.units.Unit;
@@ -254,6 +255,7 @@ public class PhysicalGameState implements Serializable {
         return true;
     }
     
+    
     public void toxml(XMLWriter w) {
        w.tagWithAttributes(this.getClass().getName(), "width=\"" + width + "\" height=\"" + height + "\"");
        String tmp = "";
@@ -267,6 +269,7 @@ public class PhysicalGameState implements Serializable {
        w.tag("/units");
        w.tag("/" + this.getClass().getName());
     }
+    
     
     public PhysicalGameState(Element e, UnitTypeTable utt) {
         Element terrain_e = e.getChild("terrain");
@@ -293,7 +296,9 @@ public class PhysicalGameState implements Serializable {
 
         }
     }    
- public boolean[][] getAllFree() {
+    
+    
+     public boolean[][] getAllFree() {
     	
     	boolean free[][]=new boolean[getWidth()][getHeight()];
     	for(int x=0;x<getWidth();x++){

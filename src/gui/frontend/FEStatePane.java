@@ -230,7 +230,7 @@ public class FEStatePane extends JPanel {
                             try {
                                 PhysicalGameState pgs = PhysicalGameState.load(file.getAbsolutePath(), currentUtt);
                                 GameState gs = new GameState(pgs, currentUtt);
-                                statePanel.setStateDirect(currentGameState);
+                                statePanel.setStateDirect(gs);
                                 statePanel.repaint();
                             } catch (Exception ex) {
                                 ex.printStackTrace();

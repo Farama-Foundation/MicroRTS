@@ -36,11 +36,6 @@ public class PartiallyObservableGameState extends GameState {
             }
         }
         for(Unit u:toDelete) removeUnit(u);
-        for(int y = 0;y<pgs.getHeight();y++) {
-            for(int x = 0;x<pgs.getWidth();x++) {
-                if (!observable(x, y)) pgs.setTerrain(x, y, PhysicalGameState.TERRAIN_NONE);
-            }
-        }
     }
 
     public boolean observable(int x, int y) {
