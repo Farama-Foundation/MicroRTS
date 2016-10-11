@@ -33,10 +33,6 @@ import ai.evaluation.SimpleEvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction2;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
-import ai.machinelearning.bayes.ActionInterdependenceModel;
-import ai.machinelearning.bayes.BayesianModelByUnitTypeWithDefaultModel;
-import ai.machinelearning.bayes.featuregeneration.FeatureGenerator;
-import ai.machinelearning.bayes.featuregeneration.FeatureGeneratorSimple;
 import ai.mcts.informedmcts.InformedNaiveMCTS;
 import ai.mcts.mlps.MLPSMCTS;
 import ai.mcts.naivemcts.NaiveMCTS;
@@ -48,13 +44,10 @@ import ai.minimax.RTMiniMax.IDRTMinimax;
 import ai.minimax.RTMiniMax.IDRTMinimaxRandomized;
 import ai.montecarlo.MonteCarlo;
 import ai.montecarlo.lsi.LSI;
-import ai.montecarlo.lsi.Sampling;
 import ai.portfolio.PortfolioAI;
 import ai.portfolio.portfoliogreedysearch.PGSAI;
-import ai.puppet.BasicConfigurableScript;
 import ai.puppet.PuppetSearchMCTS;
 import ai.stochastic.UnitActionProbabilityDistribution;
-import ai.stochastic.UnitActionProbabilityDistributionAI;
 import gui.MouseController;
 import gui.PhysicalGameStateMouseJFrame;
 import gui.PhysicalGameStatePanel;
@@ -70,6 +63,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
+import javax.swing.Box;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -85,7 +79,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
-import org.jdom.input.SAXBuilder;
 
 import rts.GameState;
 import rts.PartiallyObservableGameState;
@@ -161,6 +154,7 @@ public class FEStatePane extends JPanel {
     JFormattedTextField mapWidthField = null;
     JFormattedTextField mapHeightField = null;
     JFormattedTextField maxCyclesField = null;
+    JFormattedTextField defaultDelayField = null;
     JCheckBox fullObservabilityBox = null;
     JCheckBox saveTraceBox = null;
     JCheckBox slowDownBox = null;    
@@ -456,6 +450,11 @@ public class FEStatePane extends JPanel {
             JPanel ptmp = new JPanel();
             ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
             maxCyclesField = addTextField(ptmp,"Max Cycles:", "3000", 5);
+            defaultDelayField = addTextField(ptmp,"Default Delay:", "50", 5);
+            p1.add(ptmp);
+        }
+        {
+            JPanel ptmp = new JPanel();
             {
                 fullObservabilityBox = new JCheckBox("Full Obsservability");
                 fullObservabilityBox.setSelected(true);
@@ -469,6 +468,13 @@ public class FEStatePane extends JPanel {
                     }
                 });
                 ptmp.add(fullObservabilityBox);
+            }
+            {
+                slowDownBox = new JCheckBox("Slow Down");
+                slowDownBox.setAlignmentX(Component.CENTER_ALIGNMENT);
+                slowDownBox.setAlignmentY(Component.TOP_ALIGNMENT);
+                slowDownBox.setMaximumSize(new Dimension(120,20));
+                ptmp.add(slowDownBox);
             }
             p1.add(ptmp);
         }
@@ -488,8 +494,8 @@ public class FEStatePane extends JPanel {
                                 try {
                                     AI ai1 = createAI(aiComboBox[0].getSelectedIndex(), 0, currentUtt);
                                     AI ai2 = createAI(aiComboBox[1].getSelectedIndex(), 1, currentUtt);
-                                    int PERIOD1 = 100;
-                                    int PERIOD2 = 100;
+                                    int PERIOD1 = Integer.parseInt(defaultDelayField.getText());
+                                    int PERIOD2 = Integer.parseInt(defaultDelayField.getText());;
                                     JFormattedTextField t1 = (JFormattedTextField)AIOptionsPanelComponents[0].get("TimeBudget");
                                     JFormattedTextField t2 = (JFormattedTextField)AIOptionsPanelComponents[1].get("TimeBudget");
                                     if (t1!=null) PERIOD1 = Integer.parseInt(t1.getText());
@@ -593,13 +599,6 @@ public class FEStatePane extends JPanel {
                 saveTraceBox.setMaximumSize(new Dimension(120,20));
                 ptmp.add(saveTraceBox);
             }
-            {
-                slowDownBox = new JCheckBox("Slow Down");
-                slowDownBox.setAlignmentX(Component.CENTER_ALIGNMENT);
-                slowDownBox.setAlignmentY(Component.TOP_ALIGNMENT);
-                slowDownBox.setMaximumSize(new Dimension(120,20));
-                ptmp.add(slowDownBox);
-            }
             p1.add(ptmp);
         }
         
@@ -636,43 +635,6 @@ public class FEStatePane extends JPanel {
             p1.add(AIOptionsPanel[player]);
 
             updateAIOptions(AIOptionsPanel[player], player);
-            
-            
-            /*
-            {
-                String PFNames[] = new String[pathFinders.length];
-                for(int i = 0;i<pathFinders.length;i++) {
-                    PFNames[i] = pathFinders[i].getClass().getSimpleName();
-                }
-                pfComboBox[player] = new JComboBox(PFNames);
-                pfComboBox[player].setAlignmentX(Component.CENTER_ALIGNMENT);
-                pfComboBox[player].setAlignmentY(Component.TOP_ALIGNMENT);
-                pfComboBox[player].setMaximumSize(new Dimension(300,24));
-                p1.add(pfComboBox[player]);
-            }
-            {
-                String EFSNames[] = new String[efs.length];
-                for(int i = 0;i<efs.length;i++) {
-                    EFSNames[i] = efs[i].getClass().getSimpleName();
-                }
-                efComboBox[player] = new JComboBox(EFSNames);
-                efComboBox[player].setAlignmentX(Component.CENTER_ALIGNMENT);
-                efComboBox[player].setAlignmentY(Component.TOP_ALIGNMENT);
-                efComboBox[player].setMaximumSize(new Dimension(300,24));
-                p1.add(efComboBox[player]);
-            }
-            cpuTimeField[player] = addTextField(p1,"CPU time per cycle:", "100", 5);
-            maxPlayoutsField[player] = addTextField(p1,"max playouts (set >0 for LSI!):", "-1", 5);
-            playoutTimeField[player] = addTextField(p1,"playout time:", "100", 5);
-            maxActionsField[player] = addTextField(p1,"max actions (downsampling):", "-1", 5);
-            {
-                JPanel ptmp = new JPanel();
-                ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
-                LSIsplitField[player] = addTextField(ptmp,"split (LSI):", "0.25", 5);
-                fpuField[player] = addTextField(ptmp,"FPU:", "4.9", 5);
-                p1.add(ptmp);
-            }
-            */
         }
         
         aiComboBox[0].addActionListener(new ActionListener() {
@@ -696,7 +658,9 @@ public class FEStatePane extends JPanel {
                 }
             }
 
-        });        
+        });   
+        
+//        p1.add(Box.createVerticalGlue());
 
         JPanel p2 = new JPanel();
         p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));

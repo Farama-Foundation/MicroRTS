@@ -6,9 +6,7 @@ package rts;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Observable;
 import rts.units.Unit;
-import rts.units.UnitTypeTable;
 
 /**
  *
