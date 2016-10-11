@@ -444,7 +444,7 @@ public class FEStatePane extends JPanel {
             p1.add(b);
         }
         
-        p1.add(new JSeparator(SwingConstants.HORIZONTAL));
+//        p1.add(new JSeparator(SwingConstants.HORIZONTAL));
         
         {
             JPanel ptmp = new JPanel();
@@ -455,6 +455,7 @@ public class FEStatePane extends JPanel {
         }
         {
             JPanel ptmp = new JPanel();
+            ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
             {
                 fullObservabilityBox = new JCheckBox("Full Obsservability");
                 fullObservabilityBox.setSelected(true);
