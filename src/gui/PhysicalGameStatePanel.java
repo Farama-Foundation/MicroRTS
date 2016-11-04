@@ -130,6 +130,10 @@ public class PhysicalGameStatePanel extends JPanel {
         return frame;
     }
     
+    public GameState getGameState() {
+        return gs;
+    }
+    
     public void setColorScheme(int cs) {
         colorScheme = cs;
         if (colorScheme==COLORSCHEME_BLACK) setBackground(Color.BLACK);

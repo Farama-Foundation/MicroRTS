@@ -179,9 +179,6 @@ public class FEStatePane extends JPanel {
 
     public FEStatePane() throws Exception {        
         currentUtt = new UnitTypeTable();
-        MapGenerator mg = new MapGenerator(currentUtt);
-        
-        GameState currentGameState = new GameState(mg.bases8x8(), currentUtt);
 
         setLayout(new BorderLayout());
 
@@ -226,6 +223,8 @@ public class FEStatePane extends JPanel {
                                 GameState gs = new GameState(pgs, currentUtt);
                                 statePanel.setStateDirect(gs);
                                 statePanel.repaint();
+                                mapWidthField.setText(pgs.getWidth()+"");
+                                mapHeightField.setText(pgs.getHeight()+"");
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
@@ -241,13 +240,13 @@ public class FEStatePane extends JPanel {
                 b.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e)
                     {
-                        if (currentGameState!=null) {
+                        if (statePanel.getGameState()!=null) {
                             int returnVal = fileChooser.showSaveDialog((Component)null);
                             if (returnVal == fileChooser.APPROVE_OPTION) {
                                 File file = fileChooser.getSelectedFile();
                                 try {
                                     XMLWriter xml = new XMLWriter(new FileWriter(file.getAbsolutePath()));
-                                    currentGameState.getPhysicalGameState().toxml(xml);
+                                    statePanel.getGameState().getPhysicalGameState().toxml(xml);
                                     xml.flush();
                                 } catch (Exception ex) {
                                     ex.printStackTrace();
@@ -268,7 +267,7 @@ public class FEStatePane extends JPanel {
                 public void actionPerformed(ActionEvent e) {
                     try {
                         int newWidth = Integer.parseInt(mapWidthField.getText());
-                        statePanel.resizeGameState(newWidth, currentGameState.getPhysicalGameState().getHeight());
+                        statePanel.resizeGameState(newWidth, statePanel.getGameState().getPhysicalGameState().getHeight());
                         statePanel.repaint();
                     } catch(Exception ex) {
                     }
@@ -279,7 +278,7 @@ public class FEStatePane extends JPanel {
                 public void actionPerformed(ActionEvent e) {
                     try {
                         int newHeight = Integer.parseInt(mapHeightField.getText());
-                        statePanel.resizeGameState(currentGameState.getPhysicalGameState().getWidth(), newHeight);
+                        statePanel.resizeGameState(statePanel.getGameState().getPhysicalGameState().getWidth(), newHeight);
                         statePanel.repaint();
                     } catch(Exception ex) {
                     }
@@ -305,7 +304,7 @@ public class FEStatePane extends JPanel {
                         try {
                             long start = System.currentTimeMillis();
                             ai.reset();
-                            PlayerAction a = ai.getAction(0, currentGameState);
+                            PlayerAction a = ai.getAction(0, statePanel.getGameState());
                             long end = System.currentTimeMillis();
                             textArea.setText("Action generated with " + ai.getClass().getSimpleName() + " in " + (end-start) + "ms\n");
                             textArea.append(ai.statisticsString() + "\n");
@@ -336,7 +335,7 @@ public class FEStatePane extends JPanel {
                         try {
                             long start = System.currentTimeMillis();
                             ai.reset();
-                            PlayerAction a = ai.getAction(0, currentGameState);
+                            PlayerAction a = ai.getAction(0, statePanel.getGameState());
                             long end = System.currentTimeMillis();
                             textArea.setText("Action generated with " + ai.getClass().getSimpleName() + " in " + (end-start) + "ms\n");
                             textArea.append(ai.statisticsString() + "\n");
@@ -359,7 +358,7 @@ public class FEStatePane extends JPanel {
                 b.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e)
                     {
-                        if (currentGameState==null) {
+                        if (statePanel.getGameState()==null) {
                             textArea.setText("Load a game state first");
                             return;
                         }
@@ -370,14 +369,14 @@ public class FEStatePane extends JPanel {
                             // Evaluation functions:
                             textArea.append("Evaluation functions:\n");
                             for(EvaluationFunction ef:efs) {
-                                textArea.append("  - " + ef.getClass().getSimpleName() + ": " + ef.evaluate(0, 1, currentGameState) + ", " + ef.evaluate(1, 0, currentGameState) + "\n");
+                                textArea.append("  - " + ef.getClass().getSimpleName() + ": " + ef.evaluate(0, 1, statePanel.getGameState()) + ", " + ef.evaluate(1, 0, statePanel.getGameState()) + "\n");
                             }
                             textArea.append("\n");
                             
                             // units:
                             {
                                 int n0 = 0, n1 = 0;
-                                for(Unit u:currentGameState.getUnits()) {
+                                for(Unit u:statePanel.getGameState().getUnits()) {
                                     if (u.getPlayer()==0) n0++;
                                     if (u.getPlayer()==1) n1++;
                                 }
@@ -387,27 +386,27 @@ public class FEStatePane extends JPanel {
 
                             // Branching:
                             textArea.append("Braching Factor (long, might overflow):\n");
-                            textArea.append("  - player 0: " + BranchingFactorCalculatorLong.branchingFactorByResourceUsageSeparatingFast(currentGameState, 0) + "\n");
-                            textArea.append("  - player 1: " + BranchingFactorCalculatorLong.branchingFactorByResourceUsageSeparatingFast(currentGameState, 1) + "\n");
+                            textArea.append("  - player 0: " + BranchingFactorCalculatorLong.branchingFactorByResourceUsageSeparatingFast(statePanel.getGameState(), 0) + "\n");
+                            textArea.append("  - player 1: " + BranchingFactorCalculatorLong.branchingFactorByResourceUsageSeparatingFast(statePanel.getGameState(), 1) + "\n");
                             textArea.append("\n");
                             textArea.append("Braching Factor (double):\n");
-                            textArea.append("  - player 0: " + BranchingFactorCalculatorDouble.branchingFactorByResourceUsageSeparatingFast(currentGameState, 0) + "\n");
-                            textArea.append("  - player 1: " + BranchingFactorCalculatorDouble.branchingFactorByResourceUsageSeparatingFast(currentGameState, 1) + "\n");
+                            textArea.append("  - player 0: " + BranchingFactorCalculatorDouble.branchingFactorByResourceUsageSeparatingFast(statePanel.getGameState(), 0) + "\n");
+                            textArea.append("  - player 1: " + BranchingFactorCalculatorDouble.branchingFactorByResourceUsageSeparatingFast(statePanel.getGameState(), 1) + "\n");
                             textArea.append("\n");
 
                             // Branching:
                             textArea.append("Unit moves:\n");
                             textArea.append("  - player 0:\n");
-                            if (currentGameState.canExecuteAnyAction(0)) {
-                                PlayerActionGenerator pag0 = new PlayerActionGenerator(currentGameState, 0);
+                            if (statePanel.getGameState().canExecuteAnyAction(0)) {
+                                PlayerActionGenerator pag0 = new PlayerActionGenerator(statePanel.getGameState(), 0);
                                 for(Pair<Unit,List<UnitAction>> tmp:pag0.getChoices()) {
                                     textArea.append("    " + tmp.m_a + " has " + tmp.m_b.size() + " actions: " + tmp.m_b + "\n");
                                 }
                                 textArea.append("\n");
                             }
                             textArea.append("  - player 1:\n");
-                            if (currentGameState.canExecuteAnyAction(1)) {
-                                PlayerActionGenerator pag1 = new PlayerActionGenerator(currentGameState, 1);
+                            if (statePanel.getGameState().canExecuteAnyAction(1)) {
+                                PlayerActionGenerator pag1 = new PlayerActionGenerator(statePanel.getGameState(), 1);
                                 for(Pair<Unit,List<UnitAction>> tmp:pag1.getChoices()) {
                                     textArea.append("    " + tmp.m_a + " has " + tmp.m_b.size() + " actions: " + tmp.m_b + "\n");
                                 }
@@ -662,10 +661,12 @@ public class FEStatePane extends JPanel {
         });   
         
 //        p1.add(Box.createVerticalGlue());
+        MapGenerator mg = new MapGenerator(currentUtt);
+        GameState initialGs = new GameState(mg.bases8x8(), currentUtt);
 
         JPanel p2 = new JPanel();
         p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));
-        statePanel = new PhysicalGameStatePanel(currentGameState);
+        statePanel = new PhysicalGameStatePanel(initialGs);
         statePanel.setPreferredSize(new Dimension(512, 512));
         p2.add(statePanel);
         textArea = new JTextArea(5, 20);
