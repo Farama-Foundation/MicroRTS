@@ -63,7 +63,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
-import javax.swing.Box;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -111,7 +110,7 @@ public class FEStatePane extends JPanel {
                                 new SimpleSqrtEvaluationFunction3(),
                                 new EvaluationFunctionForwarding(new SimpleEvaluationFunction())};
 
-    Class AIs[] = {PassiveAI.class,
+    public static Class AIs[] = {PassiveAI.class,
                    MouseController.class,
                    RandomAI.class,
                    RandomBiasedAI.class,
@@ -681,11 +680,15 @@ public class FEStatePane extends JPanel {
         mouseListener = new FEStateMouseListener(statePanel, currentUtt);
         statePanel.addMouseListener(mouseListener);              
     }
+    
 
     public void setState(GameState gs) {
         statePanel.setStateDirect(gs);
         statePanel.repaint();
+        mapWidthField.setText(gs.getPhysicalGameState().getWidth()+"");
+        mapHeightField.setText(gs.getPhysicalGameState().getHeight()+"");
     }    
+    
     
     private static String nextTraceName() {
         int idx = 1;
@@ -697,7 +700,7 @@ public class FEStatePane extends JPanel {
     }
     
     
-    public JFormattedTextField addTextField(JPanel p, String name, String defaultValue, int columns) {
+    public static JFormattedTextField addTextField(JPanel p, String name, String defaultValue, int columns) {
         JPanel ptmp = new JPanel();
         ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
         ptmp.add(new JLabel(name));
