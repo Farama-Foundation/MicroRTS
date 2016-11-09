@@ -28,6 +28,10 @@ public class MapVisualizationTest {
         pgs.toxml(xml);
         xml.flush();
 
+        OutputStreamWriter jsonwriter = new OutputStreamWriter(System.out);
+        pgs.toJSON(jsonwriter);
+        jsonwriter.flush();
+
         JFrame w = PhysicalGameStatePanel.newVisualizer(gs,640,640);
         JFrame w2 = PhysicalGameStatePanel.newVisualizer(new PartiallyObservableGameState(gs,0),640,640, true);
         JFrame w3 = PhysicalGameStatePanel.newVisualizer(gs,640,640,false,PhysicalGameStatePanel.COLORSCHEME_WHITE);

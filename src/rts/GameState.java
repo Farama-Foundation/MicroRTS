@@ -5,10 +5,12 @@
 package rts;
 
 import java.io.Serializable;
+import java.io.Writer;
 import java.util.*;
 import rts.units.Unit;
 import rts.units.UnitTypeTable;
 import util.Pair;
+import util.XMLWriter;
 
 /**
  *
@@ -493,5 +495,39 @@ public class GameState implements Serializable{
         tmp += pgs;
         return tmp;
     }
+
     
+    public void toxml(XMLWriter w) {
+        w.tagWithAttributes(this.getClass().getName(),"time=\"" + time + "\"");
+        pgs.toxml(w);
+        w.tag("actions");
+        for(Unit u:unitActions.keySet()) {
+            UnitActionAssignment uaa = unitActions.get(u);
+            w.tagWithAttributes("unitAction","ID=\""+uaa.unit.getID()+"\" time=\""+uaa.time+"\"");
+            uaa.action.toxml(w);
+            w.tag("/unitAction");
+        }
+        w.tag("/actions");
+        w.tag("/" + this.getClass().getName());
+    }
+    
+
+    public void toJSON(Writer w) throws Exception {
+        w.write("{\n");
+        w.write("\"time\":" + time + ",\n\"pgs\":");
+        pgs.toJSON(w);
+        w.write(",\n\"actions\":[\n");
+        boolean first = true;
+        for(Unit u:unitActions.keySet()) {
+            if (!first) w.write(",\n");
+            first = false;
+            UnitActionAssignment uaa = unitActions.get(u);
+            w.write("{\"ID\":" + uaa.unit.getID() + ", \"time\":"+uaa.time+", \"action\":");
+            uaa.action.toJSON(w);
+            w.write("}");
+        }
+        w.write("]\n");
+        w.write("}");
+    }
+
 }

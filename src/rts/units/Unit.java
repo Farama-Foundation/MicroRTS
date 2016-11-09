@@ -5,6 +5,7 @@
 package rts.units;
 
 import java.io.Serializable;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import org.jdom.Element;
@@ -276,6 +277,18 @@ public class Unit implements Serializable {
                                                       "resources=\"" + resources + "\" " + 
                                                       "hitpoints=\"" + hitpoints + "\" ");
        w.tag("/" + this.getClass().getName());
+    }
+    
+    
+    public void toJSON(Writer w) throws Exception {
+        w.write("{\"type\":\""+type.name+"\", " +
+                 "\"ID\":"+ID+", " +
+                 "\"player\":"+player+", " +
+                 "\"x\":"+x+", " +
+                 "\"y\":"+y+", " +
+                 "\"resources\":"+resources+", " +
+                 "\"hitpoints\":"+hitpoints+
+                "}");
     }
 
     

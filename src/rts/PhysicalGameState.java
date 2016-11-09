@@ -6,6 +6,7 @@ package rts;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -271,6 +272,28 @@ public class PhysicalGameState implements Serializable {
     }
     
     
+    public void toJSON(Writer w) throws Exception {
+        w.write("{\n");
+        w.write("\"width\":"+width+",\"height\":" + height + ",\n");
+        w.write("\"terrain\":\"");
+        for(int i = 0;i<height*width;i++) w.write("" + terrain[i]);
+        w.write("\",\n");
+        w.write("\"players\":[\n");
+        for(int i = 0;i<players.size();i++) {
+            players.get(i).toJSON(w);
+            if (i<players.size()-1) w.write(",\n");
+        }
+        w.write("],\n");
+        w.write("\"units\":[\n");
+        for(int i = 0;i<units.size();i++) {
+            units.get(i).toJSON(w);
+            if (i<units.size()-1) w.write(",\n");
+        }
+        w.write("]\n");
+        w.write("}");
+    }
+    
+       
     public PhysicalGameState(Element e, UnitTypeTable utt) {
         Element terrain_e = e.getChild("terrain");
         Element players_e = e.getChild("players");

@@ -36,10 +36,6 @@ public class GameVisualSimulationTest {
         AI ai1 = new WorkerRush(utt, new BFSPathFinding());        
         AI ai2 = new RandomBiasedAI();
 
-        XMLWriter xml = new XMLWriter(new OutputStreamWriter(System.out));
-        pgs.toxml(xml);
-        xml.flush();
-
         JFrame w = PhysicalGameStatePanel.newVisualizer(gs,640,640,false,PhysicalGameStatePanel.COLORSCHEME_BLACK);
 //        JFrame w = PhysicalGameStatePanel.newVisualizer(gs,640,640,false,PhysicalGameStatePanel.COLORSCHEME_WHITE);
 

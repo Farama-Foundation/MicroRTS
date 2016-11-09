@@ -5,6 +5,7 @@
 package rts;
 
 import java.io.Serializable;
+import java.io.Writer;
 
 import org.jdom.Element;
 import rts.units.*;
@@ -289,6 +290,21 @@ public class UnitAction implements Serializable {
         w.tag("/UnitAction");           
     }    
     
+
+    public void toJSON(Writer w) throws Exception {
+        String attributes = "\"type\":" + type + "";
+        if (type==TYPE_ATTACK_LOCATION) {
+            attributes += ", \"x\":" + x + ",\"y\":" + y;
+        } else {
+            if (parameter != DIRECTION_NONE) {
+                attributes += ", \"parameter\":" + parameter;
+            }
+            if (unitType!=null) attributes += ", \"unitType\":\"" + unitType.name + "\"";
+        }
+        w.write("{"+attributes+"}");
+    }    
+
+
     public UnitAction(Element e, UnitTypeTable utt) {
         String typeStr = e.getAttributeValue("type");
         String parameterStr = e.getAttributeValue("parameter");
