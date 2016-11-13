@@ -20,6 +20,9 @@ import rts.units.UnitTypeTable;
  * @author santi
  */
 public class RoundRobinTournament {
+    
+    public static int TIMEOUT_CHECK_TOLERANCE = 20;
+    
     public static void runTournament(List<AI> AIs,
                                      List<String> maps,
                                      int iterations,
@@ -57,7 +60,7 @@ public class RoundRobinTournament {
         out.write("fullObservability\t"+fullObservability+"\n");
         out.write("timeoutCheck\t"+timeoutCheck+"\n");
         out.write("runGC\t"+runGC+"\n");
-        out.write("iteration\tmap\tai1\tai2\twinner\ttime\tcrashed\ttimedout\n");
+        out.write("iteration\tmap\tai1\tai2\ttime\twinner\tcrashed\ttimedout\n");
         out.flush();
         for(int iteration = 0;iteration<iterations;iteration++) {
             for(int map_idx = 0;map_idx<maps.size();map_idx++) {
@@ -135,11 +138,11 @@ public class RoundRobinTournament {
                             if (timeoutCheck) {
                                 long AI1time = AI1end - AI1start;
                                 long AI2time = AI2end - AI1start;
-                                if (AI1time>timeBudget) {
+                                if (AI1time>timeBudget + TIMEOUT_CHECK_TOLERANCE) {
                                     timedout = 0;
                                     break;
                                 }
-                                if (AI2time>timeBudget) {
+                                if (AI2time>timeBudget + TIMEOUT_CHECK_TOLERANCE) {
                                     timedout = 1;
                                     break;
                                 }

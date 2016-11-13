@@ -5,8 +5,6 @@
  */
 package ai.core;
 
-import ai.core.AI;
-
 /**
  *
  * @author santi

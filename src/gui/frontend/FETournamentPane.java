@@ -6,6 +6,7 @@
 package gui.frontend;
 
 import ai.core.AI;
+import gui.JTextAreaWriter;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -29,10 +30,12 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import rts.units.UnitTypeTable;
 import tournaments.FixedOpponentsTournament;
+import tournaments.LoadTournamentAIs;
 import tournaments.RoundRobinTournament;
 
 /**
@@ -45,7 +48,7 @@ public class FETournamentPane extends JPanel {
     
     JComboBox tournamentTypeComboBox = null;
     
-    Object availableAIsListNames[] = null;
+    DefaultListModel availableAIsListModel = null;
     JList availableAIsList = null;
     DefaultListModel selectedAIsListModel = null;
     JList selectedAIsList = null;
@@ -67,6 +70,10 @@ public class FETournamentPane extends JPanel {
     JCheckBox selfMatchesCheckBox = null;
     JCheckBox timeoutCheckBox = null;
     JCheckBox gcCheckBox = null;
+    
+    JTextArea tournamentProgressTextArea = null;
+    
+    JFileChooser fileChooser = new JFileChooser();    
     
     public FETournamentPane() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -103,18 +110,77 @@ public class FETournamentPane extends JPanel {
                 p1left.setLayout(new BoxLayout(p1left, BoxLayout.Y_AXIS));
                 p1left.add(new JLabel("Available AIs"));
 
-                availableAIsListNames = new Object[FEStatePane.AIs.length];
+                availableAIsListModel = new DefaultListModel();
+
                 for(int i = 0;i<FEStatePane.AIs.length;i++) {
-                    availableAIsListNames[i] = FEStatePane.AIs[i];
-                }
-                
-                availableAIsList = new JList(availableAIsListNames);
+                    availableAIsListModel.addElement(FEStatePane.AIs[i]);
+                }                
+                availableAIsList = new JList(availableAIsListModel);
                 availableAIsList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
                 availableAIsList.setLayoutOrientation(JList.VERTICAL);
                 availableAIsList.setVisibleRowCount(-1);
                 JScrollPane listScroller = new JScrollPane(availableAIsList);
                 listScroller.setPreferredSize(new Dimension(200, 200));
                 p1left.add(listScroller);
+                
+                JButton loadJAR = new JButton("Load Specific JAR");
+                loadJAR.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                        int returnVal = fileChooser.showOpenDialog((Component)null);
+                        if (returnVal == JFileChooser.APPROVE_OPTION) {
+                            File file = fileChooser.getSelectedFile();
+                            try {
+                                List<Class> cl = LoadTournamentAIs.loadTournamentAIsFromJAR(file.getAbsolutePath());
+                                for(Class c:cl) {
+                                    boolean exists = false;
+                                    for(int i = 0;i<availableAIsListModel.size();i++) {
+                                        Class c2 = (Class)availableAIsListModel.get(i);
+                                        if (c2.getName().equals(c.getName())) {
+                                            exists = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!exists) availableAIsListModel.addElement(c);
+                                }
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                       }
+                    }
+                });
+                p1left.add(loadJAR);
+                
+                JButton loadJARFolder = new JButton("Load All JARS from Folder");
+                loadJARFolder.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                        int returnVal = fileChooser.showOpenDialog((Component)null);
+                        if (returnVal == JFileChooser.APPROVE_OPTION) {
+                            File file = fileChooser.getSelectedFile();
+                            try {
+                                List<Class> cl = LoadTournamentAIs.loadTournamentAIsFromFolder(file.getAbsolutePath());
+                                for(Class c:cl) {
+                                     boolean exists = false;
+                                    for(int i = 0;i<availableAIsListModel.size();i++) {
+                                        Class c2 = (Class)availableAIsListModel.get(i);
+                                        if (c2.getName().equals(c.getName())) {
+                                            exists = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!exists) availableAIsListModel.addElement(c);
+                               }
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                       }
+                    }
+                });
+                p1left.add(loadJARFolder);
+
                 p1.add(p1left);
             }
             {
@@ -323,26 +389,76 @@ public class FETournamentPane extends JPanel {
                         idx++;
                         file = new File(prefix + idx + sufix);
                     }while(file.exists());
-                    Writer writer = new FileWriter(file);
-                    Writer writerProgress = new OutputStreamWriter(System.out);
-                                        
+                    final File fileToUse = file;
+                                                            
                     if (tournamentType.equals(TOURNAMENT_ROUNDROBIN)) {
-                        RoundRobinTournament.runTournament(selectedAIs, maps, 
-                                                           iterations, maxGameLength, timeBudget, iterationsBudget,
-                                                           fullObservability, selfMatches, timeOutCheck, gcCheck, 
-                                                           utt, writer, writerProgress);
+                        if (selectedAIs.size()<2) {
+                            tournamentProgressTextArea.append("Select at least two AIs\n");
+                        } else if (maps.isEmpty()) {
+                            tournamentProgressTextArea.append("Select at least one map\n");
+                        } else {
+                            try {
+                                Runnable r = new Runnable() {
+                                    public void run() {
+                                        try {
+                                            Writer writer = new FileWriter(fileToUse);
+                                            Writer writerProgress = new JTextAreaWriter(tournamentProgressTextArea);
+                                            RoundRobinTournament.runTournament(selectedAIs, maps, 
+                                                                               iterations, maxGameLength, timeBudget, iterationsBudget,
+                                                                               fullObservability, selfMatches, timeOutCheck, gcCheck, 
+                                                                               utt, writer, writerProgress);
+                                            writer.close();
+                                        } catch(Exception e2) {
+                                            e2.printStackTrace();
+                                        }
+                                    }                                
+                                };
+                                (new Thread(r)).start();
+                            } catch(Exception e3) {
+                                e3.printStackTrace();
+                            }
+                        }
                     } else if (tournamentType.equals(TOURNAMENT_FIXED_OPPONENTS)) {
-                        FixedOpponentsTournament.runTournament(selectedAIs, opponentAIs, maps, 
-                                                           iterations, maxGameLength, timeBudget, iterationsBudget,
-                                                           fullObservability, timeOutCheck, gcCheck, 
-                                                           utt, writer, writerProgress);
-                        
+                        if (selectedAIs.isEmpty()) {
+                            tournamentProgressTextArea.append("Select at least one AI\n");
+                        } else if (opponentAIs.isEmpty()) {
+                            tournamentProgressTextArea.append("Select at least one opponent AI\n");
+                        } else if (maps.isEmpty()) {
+                            tournamentProgressTextArea.append("Select at least one map\n");
+                        } else {
+                            try {
+                                Runnable r = new Runnable() {
+                                    public void run() {
+                                        try {
+                                            Writer writer = new FileWriter(fileToUse);
+                                            Writer writerProgress = new JTextAreaWriter(tournamentProgressTextArea);
+                                            FixedOpponentsTournament.runTournament(selectedAIs, opponentAIs, maps, 
+                                                                               iterations, maxGameLength, timeBudget, iterationsBudget,
+                                                                               fullObservability, timeOutCheck, gcCheck, 
+                                                                               utt, writer, writerProgress);
+                                            writer.close();
+                                        } catch(Exception e2) {
+                                            e2.printStackTrace();
+                                        }
+                                    }                                
+                                };
+                                (new Thread(r)).start();
+                            } catch(Exception e3) {
+                                e3.printStackTrace();
+                            }
+                        }                        
                     }
-                    writer.close();
                 }catch(Exception ex) {
                     ex.printStackTrace();
                 }
             }
         });
+        
+        tournamentProgressTextArea = new JTextArea(5, 20);
+        JScrollPane scrollPane = new JScrollPane(tournamentProgressTextArea);
+        tournamentProgressTextArea.setEditable(false);
+        scrollPane.setPreferredSize(new Dimension(512, 192));
+        add(scrollPane);
+        
     }
 }
