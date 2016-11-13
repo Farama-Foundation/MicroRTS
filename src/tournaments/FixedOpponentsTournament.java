@@ -7,13 +7,21 @@ package tournaments;
 
 import ai.core.AI;
 import ai.core.AIWithComputationBudget;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 import rts.GameState;
 import rts.PartiallyObservableGameState;
 import rts.PhysicalGameState;
 import rts.PlayerAction;
+import rts.Trace;
+import rts.TraceEntry;
 import rts.units.UnitTypeTable;
+import util.XMLWriter;
 
 /**
  *
@@ -34,6 +42,7 @@ public class FixedOpponentsTournament {
                                      boolean timeoutCheck,
                                      boolean runGC,
                                      UnitTypeTable utt,
+                                     String traceOutputfolder,
                                      Writer out,
                                      Writer progress) throws Exception {
         if (progress!=null) progress.write("FixedOpponentsTournament: Starting tournament\n");
@@ -95,6 +104,13 @@ public class FixedOpponentsTournament {
                         boolean gameover = false;
                         int crashed = -1;
                         int timedout = -1;
+                        Trace trace = null;
+                        TraceEntry te;
+                        if (traceOutputfolder != null) {
+                            trace = new Trace(utt);
+                            te = new TraceEntry(gs.getPhysicalGameState().clone(), gs.getTime());
+                            trace.addEntry(te);
+                        }
                         do {
                             PlayerAction pa1 = null;
                             PlayerAction pa2 = null;
@@ -142,7 +158,7 @@ public class FixedOpponentsTournament {
                             }
                             if (timeoutCheck) {
                                 long AI1time = AI1end - AI1start;
-                                long AI2time = AI2end - AI1start;
+                                long AI2time = AI2end - AI2start;
                                 if (AI1time>timeBudget + TIMEOUT_CHECK_TOLERANCE) {
                                     timedout = 0;
                                     break;
@@ -152,12 +168,40 @@ public class FixedOpponentsTournament {
                                     break;
                                 }
                             }
+                            if (traceOutputfolder != null && (!pa1.isEmpty() || !pa2.isEmpty())) {
+                                te = new TraceEntry(gs.getPhysicalGameState().clone(), gs.getTime());
+                                te.addPlayerAction(pa1.clone());
+                                te.addPlayerAction(pa2.clone());
+                                trace.addEntry(te);
+                            }
+                            
                             gs.issueSafe(pa1);
                             gs.issueSafe(pa2);
                             gameover = gs.cycle();
                         } while (!gameover && 
                                  (gs.getTime() < maxGameLength));
 
+                        if (traceOutputfolder != null) {
+                            File folder = new File(traceOutputfolder);
+                            if (!folder.exists()) folder.mkdirs();
+                            te = new TraceEntry(gs.getPhysicalGameState().clone(), gs.getTime());
+                            trace.addEntry(te);
+                            XMLWriter xml;
+                            ZipOutputStream zip = null;
+                            String filename = ai1_idx + "-vs-" + ai2_idx + "-" + map_idx + "-" + iteration;
+                            filename = filename.replace("/", "");
+                            filename = filename.replace(")", "");
+                            filename = filename.replace("(", "");
+                            filename = traceOutputfolder + "/" + filename;
+                            zip = new ZipOutputStream(new FileOutputStream(filename + ".zip"));
+                            zip.putNextEntry(new ZipEntry("game.xml"));
+                            xml = new XMLWriter(new OutputStreamWriter(zip));
+                            trace.toxml(xml);
+                            xml.flush();
+                            zip.closeEntry();
+                            zip.close();
+                        }
+                        
                         int winner = -1;
                         if (crashed!=-1) {
                             winner = 1 - crashed;

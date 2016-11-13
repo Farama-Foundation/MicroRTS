@@ -70,6 +70,7 @@ public class FETournamentPane extends JPanel {
     JCheckBox selfMatchesCheckBox = null;
     JCheckBox timeoutCheckBox = null;
     JCheckBox gcCheckBox = null;
+    JCheckBox tracesCheckBox = null;
     
     JTextArea tournamentProgressTextArea = null;
     
@@ -339,6 +340,9 @@ public class FETournamentPane extends JPanel {
                 gcCheckBox = new JCheckBox("Call garbage collector right before each AI call");
                 gcCheckBox.setSelected(false);                
                 p2right.add(gcCheckBox);
+                tracesCheckBox = new JCheckBox("Save game traces");
+                tracesCheckBox.setSelected(false);                
+                p2right.add(tracesCheckBox);
                 p2.add(p2right);
             }            
             add(p2);
@@ -390,6 +394,7 @@ public class FETournamentPane extends JPanel {
                         file = new File(prefix + idx + sufix);
                     }while(file.exists());
                     final File fileToUse = file;
+                    final String tracesFolder = (tracesCheckBox.isSelected() ? prefix + idx:null);
                                                             
                     if (tournamentType.equals(TOURNAMENT_ROUNDROBIN)) {
                         if (selectedAIs.size()<2) {
@@ -406,7 +411,8 @@ public class FETournamentPane extends JPanel {
                                             RoundRobinTournament.runTournament(selectedAIs, maps, 
                                                                                iterations, maxGameLength, timeBudget, iterationsBudget,
                                                                                fullObservability, selfMatches, timeOutCheck, gcCheck, 
-                                                                               utt, writer, writerProgress);
+                                                                               utt, tracesFolder,
+                                                                               writer, writerProgress);
                                             writer.close();
                                         } catch(Exception e2) {
                                             e2.printStackTrace();
@@ -435,7 +441,8 @@ public class FETournamentPane extends JPanel {
                                             FixedOpponentsTournament.runTournament(selectedAIs, opponentAIs, maps, 
                                                                                iterations, maxGameLength, timeBudget, iterationsBudget,
                                                                                fullObservability, timeOutCheck, gcCheck, 
-                                                                               utt, writer, writerProgress);
+                                                                               utt, tracesFolder,
+                                                                               writer, writerProgress);
                                             writer.close();
                                         } catch(Exception e2) {
                                             e2.printStackTrace();
