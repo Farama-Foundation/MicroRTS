@@ -7,6 +7,7 @@
 package gui;
 
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -120,10 +121,12 @@ public class PGSMouseListener implements MouseListener, MouseMotionListener, Key
                     }
                 }
             } else {
-                selectedUnits.clear();
-                selectedButton = null;
-                mousePanel.clearButtons();
-                clearQuickKeys();
+                if (insideOfGameArea(e.getX(), e.getY())) {
+                    selectedUnits.clear();
+                    selectedButton = null;
+                    mousePanel.clearButtons();
+                    clearQuickKeys();
+                }
             }
         } else if (e.getButton()==MouseEvent.BUTTON3) {
             // right click (execute actions):
@@ -197,6 +200,12 @@ public class PGSMouseListener implements MouseListener, MouseMotionListener, Key
 
     public void mouseReleased(MouseEvent e) {
         // identify the units to be selected:
+        if (!insideOfGameArea(e.getX(), e.getY())) {
+            frame.panel.m_mouse_selection_x0 = frame.panel.m_mouse_selection_x1 = -1;
+            frame.panel.m_mouse_selection_y0 = frame.panel.m_mouse_selection_y1 = -1;
+            return;
+        }
+        
         if (e.getButton()==MouseEvent.BUTTON1) {
             int x0 = Math.min(frame.panel.m_mouse_selection_x0, frame.panel.m_mouse_selection_x1);
             int x1 = Math.max(frame.panel.m_mouse_selection_x0, frame.panel.m_mouse_selection_x1);
@@ -342,5 +351,18 @@ public class PGSMouseListener implements MouseListener, MouseMotionListener, Key
                 mousePanel.addButton(ut.name, qk);
             }
         }
+    }
+    
+    
+    public boolean insideOfGameArea(int x, int y) {
+        Insets insets = frame.getInsets();
+        x-= insets.left;
+        y-= insets.top;
+                
+        Rectangle r = frame.panel.getBounds();
+        // if mouse was outside of playing area, return:
+        if (x<r.x || x>=r.x+r.width ||
+            y<r.y || y>=r.y+r.height) return false;
+        return true;        
     }
 }
