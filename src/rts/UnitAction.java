@@ -34,6 +34,7 @@ public class UnitAction implements Serializable {
     
     public static final int DIRECTION_OFFSET_X[] = {0,1,0,-1};
     public static final int DIRECTION_OFFSET_Y[] = {-1,0,1,0};
+    public static final String DIRECTION_NAMES[] = {"up","right","down","left"};
  
     int type = TYPE_NONE;
     int parameter = DIRECTION_NONE; // used for both "direction" and "duration"

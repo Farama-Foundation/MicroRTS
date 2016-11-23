@@ -263,13 +263,23 @@ public class GameState implements Serializable{
     public boolean isUnitActionAllowed(Unit u, UnitAction ua) {
         PlayerAction empty = new PlayerAction();
 
+        if (ua.getType()==UnitAction.TYPE_MOVE) {
+            int x2 = u.getX() + UnitAction.DIRECTION_OFFSET_X[ua.getDirection()];
+            int y2 = u.getY() + UnitAction.DIRECTION_OFFSET_Y[ua.getDirection()];
+            if (x2<0 || y2<0 ||
+                x2>=getPhysicalGameState().getWidth() || 
+                y2>=getPhysicalGameState().getHeight() ||
+                getPhysicalGameState().getTerrain(x2, y2) == PhysicalGameState.TERRAIN_WALL ||
+                getPhysicalGameState().getUnitAt(x2, y2) != null) return false;
+        }
+        
         // Generate the reserved resources:
         for(Unit u2:pgs.getUnits()) {
-                UnitActionAssignment uaa = unitActions.get(u2);
-                if (uaa!=null) {
-                    ResourceUsage ru = uaa.action.resourceUsage(u2, pgs);
-                    empty.r.merge(ru);
-                }
+            UnitActionAssignment uaa = unitActions.get(u2);
+            if (uaa!=null) {
+                ResourceUsage ru = uaa.action.resourceUsage(u2, pgs);
+                empty.r.merge(ru);
+            }
         }
         
         if (ua.resourceUsage(u, pgs).consistentWith(empty.getResourceUsage(), this)) return true;
