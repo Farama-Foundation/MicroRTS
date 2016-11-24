@@ -7,13 +7,16 @@ package ai.montecarlo;
 import ai.core.AI;
 import ai.RandomBiasedAI;
 import ai.core.InterruptibleAIWithComputationBudget;
+import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
+import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import rts.GameState;
 import rts.PlayerAction;
 import rts.PlayerActionGenerator;
+import rts.units.UnitTypeTable;
 
 /**
  *
@@ -50,6 +53,14 @@ public class MonteCarlo extends InterruptibleAIWithComputationBudget {
     long MAXACTIONS = 100;
     int MAXSIMULATIONTIME = 1024;
     
+    
+    public MonteCarlo(UnitTypeTable utt) {
+        this(100, -1, 100,
+             new RandomBiasedAI(), 
+             new SimpleSqrtEvaluationFunction3());
+    }
+
+    
     public MonteCarlo(int available_time, int playouts_per_cycle, int lookahead, AI policy, EvaluationFunction a_ef) {
         super(available_time, playouts_per_cycle);
         MAXACTIONS = -1;
@@ -82,7 +93,7 @@ public class MonteCarlo extends InterruptibleAIWithComputationBudget {
     }    
     
     public AI clone() {
-        return new MonteCarlo(MAX_TIME, MAX_ITERATIONS, MAXSIMULATIONTIME, MAXACTIONS, randomAI, ef);
+        return new MonteCarlo(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME, MAXACTIONS, randomAI, ef);
     }
     
     public void startNewComputation(int a_player, GameState gs) throws Exception {
@@ -111,8 +122,8 @@ public class MonteCarlo extends InterruptibleAIWithComputationBudget {
         if (DEBUG>=2) System.out.println("Search...");
         long start = System.currentTimeMillis();
         int nruns = 0;
-        long cutOffTime = (MAX_TIME>0 ? System.currentTimeMillis() + MAX_TIME:0);
-        if (MAX_TIME<=0) cutOffTime = 0;
+        long cutOffTime = (TIME_BUDGET>0 ? System.currentTimeMillis() + TIME_BUDGET:0);
+        if (TIME_BUDGET<=0) cutOffTime = 0;
         
         if (actions==null) {
             actions = new ArrayList<>();
@@ -144,8 +155,8 @@ public class MonteCarlo extends InterruptibleAIWithComputationBudget {
         }
         
         while(true) {
-            if (MAX_TIME>0 && (System.currentTimeMillis() - start)>=MAX_TIME) break;
-            if (MAX_ITERATIONS>0 && nruns>=MAX_ITERATIONS) break;
+            if (TIME_BUDGET>0 && (System.currentTimeMillis() - start)>=TIME_BUDGET) break;
+            if (ITERATIONS_BUDGET>0 && nruns>=ITERATIONS_BUDGET) break;
             monteCarloRun(playerForThisComputation, gs_to_start_from);
             nruns++;
         }
@@ -205,8 +216,64 @@ public class MonteCarlo extends InterruptibleAIWithComputationBudget {
         }while(!gameover && gs.getTime()<time);   
     }
     
+    
     public String toString() {
-        return "MonteCarlo(" + MAXACTIONS + "," + MAX_TIME + "," +  MAX_ITERATIONS + "," + MAXSIMULATIONTIME + ")";
+        return getClass().getSimpleName() + "(" + TIME_BUDGET + "," + ITERATIONS_BUDGET + "," +  MAXSIMULATIONTIME + "," + MAXACTIONS + ", " + randomAI + ", " + ef + ")";
     }
     
+    
+    @Override
+    public List<ParameterSpecification> getParameters()
+    {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+        
+        parameters.add(new ParameterSpecification("TimeBudget",int.class,100));
+        parameters.add(new ParameterSpecification("IterationsBudget",int.class,-1));
+        parameters.add(new ParameterSpecification("PlayoutLookahead",int.class,100));
+        parameters.add(new ParameterSpecification("MaxActions",long.class,100));
+        parameters.add(new ParameterSpecification("playoutAI",AI.class, randomAI));
+        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
+        
+        return parameters;
+    }       
+    
+    
+    public int getPlayoutLookahead() {
+        return MAXSIMULATIONTIME;
+    }
+    
+    
+    public void setPlayoutLookahead(int a_pola) {
+        MAXSIMULATIONTIME = a_pola;
+    }
+
+
+    public long getMaxActions() {
+        return MAXACTIONS;
+    }
+    
+    
+    public void setMaxActions(long a_ma) {
+        MAXACTIONS = a_ma;
+    }
+
+
+    public AI getplayoutAI() {
+        return randomAI;
+    }
+    
+    
+    public void setplayoutAI(AI a_dp) {
+        randomAI = a_dp;
+    }
+    
+    
+    public EvaluationFunction getEvaluationFunction() {
+        return ef;
+    }
+    
+    
+    public void setEvaluationFunction(EvaluationFunction a_ef) {
+        ef = a_ef;
+    }      
 }

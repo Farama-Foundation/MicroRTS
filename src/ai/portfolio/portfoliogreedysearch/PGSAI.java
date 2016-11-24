@@ -6,10 +6,14 @@
 
 package ai.portfolio.portfoliogreedysearch;
 
+import ai.RandomBiasedAI;
+import ai.abstraction.pathfinding.AStarPathFinding;
 import ai.core.AI;
 import ai.abstraction.pathfinding.PathFinding;
 import ai.core.AIWithComputationBudget;
+import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
+import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +55,15 @@ public class PGSAI extends AIWithComputationBudget {
     long start_time = 0;
     int nplayouts = 0;
 
+    
+    public PGSAI(UnitTypeTable utt) {
+        this(100, -1, 100, 1, 1, 
+             new SimpleSqrtEvaluationFunction3(),
+             utt,
+             new AStarPathFinding());
+    }
+    
+    
     public PGSAI(int time, int max_playouts, int la, int a_I, int a_R, EvaluationFunction e, UnitTypeTable a_utt, PathFinding a_pf) {
         super(time, max_playouts);
         LOOKAHEAD = la;
@@ -124,7 +137,7 @@ public class PGSAI extends AIWithComputationBudget {
         if (gs.winner()!=-1) return new PlayerAction();
         if (!gs.canExecuteAnyAction(player)) return new PlayerAction();
 
-        if (DEBUG>=1) System.out.println("PGSAI " + player + "(MAX_TIME = " + MAX_TIME +", I: " + I + ", R: " + R + ")");
+        if (DEBUG>=1) System.out.println("PGSAI " + player + "(MAX_TIME = " + TIME_BUDGET +", I: " + I + ", R: " + R + ")");
 
         List<Unit> playerUnits = new ArrayList<>();
         List<Unit> enemyUnits = new ArrayList<>();
@@ -189,11 +202,11 @@ public class PGSAI extends AIWithComputationBudget {
         for(int i = 0;i<I;i++) {
             if (DEBUG>=1) System.out.println("Improve player " + player + "(" + i + "/" + I + ")");
             for(int u = 0;u<scriptsToImprove.length;u++) {
-                if (MAX_ITERATIONS>0 && nplayouts>=MAX_ITERATIONS) {
+                if (ITERATIONS_BUDGET>0 && nplayouts>=ITERATIONS_BUDGET) {
                     if (DEBUG>=1) System.out.println("nplayouts>=MAX_PLAYOUTS");
                     return;
                 }
-                if (MAX_TIME>0 && System.currentTimeMillis()>=start_time+MAX_TIME) {
+                if (TIME_BUDGET>0 && System.currentTimeMillis()>=start_time+TIME_BUDGET) {
                     if (DEBUG>=1) System.out.println("Time out!");
                     return;
                 }
@@ -249,8 +262,80 @@ public class PGSAI extends AIWithComputationBudget {
     }
 
 
+    @Override
     public AI clone() {
-        return new PGSAI(MAX_TIME, MAX_ITERATIONS, LOOKAHEAD, I, R, evaluation, utt, pf);
+        return new PGSAI(TIME_BUDGET, ITERATIONS_BUDGET, LOOKAHEAD, I, R, evaluation, utt, pf);
+    }
+    
+    
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", " + LOOKAHEAD + ", " + I + ", " + R + ", " + evaluation + ", " + pf + ")";
+    }
+    
+    
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+        
+        parameters.add(new ParameterSpecification("TimeBudget",int.class,100));
+        parameters.add(new ParameterSpecification("IterationsBudget",int.class,-1));
+        parameters.add(new ParameterSpecification("PlayoutLookahead",int.class,100));
+        parameters.add(new ParameterSpecification("I", int.class, 1));
+        parameters.add(new ParameterSpecification("R", int.class, 1));
+        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
+        parameters.add(new ParameterSpecification("PathFinding", PathFinding.class, new AStarPathFinding()));
+        
+        return parameters;
+    }    
+    
+    
+    public int getPlayoutLookahead() {
+        return LOOKAHEAD;
+    }
+    
+    
+    public void setPlayoutLookahead(int a_pola) {
+        LOOKAHEAD = a_pola;
     }
 
+    
+    public int getI() {
+        return I;
+    }
+    
+    
+    public void setI(int a) {
+        I = a;
+    }
+    
+    
+    public int getR() {
+        return R;
+    }
+    
+    
+    public void setR(int a) {
+        R = a;
+    }
+       
+    
+    public EvaluationFunction getEvaluationFunction() {
+        return evaluation;
+    }
+    
+    
+    public void setEvaluationFunction(EvaluationFunction a_ef) {
+        evaluation = a_ef;
+    }        
+        
+    
+    public PathFinding getPathFinding() {
+        return pf;
+    }
+    
+    
+    public void setPathFinding(PathFinding a_pf) {
+        pf = a_pf;
+    }    
 }

@@ -7,10 +7,15 @@ package ai.mcts.naivemcts;
 import ai.*;
 import ai.core.AI;
 import ai.core.InterruptibleAIWithComputationBudget;
+import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
+import ai.evaluation.SimpleSqrtEvaluationFunction3;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import rts.GameState;
 import rts.PlayerAction;
+import rts.units.UnitTypeTable;
 
 /**
  *
@@ -53,6 +58,14 @@ public class NaiveMCTS extends InterruptibleAIWithComputationBudget {
     public long total_cycles_executed = 0;
     public long total_actions_issued = 0;
     public long total_time = 0;
+    
+    
+    public NaiveMCTS(UnitTypeTable utt) {
+        this(100,-1,100,10,
+             0.3f, 0.0f, 0.4f,
+             new RandomBiasedAI(),
+             new SimpleSqrtEvaluationFunction3());
+    }    
     
     
     public NaiveMCTS(int available_time, int max_playouts, int lookahead, int max_depth, 
@@ -114,7 +127,7 @@ public class NaiveMCTS extends InterruptibleAIWithComputationBudget {
         
     
     public AI clone() {
-        return new NaiveMCTS(MAX_TIME, MAX_ITERATIONS, MAXSIMULATIONTIME, MAX_TREE_DEPTH, epsilon_l, discount_l, epsilon_g, discount_g, epsilon_0, discount_0, playoutPolicy, ef);
+        return new NaiveMCTS(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME, MAX_TREE_DEPTH, epsilon_l, discount_l, epsilon_g, discount_g, epsilon_0, discount_0, playoutPolicy, ef);
     }    
     
     
@@ -148,8 +161,8 @@ public class NaiveMCTS extends InterruptibleAIWithComputationBudget {
             if (!iteration(player)) break;
             count++;
             end = System.currentTimeMillis();
-            if (MAX_TIME>=0 && (end - start)>=MAX_TIME) break; 
-            if (MAX_ITERATIONS>=0 && count>=MAX_ITERATIONS) break;             
+            if (TIME_BUDGET>=0 && (end - start)>=TIME_BUDGET) break; 
+            if (ITERATIONS_BUDGET>=0 && count>=ITERATIONS_BUDGET) break;             
         }
 //        System.out.println("HL: " + count + " time: " + (System.currentTimeMillis() - start) + " (" + available_time + "," + max_playouts + ")");
         total_time += (end - start);
@@ -279,10 +292,12 @@ public class NaiveMCTS extends InterruptibleAIWithComputationBudget {
     }
     
     
+    @Override
     public String toString() {
-        return "NaiveMCTS(" + MAXSIMULATIONTIME + "," + MAX_TIME + "," + MAX_ITERATIONS + "," + MAX_TREE_DEPTH + "," + epsilon_l + "," + epsilon_g + "," + epsilon_0 + "," + playoutPolicy + ")";
+        return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", " + MAXSIMULATIONTIME + "," + MAX_TREE_DEPTH + "," + epsilon_l + ", " + discount_l + ", " + epsilon_g + ", " + discount_g + ", " + epsilon_0 + ", " + discount_0 + ", " + playoutPolicy + ", " + ef + ")";
     }
     
+    @Override
     public String statisticsString() {
         return "Total runs: " + total_runs + 
                ", runs per action: " + (total_runs/(float)total_actions_issued) + 
@@ -291,4 +306,127 @@ public class NaiveMCTS extends InterruptibleAIWithComputationBudget {
                ", max branching factor: " + max_actions_so_far;
     }
     
+    
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+        
+        parameters.add(new ParameterSpecification("TimeBudget",int.class,100));
+        parameters.add(new ParameterSpecification("IterationsBudget",int.class,-1));
+        parameters.add(new ParameterSpecification("PlayoutLookahead",int.class,100));
+        parameters.add(new ParameterSpecification("MaxTreeDepth",int.class,10));
+        
+        parameters.add(new ParameterSpecification("E_l",float.class,0.3));
+        parameters.add(new ParameterSpecification("Discount_l",float.class,1.0));
+        parameters.add(new ParameterSpecification("E_g",float.class,0.0));
+        parameters.add(new ParameterSpecification("Discount_g",float.class,1.0));
+        parameters.add(new ParameterSpecification("E_0",float.class,0.4));
+        parameters.add(new ParameterSpecification("Discount_0",float.class,1.0));
+                
+        parameters.add(new ParameterSpecification("DefaultPolicy",AI.class, playoutPolicy));
+        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
+
+        return parameters;
+    }    
+    
+    
+    public int getPlayoutLookahead() {
+        return MAXSIMULATIONTIME;
+    }
+    
+    
+    public void setPlayoutLookahead(int a_pola) {
+        MAXSIMULATIONTIME = a_pola;
+    }
+
+
+    public int getMaxTreeDepth() {
+        return MAX_TREE_DEPTH;
+    }
+    
+    
+    public void setMaxTreeDepth(int a_mtd) {
+        MAX_TREE_DEPTH = a_mtd;
+    }
+    
+    
+    public float getE_l() {
+        return epsilon_l;
+    }
+    
+    
+    public void setE_l(float a_e_l) {
+        epsilon_l = a_e_l;
+    }
+
+
+    public float getDiscount_l() {
+        return discount_l;
+    }
+    
+    
+    public void setDiscount_l(float a_discount_l) {
+        discount_l = a_discount_l;
+    }
+
+
+    public float getE_g() {
+        return epsilon_g;
+    }
+    
+    
+    public void setE_g(float a_e_g) {
+        epsilon_g = a_e_g;
+    }
+
+
+    public float getDiscount_g() {
+        return discount_g;
+    }
+    
+    
+    public void setDiscount_g(float a_discount_g) {
+        discount_g = a_discount_g;
+    }
+
+
+    public float getE_0() {
+        return epsilon_0;
+    }
+    
+    
+    public void setE_0(float a_e_0) {
+        epsilon_0 = a_e_0;
+    }
+
+
+    public float getDiscount_0() {
+        return discount_0;
+    }
+    
+    
+    public void setDiscount_0(float a_discount_0) {
+        discount_0 = a_discount_0;
+    }
+    
+    
+    
+    public AI getDefaultPolicy() {
+        return playoutPolicy;
+    }
+    
+    
+    public void setDefaultPolicy(AI a_dp) {
+        playoutPolicy = a_dp;
+    }
+    
+    
+    public EvaluationFunction getEvaluationFunction() {
+        return ef;
+    }
+    
+    
+    public void setEvaluationFunction(EvaluationFunction a_ef) {
+        ef = a_ef;
+    }
 }

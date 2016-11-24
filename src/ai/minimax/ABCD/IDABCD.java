@@ -4,14 +4,20 @@
  */
 package ai.minimax.ABCD;
 
+import ai.abstraction.WorkerRush;
+import ai.abstraction.pathfinding.AStarPathFinding;
 import ai.core.AI;
 import ai.core.InterruptibleAIWithComputationBudget;
+import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
+import ai.evaluation.SimpleSqrtEvaluationFunction3;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import rts.GameState;
 import rts.PlayerAction;
 import rts.PlayerActionGenerator;
+import rts.units.UnitTypeTable;
 import util.Pair;
 
 /**
@@ -76,6 +82,14 @@ public class IDABCD extends InterruptibleAIWithComputationBudget {
     PlayerAction bestMove = null;
     int playerForThisComputation;
 
+    
+    public IDABCD(UnitTypeTable utt) {
+        this(100, -1, 
+             new WorkerRush(utt, new AStarPathFinding()), 100, 
+             new SimpleSqrtEvaluationFunction3(), true);
+    }
+
+    
     public IDABCD(int tpc, int ppc, AI a_playoutAI, int a_maxPlayoutTime, EvaluationFunction a_ef, boolean a_performGreedyActionScan) {
         super(tpc, ppc);
         playoutAI = a_playoutAI;
@@ -85,6 +99,7 @@ public class IDABCD extends InterruptibleAIWithComputationBudget {
     }
 
 
+    @Override
     public void reset() {
         gs_to_start_from = null;
         consecutive_frames_searching = 0;
@@ -119,7 +134,7 @@ public class IDABCD extends InterruptibleAIWithComputationBudget {
 
 
     public AI clone() {
-        return new IDABCD(MAX_TIME, MAX_ITERATIONS, playoutAI, maxPlayoutTime, ef, performGreedyActionScan);
+        return new IDABCD(TIME_BUDGET, ITERATIONS_BUDGET, playoutAI, maxPlayoutTime, ef, performGreedyActionScan);
     }
     
 
@@ -142,16 +157,16 @@ public class IDABCD extends InterruptibleAIWithComputationBudget {
         int minplayer = 1 - playerForThisComputation;
         int depth = 1;
         long startTime = System.currentTimeMillis();
-        long cutOffTime = startTime + MAX_TIME;
+        long cutOffTime = startTime + TIME_BUDGET;
         
 //        System.out.println("ABCD search starts (consecutive_frames_searching: " + consecutive_frames_searching + ")");
 
-        if (MAX_TIME<=0) cutOffTime = 0;
+        if (TIME_BUDGET<=0) cutOffTime = 0;
         nPlayouts = 0;
         
         if (bestMove==null && performGreedyActionScan) {
             // The first time, we just want to do a quick evaluation of all actions, to have a first idea of what is best:
-            bestMove = greedyActionScan(gs_to_start_from,playerForThisComputation, cutOffTime, MAX_ITERATIONS);
+            bestMove = greedyActionScan(gs_to_start_from,playerForThisComputation, cutOffTime, ITERATIONS_BUDGET);
 //            System.out.println("greedyActionScan suggested action: " + bestMove);
         }
 
@@ -174,7 +189,7 @@ public class IDABCD extends InterruptibleAIWithComputationBudget {
 //            if (depth==50) DEBUG = 2;
             
             long currentTime = System.currentTimeMillis();
-            PlayerAction tmp = searchOutsideStack(gs_to_start_from, maxplayer, minplayer, depth, cutOffTime, MAX_ITERATIONS, false);
+            PlayerAction tmp = searchOutsideStack(gs_to_start_from, maxplayer, minplayer, depth, cutOffTime, ITERATIONS_BUDGET, false);
             if (DEBUG>=1) System.out.println("    Time taken: " + (System.currentTimeMillis() - currentTime) + ", nPlayouts: " + nPlayouts);
 
 //            System.out.println(gs.getTime() + ", depth: " + depth + ", nPlayouts: " + nPlayouts + ", PA: " + tmp);
@@ -206,7 +221,7 @@ public class IDABCD extends InterruptibleAIWithComputationBudget {
             nLeaves = 0;
             nNodes = 0;
             time_depth = 0;
-            if (MAX_ITERATIONS>0 && nPlayouts>=MAX_ITERATIONS) break;
+            if (ITERATIONS_BUDGET>0 && nPlayouts>=ITERATIONS_BUDGET) break;
             if (cutOffTime>0 && System.currentTimeMillis() >= cutOffTime) break;
         }while(true);
         last_depth = depth;
@@ -486,5 +501,65 @@ public class IDABCD extends InterruptibleAIWithComputationBudget {
                " , avg time depth: " + (avg_time_depth_so_far/(double)count_time_depth_so_far) +
                " , max time depth: " + max_time_depth_so_far;
     }
+    
+    
+    public String toString() {
+        return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", " + playoutAI + ", " + maxPlayoutTime + ", " + ef + ", " + performGreedyActionScan + ")";
+    }     
 
+    
+    @Override
+    public List<ParameterSpecification> getParameters()
+    {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+        
+        parameters.add(new ParameterSpecification("TimeBudget",int.class,100));
+        parameters.add(new ParameterSpecification("IterationsBudget",int.class,-1));
+        parameters.add(new ParameterSpecification("PlayoutAI",AI.class, playoutAI));
+        parameters.add(new ParameterSpecification("PlayoutLookahead",int.class,100));
+        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
+        parameters.add(new ParameterSpecification("PerformGreedyActionScan",boolean.class,true));
+        
+        return parameters;
+    }  
+    
+    
+    public AI getPlayoutAI() {
+        return playoutAI;
+    }
+    
+    
+    public void setPlayoutAI(AI a_dp) {
+        playoutAI = a_dp;
+    }
+    
+    
+    public int getPlayoutLookahead() {
+        return maxPlayoutTime;
+    }
+    
+    
+    public void setPlayoutLookahead(int a_pola) {
+        maxPlayoutTime = a_pola;
+    }
+    
+
+    public EvaluationFunction getEvaluationFunction() {
+        return ef;
+    }
+    
+    
+    public void setEvaluationFunction(EvaluationFunction a_ef) {
+        ef = a_ef;
+    }
+
+
+    public boolean getPerformGreedyActionScan() {
+        return performGreedyActionScan;
+    }
+    
+    
+    public void setPerformGreedyActionScan(boolean a_pgas) {
+        performGreedyActionScan = a_pgas;
+    }
 }

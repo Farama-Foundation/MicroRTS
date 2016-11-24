@@ -1,5 +1,6 @@
 package ai.puppet;
 
+import ai.abstraction.pathfinding.FloodFillPathFinding;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -10,6 +11,7 @@ import java.util.Random;
 import java.util.function.Predicate;
 
 import ai.abstraction.pathfinding.PathFinding;
+import ai.core.ParameterSpecification;
 import rts.GameState;
 import rts.PhysicalGameState;
 import rts.Player;
@@ -44,6 +46,11 @@ public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint
     private static final int BASE_RESOURCE_RADIUS = 8;
     
 
+    public BasicConfigurableScript(UnitTypeTable a_utt) {
+        this(a_utt, new FloodFillPathFinding());
+    }
+    
+    
     public BasicConfigurableScript(UnitTypeTable a_utt, PathFinding a_pf) {
         super(a_pf);
         utt = a_utt;
@@ -502,11 +509,20 @@ public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint
 	}
 
 	public String toString(){
-		String str = "BasicScript(";
+		String str = getClass().getSimpleName() + "(";
 		for(BasicChoicePoint c:BasicChoicePoint.values()){
 			str+=c.toString()+",";
 		}
 		return str+")";
 	}
-    
+        
+        
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+        
+        parameters.add(new ParameterSpecification("PathFinding", PathFinding.class, new FloodFillPathFinding()));
+        
+        return parameters;
+    }    
 }

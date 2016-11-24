@@ -27,6 +27,17 @@ public class Harvest extends AbstractAction  {
         pf = a_pf;
     }
     
+    
+    public Unit getTarget() {
+        return target;
+    }
+    
+    
+    public Unit getBase() {
+        return base;
+    }
+    
+    
     public boolean completed(GameState gs) {
         if (!gs.getPhysicalGameState().getUnits().contains(target)) return true;
         return false;

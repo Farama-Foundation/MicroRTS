@@ -28,7 +28,7 @@ public class SimpleSqrtEvaluationFunction extends EvaluationFunction {
         for(Unit u:pgs.getUnits()) {
             if (u.getPlayer()==player) {
                 score += u.getResources() * RESOURCE_IN_WORKER;
-                score += UNIT_BONUS_MULTIPLIER * (u.getCost()*Math.sqrt(u.getHitPoints()))/(float)u.getMaxHitPoints();
+                score += UNIT_BONUS_MULTIPLIER * (u.getCost()*Math.sqrt( u.getHitPoints() / u.getMaxHitPoints() ));
             }
         }
         return score;

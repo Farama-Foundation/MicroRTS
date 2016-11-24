@@ -1,0 +1,139 @@
+<rts.PhysicalGameState width="16" height="16">
+  <terrain>0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</terrain>
+  <players>
+    <rts.Player ID="0" resources="5">
+    </rts.Player>
+    <rts.Player ID="1" resources="5">
+    </rts.Player>
+  </players>
+  <units>
+    <rts.units.Unit type="Resource" ID="37" player="-1" x="11" y="15" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="38" player="-1" x="10" y="15" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="39" player="-1" x="9" y="15" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="40" player="-1" x="8" y="15" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="41" player="-1" x="7" y="15" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Base" ID="42" player="1" x="7" y="13" resources="0" hitpoints="10" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Base" ID="43" player="1" x="9" y="13" resources="0" hitpoints="10" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Base" ID="44" player="1" x="11" y="13" resources="0" hitpoints="10" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Worker" ID="45" player="1" x="11" y="14" resources="0" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Worker" ID="46" player="1" x="9" y="14" resources="0" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Worker" ID="47" player="1" x="7" y="14" resources="0" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="48" player="-1" x="0" y="0" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="49" player="-1" x="1" y="0" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="50" player="-1" x="2" y="0" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="51" player="-1" x="3" y="0" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="52" player="-1" x="4" y="0" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Base" ID="53" player="0" x="4" y="2" resources="0" hitpoints="10" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Base" ID="54" player="0" x="2" y="2" resources="0" hitpoints="10" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Base" ID="55" player="0" x="0" y="2" resources="0" hitpoints="10" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Worker" ID="56" player="0" x="0" y="1" resources="0" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Worker" ID="57" player="0" x="2" y="1" resources="0" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Worker" ID="58" player="0" x="4" y="1" resources="0" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="59" player="-1" x="6" y="15" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="60" player="-1" x="5" y="15" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Base" ID="61" player="1" x="5" y="13" resources="0" hitpoints="10" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Worker" ID="64" player="1" x="5" y="14" resources="0" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="65" player="-1" x="5" y="0" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="66" player="-1" x="6" y="0" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Worker" ID="67" player="0" x="6" y="1" resources="0" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Base" ID="68" player="0" x="6" y="2" resources="0" hitpoints="10" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="69" player="-1" x="7" y="0" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="70" player="-1" x="8" y="0" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Worker" ID="71" player="0" x="8" y="1" resources="0" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Base" ID="72" player="0" x="8" y="2" resources="0" hitpoints="10" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="73" player="-1" x="4" y="15" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="74" player="-1" x="3" y="15" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Worker" ID="75" player="1" x="3" y="14" resources="0" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Base" ID="76" player="1" x="3" y="13" resources="0" hitpoints="10" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="77" player="-1" x="9" y="0" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="78" player="-1" x="10" y="0" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Worker" ID="79" player="0" x="10" y="1" resources="0" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Base" ID="80" player="0" x="10" y="2" resources="0" hitpoints="10" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Base" ID="81" player="1" x="1" y="13" resources="0" hitpoints="10" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Worker" ID="82" player="1" x="1" y="14" resources="0" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="83" player="-1" x="1" y="15" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="84" player="-1" x="2" y="15" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="85" player="-1" x="11" y="0" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="86" player="-1" x="12" y="0" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="87" player="-1" x="13" y="0" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="88" player="-1" x="14" y="0" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="89" player="-1" x="15" y="0" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Worker" ID="90" player="0" x="12" y="1" resources="0" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Worker" ID="91" player="0" x="14" y="1" resources="0" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Base" ID="92" player="0" x="12" y="2" resources="0" hitpoints="10" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Base" ID="93" player="0" x="14" y="2" resources="0" hitpoints="10" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Base" ID="94" player="1" x="13" y="13" resources="0" hitpoints="10" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Base" ID="95" player="1" x="15" y="13" resources="0" hitpoints="10" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="96" player="-1" x="12" y="15" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="97" player="-1" x="13" y="15" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="98" player="-1" x="14" y="15" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="99" player="-1" x="15" y="15" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Worker" ID="100" player="1" x="13" y="14" resources="0" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Worker" ID="101" player="1" x="15" y="14" resources="0" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="102" player="-1" x="0" y="15" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+  </units>
+</rts.PhysicalGameState>

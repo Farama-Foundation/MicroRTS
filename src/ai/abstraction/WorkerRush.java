@@ -4,9 +4,11 @@
  */
 package ai.abstraction;
 
+import ai.abstraction.pathfinding.AStarPathFinding;
 import ai.core.AI;
-import ai.abstraction.AbstractionLayerAI;
 import ai.abstraction.pathfinding.PathFinding;
+import ai.core.ParameterSpecification;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -15,7 +17,6 @@ import rts.PhysicalGameState;
 import rts.Player;
 import rts.PlayerAction;
 import rts.units.*;
-import util.Pair;
 
 /**
  *
@@ -31,7 +32,11 @@ public class WorkerRush extends AbstractionLayerAI {
     // If we have more than 1 "Worker": send the extra workers to attack to the nearest enemy unit
     // If we have a base: train workers non-stop
     // If we have a worker: do this if needed: build base, harvest resources
-    
+    public WorkerRush(UnitTypeTable a_utt) {
+        this(a_utt, new AStarPathFinding());
+    }
+
+        
     public WorkerRush(UnitTypeTable a_utt, PathFinding a_pf) {
         super(a_pf);
         utt = a_utt;
@@ -172,4 +177,14 @@ public class WorkerRush extends AbstractionLayerAI {
         
     }
     
+    
+    @Override
+    public List<ParameterSpecification> getParameters()
+    {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+        
+        parameters.add(new ParameterSpecification("PathFinding", PathFinding.class, new AStarPathFinding()));
+
+        return parameters;
+    }
 }

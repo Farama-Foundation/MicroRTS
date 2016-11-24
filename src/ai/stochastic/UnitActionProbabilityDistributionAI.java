@@ -5,9 +5,11 @@
 package ai.stochastic;
 
 import ai.core.AI;
+import ai.core.ParameterSpecification;
 import java.util.List;
 import java.util.Random;
 import ai.stochastic.UnitActionProbabilityDistribution;
+import java.util.ArrayList;
 import rts.*;
 import rts.units.Unit;
 import rts.units.UnitTypeTable;
@@ -26,6 +28,14 @@ public class UnitActionProbabilityDistributionAI extends AI {
     String modelName = "";  // name of the model for the toString method, so it can be identified
     UnitTypeTable utt = null;
     
+    
+    public UnitActionProbabilityDistributionAI(UnitTypeTable utt) throws Exception {
+        this(new UnitActionTypeConstantDistribution(utt,new double[]{1.0,1.0,1.0,1.0,1.0,1.0}),
+             utt,
+             "uniform");
+    }
+    
+    
     public UnitActionProbabilityDistributionAI(UnitActionProbabilityDistribution a_model, UnitTypeTable a_utt, String a_modelName) {
         model = a_model;
         utt = a_utt;
@@ -33,11 +43,13 @@ public class UnitActionProbabilityDistributionAI extends AI {
     }
     
     
+    @Override
     public String toString() {
         return this.getClass().getSimpleName()+"("+modelName+")";
     }   
     
     
+    @Override
     public void reset() {   
     }    
     
@@ -92,4 +104,40 @@ public class UnitActionProbabilityDistributionAI extends AI {
         return pa;
     }
     
+    
+    @Override
+    public List<ParameterSpecification> getParameters()
+    {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+        
+        try {
+            parameters.add(new ParameterSpecification("Model",UnitActionProbabilityDistribution.class,
+                           new UnitActionTypeConstantDistribution(utt,new double[]{1.0,1.0,1.0,1.0,1.0,1.0})));
+            parameters.add(new ParameterSpecification("ModelName",String.class,"uniformDistribution"));
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+        
+        return parameters;
+    }
+    
+    
+    public UnitActionProbabilityDistribution getModel() {
+        return model;
+    }
+    
+    
+    public void setModel(UnitActionProbabilityDistribution a) {
+        model = a;
+    }
+    
+    
+    public String getModelName() {
+        return modelName;
+    }
+    
+    
+    public void setModelName(String a) {
+        modelName = a;
+    }
 }

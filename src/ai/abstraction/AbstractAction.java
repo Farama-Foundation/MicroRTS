@@ -21,14 +21,24 @@ public abstract class AbstractAction {
         unit = a_unit;
     }
 
+    
     public Unit getUnit() {
         return unit;
     }
+    
+    
+    public void setUnit(Unit u) {
+        unit = u;
+    }
+    
+    
     public abstract boolean completed(GameState pgs);
+    
     
     public UnitAction execute(GameState pgs){
     	return execute(pgs,null);
     };
+    
     
     public abstract UnitAction execute(GameState pgs, ResourceUsage ru);
 }

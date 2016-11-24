@@ -1,12 +1,19 @@
 package ai.puppet;
 
+import ai.RandomBiasedAI;
+import ai.abstraction.pathfinding.FloodFillPathFinding;
 import java.util.Collection;
 import java.util.Collections;
 
 import ai.core.AI;
+import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
+import ai.evaluation.SimpleSqrtEvaluationFunction3;
+import java.util.ArrayList;
+import java.util.List;
 import rts.GameState;
 import rts.PlayerAction;
+import rts.units.UnitTypeTable;
 import util.Pair;
 
 public class PuppetSearchMCTS extends PuppetBase {
@@ -49,6 +56,18 @@ public class PuppetSearchMCTS extends PuppetBase {
 	PuppetMCTSNode root;
 	Plan currentPlan;
 	float C;//UCT exploration constant
+        
+        
+        public PuppetSearchMCTS(UnitTypeTable utt) {
+            this(100, -1,
+                 5000, -1,
+                 100, 100,
+                 new RandomBiasedAI(),
+                 new BasicConfigurableScript(utt, new FloodFillPathFinding()),
+                 new SimpleSqrtEvaluationFunction3());
+        }
+        
+        
 	public PuppetSearchMCTS(int max_time_per_frame, int max_playouts_per_frame, 
 			int max_plan_time, int max_plan_playouts,
 			int step_playout_time, int eval_playout_time, 
@@ -211,7 +230,114 @@ public class PuppetSearchMCTS extends PuppetBase {
 		return PLAN && planBudgetExpired();
 	}
 	
+        
+        @Override
 	public String toString(){
-		return "PuppetSearchMCTS("+script.toString()+")";
+            return getClass().getSimpleName() + "("+
+                   MAX_TIME + ", " + MAX_ITERATIONS + ", " +
+                   PLAN_TIME + ", " + PLAN_PLAYOUTS + ", " + STEP_PLAYOUT_TIME + ", " + EVAL_PLAYOUT_TIME + ", " +
+                   policy1 + ", " + script + ", " + eval + ")"; 
 	}
+        
+        
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+        
+        parameters.add(new ParameterSpecification("TimeBudget",int.class,100));
+        parameters.add(new ParameterSpecification("IterationsBudget",int.class,-1));
+        parameters.add(new ParameterSpecification("PlanTimeBudget",int.class,5000));
+        parameters.add(new ParameterSpecification("PlanIterationsBudget",int.class,-1));
+
+
+        parameters.add(new ParameterSpecification("StepPlayoutTime",int.class,100));
+        parameters.add(new ParameterSpecification("EvalPlayoutTime",int.class,100));
+        parameters.add(new ParameterSpecification("Policy",AI.class,policy1));
+//        parameters.add(new ParameterSpecification("Script",ConfigurableScript.class, script));
+        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));        
+        
+        return parameters;
+    }   
+    
+    
+    public int getTimeBudget() {
+        return MAX_TIME;
+    }
+    
+    
+    public void setTimeBudget(int a_tb) {
+        MAX_TIME = a_tb;
+    }
+
+
+    public int getIterationsBudget() {
+        return MAX_ITERATIONS;
+    }
+    
+    
+    public void setIterationsBudget(int a_ib) {
+        MAX_ITERATIONS = a_ib;
+    }    
+
+
+    public int getPlanTimeBudget() {
+        return PLAN_TIME;
+    }
+    
+    
+    public void setPlanTimeBudget(int a_ib) {
+        PLAN_TIME = a_ib;
+    }    
+
+
+    public int getPlanIterationsBudget() {
+        return PLAN_PLAYOUTS;
+    }
+    
+    
+    public void setPlanIterationsBudget(int a_ib) {
+        PLAN_PLAYOUTS = a_ib;
+    }    
+
+
+    public int getStepPlayoutTime() {
+        return STEP_PLAYOUT_TIME;
+    }
+    
+    
+    public void setStepPlayoutTime(int a_ib) {
+        STEP_PLAYOUT_TIME = a_ib;
+    }    
+
+
+    public int getEvalPlayoutTime() {
+        return EVAL_PLAYOUT_TIME;
+    }
+    
+    
+    public void setEvalPlayoutTime(int a_ib) {
+        EVAL_PLAYOUT_TIME = a_ib;
+    }    
+    
+    
+    public AI getPolicy() {
+        return policy1;
+    }
+    
+    
+    public void setPolicy(AI a) throws Exception {
+        policy1 = (AI) a.clone();
+        policy2 = (AI) a.clone();
+    }      
+
+
+    public EvaluationFunction getEvaluationFunction() {
+        return eval;
+    }
+    
+    
+    public void setEvaluationFunction(EvaluationFunction a_ef) {
+        eval = a_ef;
+    }      
+    
 }

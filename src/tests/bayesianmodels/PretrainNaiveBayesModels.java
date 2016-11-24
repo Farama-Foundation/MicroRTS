@@ -90,13 +90,13 @@ public class PretrainNaiveBayesModels {
         
         BayesianModel model = null;
         if (model_type == CALIBRATED_NAIVE_BAYES) {
-            model = new CalibratedNaiveBayes(Xsizes, allPossibleActions.size(), BayesianModel.ESTIMATION_LAPLACE, 0.0, utt, fg);
+            model = new CalibratedNaiveBayes(Xsizes, allPossibleActions.size(), BayesianModel.ESTIMATION_LAPLACE, 0.0, utt, fg, "CNB");
         } else if (model_type == ACTION_INTERDEPENDENCE_MODEL) {
-            model = new ActionInterdependenceModel(Xsizes, allPossibleActions.size(), BayesianModel.ESTIMATION_LAPLACE, 0.0, utt, fg);
+            model = new ActionInterdependenceModel(Xsizes, allPossibleActions.size(), BayesianModel.ESTIMATION_LAPLACE, 0.0, utt, fg, "AIM");
         } else if (model_type == CALIBRATED_NAIVE_BAYES_BY_UNIT_TYPE) {
-            model = new BayesianModelByUnitTypeWithDefaultModel(utt, new CalibratedNaiveBayes(Xsizes, allPossibleActions.size(), BayesianModel.ESTIMATION_LAPLACE, 0.0, utt, fg));
+            model = new BayesianModelByUnitTypeWithDefaultModel(utt, new CalibratedNaiveBayes(Xsizes, allPossibleActions.size(), BayesianModel.ESTIMATION_LAPLACE, 0.0, utt, fg, "CNB"), "CNB");
         } else if (model_type == ACTION_INTERDEPENDENCE_MODEL_BY_UNIT_TYPE) {
-            model = new BayesianModelByUnitTypeWithDefaultModel(utt, new ActionInterdependenceModel(Xsizes, allPossibleActions.size(), BayesianModel.ESTIMATION_LAPLACE, 0.0, utt, fg));
+            model = new BayesianModelByUnitTypeWithDefaultModel(utt, new ActionInterdependenceModel(Xsizes, allPossibleActions.size(), BayesianModel.ESTIMATION_LAPLACE, 0.0, utt, fg, "AIM"), "AIM");
         }
         model.featureSelectionByCrossValidation(X_l, Y_l, instances);
         model.train(X_l, Y_l, instances);

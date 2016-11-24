@@ -1,10 +1,14 @@
 package ai.puppet;
 
+import ai.abstraction.pathfinding.FloodFillPathFinding;
 import java.util.Collection;
 import java.util.EnumMap;
 
 import ai.abstraction.pathfinding.PathFinding;
 import ai.core.AI;
+import ai.core.ParameterSpecification;
+import java.util.ArrayList;
+import java.util.List;
 import rts.GameState;
 import rts.PlayerAction;
 
@@ -77,4 +81,14 @@ public class SingleChoiceConfigurableScript extends ConfigurableScript<SingleCho
 		return str+")";
 	}
 
+        
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+        
+        parameters.add(new ParameterSpecification("PathFinding", PathFinding.class, new FloodFillPathFinding()));
+        parameters.add(new ParameterSpecification("Scripts", AI[].class, scripts));
+        
+        return parameters;
+    }          
 }

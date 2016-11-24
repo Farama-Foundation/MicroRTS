@@ -6,7 +6,9 @@ package rts;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import rts.units.Unit;
@@ -62,12 +64,28 @@ public class PhysicalGameState implements Serializable {
         return height;
     }
     
+    // note: these functions do not change the terrain array, remember to change that when
+    //       you change the map width or height
+    public void setWidth(int w) {
+        width = w;
+    }
+    
+    // note: these functions do not change the terrain array, remember to change that when
+    //       you change the map width or height
+    public void setHeight(int h) {
+        height = h;
+    }      
+    
     public int getTerrain(int x,int y) {
         return terrain[x+y*width];
     }
     
     public void setTerrain(int x,int y, int v) {
         terrain[x+y*width] = v;
+    }
+    
+    public void setTerrain(int t[]){
+        terrain = t;
     }
     
     public void addPlayer(Player p) {
@@ -182,6 +200,18 @@ public class PhysicalGameState implements Serializable {
         return pgs;
     }
 
+
+    public PhysicalGameState cloneKeepingUnits() {
+        PhysicalGameState pgs = new PhysicalGameState(width, height, terrain);  // The terrain is shared amongst all instances, since it never changes
+        for(Player p:players) {
+            pgs.players.add(p);
+        }
+        for(Unit u:units) {
+            pgs.units.add(u);
+        }
+        return pgs;
+    }
+
     
     public PhysicalGameState cloneIncludingTerrain() {
         int new_terrain[] = new int[terrain.length];
@@ -226,6 +256,7 @@ public class PhysicalGameState implements Serializable {
         return true;
     }
     
+    
     public void toxml(XMLWriter w) {
        w.tagWithAttributes(this.getClass().getName(), "width=\"" + width + "\" height=\"" + height + "\"");
        String tmp = "";
@@ -240,6 +271,29 @@ public class PhysicalGameState implements Serializable {
        w.tag("/" + this.getClass().getName());
     }
     
+    
+    public void toJSON(Writer w) throws Exception {
+        w.write("{\n");
+        w.write("\"width\":"+width+",\"height\":" + height + ",\n");
+        w.write("\"terrain\":\"");
+        for(int i = 0;i<height*width;i++) w.write("" + terrain[i]);
+        w.write("\",\n");
+        w.write("\"players\":[\n");
+        for(int i = 0;i<players.size();i++) {
+            players.get(i).toJSON(w);
+            if (i<players.size()-1) w.write(",\n");
+        }
+        w.write("],\n");
+        w.write("\"units\":[\n");
+        for(int i = 0;i<units.size();i++) {
+            units.get(i).toJSON(w);
+            if (i<units.size()-1) w.write(",\n");
+        }
+        w.write("]\n");
+        w.write("}");
+    }
+    
+       
     public PhysicalGameState(Element e, UnitTypeTable utt) {
         Element terrain_e = e.getChild("terrain");
         Element players_e = e.getChild("players");
@@ -265,7 +319,9 @@ public class PhysicalGameState implements Serializable {
 
         }
     }    
- public boolean[][] getAllFree() {
+    
+    
+     public boolean[][] getAllFree() {
     	
     	boolean free[][]=new boolean[getWidth()][getHeight()];
     	for(int x=0;x<getWidth();x++){

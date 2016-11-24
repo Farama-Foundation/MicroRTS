@@ -4,6 +4,7 @@
  */
 package ai.core;
 
+import java.util.List;
 import rts.GameState;
 import rts.PlayerAction;
 
@@ -14,8 +15,10 @@ import rts.PlayerAction;
 public abstract class AI {
     public abstract void reset();
     public abstract PlayerAction getAction(int player, GameState gs) throws Exception;
+    @Override
     public abstract AI clone();   // this function is not supposed to do an exact clone with all the internal state, etc.
                                   // just a copy of the AI witht he same configuration.
+    
     
     // This method can be used to report any meaningful statistics once the game is over 
     // (for example, average nodes explored per move, etc.)
@@ -23,13 +26,18 @@ public abstract class AI {
         return null;
     }
     
+    
     public void printStats() {
         String stats = statisticsString();
         if (stats!=null) System.out.println(stats);        
     }
     
+    
+    @Override
     public String toString() {
         return this.getClass().getSimpleName();
     }  
     
+    
+    public abstract List<ParameterSpecification> getParameters();
 } 

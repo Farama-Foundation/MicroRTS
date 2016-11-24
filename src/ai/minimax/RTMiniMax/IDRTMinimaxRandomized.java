@@ -6,13 +6,17 @@ package ai.minimax.RTMiniMax;
 
 import ai.evaluation.EvaluationFunctionForwarding;
 import ai.core.AI;
+import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
+import ai.evaluation.SimpleSqrtEvaluationFunction3;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import rts.GameState;
 import rts.PlayerAction;
 import rts.PlayerActionGenerator;
+import rts.units.UnitTypeTable;
 import util.Pair;
 
 /**
@@ -26,13 +30,19 @@ import util.Pair;
 public class IDRTMinimaxRandomized extends IDRTMinimax {
     int m_repeats = 10; // howmany times will we repeat the search for each action in the root node?
     
+    
+    public IDRTMinimaxRandomized(UnitTypeTable utt) {
+        this(100, 10, new SimpleSqrtEvaluationFunction3());
+    }
+
+    
     public IDRTMinimaxRandomized(int tpc, int repeats, EvaluationFunction a_ef) {
         super(tpc, a_ef);
     }
 
     
     public AI clone() {
-        return new IDRTMinimaxRandomized(MAX_TIME, m_repeats, ef);
+        return new IDRTMinimaxRandomized(TIME_BUDGET, m_repeats, ef);
     }
 
 
@@ -267,5 +277,31 @@ public class IDRTMinimaxRandomized extends IDRTMinimax {
             return head.actions.getRandom();
         }
         return null;
+    }
+    
+    
+    public String toString() {
+        return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", " + m_repeats + ", " + ef + ")";
+    }     
+    
+    
+    @Override
+    public List<ParameterSpecification> getParameters()
+    {
+        List<ParameterSpecification> parameters = super.getParameters();
+        
+        parameters.add(new ParameterSpecification("Repeats",int.class,10));
+        
+        return parameters;
+    }        
+    
+    
+    public int getRepeats() {
+        return m_repeats;
+    }
+    
+    
+    public void setRepeats(int a_r) {
+        m_repeats = a_r;
     }
 }

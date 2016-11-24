@@ -5,6 +5,7 @@
 package rts;
 
 import java.io.Serializable;
+import java.io.Writer;
 
 import org.jdom.Element;
 import rts.units.Unit;
@@ -46,6 +47,10 @@ public class Player  implements Serializable {
     public void toxml(XMLWriter w) {
        w.tagWithAttributes(this.getClass().getName(), "ID=\"" + ID + "\" resources=\"" + resources  + "\"");
        w.tag("/" + this.getClass().getName());
+    }
+    
+    public void toJSON(Writer w) throws Exception {
+        w.write("{\"ID\":"+ID+", \"resources\":"+resources+"}");
     }
     
     public Player(Element e) {

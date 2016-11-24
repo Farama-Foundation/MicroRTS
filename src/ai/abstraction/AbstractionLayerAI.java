@@ -33,18 +33,23 @@ public abstract class AbstractionLayerAI extends AI {
     //      - harvest(target)
     //      - attack(target)
     
-    protected HashMap<Unit,AbstractAction> actions = new LinkedHashMap<Unit,AbstractAction>();
+    protected HashMap<Unit,AbstractAction> actions = new LinkedHashMap<>();
     protected PathFinding pf = null;
             
     public AbstractionLayerAI(PathFinding a_pf) {
         pf = a_pf;
     }
-            
+           
+    
+    @Override
     public void reset(){
     	actions.clear();
     }
+    
 
+    @Override
     public abstract AI clone();
+    
     
     public PlayerAction translateActions(int player, GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
@@ -189,6 +194,7 @@ public abstract class AbstractionLayerAI extends AI {
         return -1;
     }
     
+    
     public boolean buildIfNotAlreadyBuilding(Unit u, UnitType type, int desiredX, int desiredY, List<Integer> reservedPositions, Player p, PhysicalGameState pgs){
     	AbstractAction action=getAbstractAction(u);
     	if(!(action instanceof Build) || ((Build)action).type != type){
@@ -199,5 +205,21 @@ public abstract class AbstractionLayerAI extends AI {
     	}else{
     		return false;
     	}
+    }
+    
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + pf + ")";
+    }
+    
+    
+    public PathFinding getPathFinding() {
+        return pf;
+    }
+    
+    
+    public void setPathFinding(PathFinding a_pf) {
+        pf = a_pf;
     }
 }   

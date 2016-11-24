@@ -5,17 +5,19 @@
 package rts;
 
 import java.io.Serializable;
+import java.io.Writer;
 import java.util.*;
 import rts.units.Unit;
 import rts.units.UnitTypeTable;
 import util.Pair;
+import util.XMLWriter;
 
 /**
  *
  * @author santi
  */
 public class GameState implements Serializable{
-	static Random r = new Random();         // only used if the action conflict resolution strategy is set to random
+    static Random r = new Random();         // only used if the action conflict resolution strategy is set to random
     int unitCancelationCounter = 0;  // only used if the action conflict resolution strategy is set to alternating
     
     int time = 0;
@@ -261,13 +263,23 @@ public class GameState implements Serializable{
     public boolean isUnitActionAllowed(Unit u, UnitAction ua) {
         PlayerAction empty = new PlayerAction();
 
+        if (ua.getType()==UnitAction.TYPE_MOVE) {
+            int x2 = u.getX() + UnitAction.DIRECTION_OFFSET_X[ua.getDirection()];
+            int y2 = u.getY() + UnitAction.DIRECTION_OFFSET_Y[ua.getDirection()];
+            if (x2<0 || y2<0 ||
+                x2>=getPhysicalGameState().getWidth() || 
+                y2>=getPhysicalGameState().getHeight() ||
+                getPhysicalGameState().getTerrain(x2, y2) == PhysicalGameState.TERRAIN_WALL ||
+                getPhysicalGameState().getUnitAt(x2, y2) != null) return false;
+        }
+        
         // Generate the reserved resources:
         for(Unit u2:pgs.getUnits()) {
-                UnitActionAssignment uaa = unitActions.get(u2);
-                if (uaa!=null) {
-                    ResourceUsage ru = uaa.action.resourceUsage(u2, pgs);
-                    empty.r.merge(ru);
-                }
+            UnitActionAssignment uaa = unitActions.get(u2);
+            if (uaa!=null) {
+                ResourceUsage ru = uaa.action.resourceUsage(u2, pgs);
+                empty.r.merge(ru);
+            }
         }
         
         if (ua.resourceUsage(u, pgs).consistentWith(empty.getResourceUsage(), this)) return true;
@@ -493,5 +505,39 @@ public class GameState implements Serializable{
         tmp += pgs;
         return tmp;
     }
+
     
+    public void toxml(XMLWriter w) {
+        w.tagWithAttributes(this.getClass().getName(),"time=\"" + time + "\"");
+        pgs.toxml(w);
+        w.tag("actions");
+        for(Unit u:unitActions.keySet()) {
+            UnitActionAssignment uaa = unitActions.get(u);
+            w.tagWithAttributes("unitAction","ID=\""+uaa.unit.getID()+"\" time=\""+uaa.time+"\"");
+            uaa.action.toxml(w);
+            w.tag("/unitAction");
+        }
+        w.tag("/actions");
+        w.tag("/" + this.getClass().getName());
+    }
+    
+
+    public void toJSON(Writer w) throws Exception {
+        w.write("{\n");
+        w.write("\"time\":" + time + ",\n\"pgs\":");
+        pgs.toJSON(w);
+        w.write(",\n\"actions\":[\n");
+        boolean first = true;
+        for(Unit u:unitActions.keySet()) {
+            if (!first) w.write(",\n");
+            first = false;
+            UnitActionAssignment uaa = unitActions.get(u);
+            w.write("{\"ID\":" + uaa.unit.getID() + ", \"time\":"+uaa.time+", \"action\":");
+            uaa.action.toJSON(w);
+            w.write("}");
+        }
+        w.write("]\n");
+        w.write("}");
+    }
+
 }

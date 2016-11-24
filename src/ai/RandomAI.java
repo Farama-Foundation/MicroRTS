@@ -5,8 +5,12 @@
 package ai;
 
 import ai.core.AI;
+import ai.core.ParameterSpecification;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import rts.*;
+import rts.units.UnitTypeTable;
 
 /**
  *
@@ -15,13 +19,27 @@ import rts.*;
 public class RandomAI extends AI {
     Random r = new Random();
 
-    public void reset() {
+    
+    public RandomAI(UnitTypeTable utt) {
     }
     
+
+    public RandomAI() {
+    }
+    
+    
+    @Override
+    public void reset() {
+    }
+
+    
+    @Override
     public AI clone() {
         return new RandomAI();
     }
    
+    
+    @Override
     public PlayerAction getAction(int player, GameState gs) {
         try {
             if (!gs.canExecuteAnyAction(player)) return new PlayerAction();
@@ -34,4 +52,12 @@ public class RandomAI extends AI {
             return new PlayerAction();
         }
     }
+    
+    
+    @Override
+    public List<ParameterSpecification> getParameters()
+    {
+        return new ArrayList<>();
+    }
+    
 }

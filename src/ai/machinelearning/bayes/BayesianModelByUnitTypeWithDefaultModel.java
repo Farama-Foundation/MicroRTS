@@ -24,14 +24,14 @@ public class BayesianModelByUnitTypeWithDefaultModel extends BayesianModel {
     HashMap<UnitType,BayesianModel> unitModels = new HashMap<>();
     BayesianModel defaultModel = null;
     
-    public BayesianModelByUnitTypeWithDefaultModel(UnitTypeTable utt, BayesianModel tm) {
-        super(utt, tm.featureGenerator);
+    public BayesianModelByUnitTypeWithDefaultModel(UnitTypeTable utt, BayesianModel tm, String a_name) {
+        super(utt, tm.featureGenerator, a_name);
         templateModel = tm;
     }
     
     
     public Object clone() {
-        return new BayesianModelByUnitTypeWithDefaultModel(utt, templateModel);
+        return new BayesianModelByUnitTypeWithDefaultModel(utt, templateModel, name);
     }    
     
     
@@ -191,8 +191,8 @@ public class BayesianModelByUnitTypeWithDefaultModel extends BayesianModel {
     }    
     
     
-    public BayesianModelByUnitTypeWithDefaultModel(Element e, UnitTypeTable utt, BayesianModel tm) throws Exception {
-        super(utt, tm.featureGenerator);
+    public BayesianModelByUnitTypeWithDefaultModel(Element e, UnitTypeTable utt, BayesianModel tm, String a_name) throws Exception {
+        super(utt, tm.featureGenerator, a_name);
         templateModel = tm;
         load(e);
     }
@@ -212,5 +212,5 @@ public class BayesianModelByUnitTypeWithDefaultModel extends BayesianModel {
         defaultModel = (BayesianModel) templateModel.clone();
         defaultModel.load((Element)dm_xml.getChildren().get(0));
     }    
-
+    
 }

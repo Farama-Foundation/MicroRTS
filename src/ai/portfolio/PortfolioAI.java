@@ -6,11 +6,20 @@
 
 package ai.portfolio;
 
+import ai.RandomBiasedAI;
+import ai.abstraction.LightRush;
+import ai.abstraction.RangedRush;
+import ai.abstraction.WorkerRush;
 import ai.core.AI;
 import ai.core.InterruptibleAIWithComputationBudget;
+import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
+import ai.evaluation.SimpleSqrtEvaluationFunction3;
+import java.util.ArrayList;
+import java.util.List;
 import rts.GameState;
 import rts.PlayerAction;
+import rts.units.UnitTypeTable;
 
 /**
  *
@@ -31,6 +40,18 @@ public class PortfolioAI extends InterruptibleAIWithComputationBudget {
     int nplayouts = 0;
     int playerForThisComputation;
     
+    
+    public PortfolioAI(UnitTypeTable utt) {
+        this(new AI[]{new WorkerRush(utt),
+                      new LightRush(utt),
+                      new RangedRush(utt),
+                      new RandomBiasedAI()},
+             new boolean[]{true,true,true,false},
+             100, -1, 100,
+             new SimpleSqrtEvaluationFunction3());
+    }
+    
+    
     public PortfolioAI(AI s[], boolean d[], int time, int max_playouts, int la, EvaluationFunction e) {
         super(time, max_playouts);
         LOOKAHEAD = la;
@@ -39,10 +60,13 @@ public class PortfolioAI extends InterruptibleAIWithComputationBudget {
         evaluation = e;
     }
     
+    
+    @Override
     public void reset() {
     }
 
     
+    @Override
     public void startNewComputation(int a_player, GameState gs) {
         int n = strategies.length;
         scores = new double[n][n];
@@ -58,6 +82,8 @@ public class PortfolioAI extends InterruptibleAIWithComputationBudget {
         gs_to_start_from = null;
     }
     
+    
+    @Override
     public void computeDuringOneGameFrame() throws Exception {        
         int n = strategies.length;
         boolean timeout = false;
@@ -90,8 +116,8 @@ public class PortfolioAI extends InterruptibleAIWithComputationBudget {
                         counts[i][j]++;
                         nplayouts++;
                     }
-                    if (MAX_ITERATIONS>0 && nplayouts>=MAX_ITERATIONS) timeout = true;
-                    if (MAX_TIME>0 && System.currentTimeMillis()>start+MAX_TIME) timeout = true;
+                    if (ITERATIONS_BUDGET>0 && nplayouts>=ITERATIONS_BUDGET) timeout = true;
+                    if (TIME_BUDGET>0 && System.currentTimeMillis()>start+TIME_BUDGET) timeout = true;
                 }
             }
             // when all the AIs are deterministic, as soon as we have done one play out with each, we are done
@@ -151,8 +177,51 @@ public class PortfolioAI extends InterruptibleAIWithComputationBudget {
         return ai.getAction(playerForThisComputation, gs_to_start_from);
     }
 
+    
+    @Override
     public AI clone() {
-        return new PortfolioAI(strategies, deterministic, MAX_TIME, MAX_ITERATIONS, LOOKAHEAD, evaluation);
+        return new PortfolioAI(strategies, deterministic, TIME_BUDGET, ITERATIONS_BUDGET, LOOKAHEAD, evaluation);
     }
     
+    
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", " + LOOKAHEAD + ", " + evaluation + ")";
+    }
+
+    
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+        
+        parameters.add(new ParameterSpecification("TimeBudget",int.class,100));
+        parameters.add(new ParameterSpecification("IterationsBudget",int.class,-1));
+        parameters.add(new ParameterSpecification("PlayoutLookahead",int.class,100));
+        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
+
+//        parameters.add(new ParameterSpecification("Strategies", AI[].class, strategies));
+//        parameters.add(new ParameterSpecification("Deterministic", boolean[].class, deterministic));
+        
+        return parameters;
+    }
+    
+    
+    public int getPlayoutLookahead() {
+        return LOOKAHEAD;
+    }
+    
+    
+    public void setPlayoutLookahead(int a_pola) {
+        LOOKAHEAD = a_pola;
+    }
+       
+    
+    public EvaluationFunction getEvaluationFunction() {
+        return evaluation;
+    }
+    
+    
+    public void setEvaluationFunction(EvaluationFunction a_ef) {
+        evaluation = a_ef;
+    }            
 }

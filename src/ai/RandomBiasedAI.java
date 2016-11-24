@@ -5,10 +5,13 @@
 package ai;
 
 import ai.core.AI;
+import ai.core.ParameterSpecification;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import rts.*;
 import rts.units.Unit;
+import rts.units.UnitTypeTable;
 import util.Sampler;
 
 /**
@@ -20,20 +23,33 @@ import util.Sampler;
  * 
  */
 public class RandomBiasedAI extends AI {
+    static final double REGULAR_ACTION_WEIGHT = 1;
+    static final double BIASED_ACTION_WEIGHT = 5;
     Random r = new Random();
 
+    
+    public RandomBiasedAI(UnitTypeTable utt) {
+    }
+    
+
+    public RandomBiasedAI() {
+    }
+    
+    
+    @Override
     public void reset() {   
     }    
     
+    
+    @Override
     public AI clone() {
         return new RandomBiasedAI();
     }
     
+    
+    @Override
     public PlayerAction getAction(int player, GameState gs) {
         // attack, harvest and return have 5 times the probability of other actions
-        double regularActionWeight = 1;
-        double biasedActionWeight = 5;
-
         PhysicalGameState pgs = gs.getPhysicalGameState();
         PlayerAction pa = new PlayerAction();
         
@@ -41,13 +57,11 @@ public class RandomBiasedAI extends AI {
 
         // Generate the reserved resources:
         for(Unit u:pgs.getUnits()) {
-//            if (u.getPlayer()==pID) {
-                UnitActionAssignment uaa = gs.getActionAssignment(u);
-                if (uaa!=null) {
-                    ResourceUsage ru = uaa.action.resourceUsage(u, pgs);
-                    pa.getResourceUsage().merge(ru);
-                }
-//            }
+            UnitActionAssignment uaa = gs.getActionAssignment(u);
+            if (uaa!=null) {
+                ResourceUsage ru = uaa.action.resourceUsage(u, pgs);
+                pa.getResourceUsage().merge(ru);
+            }
         }
         
         for(Unit u:pgs.getUnits()) {
@@ -65,9 +79,9 @@ public class RandomBiasedAI extends AI {
                         if (a.getType()==UnitAction.TYPE_ATTACK_LOCATION ||
                             a.getType()==UnitAction.TYPE_HARVEST ||
                             a.getType()==UnitAction.TYPE_RETURN) {
-                            distribution[i]=biasedActionWeight;
+                            distribution[i]=BIASED_ACTION_WEIGHT;
                         } else {
-                            distribution[i]=regularActionWeight;
+                            distribution[i]=REGULAR_ACTION_WEIGHT;
                         }
                         i++;
                     }
@@ -91,5 +105,12 @@ public class RandomBiasedAI extends AI {
         
         return pa;
     }
+    
+    
+    @Override
+    public List<ParameterSpecification> getParameters()
+    {
+        return new ArrayList<>();
+    }    
     
 }

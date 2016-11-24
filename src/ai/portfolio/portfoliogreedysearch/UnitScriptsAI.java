@@ -6,6 +6,8 @@
 package ai.portfolio.portfoliogreedysearch;
 
 import ai.core.AI;
+import ai.core.ParameterSpecification;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import rts.GameState;
@@ -27,6 +29,7 @@ public class UnitScriptsAI extends AI {
     HashMap<Unit,UnitScript> scripts = new HashMap<>();
     HashMap<UnitType, List<UnitScript>> allScripts = null;
     UnitScript defaultScript = null;
+    
     
     public UnitScriptsAI(UnitScript a_scripts[], List<Unit> a_units,
                          HashMap<UnitType, List<UnitScript>> a_allScripts,
@@ -76,8 +79,29 @@ public class UnitScriptsAI extends AI {
         return pa;
     }
 
+    
+    @Override
     public AI clone() {
         return new UnitScriptsAI(scriptsInput, unitsInput, allScripts, defaultScript);
+    }
+    
+    
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "()";
+    }
+
+    
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+        
+        parameters.add(new ParameterSpecification("Scripts", List.class, scriptsInput));
+        parameters.add(new ParameterSpecification("Units", List.class, unitsInput));
+        parameters.add(new ParameterSpecification("AllScripts", HashMap.class, allScripts));
+        parameters.add(new ParameterSpecification("DefaultScript", UnitScript.class, defaultScript));
+        
+        return parameters;
     }
     
 }
