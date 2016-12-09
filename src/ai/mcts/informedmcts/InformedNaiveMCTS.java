@@ -6,7 +6,7 @@ package ai.mcts.informedmcts;
 
 import ai.*;
 import ai.core.AI;
-import ai.core.InterruptibleAIWithComputationBudget;
+import ai.core.AIWithComputationBudget;
 import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
@@ -22,12 +22,13 @@ import org.jdom.input.SAXBuilder;
 import rts.GameState;
 import rts.PlayerAction;
 import rts.units.UnitTypeTable;
+import ai.core.InterruptibleAI;
 
 /**
  *
  * @author santi
  */
-public class InformedNaiveMCTS extends InterruptibleAIWithComputationBudget {
+public class InformedNaiveMCTS extends AIWithComputationBudget implements InterruptibleAI {
     public static int DEBUG = 0;
     public EvaluationFunction ef = null;
     UnitTypeTable utt = null;
@@ -161,6 +162,18 @@ public class InformedNaiveMCTS extends InterruptibleAIWithComputationBudget {
     public AI clone() {
         return new InformedNaiveMCTS(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME, MAX_TREE_DEPTH, epsilon_l, discount_l, epsilon_g, discount_g, epsilon_0, discount_0, playoutPolicy, bias, ef, utt);
     }    
+    
+    
+    public final PlayerAction getAction(int player, GameState gs) throws Exception
+    {
+        if (gs.canExecuteAnyAction(player)) {
+            startNewComputation(player,gs.clone());
+            computeDuringOneGameFrame();
+            return getBestActionSoFar();
+        } else {
+            return new PlayerAction();        
+        }       
+    }
     
     
     public void startNewComputation(int a_player, GameState gs) throws Exception {

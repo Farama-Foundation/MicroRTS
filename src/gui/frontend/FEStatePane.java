@@ -9,7 +9,6 @@ package gui.frontend;
 import ai.core.AI;
 import ai.core.AIWithComputationBudget;
 import ai.core.ContinuingAI;
-import ai.core.InterruptibleAIWithComputationBudget;
 import ai.core.PseudoContinuingAI;
 import ai.BranchingFactorCalculatorDouble;
 import ai.BranchingFactorCalculatorLong;
@@ -92,6 +91,7 @@ import rts.units.UnitTypeTable;
 import tests.MapGenerator;
 import util.Pair;
 import util.XMLWriter;
+import ai.core.InterruptibleAI;
 
 /**
  *
@@ -765,8 +765,8 @@ public class FEStatePane extends JPanel {
             if (continuingBox[player].isSelected()) {
                 // If the user wants a "continuous" AI, check if we can wrap it around a continuing decorator:
                 if (ai instanceof AIWithComputationBudget) {
-                    if (ai instanceof InterruptibleAIWithComputationBudget) {
-                        ai = new ContinuingAI((InterruptibleAIWithComputationBudget)ai);
+                    if (ai instanceof InterruptibleAI) {
+                        ai = new ContinuingAI(ai);
                     } else {
                         ai = new PseudoContinuingAI((AIWithComputationBudget)ai);        				
                     }

@@ -12,6 +12,13 @@ import rts.PlayerAction;
 /**
  *
  * @author santi
+ * 
+ * - This class is just a wrapper around some other AI class, that "fakes" the AI to be a "Continuing" one by doing this:
+ *      - The AI keeps track of each game cycle in which the AI had nothing to do (none of its units were ready to execute an action)
+ *      - Then, when it comes time to execute an action, it uses additional time based on how many of those game cycles the AI was idle.
+ *      - So, basically, instead of splitting computation across frames, this AI, just does all the computation in the last game cycle
+ * - This AI will violate the timing checks of the tournament setting of the game, but it is useful for experimentation purposes.   
+ * 
  */
 public class PseudoContinuingAI extends AI {
     public static int DEBUG = 0;

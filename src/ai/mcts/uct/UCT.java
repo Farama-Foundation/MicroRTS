@@ -6,7 +6,7 @@ package ai.mcts.uct;
 
 import ai.core.AI;
 import ai.RandomBiasedAI;
-import ai.core.InterruptibleAIWithComputationBudget;
+import ai.core.AIWithComputationBudget;
 import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
@@ -16,12 +16,13 @@ import java.util.Random;
 import rts.GameState;
 import rts.PlayerAction;
 import rts.units.UnitTypeTable;
+import ai.core.InterruptibleAI;
 
 /**
  *
  * @author santi
  */
-public class UCT extends InterruptibleAIWithComputationBudget {
+public class UCT extends AIWithComputationBudget implements InterruptibleAI {
     public static int DEBUG = 0;
     EvaluationFunction ef = null;
        
@@ -85,6 +86,18 @@ public class UCT extends InterruptibleAIWithComputationBudget {
     public AI clone() {
         return new UCT(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME, MAX_TREE_DEPTH, randomAI, ef);
     }  
+    
+    
+    public final PlayerAction getAction(int player, GameState gs) throws Exception
+    {
+        if (gs.canExecuteAnyAction(player)) {
+            startNewComputation(player,gs.clone());
+            computeDuringOneGameFrame();
+            return getBestActionSoFar();
+        } else {
+            return new PlayerAction();        
+        }       
+    }
     
     
     public void startNewComputation(int a_player, GameState gs) throws Exception {

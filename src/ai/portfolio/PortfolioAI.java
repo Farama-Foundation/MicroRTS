@@ -11,7 +11,7 @@ import ai.abstraction.LightRush;
 import ai.abstraction.RangedRush;
 import ai.abstraction.WorkerRush;
 import ai.core.AI;
-import ai.core.InterruptibleAIWithComputationBudget;
+import ai.core.AIWithComputationBudget;
 import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
@@ -20,12 +20,13 @@ import java.util.List;
 import rts.GameState;
 import rts.PlayerAction;
 import rts.units.UnitTypeTable;
+import ai.core.InterruptibleAI;
 
 /**
  *
  * @author santi
  */
-public class PortfolioAI extends InterruptibleAIWithComputationBudget {
+public class PortfolioAI extends AIWithComputationBudget implements InterruptibleAI {
     
     public static int DEBUG = 0;
 
@@ -66,6 +67,18 @@ public class PortfolioAI extends InterruptibleAIWithComputationBudget {
     }
 
     
+    public final PlayerAction getAction(int player, GameState gs) throws Exception
+    {
+        if (gs.canExecuteAnyAction(player)) {
+            startNewComputation(player,gs.clone());
+            computeDuringOneGameFrame();
+            return getBestActionSoFar();
+        } else {
+            return new PlayerAction();        
+        }       
+    }
+
+
     @Override
     public void startNewComputation(int a_player, GameState gs) {
         int n = strategies.length;

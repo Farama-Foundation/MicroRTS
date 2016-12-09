@@ -7,7 +7,6 @@ package tests;
 import ai.core.AI;
 import ai.core.AIWithComputationBudget;
 import ai.core.ContinuingAI;
-import ai.core.InterruptibleAIWithComputationBudget;
 import ai.core.PseudoContinuingAI;
 import ai.portfolio.PortfolioAI;
 import ai.*;
@@ -33,6 +32,7 @@ import java.util.List;
 
 import rts.PhysicalGameState;
 import rts.units.UnitTypeTable;
+import ai.core.InterruptibleAI;
 
 /**
  *
@@ -86,8 +86,8 @@ public class CompareAllAIsPartiallyObservable {
         	List<AI> bots2 = new LinkedList<>();
         	for(AI bot:bots) {
         		if (bot instanceof AIWithComputationBudget) {
-        			if (bot instanceof InterruptibleAIWithComputationBudget) {
-        				bots2.add(new ContinuingAI((InterruptibleAIWithComputationBudget)bot));
+        			if (bot instanceof InterruptibleAI) {
+        				bots2.add(new ContinuingAI(bot));
         			} else {
         				bots2.add(new PseudoContinuingAI((AIWithComputationBudget)bot));        				
         			}

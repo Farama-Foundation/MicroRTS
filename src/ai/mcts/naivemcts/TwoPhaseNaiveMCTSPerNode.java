@@ -6,7 +6,7 @@ package ai.mcts.naivemcts;
 
 import ai.*;
 import ai.core.AI;
-import ai.core.InterruptibleAIWithComputationBudget;
+import ai.core.AIWithComputationBudget;
 import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
@@ -16,12 +16,13 @@ import java.util.Random;
 import rts.GameState;
 import rts.PlayerAction;
 import rts.units.UnitTypeTable;
+import ai.core.InterruptibleAI;
 
 /**
  *
  * @author santi
  */
-public class TwoPhaseNaiveMCTSPerNode extends InterruptibleAIWithComputationBudget {
+public class TwoPhaseNaiveMCTSPerNode extends AIWithComputationBudget implements InterruptibleAI {
     public static int DEBUG = 0;
     public EvaluationFunction ef = null;
        
@@ -125,6 +126,18 @@ public class TwoPhaseNaiveMCTSPerNode extends InterruptibleAIWithComputationBudg
                                              phase2_epsilon_l, phase2_epsilon_g, phase2_epsilon_0,
                                              phase1_budget, randomAI, ef);
     }    
+    
+    
+    public final PlayerAction getAction(int player, GameState gs) throws Exception
+    {
+        if (gs.canExecuteAnyAction(player)) {
+            startNewComputation(player,gs.clone());
+            computeDuringOneGameFrame();
+            return getBestActionSoFar();
+        } else {
+            return new PlayerAction();        
+        }       
+    }
     
     
     public void startNewComputation(int a_player, GameState gs) throws Exception {

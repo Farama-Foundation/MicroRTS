@@ -12,12 +12,22 @@ import rts.PlayerAction;
  *
  * @author santi
  * 
- * A "InterruptibleAI" is one that can divide the computation across multiple game frames. As such, it must implement the three
- * basic methods described below, does cannot modify the getAction method
+ * - A "InterruptibleAI" is one that can divide the computation across multiple game frames. As such, it must implement the three
+ * basic methods described below. 
+ * - Usually, this AI is used in combination with the "ContinuingAI" class
+ * 
  */
-public abstract class InterruptibleAIWithComputationBudget extends AIWithComputationBudget {
+public interface InterruptibleAI {
     
-    public InterruptibleAIWithComputationBudget(int mt, int mi) {
+    public void startNewComputation(int player, GameState gs) throws Exception;
+    public void computeDuringOneGameFrame() throws Exception;
+    public PlayerAction getBestActionSoFar() throws Exception;   
+}
+
+/*
+public abstract class InterruptibleAI extends AIWithComputationBudget {
+    
+    public InterruptibleAI(int mt, int mi) {
         super(mt,mi);
     }
     
@@ -35,5 +45,5 @@ public abstract class InterruptibleAIWithComputationBudget extends AIWithComputa
     public abstract void startNewComputation(int player, GameState gs) throws Exception;
     public abstract void computeDuringOneGameFrame() throws Exception;
     public abstract PlayerAction getBestActionSoFar() throws Exception;
-    
 }
+*/

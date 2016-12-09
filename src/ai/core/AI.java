@@ -14,7 +14,11 @@ import rts.PlayerAction;
  */
 public abstract class AI {
     public abstract void reset();
+    
+    
     public abstract PlayerAction getAction(int player, GameState gs) throws Exception;
+    
+    
     @Override
     public abstract AI clone();   // this function is not supposed to do an exact clone with all the internal state, etc.
                                   // just a copy of the AI witht he same configuration.
