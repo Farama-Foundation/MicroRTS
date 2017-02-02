@@ -71,7 +71,6 @@ public class LightRush extends AbstractionLayerAI {
     public PlayerAction getAction(int player, GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         Player p = gs.getPlayer(player);
-        PlayerAction pa = new PlayerAction();
 //        System.out.println("LightRushAI for player " + player + " (cycle " + gs.getTime() + ")");
 
         // behavior of bases:
