@@ -19,7 +19,8 @@ public class UnitType implements Serializable {
     public int cost = 1;
     public int hp = 1;
 
-    public int damage = 1;
+    public int minDamage = 1;
+    public int maxDamage = 1;
     public int attackRange = 1;
 
     public int produceTime = 10, 

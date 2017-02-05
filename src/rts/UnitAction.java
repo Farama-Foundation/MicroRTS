@@ -6,6 +6,7 @@ package rts;
 
 import java.io.Serializable;
 import java.io.Writer;
+import java.util.Random;
 
 import org.jdom.Element;
 import rts.units.*;
@@ -16,6 +17,8 @@ import util.XMLWriter;
  * @author santi
  */
 public class UnitAction implements Serializable {
+    public static Random r = new Random();  // only used for non-deterministic events    
+    
     public static final int TYPE_NONE = 0;
     public static final int TYPE_MOVE = 1;
     public static final int TYPE_HARVEST = 2;
@@ -172,7 +175,13 @@ public class UnitAction implements Serializable {
                 {
                     Unit u2 = pgs.getUnitAt(x, y);
                     if (u2!=null) {
-                        u2.setHitPoints(u2.getHitPoints() - u.getDamage());
+                        int damage;
+                        if (u.getMinDamage() == u.getMaxDamage()) {
+                            damage = u.getMinDamage();
+                        } else {
+                            damage = u.getMinDamage() + r.nextInt(1 + (u.getMaxDamage() - u.getMinDamage()));
+                        }
+                        u2.setHitPoints(u2.getHitPoints() - damage);
                         if (u2.getHitPoints()<=0) {
                             s.removeUnit(u2);
                         }

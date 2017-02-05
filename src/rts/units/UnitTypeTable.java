@@ -15,6 +15,7 @@ import java.util.List;
 public class UnitTypeTable implements Serializable {
     public static final int VERSION_ORIGINAL = 1;
     public static final int VERSION_ORIGINAL_FINETUNED = 2;
+    public static final int VERSION_NON_DETERMINISTIC = 3;
     
     public static final int MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH = 1;   // (default)
     public static final int MOVE_CONFLICT_RESOLUTION_CANCEL_RANDOM = 2;   // (makes game non-deterministic)
@@ -77,10 +78,13 @@ public class UnitTypeTable implements Serializable {
         barracks.cost = 5;
         barracks.hp = 4;
         switch(version) {
-            case VERSION_ORIGINAL: barracks.produceTime = 200;
-                                   break;
-            case VERSION_ORIGINAL_FINETUNED: barracks.produceTime = 100;
-                                   break;
+            case VERSION_ORIGINAL: 
+                barracks.produceTime = 200;
+                break;
+            case VERSION_ORIGINAL_FINETUNED: 
+            case VERSION_NON_DETERMINISTIC:
+                barracks.produceTime = 100;
+                break;
         }
         barracks.isResource = false;
         barracks.isStockpile = false;
@@ -95,7 +99,16 @@ public class UnitTypeTable implements Serializable {
         worker.name = "Worker";
         worker.cost = 1;
         worker.hp = 1;
-        worker.damage = 1;
+        switch(version) {
+            case VERSION_ORIGINAL:
+            case VERSION_ORIGINAL_FINETUNED:
+                worker.minDamage = worker.maxDamage = 1;
+                break;
+            case VERSION_NON_DETERMINISTIC:
+                worker.minDamage = 0;
+                worker.maxDamage = 2;
+                break;
+        }
         worker.attackRange = 1;
         worker.produceTime = 50;
         worker.moveTime = 10;
@@ -115,7 +128,16 @@ public class UnitTypeTable implements Serializable {
         light.name = "Light";
         light.cost = 2;
         light.hp = 4;
-        light.damage = 2;
+        switch(version) {
+            case VERSION_ORIGINAL:
+            case VERSION_ORIGINAL_FINETUNED:
+                light.minDamage = worker.maxDamage = 2;
+                break;
+            case VERSION_NON_DETERMINISTIC:
+                light.minDamage = 1;
+                light.maxDamage = 3;
+                break;
+        }
         light.attackRange = 1;
         light.produceTime = 80;
         light.moveTime = 8;
@@ -131,18 +153,30 @@ public class UnitTypeTable implements Serializable {
         // HEAVY: 
         UnitType heavy = new UnitType();
         heavy.name = "Heavy";
-        heavy.damage = 4;
+        switch(version) {
+            case VERSION_ORIGINAL:
+            case VERSION_ORIGINAL_FINETUNED:
+                heavy.minDamage = worker.maxDamage = 2;
+                break;
+            case VERSION_NON_DETERMINISTIC:
+                heavy.minDamage = 0;
+                heavy.maxDamage = 6;
+                break;
+        }
         heavy.attackRange = 1;
         heavy.produceTime = 120;
         switch(version) {
-            case VERSION_ORIGINAL: heavy.moveTime = 12;
-                                   heavy.hp = 4;
-                                   heavy.cost = 2;
-                                   break;
-            case VERSION_ORIGINAL_FINETUNED: heavy.moveTime = 10;
-                                             heavy.hp = 8;
-                                             heavy.cost = 3;
-                                             break;
+            case VERSION_ORIGINAL: 
+                heavy.moveTime = 12;
+                heavy.hp = 4;
+                heavy.cost = 2;
+                break;
+            case VERSION_ORIGINAL_FINETUNED: 
+            case VERSION_NON_DETERMINISTIC:
+                heavy.moveTime = 10;
+                heavy.hp = 8;
+                heavy.cost = 3;
+                break;
         }
         heavy.attackTime = 5;
         heavy.isResource = false;
@@ -158,7 +192,16 @@ public class UnitTypeTable implements Serializable {
         ranged.name = "Ranged";
         ranged.cost = 2;
         ranged.hp = 1;
-        ranged.damage = 1;
+        switch(version) {
+            case VERSION_ORIGINAL:
+            case VERSION_ORIGINAL_FINETUNED:
+                ranged.minDamage = worker.maxDamage = 1;
+                break;
+            case VERSION_NON_DETERMINISTIC:
+                ranged.minDamage = 1;
+                ranged.maxDamage = 2;
+                break;
+        }
         ranged.attackRange = 3;
         ranged.produceTime = 100;
         ranged.moveTime = 10;

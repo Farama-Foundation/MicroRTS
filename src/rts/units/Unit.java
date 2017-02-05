@@ -135,8 +135,12 @@ public class Unit implements Serializable {
         return type.attackRange;
     }
     
-    public int getDamage() {
-        return type.damage;
+    public int getMinDamage() {
+        return type.minDamage;
+    }
+
+    public int getMaxDamage() {
+        return type.maxDamage;
     }
     
     public int getHarvestAmount() {
