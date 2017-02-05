@@ -24,8 +24,7 @@ import rts.units.UnitTypeTable;
 public class PlayGameWithMouseTest {
     public static void main(String args[]) throws Exception {
         UnitTypeTable utt = new UnitTypeTable();
-        PhysicalGameState pgs = PhysicalGameState.load("maps/basesWorkers16x16.xml", utt);
-//        PhysicalGameState pgs = PhysicalGameState.load("maps/basesWorkers8x8.xml", utt);
+        PhysicalGameState pgs = PhysicalGameState.load("maps/16x16/basesWorkers16x16.xml", utt);
 
         GameState gs = new GameState(pgs, utt);
         int MAXCYCLES = 10000;

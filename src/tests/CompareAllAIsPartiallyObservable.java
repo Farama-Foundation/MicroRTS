@@ -104,11 +104,11 @@ public class CompareAllAIsPartiallyObservable {
         List<PhysicalGameState> maps = new LinkedList<PhysicalGameState>();        
 
         maps.clear();
-        maps.add(PhysicalGameState.load("maps/basesWorkers8x8.xml",utt));
+        maps.add(PhysicalGameState.load("maps/8x8/basesWorkers8x8.xml",utt));
         Experimenter.runExperimentsPartiallyObservable(bots, maps, utt, 10, 3000, 300, true, out);
       
         maps.clear();
-        maps.add(PhysicalGameState.load("maps/basesWorkers16x16.xml",utt));
+        maps.add(PhysicalGameState.load("maps/16x16/basesWorkers16x16.xml",utt));
         Experimenter.runExperimentsPartiallyObservable(bots, maps, utt, 10, 3000, 300, true, out);
     }
 }

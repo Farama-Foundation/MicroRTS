@@ -43,31 +43,31 @@ public class MapGenerator {
     public static void main(String args[]) throws IOException {
         MapGenerator mg = new MapGenerator(new UnitTypeTable());
         // Complete game maps:
-        XMLWriter xml = new XMLWriter(new FileWriter("maps/bases8x8.xml"));
+        XMLWriter xml = new XMLWriter(new FileWriter("maps/8x8/bases8x8.xml"));
         mg.bases8x8().toxml(xml);
         xml.flush();
 
-        xml = new XMLWriter(new FileWriter("maps/basesWorkers8x8.xml"));
+        xml = new XMLWriter(new FileWriter("maps/8x8/basesWorkers8x8.xml"));
         mg.basesWorkers8x8().toxml(xml);
         xml.flush();
 
-        xml = new XMLWriter(new FileWriter("maps/basesWorkers8x8Obstacle.xml"));
+        xml = new XMLWriter(new FileWriter("maps/8x8/basesWorkers8x8Obstacle.xml"));
         mg.basesWorkers8x8Obstacle().toxml(xml);
         xml.flush();
         
-        xml = new XMLWriter(new FileWriter("maps/basesWorkers12x12.xml"));
+        xml = new XMLWriter(new FileWriter("maps/12x12/basesWorkers12x12.xml"));
         mg.basesWorkers12x12().toxml(xml);
         xml.flush();
 
-        xml = new XMLWriter(new FileWriter("maps/complexBasesWorkers12x12.xml"));
+        xml = new XMLWriter(new FileWriter("maps/12x12/complexBasesWorkers12x12.xml"));
         mg.complexBasesWorkers12x12().toxml(xml);
         xml.flush();        
 
-        xml = new XMLWriter(new FileWriter("maps/basesWorkers16x16.xml"));
+        xml = new XMLWriter(new FileWriter("maps/16x16/basesWorkers16x16.xml"));
         mg.basesWorkers16x16().toxml(xml);
         xml.flush();
         
-        xml = new XMLWriter(new FileWriter("maps/basesWorkersBarracks8x8.xml"));
+        xml = new XMLWriter(new FileWriter("maps/8x8/basesWorkersBarracks8x8.xml"));
         mg.basesWorkersBarracks8x8().toxml(xml);
         xml.flush();
         
@@ -76,31 +76,31 @@ public class MapGenerator {
         mg.melee4x4light2().toxml(xml);
         xml.flush();
         
-        xml = new XMLWriter(new FileWriter("maps/melee8x8light4.xml"));
+        xml = new XMLWriter(new FileWriter("maps/8x8/melee8x8light4.xml"));
         mg.melee8x8light4().toxml(xml);
         xml.flush();
         
-        xml = new XMLWriter(new FileWriter("maps/melee8x8Mixed4.xml"));
+        xml = new XMLWriter(new FileWriter("maps/8x8/melee8x8Mixed4.xml"));
         mg.melee8x8Mixed4().toxml(xml);
         xml.flush();
         
-        xml = new XMLWriter(new FileWriter("maps/melee8x8Mixed6.xml"));
+        xml = new XMLWriter(new FileWriter("maps/8x8/melee8x8Mixed6.xml"));
         mg.melee8x8Mixed6().toxml(xml);
         xml.flush();
 
-        xml = new XMLWriter(new FileWriter("maps/melee16x16Mixed8.xml"));
+        xml = new XMLWriter(new FileWriter("maps/16x16/melee16x16Mixed8.xml"));
         mg.melee16x16Mixed8().toxml(xml);
         xml.flush();
 
-        xml = new XMLWriter(new FileWriter("maps/melee12x12Mixed12.xml"));
+        xml = new XMLWriter(new FileWriter("maps/12x12/melee12x12Mixed12.xml"));
         mg.melee12x12Mixed12().toxml(xml);
         xml.flush();
 
-        xml = new XMLWriter(new FileWriter("maps/melee16x16Mixed12.xml"));
+        xml = new XMLWriter(new FileWriter("maps/16x16/melee16x16Mixed12.xml"));
         mg.melee16x16Mixed12().toxml(xml);
         xml.flush();
         
-        xml = new XMLWriter(new FileWriter("maps/melee14x12Mixed18.xml"));
+        xml = new XMLWriter(new FileWriter("maps/14x12/melee14x12Mixed18.xml"));
         mg.melee14x12Mixed18().toxml(xml);
         xml.flush();
     }
