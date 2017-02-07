@@ -149,7 +149,11 @@ public class NaiveMCTS extends AIWithComputationBudget implements InterruptibleA
         current_iteration = 0;
         tree = new NaiveMCTSNode(player, 1-player, gs, null, ef.upperBound(gs), current_iteration++);
         
-        max_actions_so_far = Math.max(tree.moveGenerator.getSize(),max_actions_so_far);
+        if (tree.moveGenerator==null) {
+            max_actions_so_far = 0;
+        } else {
+            max_actions_so_far = Math.max(tree.moveGenerator.getSize(),max_actions_so_far);        
+        }
         gs_to_start_from = gs;
         
         epsilon_l = initial_epsilon_l;
@@ -239,6 +243,7 @@ public class NaiveMCTS extends AIWithComputationBudget implements InterruptibleA
             System.out.println("Number of playouts: " + tree.visit_count);
             tree.printUnitActionTable();
         }
+        if (tree.children==null) return -1;
         for(int i = 0;i<tree.children.size();i++) {
             NaiveMCTSNode child = (NaiveMCTSNode)tree.children.get(i);
             if (DEBUG>=2) {

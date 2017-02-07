@@ -156,7 +156,7 @@ public class UnitTypeTable implements Serializable {
         switch(version) {
             case VERSION_ORIGINAL:
             case VERSION_ORIGINAL_FINETUNED:
-                heavy.minDamage = worker.maxDamage = 2;
+                heavy.minDamage = worker.maxDamage = 4;
                 break;
             case VERSION_NON_DETERMINISTIC:
                 heavy.minDamage = 0;
