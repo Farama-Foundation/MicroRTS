@@ -101,7 +101,9 @@ public class MLPSMCTS extends AIWithComputationBudget implements InterruptibleAI
         float evaluation_bound = ef.upperBound(gs);
         tree = new MLPSNode(playerForThisComputation, 1-playerForThisComputation, gs, null, evaluation_bound, current_iteration++);
         
-        max_actions_so_far = Math.max(tree.moveGenerator.getSize(),max_actions_so_far);
+        if (tree.moveGenerator!=null) {
+            max_actions_so_far = Math.max(tree.moveGenerator.getSize(),max_actions_so_far);
+        }
         gs_to_start_from = gs;        
     }    
     
@@ -174,12 +176,12 @@ public class MLPSMCTS extends AIWithComputationBudget implements InterruptibleAI
         int bestIdx = -1;
         MLPSNode best = null;
         if (DEBUG>=2) {
-//            for(Player p:gs_to_start_from.getPlayers()) {
-//                System.out.println("Resources P" + p.getID() + ": " + p.getResources());
-//            }
             System.out.println("Number of playouts: " + tree.visit_count);
             tree.printUnitActionTable();
         }
+
+        if (tree.children==null) return -1;
+
         for(int i = 0;i<tree.children.size();i++) {
             MLPSNode child = (MLPSNode)tree.children.get(i);
             if (DEBUG>=2) {

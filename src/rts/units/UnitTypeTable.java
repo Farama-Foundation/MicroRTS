@@ -131,7 +131,7 @@ public class UnitTypeTable implements Serializable {
         switch(version) {
             case VERSION_ORIGINAL:
             case VERSION_ORIGINAL_FINETUNED:
-                light.minDamage = worker.maxDamage = 2;
+                light.minDamage = light.maxDamage = 2;
                 break;
             case VERSION_NON_DETERMINISTIC:
                 light.minDamage = 1;
@@ -156,7 +156,7 @@ public class UnitTypeTable implements Serializable {
         switch(version) {
             case VERSION_ORIGINAL:
             case VERSION_ORIGINAL_FINETUNED:
-                heavy.minDamage = worker.maxDamage = 4;
+                heavy.minDamage = heavy.maxDamage = 4;
                 break;
             case VERSION_NON_DETERMINISTIC:
                 heavy.minDamage = 0;
@@ -195,7 +195,7 @@ public class UnitTypeTable implements Serializable {
         switch(version) {
             case VERSION_ORIGINAL:
             case VERSION_ORIGINAL_FINETUNED:
-                ranged.minDamage = worker.maxDamage = 1;
+                ranged.minDamage = ranged.maxDamage = 1;
                 break;
             case VERSION_NON_DETERMINISTIC:
                 ranged.minDamage = 1;

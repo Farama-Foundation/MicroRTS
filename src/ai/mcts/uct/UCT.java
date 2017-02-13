@@ -168,6 +168,11 @@ public class UCT extends AIWithComputationBudget implements InterruptibleAI {
     
     public PlayerAction getBestActionSoFar() {
         total_actions_issued++;
+        
+        if (tree.children==null) {
+            if (DEBUG>=1) System.out.println(this.getClass().getSimpleName() + " no children selected. Returning an empty asction");
+            return new PlayerAction();
+        }
                 
         int mostVisitedIdx = -1;
         UCTNode mostVisited = null;

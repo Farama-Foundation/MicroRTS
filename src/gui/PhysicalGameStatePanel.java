@@ -217,18 +217,16 @@ public class PhysicalGameStatePanel extends JPanel {
     public void paint(Graphics g) {
         super.paint(g);
         Graphics2D g2d = (Graphics2D)g;
-        synchronized(this) {
-            draw(g2d, this, this.getWidth(), this.getHeight(), gs, pogs, colorScheme, fullObservability, drawFromPerspectiveOfPlayer, evalFunction);
+        draw(g2d, this, this.getWidth(), this.getHeight(), gs, pogs, colorScheme, fullObservability, drawFromPerspectiveOfPlayer, evalFunction);
 
-            if (m_mouse_selection_x0>=0) {
-                g.setColor(Color.green);
-                int x0 = Math.min(m_mouse_selection_x0, m_mouse_selection_x1);
-                int x1 = Math.max(m_mouse_selection_x0, m_mouse_selection_x1);
-                int y0 = Math.min(m_mouse_selection_y0, m_mouse_selection_y1);
-                int y1 = Math.max(m_mouse_selection_y0, m_mouse_selection_y1);
-                g.drawRect(x0, y0, x1 - x0, y1 - y0);
-            }        
-        }
+        if (m_mouse_selection_x0>=0) {
+            g.setColor(Color.green);
+            int x0 = Math.min(m_mouse_selection_x0, m_mouse_selection_x1);
+            int x1 = Math.max(m_mouse_selection_x0, m_mouse_selection_x1);
+            int y0 = Math.min(m_mouse_selection_y0, m_mouse_selection_y1);
+            int y1 = Math.max(m_mouse_selection_y0, m_mouse_selection_y1);
+            g.drawRect(x0, y0, x1 - x0, y1 - y0);
+        }        
     }
     
     
@@ -253,8 +251,10 @@ public class PhysicalGameStatePanel extends JPanel {
         if (pogs!=null && pogs[0]!=null && pogs[1]!=null) {
             if (pogs[0].getTime() != gs.getTime()) {
                 // update 
-                pogs[0] = new PartiallyObservableGameState(gs, 0);
-                pogs[1] = new PartiallyObservableGameState(gs, 1);
+                synchronized(gs) {
+                    pogs[0] = new PartiallyObservableGameState(gs, 0);
+                    pogs[1] = new PartiallyObservableGameState(gs, 1);
+                }
             }
         }
         

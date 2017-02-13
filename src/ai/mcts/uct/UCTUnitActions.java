@@ -17,6 +17,7 @@ import rts.GameState;
 import rts.PlayerAction;
 import rts.units.UnitTypeTable;
 import ai.core.InterruptibleAI;
+import static ai.mcts.uct.UCT.DEBUG;
 
 /**
  *
@@ -141,6 +142,10 @@ public class UCTUnitActions extends AIWithComputationBudget implements Interrupt
     
     
     public PlayerAction getBestActionSoFar() {
+        if (tree.children==null) {
+            if (DEBUG>=1) System.out.println(this.getClass().getSimpleName() + " no children selected. Returning an empty asction");
+            return new PlayerAction();
+        }
         return getMostVisited(tree, gs_to_start_from.getTime());
     }
     

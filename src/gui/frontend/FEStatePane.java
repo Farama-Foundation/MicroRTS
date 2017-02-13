@@ -448,7 +448,7 @@ public class FEStatePane extends JPanel {
             JPanel ptmp = new JPanel();
             ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
             maxCyclesField = addTextField(ptmp,"Max Cycles:", "3000", 5);
-            defaultDelayField = addTextField(ptmp,"Default Delay:", "50", 5);
+            defaultDelayField = addTextField(ptmp,"Default Delay:", "10", 5);
             p1.add(ptmp);
         }
         {
@@ -473,6 +473,7 @@ public class FEStatePane extends JPanel {
                 slowDownBox.setAlignmentX(Component.CENTER_ALIGNMENT);
                 slowDownBox.setAlignmentY(Component.TOP_ALIGNMENT);
                 slowDownBox.setMaximumSize(new Dimension(120,20));
+                slowDownBox.setSelected(true);
                 ptmp.add(slowDownBox);
             }
             p1.add(ptmp);
@@ -510,8 +511,13 @@ public class FEStatePane extends JPanel {
 
                                     JFrame w = null;
 
-                                    if (ai1 instanceof MouseController ||
-                                        ai2 instanceof MouseController) {
+                                    boolean isMouseController = false;
+                                    if (ai1 instanceof MouseController) isMouseController = true;
+                                    if (ai2 instanceof MouseController) isMouseController = true;
+                                    if ((ai1 instanceof PseudoContinuingAI) && (((PseudoContinuingAI)ai1).getbaseAI() instanceof MouseController)) isMouseController = true;
+                                    if ((ai2 instanceof PseudoContinuingAI) && (((PseudoContinuingAI)ai2).getbaseAI() instanceof MouseController)) isMouseController = true;
+                                    
+                                    if (isMouseController) {
                                         PhysicalGameStatePanel pgsp = new PhysicalGameStatePanel(statePanel);
                                         pgsp.setStateDirect(gs);
                                         w = new PhysicalGameStateMouseJFrame("Game State Visualizer (Mouse)",640,640,pgsp);
@@ -521,9 +527,15 @@ public class FEStatePane extends JPanel {
                                         if (ai1 instanceof MouseController) {
                                             ((MouseController)ai1).setFrame((PhysicalGameStateMouseJFrame)w);
                                             mousep1 = true;
+                                        } else if ((ai1 instanceof PseudoContinuingAI) && (((PseudoContinuingAI)ai1).getbaseAI() instanceof MouseController)) {
+                                            ((MouseController)((PseudoContinuingAI)ai1).getbaseAI()).setFrame((PhysicalGameStateMouseJFrame)w);
+                                            mousep1 = true;
                                         }
                                         if (ai2 instanceof MouseController) {
                                             ((MouseController)ai2).setFrame((PhysicalGameStateMouseJFrame)w);
+                                            mousep2 = true;
+                                        } else if ((ai2 instanceof PseudoContinuingAI) && (((PseudoContinuingAI)ai2).getbaseAI() instanceof MouseController)) {
+                                            ((MouseController)((PseudoContinuingAI)ai2).getbaseAI()).setFrame((PhysicalGameStateMouseJFrame)w);
                                             mousep2 = true;
                                         }
                                         if (mousep1 && !mousep2) pgsp.setDrawFromPerspectiveOfPlayer(0);
@@ -551,8 +563,10 @@ public class FEStatePane extends JPanel {
                                                 pa1 = ai1.getAction(0, new PartiallyObservableGameState(gs,0));
                                                 pa2 = ai2.getAction(1, new PartiallyObservableGameState(gs,1));
                                             }
-                                            gs.issueSafe(pa1);
-                                            gs.issueSafe(pa2);
+                                            synchronized(gs) {
+                                                gs.issueSafe(pa1);
+                                                gs.issueSafe(pa2);
+                                            }
                                             if (trace!=null && (!pa1.isEmpty() || !pa2.isEmpty())) {
                                                 TraceEntry te = new TraceEntry(gs.getPhysicalGameState().clone(),gs.getTime());
                                                 te.addPlayerAction(pa1);
@@ -561,7 +575,9 @@ public class FEStatePane extends JPanel {
                                             }
 
                                             // simulate:
-                                            gameover = gs.cycle();
+                                            synchronized(gs) {
+                                                gameover = gs.cycle();
+                                            }
                                             w.repaint();
                                             nextTimeToUpdate+=PERIOD;
                                         } else {

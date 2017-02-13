@@ -91,4 +91,9 @@ public class PseudoContinuingAI extends AI {
         return m_AI.getParameters();
     }
     
+    
+    public AIWithComputationBudget getbaseAI() {
+        return m_AI;
+    }
+    
 }

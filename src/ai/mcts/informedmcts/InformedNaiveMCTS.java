@@ -181,7 +181,9 @@ public class InformedNaiveMCTS extends AIWithComputationBudget implements Interr
         current_iteration = 0;
         tree = new InformedNaiveMCTSNode(player, 1-player, gs, bias, null, ef.upperBound(gs), current_iteration++);
         
-        max_actions_so_far = Math.max(tree.moveGenerator.getSize(),max_actions_so_far);
+        if (tree.moveGenerator!=null) {
+            max_actions_so_far = Math.max(tree.moveGenerator.getSize(),max_actions_so_far);
+        }
         gs_to_start_from = gs;
         
         epsilon_l = initial_epsilon_l;
@@ -265,12 +267,10 @@ public class InformedNaiveMCTS extends AIWithComputationBudget implements Interr
         int bestIdx = -1;
         InformedNaiveMCTSNode best = null;
         if (DEBUG>=2) {
-//            for(Player p:gs_to_start_from.getPlayers()) {
-//                System.out.println("Resources P" + p.getID() + ": " + p.getResources());
-//            }
             System.out.println("Number of playouts: " + tree.visit_count);
             tree.printUnitActionTable();
         }
+        if (tree.children==null) return -1;
         for(int i = 0;i<tree.children.size();i++) {
             InformedNaiveMCTSNode child = (InformedNaiveMCTSNode)tree.children.get(i);
             if (DEBUG>=2) {
@@ -293,12 +293,10 @@ public class InformedNaiveMCTS extends AIWithComputationBudget implements Interr
         int bestIdx = -1;
         InformedNaiveMCTSNode best = null;
         if (DEBUG>=2) {
-//            for(Player p:gs_to_start_from.getPlayers()) {
-//                System.out.println("Resources P" + p.getID() + ": " + p.getResources());
-//            }
             System.out.println("Number of playouts: " + tree.visit_count);
             tree.printUnitActionTable();
         }
+        if (tree.children==null) return -1;
         for(int i = 0;i<tree.children.size();i++) {
             InformedNaiveMCTSNode child = (InformedNaiveMCTSNode)tree.children.get(i);
             if (DEBUG>=2) {
