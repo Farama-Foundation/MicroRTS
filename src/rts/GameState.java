@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.io.Writer;
 import java.util.*;
 import rts.units.Unit;
+import rts.units.UnitType;
 import rts.units.UnitTypeTable;
 import util.Pair;
 import util.XMLWriter;
@@ -30,7 +31,7 @@ public class GameState implements Serializable{
         pgs = a_pgs;
         utt = a_utt;
     }
-    
+        
     public int getTime() {
         return time;
     }
@@ -427,19 +428,22 @@ public class GameState implements Serializable{
         GameState gs = new GameState(pgs, utt);
         gs.time = time;
         gs.unitCancelationCounter = unitCancelationCounter;
-//        if (!integrityCheck()) throw new Error("Game State inconsistent before adding action");
         gs.unitActions.putAll(unitActions);
-/*
-        for(Pair<Unit,UnitAction> ua:pa.actions) {
-            if (pgs.units.indexOf(ua.m_a)==-1) {
-                System.err.println("Unit " + ua.m_a + " does not exist in game state:\n" + pgs);
-                System.exit(1);
-            }
-        }
-*/
         gs.issue(pa);
-//        if (!integrityCheck()) throw new Error("Game State inconsistent after adding action");
         return gs;        
+    }
+    
+    
+    public GameState cloneChangingUTT(UnitTypeTable new_utt)
+    {
+        GameState gs = clone();
+        gs.utt = new_utt;
+        for(Unit u:gs.getUnits()) {
+            UnitType new_type = new_utt.getUnitType(u.getType().name);
+            if (new_type == null) return null;
+            u.setType(new_type);
+        }
+        return gs;
     }
     
     

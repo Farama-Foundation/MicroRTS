@@ -70,6 +70,13 @@ public class Unit implements Serializable {
         return type;
     }
     
+    // note: this should not be done lightly. It is currently thought to be used only when the GUI changes the
+    //       unit type table, and tries to create a clone of the current game state, but changing the UTT.
+    public void setType(UnitType a_type) {
+        type = a_type;
+    }
+            
+    
     public long getID() {
         return ID;
     }

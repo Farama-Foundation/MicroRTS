@@ -13,7 +13,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -66,6 +65,7 @@ public class FETournamentPane extends JPanel {
     JFormattedTextField timeBudgetField = null;
     JFormattedTextField iterationsBudgetField = null;
     
+    JComboBox unitTypeTableBox = null;
     JCheckBox fullObservabilityCheckBox = null;
     JCheckBox selfMatchesCheckBox = null;
     JCheckBox timeoutCheckBox = null;
@@ -328,6 +328,18 @@ public class FETournamentPane extends JPanel {
                 JPanel p2right = new JPanel();
                 p2right.setLayout(new BoxLayout(p2right, BoxLayout.Y_AXIS));
                 
+                {
+                    JPanel ptmp = new JPanel();
+                    ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
+                    ptmp.add(new JLabel("UnitTypeTable"));
+                    unitTypeTableBox = new JComboBox(FEStatePane.unitTypeTableNames);
+                    unitTypeTableBox.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    unitTypeTableBox.setAlignmentY(Component.CENTER_ALIGNMENT);
+                    unitTypeTableBox.setMaximumSize(new Dimension(160,20));
+                    ptmp.add(unitTypeTableBox);
+                    p2right.add(ptmp);
+                }                
+                
                 fullObservabilityCheckBox = new JCheckBox("Full Obsservability");
                 fullObservabilityCheckBox.setSelected(true);
                 p2right.add(fullObservabilityCheckBox);
@@ -355,7 +367,7 @@ public class FETournamentPane extends JPanel {
             {
                 try {
                     // get all the necessary info:
-                    UnitTypeTable utt = new UnitTypeTable();
+                    UnitTypeTable utt = FEStatePane.unitTypeTables[unitTypeTableBox.getSelectedIndex()];
                     String tournamentType = (String)tournamentTypeComboBox.getSelectedItem();
                     List<AI> selectedAIs = new ArrayList<>();
                     List<AI> opponentAIs = new ArrayList<>();

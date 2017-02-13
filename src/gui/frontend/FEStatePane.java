@@ -149,27 +149,38 @@ public class FEStatePane extends JPanel {
                                  new BFSPathFinding(),
                                  new GreedyPathFinding(),
                                  new FloodFillPathFinding()};
+    
+    public static UnitTypeTable unitTypeTables[] = {new UnitTypeTable(UnitTypeTable.VERSION_ORIGINAL, UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH),
+                                      new UnitTypeTable(UnitTypeTable.VERSION_ORIGINAL, UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_ALTERNATING),
+                                      new UnitTypeTable(UnitTypeTable.VERSION_ORIGINAL, UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_RANDOM),
+                                      new UnitTypeTable(UnitTypeTable.VERSION_ORIGINAL_FINETUNED, UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH),
+                                      new UnitTypeTable(UnitTypeTable.VERSION_ORIGINAL_FINETUNED, UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_ALTERNATING),
+                                      new UnitTypeTable(UnitTypeTable.VERSION_ORIGINAL_FINETUNED, UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_RANDOM),
+                                      new UnitTypeTable(UnitTypeTable.VERSION_NON_DETERMINISTIC, UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH),
+                                      new UnitTypeTable(UnitTypeTable.VERSION_NON_DETERMINISTIC, UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_ALTERNATING),
+                                      new UnitTypeTable(UnitTypeTable.VERSION_NON_DETERMINISTIC, UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_RANDOM),   
+    };
+    public static String unitTypeTableNames[] = {"Original-Both",
+                                   "Original-Alternating",
+                                   "Original-Random",
+                                   "Finetuned-Both",
+                                   "Finetuned-Alternating",
+                                   "Finetuned-Random",
+                                   "Nondeterministic-Both",
+                                   "Nondeterministic-Alternating",
+                                   "Nondeterministic-Random"};
 
     JFormattedTextField mapWidthField = null;
     JFormattedTextField mapHeightField = null;
     JFormattedTextField maxCyclesField = null;
     JFormattedTextField defaultDelayField = null;
     JCheckBox fullObservabilityBox = null;
+    JComboBox unitTypeTableBox = null;
     JCheckBox saveTraceBox = null;
     JCheckBox slowDownBox = null;    
     
     JComboBox aiComboBox[] = {null,null};    
     JCheckBox continuingBox[] = {null,null};
-    /*
-    JComboBox pfComboBox[] = {null,null};    
-    JComboBox efComboBox[] = {null,null};    
-    JFormattedTextField cpuTimeField[] = {null,null};    
-    JFormattedTextField maxPlayoutsField[] = {null,null};    
-    JFormattedTextField playoutTimeField[] = {null,null};    
-    JFormattedTextField maxActionsField[] = {null,null};    
-    JFormattedTextField LSIsplitField[] = {null,null};    
-    JFormattedTextField fpuField[] = {null,null};    
-    */
     JPanel AIOptionsPanel[] = {null, null};
     HashMap AIOptionsPanelComponents[] = {new HashMap<String, JComponent>(), new HashMap<String, JComponent>()};
     
@@ -478,7 +489,31 @@ public class FEStatePane extends JPanel {
             }
             p1.add(ptmp);
         }
-
+        {
+            JPanel ptmp = new JPanel();
+            ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
+            ptmp.add(new JLabel("UnitTypeTable"));
+            unitTypeTableBox = new JComboBox(unitTypeTableNames);
+            unitTypeTableBox.setAlignmentX(Component.CENTER_ALIGNMENT);
+            unitTypeTableBox.setAlignmentY(Component.CENTER_ALIGNMENT);
+            unitTypeTableBox.setMaximumSize(new Dimension(160,20));
+            unitTypeTableBox.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    int idx = unitTypeTableBox.getSelectedIndex();
+                    UnitTypeTable new_utt = unitTypeTables[idx];
+                    
+                    GameState gs = statePanel.getGameState().cloneChangingUTT(new_utt);
+                    if (gs!=null) {
+                        statePanel.setStateDirect(gs);
+                        currentUtt = new_utt;
+                    } else {
+                        System.err.println("Could not change unit type table!");
+                    }
+                }
+            });
+            ptmp.add(unitTypeTableBox);
+            p1.add(ptmp);
+        }
         {
             JPanel ptmp = new JPanel();
             ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
