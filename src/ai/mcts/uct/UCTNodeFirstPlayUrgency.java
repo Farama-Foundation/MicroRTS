@@ -77,7 +77,8 @@ public class UCTNodeFirstPlayUrgency {
     public UCTNodeFirstPlayUrgency UCTSelectLeaf(int maxplayer, int minplayer, long cutOffTime, int max_depth) throws Exception {
         
         // Cut the tree policy at a predefined depth
-        if (depth>=max_depth) return this;        
+        if (depth>=max_depth) return this;   
+        if (children==null) return null;
         
         // Bandit policy:
         double best_score = 0;
