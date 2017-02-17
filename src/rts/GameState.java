@@ -441,6 +441,7 @@ public class GameState implements Serializable{
         for(Unit u:gs.getUnits()) {
             UnitType new_type = new_utt.getUnitType(u.getType().name);
             if (new_type == null) return null;
+            if (u.getHitPoints() == u.getType().hp) u.setHitPoints(new_type.hp);
             u.setType(new_type);
         }
         return gs;

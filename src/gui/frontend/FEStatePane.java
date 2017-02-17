@@ -496,7 +496,7 @@ public class FEStatePane extends JPanel {
             unitTypeTableBox = new JComboBox(unitTypeTableNames);
             unitTypeTableBox.setAlignmentX(Component.CENTER_ALIGNMENT);
             unitTypeTableBox.setAlignmentY(Component.CENTER_ALIGNMENT);
-            unitTypeTableBox.setMaximumSize(new Dimension(160,20));
+            unitTypeTableBox.setMaximumSize(new Dimension(240,20));
             unitTypeTableBox.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     int idx = unitTypeTableBox.getSelectedIndex();
@@ -506,6 +506,7 @@ public class FEStatePane extends JPanel {
                     if (gs!=null) {
                         statePanel.setStateDirect(gs);
                         currentUtt = new_utt;
+                        mouseListener.utt = new_utt;
                     } else {
                         System.err.println("Could not change unit type table!");
                     }
