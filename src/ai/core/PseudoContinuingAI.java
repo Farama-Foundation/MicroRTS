@@ -25,6 +25,7 @@ public class PseudoContinuingAI extends AI {
     
     protected AIWithComputationBudget m_AI;
     protected int n_cycles_to_think = 1;
+    protected GameState m_farecastedGameState = null;
     
     public PseudoContinuingAI(AIWithComputationBudget ai) {
         m_AI = ai;
@@ -33,6 +34,14 @@ public class PseudoContinuingAI extends AI {
     public PlayerAction getAction(int player, GameState gs) throws Exception
     {
         if (gs.canExecuteAnyAction(player)) {
+            // check to make sure game is deterministic:
+            if (m_farecastedGameState!=null &&
+                !m_farecastedGameState.equals(gs)) {
+                if (DEBUG>=1) System.out.println("The game state is different from the predicted one (this can happen in non-deterministic games), restarring search.");
+                n_cycles_to_think = 1;
+                m_farecastedGameState = null;
+            }
+            
             if (DEBUG>=1) System.out.println("PseudoContinuingAI: n_cycles_to_think = " + n_cycles_to_think);
             int MT = m_AI.TIME_BUDGET;
             int MI = m_AI.ITERATIONS_BUDGET;
@@ -42,6 +51,7 @@ public class PseudoContinuingAI extends AI {
             m_AI.TIME_BUDGET = MT;
             m_AI.ITERATIONS_BUDGET = MI;
             n_cycles_to_think = 1;   
+            m_farecastedGameState = null;
             return action;
         } else {
             if (n_cycles_to_think==1) {
@@ -53,6 +63,7 @@ public class PseudoContinuingAI extends AI {
                 if ((gs2.winner() == -1 && !gs2.gameover()) && 
                     gs2.canExecuteAnyAction(player)) {
                     n_cycles_to_think++;
+                    m_farecastedGameState = gs2;
                 }            
             } else {
                 n_cycles_to_think++;

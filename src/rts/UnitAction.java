@@ -6,6 +6,7 @@ package rts;
 
 import java.io.Serializable;
 import java.io.Writer;
+import java.util.Objects;
 import java.util.Random;
 
 import org.jdom.Element;
@@ -74,6 +75,7 @@ public class UnitAction implements Serializable {
         unitType = ua.unitType;
     }
     
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof UnitAction)) return false;
         UnitAction a = (UnitAction)o;
@@ -89,6 +91,16 @@ public class UnitAction implements Serializable {
         }
         
         return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = this.type;
+        hash = 19 * hash + this.parameter;
+        hash = 19 * hash + this.x;
+        hash = 19 * hash + this.y;
+        hash = 19 * hash + Objects.hashCode(this.unitType);
+        return hash;
     }
     
    

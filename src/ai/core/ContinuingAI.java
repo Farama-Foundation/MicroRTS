@@ -28,10 +28,19 @@ public class ContinuingAI extends AI {
     public PlayerAction getAction(int player, GameState gs) throws Exception
     {
         if (gs.canExecuteAnyAction(player)) {
+            // check to make sure game is deterministic:
+            if (m_gameStateUsedForComputation!=null &&
+                !m_gameStateUsedForComputation.equals(gs)) {
+                if (DEBUG>=1) System.out.println("The game state is different from the predicted one (this can happen in non-deterministic games), restarring search.");
+                m_isThereAComputationGoingOn = false;
+                m_gameStateUsedForComputation = null;
+            }
+            
             if (DEBUG>=1) System.out.println("ContinuingAI: this cycle we need an action");
             if (!m_isThereAComputationGoingOn) ((InterruptibleAI)m_AI).startNewComputation(player, gs.clone());
             ((InterruptibleAI)m_AI).computeDuringOneGameFrame();
             m_isThereAComputationGoingOn = false;
+            m_gameStateUsedForComputation = null;
             return ((InterruptibleAI)m_AI).getBestActionSoFar();
         } else {
             if (!m_isThereAComputationGoingOn) {

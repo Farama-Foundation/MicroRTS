@@ -463,6 +463,29 @@ public class GameState implements Serializable{
     }
     
     
+    public boolean equals(Object o) {
+        if (!(o instanceof GameState)) return false;
+        GameState s2 = (GameState)o;
+        if (!pgs.equivalents(s2.pgs)) return false;
+        
+        // compare actions:
+        int n = pgs.units.size();
+        for(int i = 0;i<n;i++) {
+            UnitActionAssignment uaa = unitActions.get(pgs.units.get(i)); 
+            UnitActionAssignment uaa2 = s2.unitActions.get(s2.pgs.units.get(i));
+            if (uaa==null) {
+                if (uaa2!=null) return false;
+            } else {
+                if (uaa2==null) return false;
+                if (uaa.time!=uaa2.time) return false;
+                if (!uaa.action.equals(uaa2.action)) return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    
     public boolean integrityCheck() {
         List<Unit> alreadyUsed = new LinkedList<Unit>();
         for(UnitActionAssignment uaa:unitActions.values()) {
