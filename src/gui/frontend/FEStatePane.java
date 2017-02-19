@@ -92,6 +92,7 @@ import tests.MapGenerator;
 import util.Pair;
 import util.XMLWriter;
 import ai.core.InterruptibleAI;
+import ai.evaluation.SimpleOptEvaluationFunction;
 
 /**
  *
@@ -108,7 +109,8 @@ public class FEStatePane extends JPanel {
                                 new SimpleSqrtEvaluationFunction(),
                                 new SimpleSqrtEvaluationFunction2(),
                                 new SimpleSqrtEvaluationFunction3(),
-                                new EvaluationFunctionForwarding(new SimpleEvaluationFunction())};
+                                new EvaluationFunctionForwarding(new SimpleEvaluationFunction()),
+                                new SimpleOptEvaluationFunction()};
 
     public static Class AIs[] = {PassiveAI.class,
                    MouseController.class,
