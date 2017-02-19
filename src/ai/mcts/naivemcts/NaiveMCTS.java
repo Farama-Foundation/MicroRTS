@@ -70,45 +70,45 @@ public class NaiveMCTS extends AIWithComputationBudget implements InterruptibleA
     
     
     public NaiveMCTS(int available_time, int max_playouts, int lookahead, int max_depth, 
-                               float e1, float discout1,
-                               float e2, float discout2, 
-                               float e3, float discout3, 
+                               float e_l, float discout_l,
+                               float e_g, float discout_g, 
+                               float e_0, float discout_0, 
                                AI policy, EvaluationFunction a_ef) {
         super(available_time, max_playouts);
         MAXSIMULATIONTIME = lookahead;
         playoutPolicy = policy;
         MAX_TREE_DEPTH = max_depth;
-        initial_epsilon_l = epsilon_l = e1;
-        initial_epsilon_g = epsilon_g = e2;
-        initial_epsilon_0 = epsilon_0 = e3;
-        discount_l = discout1;
-        discount_g = discout2;
-        discount_0 = discout3;
+        initial_epsilon_l = epsilon_l = e_l;
+        initial_epsilon_g = epsilon_g = e_g;
+        initial_epsilon_0 = epsilon_0 = e_0;
+        discount_l = discout_l;
+        discount_g = discout_g;
+        discount_0 = discout_0;
         ef = a_ef;
     }    
 
-    public NaiveMCTS(int available_time, int max_playouts, int lookahead, int max_depth, float e1, float e2, float e3, AI policy, EvaluationFunction a_ef) {
+    public NaiveMCTS(int available_time, int max_playouts, int lookahead, int max_depth, float e_l, float e_g, float e_0, AI policy, EvaluationFunction a_ef) {
         super(available_time, max_playouts);
         MAXSIMULATIONTIME = lookahead;
         playoutPolicy = policy;
         MAX_TREE_DEPTH = max_depth;
-        initial_epsilon_l = epsilon_l = e1;
-        initial_epsilon_g = epsilon_g = e2;
-        initial_epsilon_0 = epsilon_0 = e3;
+        initial_epsilon_l = epsilon_l = e_l;
+        initial_epsilon_g = epsilon_g = e_g;
+        initial_epsilon_0 = epsilon_0 = e_0;
         discount_l = 1.0f;
         discount_g = 1.0f;
         discount_0 = 1.0f;
         ef = a_ef;
     }    
     
-    public NaiveMCTS(int available_time, int max_playouts, int lookahead, int max_depth, float e1, float e2, float e3, int a_global_strategy, AI policy, EvaluationFunction a_ef) {
+    public NaiveMCTS(int available_time, int max_playouts, int lookahead, int max_depth, float e_l, float e_g, float e_0, int a_global_strategy, AI policy, EvaluationFunction a_ef) {
         super(available_time, max_playouts);
         MAXSIMULATIONTIME = lookahead;
         playoutPolicy = policy;
         MAX_TREE_DEPTH = max_depth;
-        initial_epsilon_l = epsilon_l = e1;
-        initial_epsilon_g = epsilon_g = e2;
-        initial_epsilon_0 = epsilon_0 = e3;
+        initial_epsilon_l = epsilon_l = e_l;
+        initial_epsilon_g = epsilon_g = e_g;
+        initial_epsilon_0 = epsilon_0 = e_0;
         discount_l = 1.0f;
         discount_g = 1.0f;
         discount_0 = 1.0f;
