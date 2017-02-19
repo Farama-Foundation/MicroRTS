@@ -164,7 +164,7 @@ public class InformedNaiveMCTS extends AIWithComputationBudget implements Interr
     }    
     
     
-    public final PlayerAction getAction(int player, GameState gs) throws Exception
+    public PlayerAction getAction(int player, GameState gs) throws Exception
     {
         if (gs.canExecuteAnyAction(player)) {
             startNewComputation(player,gs.clone());
