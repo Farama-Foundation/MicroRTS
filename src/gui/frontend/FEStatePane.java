@@ -6,6 +6,7 @@
 
 package gui.frontend;
 
+import ai.BranchingFactorCalculatorBigInteger;
 import ai.core.AI;
 import ai.core.AIWithComputationBudget;
 import ai.core.ContinuingAI;
@@ -397,13 +398,17 @@ public class FEStatePane extends JPanel {
                             }
 
                             // Branching:
-                            textArea.append("Braching Factor (long, might overflow):\n");
-                            textArea.append("  - player 0: " + BranchingFactorCalculatorLong.branchingFactorByResourceUsageSeparatingFast(statePanel.getGameState(), 0) + "\n");
-                            textArea.append("  - player 1: " + BranchingFactorCalculatorLong.branchingFactorByResourceUsageSeparatingFast(statePanel.getGameState(), 1) + "\n");
-                            textArea.append("\n");
-                            textArea.append("Braching Factor (double):\n");
-                            textArea.append("  - player 0: " + BranchingFactorCalculatorDouble.branchingFactorByResourceUsageSeparatingFast(statePanel.getGameState(), 0) + "\n");
-                            textArea.append("  - player 1: " + BranchingFactorCalculatorDouble.branchingFactorByResourceUsageSeparatingFast(statePanel.getGameState(), 1) + "\n");
+//                            textArea.append("Braching Factor (long, might overflow):\n");
+//                            textArea.append("  - player 0: " + BranchingFactorCalculatorLong.branchingFactorByResourceUsageSeparatingFast(statePanel.getGameState(), 0) + "\n");
+//                            textArea.append("  - player 1: " + BranchingFactorCalculatorLong.branchingFactorByResourceUsageSeparatingFast(statePanel.getGameState(), 1) + "\n");
+//                            textArea.append("\n");
+//                            textArea.append("Braching Factor (double):\n");
+//                            textArea.append("  - player 0: " + BranchingFactorCalculatorDouble.branchingFactorByResourceUsageSeparatingFast(statePanel.getGameState(), 0) + "\n");
+//                            textArea.append("  - player 1: " + BranchingFactorCalculatorDouble.branchingFactorByResourceUsageSeparatingFast(statePanel.getGameState(), 1) + "\n");
+//                            textArea.append("\n");
+                            textArea.append("Braching Factor (BigInteger):\n");
+                            textArea.append("  - player 0: " + BranchingFactorCalculatorBigInteger.branchingFactorByResourceUsageSeparatingFast(statePanel.getGameState(), 0) + "\n");
+                            textArea.append("  - player 1: " + BranchingFactorCalculatorBigInteger.branchingFactorByResourceUsageSeparatingFast(statePanel.getGameState(), 1) + "\n");
                             textArea.append("\n");
 
                             // Branching:

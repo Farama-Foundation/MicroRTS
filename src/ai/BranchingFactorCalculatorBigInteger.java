@@ -6,6 +6,7 @@
 
 package ai;
 
+import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,26 +38,27 @@ import util.Pair;
  * 
  * All the methods (Except for branchingFactorUpperBound) should return the same value
  */
-public class BranchingFactorCalculatorLong {
+public class BranchingFactorCalculatorBigInteger {
     public static int DEBUG = 0;
     
     
-    public static long branchingFactorUpperBound(GameState gs, int player) throws Exception {
+    public static BigInteger branchingFactorUpperBound(GameState gs, int player) throws Exception {
         PlayerActionGenerator pag = new PlayerActionGenerator(gs, player);
-        return pag.getSize();
+        return BigInteger.valueOf(pag.getSize());
     }
     
     
-    public static long branchingFactor(GameState gs, int player) throws Exception {
-        long n = 0;
+    public static BigInteger branchingFactor(GameState gs, int player) throws Exception {
+        BigInteger n = BigInteger.valueOf(0);
         PlayerActionGenerator pag = new PlayerActionGenerator(gs, player);
-        while(pag.getNextAction(-1)!=null) n++;
+        while(pag.getNextAction(-1)!=null) n = n.add(BigInteger.ONE);
         return n;
     }
 
 
-    public static long[] branchingFactorByResourceUsage(GameState gs, int player) throws Exception {
-        long n[] = new long[gs.getPlayer(player).getResources()+1];
+    public static BigInteger[] branchingFactorByResourceUsage(GameState gs, int player) throws Exception {
+        BigInteger n[] = new BigInteger[gs.getPlayer(player).getResources()+1];
+        for(int i = 0;i<n.length;i++) n[i] = BigInteger.ZERO;
         PlayerActionGenerator pag = new PlayerActionGenerator(gs, player);
         PlayerAction pa = null;
         do{
@@ -67,7 +69,7 @@ public class BranchingFactorCalculatorLong {
                     r+=tmp.m_b.resourceUsage(tmp.m_a, gs.getPhysicalGameState()).getResourcesUsed(player);
                 }
 //                n[(pa.getResourceUsage()).getResourcesUsed(player)]++;
-                n[r]++;
+                n[r] = n[r].add(BigInteger.ONE);
             }
         }while(pa!=null);
         return n;
@@ -112,7 +114,7 @@ public class BranchingFactorCalculatorLong {
     }
     
     
-    public static long branchingFactorByResourceUsageSeparatingFast(GameState gs, int player) throws Exception {
+    public static BigInteger branchingFactorByResourceUsageSeparatingFast(GameState gs, int player) throws Exception {
         int playerResources = gs.getPlayer(player).getResources();
         GameState gs2 = gs.clone();
         PhysicalGameState pgs2 = gs2.getPhysicalGameState();
@@ -148,7 +150,7 @@ public class BranchingFactorCalculatorLong {
         
         // Separate map:
 //        System.out.println(areas);
-        List<long []> branchingOfSeparatedAreas = new LinkedList<long []>();
+        List<BigInteger []> branchingOfSeparatedAreas = new LinkedList<BigInteger []>();
         for(int area:areas) {
             PlayerAction pa = new PlayerAction();
             List<Unit> unitsInArea = new LinkedList<Unit>();
@@ -165,7 +167,7 @@ public class BranchingFactorCalculatorLong {
             }
             GameState gs3 = gs2.cloneIssue(pa).clone();
             
-            long []n = branchingFactorByResourceUsageFastInternal(gs3,player);
+            BigInteger []n = branchingFactorByResourceUsageFastInternal(gs3,player);
             
 //            System.out.print("[ ");
 //            for(int i = 0;i<playerResources+1;i++) System.out.print(n[i] + " ");
@@ -174,46 +176,47 @@ public class BranchingFactorCalculatorLong {
             branchingOfSeparatedAreas.add(n);
         }
         
-        if (branchingOfSeparatedAreas.isEmpty()) return 1;
+        if (branchingOfSeparatedAreas.isEmpty()) return BigInteger.ONE;
                 
         // accumulate:
-        long n[] = branchingOfSeparatedAreas.remove(0);
-        for(long n2[]:branchingOfSeparatedAreas) {
-            long n_tmp[] = new long[playerResources+1];
+        BigInteger n[] = branchingOfSeparatedAreas.remove(0);
+        for(BigInteger n2[]:branchingOfSeparatedAreas) {
+            BigInteger n_tmp[] = new BigInteger[playerResources+1];
+            for(int i = 0;i<playerResources+1;i++) n_tmp[i] = BigInteger.ZERO;
             for(int i = 0;i<playerResources+1;i++) {
                 for(int j = 0;j<(playerResources-i)+1;j++) {
-                    n_tmp[i+j] += n2[i]*n[j];
+                    n_tmp[i+j] = n_tmp[i+j].add(n2[i].multiply(n[j]));
                 }
             }
             n = n_tmp;
         }
         
-        long branching = 0;
-        for(int i = 0;i<playerResources+1;i++) branching+=n[i];
+        BigInteger branching = BigInteger.ZERO;
+        for(int i = 0;i<playerResources+1;i++) branching = branching.add(n[i]);
                 
         return branching;
     }
     
     
-    public static long branchingFactorByResourceUsageFast(GameState gs, int player) throws Exception {
+    public static BigInteger branchingFactorByResourceUsageFast(GameState gs, int player) throws Exception {
         int playerResources = gs.getPlayer(player).getResources();
-        long n[] = branchingFactorByResourceUsageFastInternal(gs,player);
+        BigInteger n[] = branchingFactorByResourceUsageFastInternal(gs,player);
         
-        long branching = 0;
-        for(int i = 0;i<playerResources+1;i++) branching+=n[i];
+        BigInteger branching = BigInteger.ZERO;
+        for(int i = 0;i<playerResources+1;i++) branching=branching.add(n[i]);
         
         return branching;
     }
     
     
-    public static long[] branchingFactorByResourceUsageFastInternal(GameState gs, int player) throws Exception {
+    public static BigInteger[] branchingFactorByResourceUsageFastInternal(GameState gs, int player) throws Exception {
         GameState gs2 = gs.clone();
         PhysicalGameState pgs2 = gs2.getPhysicalGameState();
         int playerResources = gs2.getPlayer(player).getResources();
         
         List<Unit> unitsThatCannotBeSeparated = new LinkedList<Unit>();
         List<Unit> unitsToSeparate = new LinkedList<Unit>();
-        List<long []> branchingOfSeparatedUnits = new LinkedList<long []>();
+        List<BigInteger []> branchingOfSeparatedUnits = new LinkedList<BigInteger []>();
         PlayerAction pa = new PlayerAction();
         
         // Try to identify units that have actions that do not interfere with any other actions:
@@ -243,10 +246,14 @@ public class BranchingFactorCalculatorLong {
                 
                 List<UnitAction> ual = u.getUnitActions(gs2);
                 boolean positionConflict = false;
-                long []unitBranching = new long[playerResources+1];
+                BigInteger []unitBranching = new BigInteger[playerResources+1];
+                for(int i = 0;i<playerResources+1;i++) {
+                    unitBranching[i] = BigInteger.ZERO;
+                }
                 for(UnitAction ua:ual) {
                     ResourceUsage ru = ua.resourceUsage(u, pgs2);
-                    unitBranching[ru.getResourcesUsed(player)]++;
+                    int i = ru.getResourcesUsed(player);
+                    unitBranching[i] = unitBranching[i].add(BigInteger.ONE);
 //                    System.out.println("  " + ua + " -> " + ru.getResourcesUsed(player));
                     for(Integer pos:ru.getPositionsUsed()) {
 //                        if (DEBUG>=1) System.out.println("    " + pos);
@@ -270,22 +277,23 @@ public class BranchingFactorCalculatorLong {
         if (!unitsThatCannotBeSeparated.isEmpty()) {
             // consider the rest of the board as a single unit:
 //            System.out.println("  recursive call...");
-            long n[] = branchingFactorByResourceUsage(gs2,player);
+            BigInteger n[] = branchingFactorByResourceUsage(gs2,player);
 //            System.out.println("  branching of non separated: " + Arrays.toString(n));
             branchingOfSeparatedUnits.add(n);
         }
         
         // accumulate:
-        long n[] = branchingOfSeparatedUnits.remove(0);
+        BigInteger n[] = branchingOfSeparatedUnits.remove(0);
         
 //        System.out.println("INITIAL " + Arrays.toString(n));
 
-        for(long n2[]:branchingOfSeparatedUnits) {
+        for(BigInteger n2[]:branchingOfSeparatedUnits) {
 //            System.out.println("NEW " + Arrays.toString(n2));
-            long n_tmp[] = new long[playerResources+1];
+            BigInteger n_tmp[] = new BigInteger[playerResources+1];
+            for(int i = 0;i<playerResources+1;i++) n_tmp[i] = BigInteger.ZERO;
             for(int i = 0;i<playerResources+1;i++) {
                 for(int j = 0;j<(playerResources-i)+1;j++) {
-                    n_tmp[i+j] += n2[i]*n[j];
+                    n_tmp[i+j] = n_tmp[i+j].add(n2[i].multiply(n[j]));
                 }
             }
             n = n_tmp;

@@ -6,6 +6,7 @@ package ai.mcts.informedmcts;
 
 import ai.mcts.MCTSNode;
 import ai.stochastic.UnitActionProbabilityDistribution;
+import java.math.BigInteger;
 import java.util.*;
 import rts.*;
 import rts.units.Unit;
@@ -26,11 +27,11 @@ public class InformedNaiveMCTSNode extends MCTSNode {
     
     boolean hasMoreActions = true;
     public PlayerActionGenerator moveGenerator = null;
-    HashMap<Long,InformedNaiveMCTSNode> childrenMap = new LinkedHashMap<Long,InformedNaiveMCTSNode>();    // associates action codes with children
+    HashMap<BigInteger,InformedNaiveMCTSNode> childrenMap = new LinkedHashMap<BigInteger,InformedNaiveMCTSNode>();    // associates action codes with children
     // Decomposition of the player actions in unit actions, and their contributions:
     public List<InformedUnitActionTableEntry> unitActionTable = null;
     double evaluation_bound;    // this is the maximum positive value that the evaluation function can return
-    public long multipliers[];
+    public BigInteger multipliers[];
     UnitActionProbabilityDistribution model = null;
     
 
@@ -58,15 +59,15 @@ public class InformedNaiveMCTSNode extends MCTSNode {
             actions = new ArrayList<>();
             children = new ArrayList<>();
             unitActionTable = new LinkedList<>();
-            multipliers = new long[moveGenerator.getChoices().size()];
-            long baseMultiplier = 1;
+            multipliers = new BigInteger[moveGenerator.getChoices().size()];
+            BigInteger baseMultiplier = BigInteger.ONE;
             int idx = 0;
             for (Pair<Unit, List<UnitAction>> choice : moveGenerator.getChoices()) {
                 double []prior_distribution = model.predictDistribution(choice.m_a, gs, choice.m_b);
                 InformedUnitActionTableEntry ae = new InformedUnitActionTableEntry(choice.m_a, choice.m_b, prior_distribution);
                 unitActionTable.add(ae);
                 multipliers[idx] = baseMultiplier;
-                baseMultiplier*=ae.nactions;
+                baseMultiplier = baseMultiplier.multiply(BigInteger.valueOf(ae.nactions));                
                 idx++;
              }
         } else if (gs.canExecuteAnyAction(minplayer)) {
@@ -75,15 +76,15 @@ public class InformedNaiveMCTSNode extends MCTSNode {
             actions = new ArrayList<>();
             children = new ArrayList<>();
             unitActionTable = new LinkedList<>();
-            multipliers = new long[moveGenerator.getChoices().size()];
-            long baseMultiplier = 1;
+            multipliers = new BigInteger[moveGenerator.getChoices().size()];
+            BigInteger baseMultiplier = BigInteger.ONE;
             int idx = 0;
             for (Pair<Unit, List<UnitAction>> choice : moveGenerator.getChoices()) {
                 double []prior_distribution = model.predictDistribution(choice.m_a, gs, choice.m_b);
                 InformedUnitActionTableEntry ae = new InformedUnitActionTableEntry(choice.m_a, choice.m_b, prior_distribution);
                 unitActionTable.add(ae);
                 multipliers[idx] = baseMultiplier;
-                baseMultiplier*=ae.nactions;
+                baseMultiplier = baseMultiplier.multiply(BigInteger.valueOf(ae.nactions));                
                 idx++;
            }
         } else {
@@ -179,7 +180,7 @@ public class InformedNaiveMCTSNode extends MCTSNode {
     
     public InformedNaiveMCTSNode selectLeafUsingLocalMABs(int maxplayer, int minplayer, float epsilon_l, float epsilon_g, float epsilon_0, int global_strategy, int max_depth, int a_creation_ID) throws Exception {   
         PlayerAction pa2;
-        long actionCode;       
+        BigInteger actionCode;       
 
         // For each unit, rank the unitActions according to preference:
         List<double []> distributions = new LinkedList<double []>();
@@ -246,7 +247,7 @@ public class InformedNaiveMCTSNode extends MCTSNode {
         }
 
         pa2 = new PlayerAction();
-        actionCode = 0;
+        actionCode = BigInteger.ZERO;
         pa2.setResourceUsage(base_ru.clone());            
         while(!notSampledYet.isEmpty()) {
             int i = notSampledYet.remove(r.nextInt(notSampledYet.size()));
@@ -288,8 +289,8 @@ public class InformedNaiveMCTSNode extends MCTSNode {
                 pa2.getResourceUsage().merge(r2);
                 pa2.addUnitAction(ate.u, ua);
 
-                actionCode+= ((long)code)*multipliers[i];
-
+                actionCode = actionCode.add(BigInteger.valueOf(code).multiply(multipliers[i]));
+                
             } catch(Exception e) {
                 e.printStackTrace();
             }

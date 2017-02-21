@@ -5,6 +5,7 @@
 package ai.mcts.naivemcts;
 
 import ai.mcts.MCTSNode;
+import java.math.BigInteger;
 import java.util.*;
 import rts.*;
 import rts.units.Unit;
@@ -25,11 +26,11 @@ public class NaiveMCTSNode extends MCTSNode {
     
     boolean hasMoreActions = true;
     public PlayerActionGenerator moveGenerator = null;
-    HashMap<Long,NaiveMCTSNode> childrenMap = new LinkedHashMap<Long,NaiveMCTSNode>();    // associates action codes with children
+    HashMap<BigInteger,NaiveMCTSNode> childrenMap = new LinkedHashMap<BigInteger,NaiveMCTSNode>();    // associates action codes with children
     // Decomposition of the player actions in unit actions, and their contributions:
     public List<UnitActionTableEntry> unitActionTable = null;
     double evaluation_bound;    // this is the maximum positive value that the evaluation function can return
-    public long multipliers[];
+    public BigInteger multipliers[];
 
 
     public NaiveMCTSNode(int maxplayer, int minplayer, GameState a_gs, NaiveMCTSNode a_parent, double a_evaluation_bound, int a_creation_ID) throws Exception {
@@ -54,8 +55,8 @@ public class NaiveMCTSNode extends MCTSNode {
             actions = new ArrayList<PlayerAction>();
             children = new ArrayList<MCTSNode>();
             unitActionTable = new LinkedList<UnitActionTableEntry>();
-            multipliers = new long[moveGenerator.getChoices().size()];
-            long baseMultiplier = 1;
+            multipliers = new BigInteger[moveGenerator.getChoices().size()];
+            BigInteger baseMultiplier = BigInteger.ONE;
             int idx = 0;
             for (Pair<Unit, List<UnitAction>> choice : moveGenerator.getChoices()) {
                 UnitActionTableEntry ae = new UnitActionTableEntry();
@@ -70,7 +71,7 @@ public class NaiveMCTSNode extends MCTSNode {
                 }
                 unitActionTable.add(ae);
                 multipliers[idx] = baseMultiplier;
-                baseMultiplier*=ae.nactions;
+                baseMultiplier = baseMultiplier.multiply(BigInteger.valueOf(ae.nactions));
                 idx++;
              }
         } else if (gs.canExecuteAnyAction(minplayer)) {
@@ -79,8 +80,8 @@ public class NaiveMCTSNode extends MCTSNode {
             actions = new ArrayList<PlayerAction>();
             children = new ArrayList<MCTSNode>();
             unitActionTable = new LinkedList<UnitActionTableEntry>();
-            multipliers = new long[moveGenerator.getChoices().size()];
-            long baseMultiplier = 1;
+            multipliers = new BigInteger[moveGenerator.getChoices().size()];
+            BigInteger baseMultiplier = BigInteger.ONE;
             int idx = 0;
             for (Pair<Unit, List<UnitAction>> choice : moveGenerator.getChoices()) {
                 UnitActionTableEntry ae = new UnitActionTableEntry();
@@ -95,7 +96,7 @@ public class NaiveMCTSNode extends MCTSNode {
                 }
                 unitActionTable.add(ae);
                 multipliers[idx] = baseMultiplier;
-                baseMultiplier*=ae.nactions;
+                baseMultiplier = baseMultiplier.multiply(BigInteger.valueOf(ae.nactions));
                 idx++;
            }
         } else {
@@ -191,7 +192,7 @@ public class NaiveMCTSNode extends MCTSNode {
     
     public NaiveMCTSNode selectLeafUsingLocalMABs(int maxplayer, int minplayer, float epsilon_l, float epsilon_g, float epsilon_0, int global_strategy, int max_depth, int a_creation_ID) throws Exception {   
         PlayerAction pa2;
-        long actionCode;       
+        BigInteger actionCode;       
 
         // For each unit, rank the unitActions according to preference:
         List<double []> distributions = new LinkedList<double []>();
@@ -256,7 +257,7 @@ public class NaiveMCTSNode extends MCTSNode {
         }
 
         pa2 = new PlayerAction();
-        actionCode = 0;
+        actionCode = BigInteger.ZERO;
         pa2.setResourceUsage(base_ru.clone());            
         while(!notSampledYet.isEmpty()) {
             int i = notSampledYet.remove(r.nextInt(notSampledYet.size()));
@@ -298,7 +299,7 @@ public class NaiveMCTSNode extends MCTSNode {
                 pa2.getResourceUsage().merge(r2);
                 pa2.addUnitAction(ate.u, ua);
 
-                actionCode+= ((long)code)*multipliers[i];
+                actionCode = actionCode.add(BigInteger.valueOf(code).multiply(multipliers[i]));
 
             } catch(Exception e) {
                 e.printStackTrace();

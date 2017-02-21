@@ -6,6 +6,7 @@ package ai.mcts.naivemcts;
 
 import static ai.mcts.MCTSNode.r;
 import static ai.mcts.naivemcts.NaiveMCTSNode.DEBUG;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,7 +54,7 @@ public class TwoPhaseNaiveMCTSNode extends NaiveMCTSNode {
                                                                                         int phase1_budget,
                                                                                         int max_depth, int a_creation_ID) throws Exception {   
         PlayerAction pa2;
-        long actionCode;       
+        BigInteger actionCode;       
         
         float epsilon_l = (visit_count<phase1_budget ? el1 : el2);      
 
@@ -120,7 +121,7 @@ public class TwoPhaseNaiveMCTSNode extends NaiveMCTSNode {
         }
 
         pa2 = new PlayerAction();
-        actionCode = 0;
+        actionCode = BigInteger.ZERO;
         pa2.setResourceUsage(base_ru.clone());            
         while(!notSampledYet.isEmpty()) {
             int i = notSampledYet.remove(r.nextInt(notSampledYet.size()));
@@ -162,8 +163,8 @@ public class TwoPhaseNaiveMCTSNode extends NaiveMCTSNode {
                 pa2.getResourceUsage().merge(r2);
                 pa2.addUnitAction(ate.u, ua);
 
-                actionCode+= ((long)code)*multipliers[i];
-
+                actionCode = actionCode.add(BigInteger.valueOf(code).multiply(multipliers[i]));
+                
             } catch(Exception e) {
                 e.printStackTrace();
             }
