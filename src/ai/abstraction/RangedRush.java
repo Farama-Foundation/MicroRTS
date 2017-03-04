@@ -85,7 +85,7 @@ public class RangedRush extends AbstractionLayerAI {
             if (u.getType().canAttack && !u.getType().canHarvest
                     && u.getPlayer() == player
                     && gs.getActionAssignment(u) == null) {
-                meleeUnitBehavior(u, p, pgs);
+                meleeUnitBehavior(u, p, gs);
             }
         }
 
@@ -122,7 +122,8 @@ public class RangedRush extends AbstractionLayerAI {
         }
     }
 
-    public void meleeUnitBehavior(Unit u, Player p, PhysicalGameState pgs) {
+    public void meleeUnitBehavior(Unit u, Player p, GameState gs) {
+        PhysicalGameState pgs = gs.getPhysicalGameState();
         Unit closestEnemy = null;
         int closestDistance = 0;
         for (Unit u2 : pgs.getUnits()) {
