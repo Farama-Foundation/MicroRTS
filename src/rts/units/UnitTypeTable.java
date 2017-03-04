@@ -215,12 +215,12 @@ public class UnitTypeTable implements Serializable {
         addUnitType(ranged);     
         
 
-        base.produces.add(worker);  
-        barracks.produces.add(light);
-        barracks.produces.add(heavy); 
-        barracks.produces.add(ranged);
-        worker.produces.add(base);
-        worker.produces.add(barracks);
+        base.produces(worker);  
+        barracks.produces(light);
+        barracks.produces(heavy); 
+        barracks.produces(ranged);
+        worker.produces(base);
+        worker.produces(barracks);
     }
     
     public void addUnitType(UnitType ut) {

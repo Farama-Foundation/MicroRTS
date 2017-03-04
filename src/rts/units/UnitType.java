@@ -39,7 +39,8 @@ public class UnitType implements Serializable {
     public boolean canMove = true;      // the unit can execute the move action
     public boolean canAttack = true;    // the unit can execute the attack action
     public ArrayList<UnitType> produces = new ArrayList<UnitType>();  // units that can be produced        
-
+    public ArrayList<UnitType> producedBy = new ArrayList<UnitType>();  // unit that can produce this unit
+    
     // assume that all unit types have different names:
     public int hashCode() {
         return name.hashCode();
@@ -48,5 +49,11 @@ public class UnitType implements Serializable {
     public boolean equals(Object o) {
         if (!(o instanceof UnitType)) return false;
         return name.equals(((UnitType)o).name);
+    }
+    
+    public void produces(UnitType ut) 
+    {
+        produces.add(ut);
+        ut.producedBy.add(this);
     }
 }
