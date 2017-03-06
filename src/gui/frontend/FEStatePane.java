@@ -20,7 +20,9 @@ import ai.abstraction.HeavyRush;
 import ai.abstraction.LightRush;
 import ai.abstraction.RangedRush;
 import ai.abstraction.WorkerRush;
+import ai.abstraction.partialobservability.POHeavyRush;
 import ai.abstraction.partialobservability.POLightRush;
+import ai.abstraction.partialobservability.PORangedRush;
 import ai.abstraction.partialobservability.POWorkerRush;
 import ai.abstraction.pathfinding.AStarPathFinding;
 import ai.abstraction.pathfinding.BFSPathFinding;
@@ -125,6 +127,8 @@ public class FEStatePane extends JPanel {
                    RangedRush.class,
                    POWorkerRush.class,
                    POLightRush.class,
+                   POHeavyRush.class,
+                   PORangedRush.class,
                    PortfolioAI.class,
                    PGSAI.class,
                    IDRTMinimax.class,
