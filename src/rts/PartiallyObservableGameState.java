@@ -14,7 +14,7 @@ import rts.units.Unit;
  */
 public class PartiallyObservableGameState extends GameState {
     int player;   // the observer player
-    
+
     // creates a partially observable game state, from the point of view of 'player':
     public PartiallyObservableGameState(GameState gs, int a_player) {
         super(gs.getPhysicalGameState().cloneKeepingUnits(), gs.getUnitTypeTable());
@@ -24,7 +24,7 @@ public class PartiallyObservableGameState extends GameState {
         player = a_player;
 
         unitActions.putAll(gs.unitActions);
-        
+
         List<Unit> toDelete = new LinkedList<Unit>();
         for(Unit u:pgs.getUnits()) {
             if (u.getPlayer() != player) {
@@ -43,7 +43,11 @@ public class PartiallyObservableGameState extends GameState {
                 if (d<=u.getType().sightRadius) return true;
             }
         }
-        
+
         return false;
+    }
+
+    public PartiallyObservableGameState clone() {
+        return new PartiallyObservableGameState(super.clone(), player);
     }
 }
