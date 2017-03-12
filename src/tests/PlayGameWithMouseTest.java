@@ -39,7 +39,7 @@ public class PlayGameWithMouseTest {
 //        AI ai2 = new PassiveAI();
 //        AI ai2 = new RandomBiasedAI();
 //        AI ai2 = new LightRush(utt, new AStarPathFinding());
-        AI ai2 = new ContinuingAI(new NaiveMCTS(PERIOD, -1, 100, 20, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), new SimpleEvaluationFunction()));
+        AI ai2 = new ContinuingAI(new NaiveMCTS(PERIOD, -1, 100, 20, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), new SimpleEvaluationFunction(), true));
 
         long nextTimeToUpdate = System.currentTimeMillis() + PERIOD;
         do{

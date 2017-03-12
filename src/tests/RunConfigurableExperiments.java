@@ -150,10 +150,10 @@ public class RunConfigurableExperiments {
             // by setting "MAX_DEPTH = 1" in the next two bots, this effectively makes them Monte Carlo search, instead of Monte Carlo Tree Search
             case "NaiveMCTS1"://MonteCarlo
                 return new NaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 1, 0.33f, 0.0f, 0.75f,
-                        new RandomBiasedAI(), getEvaluationFunction());
+                        new RandomBiasedAI(), getEvaluationFunction(), true);
             case "NaiveMCTS2"://epsilon-greedy MonteCarlo
                 return new NaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 1, 1.00f, 0.0f, 0.25f,
-                        new RandomBiasedAI(), getEvaluationFunction());
+                        new RandomBiasedAI(), getEvaluationFunction(), true);
             case "UCT":
                 return new UCT(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, new RandomBiasedAI(),
                         getEvaluationFunction());
@@ -165,10 +165,10 @@ public class RunConfigurableExperiments {
                         getEvaluationFunction());
             case "NaiveMCTS3"://NaiveMCTS
                 return new NaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, 0.33f, 0.0f, 0.75f,
-                        new RandomBiasedAI(), getEvaluationFunction());
+                        new RandomBiasedAI(), getEvaluationFunction(), true);
             case "NaiveMCTS4"://epsilon-greedy MCTS
                 return new NaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, 1.00f, 0.0f, 0.25f,
-                        new RandomBiasedAI(), getEvaluationFunction());
+                        new RandomBiasedAI(), getEvaluationFunction(), true);
             case "AHTN-LL":
                 try {
                     return new AHTNAI("ahtn/microrts-ahtn-definition-lowest-level.lisp", TIME,
