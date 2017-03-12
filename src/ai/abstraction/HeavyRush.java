@@ -25,7 +25,7 @@ import rts.units.*;
 public class HeavyRush extends AbstractionLayerAI {
 
     Random r = new Random();
-    UnitTypeTable utt;
+    protected UnitTypeTable utt;
     UnitType workerType;
     UnitType baseType;
     UnitType barracksType;

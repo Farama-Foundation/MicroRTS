@@ -52,6 +52,8 @@ public class TwoPhaseNaiveMCTS extends AIWithComputationBudget implements Interr
     public int phase1_global_strategy = NaiveMCTSNode.E_GREEDY;
     public int phase2_global_strategy = NaiveMCTSNode.E_GREEDY;
     
+    boolean forceExplorationOfNonSampledActions = true;
+    
     // statistics:
     public long total_runs = 0;
     public long total_cycles_executed = 0;
@@ -65,7 +67,7 @@ public class TwoPhaseNaiveMCTS extends AIWithComputationBudget implements Interr
              0.3f, 0.0f, 0.0f,
              0.5f,
              new RandomBiasedAI(),
-             new SimpleSqrtEvaluationFunction3());
+             new SimpleSqrtEvaluationFunction3(), true);
     }    
     
     
@@ -73,7 +75,8 @@ public class TwoPhaseNaiveMCTS extends AIWithComputationBudget implements Interr
                                float el1, float eg1, float e01,
                                float el2, float eg2, float e02,
                                float p1_ratio,
-                               AI policy, EvaluationFunction a_ef) {
+                               AI policy, EvaluationFunction a_ef,
+                               boolean fensa) {
         super(available_time, max_playouts);
         MAXSIMULATIONTIME = lookahead;
         randomAI = policy;
@@ -86,13 +89,15 @@ public class TwoPhaseNaiveMCTS extends AIWithComputationBudget implements Interr
         phase2_epsilon_0 = e02;
         phase1_ratio = p1_ratio;
         ef = a_ef;
+        forceExplorationOfNonSampledActions = fensa;
     }    
     
     public TwoPhaseNaiveMCTS(int available_time, int max_playouts, int lookahead, int max_depth, 
                                float el1, float eg1, float e01, int a_gs1,
                                float el2, float eg2, float e02, int a_gs2,
                                float p1_ratio,
-                               AI policy, EvaluationFunction a_ef) {
+                               AI policy, EvaluationFunction a_ef,
+                               boolean fensa) {
         super(available_time, max_playouts);
         MAXSIMULATIONTIME = lookahead;
         randomAI = policy;
@@ -109,6 +114,7 @@ public class TwoPhaseNaiveMCTS extends AIWithComputationBudget implements Interr
         
         phase1_ratio = p1_ratio;
         ef = a_ef;
+        forceExplorationOfNonSampledActions = fensa;
     }        
 
     public void reset() {
@@ -128,7 +134,7 @@ public class TwoPhaseNaiveMCTS extends AIWithComputationBudget implements Interr
         return new TwoPhaseNaiveMCTS(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME, MAX_TREE_DEPTH, 
                                              phase1_epsilon_l, phase1_epsilon_g, phase1_epsilon_0,
                                              phase2_epsilon_l, phase2_epsilon_g, phase2_epsilon_0,
-                                             phase1_ratio, randomAI, ef);
+                                             phase1_ratio, randomAI, ef, forceExplorationOfNonSampledActions);
     }    
     
     
@@ -147,7 +153,7 @@ public class TwoPhaseNaiveMCTS extends AIWithComputationBudget implements Interr
     public void startNewComputation(int a_player, GameState gs) throws Exception {
     	playerForThisComputation = a_player;
         node_creation_ID = 0;
-        tree = new NaiveMCTSNode(playerForThisComputation, 1-playerForThisComputation, gs, null, ef.upperBound(gs), node_creation_ID++);
+        tree = new NaiveMCTSNode(playerForThisComputation, 1-playerForThisComputation, gs, null, ef.upperBound(gs), node_creation_ID++, forceExplorationOfNonSampledActions);
         
         max_actions_so_far = Math.max(tree.moveGenerator.getSize(),max_actions_so_far);
         gs_to_start_from = gs;
@@ -354,6 +360,8 @@ public class TwoPhaseNaiveMCTS extends AIWithComputationBudget implements Interr
         parameters.add(new ParameterSpecification("DefaultPolicy",AI.class, randomAI));
         parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
 
+        parameters.add(new ParameterSpecification("ForceExplorationOfNonSampledActions",boolean.class,true));
+
         return parameters;
     }     
     
@@ -465,5 +473,14 @@ public class TwoPhaseNaiveMCTS extends AIWithComputationBudget implements Interr
     
     public void setEvaluationFunction(EvaluationFunction a_ef) {
         ef = a_ef;
+    }    
+    
+    public boolean getForceExplorationOfNonSampledActions() {
+        return forceExplorationOfNonSampledActions;
+    }
+    
+    public void setForceExplorationOfNonSampledActions(boolean fensa)
+    {
+        forceExplorationOfNonSampledActions = fensa;
     }    
 }

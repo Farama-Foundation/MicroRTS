@@ -20,8 +20,8 @@ import util.Sampler;
  */
 public class TwoPhaseNaiveMCTSNode extends NaiveMCTSNode {
 
-    public TwoPhaseNaiveMCTSNode(int maxplayer, int minplayer, GameState a_gs, NaiveMCTSNode a_parent, double a_evaluation_bound, int a_creation_ID) throws Exception {
-        super(maxplayer, minplayer, a_gs, a_parent, a_evaluation_bound, a_creation_ID);
+    public TwoPhaseNaiveMCTSNode(int maxplayer, int minplayer, GameState a_gs, NaiveMCTSNode a_parent, double a_evaluation_bound, int a_creation_ID, boolean fensa) throws Exception {
+        super(maxplayer, minplayer, a_gs, a_parent, a_evaluation_bound, a_creation_ID, fensa);
     }
     
     // Naive Sampling:
@@ -174,7 +174,7 @@ public class TwoPhaseNaiveMCTSNode extends NaiveMCTSNode {
         if (pate==null) {
             actions.add(pa2);            
             GameState gs2 = gs.cloneIssue(pa2);
-            TwoPhaseNaiveMCTSNode node = new TwoPhaseNaiveMCTSNode(maxplayer, minplayer, gs2.clone(), this, evaluation_bound, a_creation_ID);
+            TwoPhaseNaiveMCTSNode node = new TwoPhaseNaiveMCTSNode(maxplayer, minplayer, gs2.clone(), this, evaluation_bound, a_creation_ID, forceExplorationOfNonSampledActions);
             childrenMap.put(actionCode,node);
             children.add(node);          
             return node;                
