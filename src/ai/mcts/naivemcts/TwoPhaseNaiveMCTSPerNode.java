@@ -50,6 +50,8 @@ public class TwoPhaseNaiveMCTSPerNode extends AIWithComputationBudget implements
     public int phase1_global_strategy = NaiveMCTSNode.E_GREEDY;
     public int phase2_global_strategy = NaiveMCTSNode.E_GREEDY;
     
+    boolean forceExplorationOfNonSampledActions = true;
+    
     // statistics:
     public long total_runs = 0;
     public long total_cycles_executed = 0;
@@ -143,7 +145,7 @@ public class TwoPhaseNaiveMCTSPerNode extends AIWithComputationBudget implements
     public void startNewComputation(int a_player, GameState gs) throws Exception {
     	playerForThisComputation = a_player;
         node_creation_ID = 0;
-        tree = new TwoPhaseNaiveMCTSNode(playerForThisComputation, 1-playerForThisComputation, gs, null, ef.upperBound(gs), node_creation_ID++);
+        tree = new TwoPhaseNaiveMCTSNode(playerForThisComputation, 1-playerForThisComputation, gs, null, ef.upperBound(gs), node_creation_ID++, forceExplorationOfNonSampledActions);
         
         max_actions_so_far = Math.max(tree.moveGenerator.getSize(),max_actions_so_far);
         gs_to_start_from = gs;
@@ -335,6 +337,8 @@ public class TwoPhaseNaiveMCTSPerNode extends AIWithComputationBudget implements
         parameters.add(new ParameterSpecification("DefaultPolicy",AI.class, randomAI));
         parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
 
+        parameters.add(new ParameterSpecification("ForceExplorationOfNonSampledActions",boolean.class,true));
+        
         return parameters;
     }      
     
@@ -447,4 +451,13 @@ public class TwoPhaseNaiveMCTSPerNode extends AIWithComputationBudget implements
     public void setEvaluationFunction(EvaluationFunction a_ef) {
         ef = a_ef;
     }    
+    
+    public boolean getForceExplorationOfNonSampledActions() {
+        return forceExplorationOfNonSampledActions;
+    }
+    
+    public void setForceExplorationOfNonSampledActions(boolean fensa)
+    {
+        forceExplorationOfNonSampledActions = fensa;
+    }
 }

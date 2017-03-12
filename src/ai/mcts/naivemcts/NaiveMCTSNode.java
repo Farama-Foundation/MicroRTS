@@ -17,6 +17,7 @@ import util.Sampler;
  * @author santi
  */
 public class NaiveMCTSNode extends MCTSNode {
+    
     public static final int E_GREEDY = 0;
     public static final int UCB1 = 1;
     
@@ -24,6 +25,7 @@ public class NaiveMCTSNode extends MCTSNode {
     
     public static float C = 0.05f;   // exploration constant for UCB1
     
+    boolean forceExplorationOfNonSampledActions = true;
     boolean hasMoreActions = true;
     public PlayerActionGenerator moveGenerator = null;
     HashMap<BigInteger,NaiveMCTSNode> childrenMap = new LinkedHashMap<BigInteger,NaiveMCTSNode>();    // associates action codes with children
@@ -33,14 +35,15 @@ public class NaiveMCTSNode extends MCTSNode {
     public BigInteger multipliers[];
 
 
-    public NaiveMCTSNode(int maxplayer, int minplayer, GameState a_gs, NaiveMCTSNode a_parent, double a_evaluation_bound, int a_creation_ID) throws Exception {
+    public NaiveMCTSNode(int maxplayer, int minplayer, GameState a_gs, NaiveMCTSNode a_parent, double a_evaluation_bound, int a_creation_ID, boolean fensa) throws Exception {
         parent = a_parent;
         gs = a_gs;
         if (parent==null) depth = 0;
                      else depth = parent.depth+1;     
         evaluation_bound = a_evaluation_bound;
         creation_ID = a_creation_ID;
- 
+        forceExplorationOfNonSampledActions = fensa;
+        
         while (gs.winner() == -1 &&
                !gs.gameover() &&
                !gs.canExecuteAnyAction(maxplayer) &&
@@ -229,8 +232,10 @@ public class NaiveMCTSNode extends MCTSNode {
             if (ate.visit_count[bestIdx]!=0) {
                 dist[bestIdx] = (1-epsilon_l) + (epsilon_l/ate.nactions);
             } else {
-                for(int j = 0;j<dist.length;j++) 
-                    if (ate.visit_count[j]>0) dist[j] = 0;
+                if (forceExplorationOfNonSampledActions) {
+                    for(int j = 0;j<dist.length;j++) 
+                        if (ate.visit_count[j]>0) dist[j] = 0;
+                }
             }  
 
             if (DEBUG>=3) {
@@ -310,7 +315,7 @@ public class NaiveMCTSNode extends MCTSNode {
         if (pate==null) {
             actions.add(pa2);            
             GameState gs2 = gs.cloneIssue(pa2);
-            NaiveMCTSNode node = new NaiveMCTSNode(maxplayer, minplayer, gs2.clone(), this, evaluation_bound, a_creation_ID);
+            NaiveMCTSNode node = new NaiveMCTSNode(maxplayer, minplayer, gs2.clone(), this, evaluation_bound, a_creation_ID, forceExplorationOfNonSampledActions);
             childrenMap.put(actionCode,node);
             children.add(node);          
             return node;                
