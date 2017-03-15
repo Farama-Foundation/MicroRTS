@@ -4,7 +4,6 @@
  */
 package ai.abstraction;
 
-import ai.core.AI;
 import ai.abstraction.pathfinding.PathFinding;
 import ai.core.AIWithComputationBudget;
 import java.util.ArrayList;
