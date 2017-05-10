@@ -22,7 +22,9 @@ public abstract class AI {
     @Override
     public abstract AI clone();   // this function is not supposed to do an exact clone with all the internal state, etc.
                                   // just a copy of the AI witht he same configuration.
-    
+        
+    public abstract List<ParameterSpecification> getParameters();
+
     
     // This method can be used to report any meaningful statistics once the game is over 
     // (for example, average nodes explored per move, etc.)
@@ -41,7 +43,16 @@ public abstract class AI {
     public String toString() {
         return this.getClass().getSimpleName();
     }  
-    
-    
-    public abstract List<ParameterSpecification> getParameters();
+
+
+    // This function could be called before starting a game (depending on the tournament
+    // configuration it will be called or not). If it is called, this gives the AIs an 
+    // opportunity to see the initial game state before the game start and do any kind of
+    // analysis.
+    // - If "milliseconds" is > 0, then this is a time bound that the AI should respect.
+    // - Even if the game is partially observable, the game state received by this function
+    //   might be fully observable.
+    public void preGameAnalysis(GameState gs, long milliseconds)
+    {
+    }
 } 

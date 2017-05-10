@@ -64,6 +64,7 @@ public class FETournamentPane extends JPanel {
     JFormattedTextField maxGameLengthField = null;
     JFormattedTextField timeBudgetField = null;
     JFormattedTextField iterationsBudgetField = null;
+    JFormattedTextField preAnalysisTimeField = null;
     
     JComboBox unitTypeTableBox = null;
     JCheckBox fullObservabilityCheckBox = null;
@@ -71,6 +72,7 @@ public class FETournamentPane extends JPanel {
     JCheckBox timeoutCheckBox = null;
     JCheckBox gcCheckBox = null;
     JCheckBox tracesCheckBox = null;
+    JCheckBox preGameAnalysisCheckBox = null;
     
     JTextArea tournamentProgressTextArea = null;
     
@@ -319,6 +321,7 @@ public class FETournamentPane extends JPanel {
                 maxGameLengthField = FEStatePane.addTextField(p2left,"Max Game Length:", "3000", 4);
                 timeBudgetField = FEStatePane.addTextField(p2left,"Time Budget:", "100", 5);
                 iterationsBudgetField = FEStatePane.addTextField(p2left,"Iterations Budget:", "-1", 8);
+                preAnalysisTimeField = FEStatePane.addTextField(p2left,"pre-Analisys time budget:", "1000", 8);
                 
                 p2.add(p2left);            
             }            
@@ -355,6 +358,9 @@ public class FETournamentPane extends JPanel {
                 tracesCheckBox = new JCheckBox("Save game traces");
                 tracesCheckBox.setSelected(false);                
                 p2right.add(tracesCheckBox);
+                preGameAnalysisCheckBox = new JCheckBox("Give time to the AIs before game starts to analyze initial game state");
+                preGameAnalysisCheckBox.setSelected(false);                
+                p2right.add(preGameAnalysisCheckBox);
                 p2.add(p2right);
             }            
             add(p2);
@@ -391,11 +397,13 @@ public class FETournamentPane extends JPanel {
                     int maxGameLength = Integer.parseInt(maxGameLengthField.getText());
                     int timeBudget = Integer.parseInt(timeBudgetField.getText());
                     int iterationsBudget = Integer.parseInt(iterationsBudgetField.getText());
+                    int preAnalysisBudget = Integer.parseInt(preAnalysisTimeField.getText());
                     
                     boolean fullObservability = fullObservabilityCheckBox.isSelected();
                     boolean selfMatches = selfMatchesCheckBox.isSelected();
                     boolean timeOutCheck = timeoutCheckBox.isSelected();
                     boolean gcCheck = gcCheckBox.isSelected();
+                    boolean preGameAnalysis = preGameAnalysisCheckBox.isSelected();
 
                     String prefix = "tournament_";
                     int idx = 0;
@@ -421,8 +429,8 @@ public class FETournamentPane extends JPanel {
                                             Writer writer = new FileWriter(fileToUse);
                                             Writer writerProgress = new JTextAreaWriter(tournamentProgressTextArea);
                                             RoundRobinTournament.runTournament(selectedAIs, maps, 
-                                                                               iterations, maxGameLength, timeBudget, iterationsBudget,
-                                                                               fullObservability, selfMatches, timeOutCheck, gcCheck, 
+                                                                               iterations, maxGameLength, timeBudget, iterationsBudget, preAnalysisBudget, 
+                                                                               fullObservability, selfMatches, timeOutCheck, gcCheck, preGameAnalysis, 
                                                                                utt, tracesFolder,
                                                                                writer, writerProgress);
                                             writer.close();
@@ -451,8 +459,8 @@ public class FETournamentPane extends JPanel {
                                             Writer writer = new FileWriter(fileToUse);
                                             Writer writerProgress = new JTextAreaWriter(tournamentProgressTextArea);
                                             FixedOpponentsTournament.runTournament(selectedAIs, opponentAIs, maps, 
-                                                                               iterations, maxGameLength, timeBudget, iterationsBudget,
-                                                                               fullObservability, timeOutCheck, gcCheck, 
+                                                                               iterations, maxGameLength, timeBudget, iterationsBudget, preAnalysisBudget, 
+                                                                               fullObservability, timeOutCheck, gcCheck, preGameAnalysis, 
                                                                                utt, tracesFolder,
                                                                                writer, writerProgress);
                                             writer.close();

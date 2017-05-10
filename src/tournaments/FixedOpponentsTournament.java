@@ -38,9 +38,11 @@ public class FixedOpponentsTournament {
                                      int maxGameLength,
                                      int timeBudget,
                                      int iterationsBudget,
+                                     int preAnalysisBudget, 
                                      boolean fullObservability,
                                      boolean timeoutCheck,
                                      boolean runGC,
+                                     boolean preAnalysis, 
                                      UnitTypeTable utt,
                                      String traceOutputfolder,
                                      Writer out,
@@ -100,6 +102,23 @@ public class FixedOpponentsTournament {
                         GameState gs = new GameState(pgs.clone(),utt);
 
                         if (progress!=null) progress.write("MATCH UP: " + ai1+ " vs " + ai2);
+                        
+                        if (preAnalysis) {
+                            long pre_start1 = System.currentTimeMillis();
+                            ai1.preGameAnalysis(gs, preAnalysisBudget);
+                            long pre_end1 = System.currentTimeMillis();
+                            if (progress != null) {
+                                progress.write("preGameAnalysis player 1 took " + (pre_end1 - pre_start1));
+                                if (preAnalysisBudget>0 && (pre_end1 - pre_start1)>preAnalysisBudget) progress.write("TIMEOUT PLAYER 1!");
+                            }
+                            long pre_start2 = System.currentTimeMillis();
+                            ai2.preGameAnalysis(gs, preAnalysisBudget);
+                            long pre_end2 = System.currentTimeMillis();
+                            if (progress != null) {
+                                progress.write("preGameAnalysis player 2 took " + (pre_end2 - pre_start2));
+                                if (preAnalysisBudget>0 && (pre_end2 - pre_start2)>preAnalysisBudget) progress.write("TIMEOUT PLAYER 2!");
+                            }
+                        }
                         
                         boolean gameover = false;
                         int crashed = -1;
