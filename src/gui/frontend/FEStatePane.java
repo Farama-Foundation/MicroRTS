@@ -605,6 +605,10 @@ public class FEStatePane extends JPanel {
                                     long nextTimeToUpdate = System.currentTimeMillis() + PERIOD;
                                     do{
                                         if (System.currentTimeMillis()>=nextTimeToUpdate) {
+                                            
+//                                            System.out.println("----------------------------------------");
+//                                            System.out.println(gs);
+                                            
                                             PlayerAction pa1 = null;
                                             PlayerAction pa2 = null;
                                             if (fullObservabilityBox.isSelected()) {
@@ -614,15 +618,17 @@ public class FEStatePane extends JPanel {
                                                 pa1 = ai1.getAction(0, new PartiallyObservableGameState(gs,0));
                                                 pa2 = ai2.getAction(1, new PartiallyObservableGameState(gs,1));
                                             }
-                                            synchronized(gs) {
-                                                gs.issueSafe(pa1);
-                                                gs.issueSafe(pa2);
-                                            }
                                             if (trace!=null && (!pa1.isEmpty() || !pa2.isEmpty())) {
+//                                                System.out.println("- (for trace) ---------------------------------------");
+//                                                System.out.println(gs);
                                                 TraceEntry te = new TraceEntry(gs.getPhysicalGameState().clone(),gs.getTime());
                                                 te.addPlayerAction(pa1);
                                                 te.addPlayerAction(pa2);
                                                 trace.addEntry(te);
+                                            }
+                                            synchronized(gs) {
+                                                gs.issueSafe(pa1);
+                                                gs.issueSafe(pa2);
                                             }
 
                                             // simulate:
@@ -642,6 +648,8 @@ public class FEStatePane extends JPanel {
                                         trace.addEntry(te);
                                    
                                         String traceFileName = FEStatePane.nextTraceName();
+                                        
+//                                        System.out.println("Trace saved as " + traceFileName);
 
                                         XMLWriter xml = new XMLWriter(new FileWriter(traceFileName));
                                         trace.toxml(xml);
@@ -763,6 +771,7 @@ public class FEStatePane extends JPanel {
             String name = "trace" + idx + ".xml";
             File f = new File(name);
             if (!f.exists()) return name;
+            idx++;
         }while(true);
     }
     

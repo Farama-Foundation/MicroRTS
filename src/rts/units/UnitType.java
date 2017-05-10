@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.jdom.Element;
+import util.XMLWriter;
 
 /**
  * A general unit definition that could turn out to be anything
@@ -56,4 +57,82 @@ public class UnitType implements Serializable {
         produces.add(ut);
         ut.producedBy.add(this);
     }
+
+    // creates a temporary instance with just the name and ID:
+    static UnitType createStub(Element unittype_e) {
+        UnitType ut = new UnitType();
+        ut.ID = Integer.parseInt(unittype_e.getAttributeValue("ID"));
+        ut.name = unittype_e.getAttributeValue("name");
+        return ut;
+    }
+    
+    
+    void fromxml(Element unittype_e, UnitTypeTable utt) {
+        cost = Integer.parseInt(unittype_e.getAttributeValue("cost"));
+        hp = Integer.parseInt(unittype_e.getAttributeValue("hp"));
+        minDamage = Integer.parseInt(unittype_e.getAttributeValue("minDamage"));
+        maxDamage = Integer.parseInt(unittype_e.getAttributeValue("maxDamage"));
+        attackRange = Integer.parseInt(unittype_e.getAttributeValue("attackRange"));
+
+        produceTime = Integer.parseInt(unittype_e.getAttributeValue("produceTime"));
+        moveTime = Integer.parseInt(unittype_e.getAttributeValue("moveTime"));
+        attackTime = Integer.parseInt(unittype_e.getAttributeValue("attackTime"));
+        harvestTime = Integer.parseInt(unittype_e.getAttributeValue("harvestTime"));
+        returnTime = Integer.parseInt(unittype_e.getAttributeValue("returnTime"));
+
+        harvestAmount = Integer.parseInt(unittype_e.getAttributeValue("harvestAmount"));
+        sightRadius = Integer.parseInt(unittype_e.getAttributeValue("sightRadius"));
+
+        isResource = Boolean.parseBoolean(unittype_e.getAttributeValue("isResource"));
+        isStockpile = Boolean.parseBoolean(unittype_e.getAttributeValue("isStockpile"));
+        canHarvest = Boolean.parseBoolean(unittype_e.getAttributeValue("canHarvest"));
+        canMove = Boolean.parseBoolean(unittype_e.getAttributeValue("canMove"));
+        canAttack = Boolean.parseBoolean(unittype_e.getAttributeValue("canAttack"));
+        
+        for(Object o:unittype_e.getChildren("produces")) {
+            Element produces_e = (Element)o;
+            produces.add(utt.getUnitType(produces_e.getAttributeValue("type")));
+        }
+
+        for(Object o:unittype_e.getChildren("producedBy")) {
+            Element producedby_e = (Element)o;
+            producedBy.add(utt.getUnitType(producedby_e.getAttributeValue("type")));
+        }
+    }    
+    
+    
+    public void toxml(XMLWriter w) {
+        w.tagWithAttributes(this.getClass().getName(),
+                            "ID=\""+ID+"\" "+
+                            "name=\""+name+"\" "+
+                            "cost=\""+cost+"\" "+
+                            "hp=\""+hp+"\" "+
+                            "minDamage=\""+minDamage+"\" "+
+                            "maxDamage=\""+maxDamage+"\" "+
+                            "attackRange=\""+attackRange+"\" "+
+
+                            "produceTime=\""+produceTime+"\" "+
+                            "moveTime=\""+moveTime+"\" "+
+                            "attackTime=\""+attackTime+"\" "+
+                            "harvestTime=\""+harvestTime+"\" "+
+                            "returnTime=\""+returnTime+"\" "+
+                                    
+                            "harvestAmount=\""+harvestAmount+"\" "+
+                            "sightRadius=\""+sightRadius+"\" "+
+
+                            "isResource=\""+isResource+"\" "+
+                            "isStockpile=\""+isStockpile+"\" "+
+                            "canHarvest=\""+canHarvest+"\" "+
+                            "canMove=\""+canMove+"\" "+
+                            "canAttack=\""+canAttack+"\"");
+        for(UnitType ut:produces) {
+            w.tagWithAttributes("produces", "type=\""+ut.name+"\"");
+            w.tag("/produces");
+        }
+        for(UnitType ut:producedBy) {
+            w.tagWithAttributes("producedBy", "type=\""+ut.name+"\"");
+            w.tag("/producedBy");
+        }
+        w.tag("/" + this.getClass().getName());
+    }     
 }

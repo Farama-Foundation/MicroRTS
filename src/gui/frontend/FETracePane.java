@@ -20,14 +20,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import org.jdom.input.SAXBuilder;
 import rts.GameState;
-import rts.PhysicalGameState;
-import rts.PlayerAction;
 import rts.Trace;
 import rts.TraceEntry;
-import rts.UnitAction;
-import rts.units.Unit;
-import rts.units.UnitTypeTable;
-import util.Pair;
 import util.XMLWriter;
 
 /**
@@ -40,13 +34,11 @@ public class FETracePane extends JPanel {
     int currentGameCycle = 0;
     
     PhysicalGameStatePanel statePanel = null;
-    UnitTypeTable currentUtt = null;
     
     JFileChooser fileChooser = new JFileChooser();
     FEStatePane stateTab = null;
     
     public FETracePane(FEStatePane a_stateTab) {
-        currentUtt = new UnitTypeTable();
         stateTab = a_stateTab;
         
         setLayout(new BorderLayout());
@@ -67,7 +59,7 @@ public class FETracePane extends JPanel {
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
                         File file = fileChooser.getSelectedFile();
                         try {
-                            currentTrace = new Trace(new SAXBuilder().build(file.getAbsolutePath()).getRootElement(), currentUtt);
+                            currentTrace = new Trace(new SAXBuilder().build(file.getAbsolutePath()).getRootElement());
                             currentGameCycle = 0;
                             statePanel.setStateDirect(currentTrace.getGameStateAtCycle(currentGameCycle));
                             statePanel.repaint();

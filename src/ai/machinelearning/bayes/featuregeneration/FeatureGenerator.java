@@ -16,7 +16,6 @@ import rts.Trace;
 import rts.TraceEntry;
 import rts.UnitAction;
 import rts.units.Unit;
-import rts.units.UnitTypeTable;
 import util.Pair;
 
 /**
@@ -25,13 +24,13 @@ import util.Pair;
  */
 public abstract class FeatureGenerator {
     
-    public static List<Trace> loadTraces(String tracesfolder, UnitTypeTable utt) throws Exception {
+    public static List<Trace> loadTraces(String tracesfolder) throws Exception {
         List<Trace> traces = new ArrayList<>();
         File folder = new File(tracesfolder);
         for(File file:folder.listFiles()) {        
             String fileName = file.getAbsolutePath();
             if (fileName.endsWith(".xml")) {
-                Trace t = new Trace(new SAXBuilder().build(fileName).getRootElement(), utt);
+                Trace t = new Trace(new SAXBuilder().build(fileName).getRootElement());
                 traces.add(t);
             }
         }      

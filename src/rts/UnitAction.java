@@ -28,7 +28,7 @@ public class UnitAction implements Serializable {
     public static final int TYPE_ATTACK_LOCATION = 5;
     public static final int NUMBER_OF_ACTION_TYPES = 6;
 
-    public static String actionName[] ={"none","move","harvest","return","produce","attack_location"};
+    public static String actionName[] ={"wait","move","harvest","return","produce","attack_location"};
     
     public static final int DIRECTION_NONE = -1;
     public static final int DIRECTION_UP = 0;
@@ -266,6 +266,8 @@ public class UnitAction implements Serializable {
         
         if (type==TYPE_ATTACK_LOCATION) {
             tmp+=x + "," + y;
+        } else if (type==TYPE_NONE) {
+            tmp+=parameter;
         } else {
             if (parameter != DIRECTION_NONE) {
                 if (parameter == DIRECTION_UP) tmp += "up";

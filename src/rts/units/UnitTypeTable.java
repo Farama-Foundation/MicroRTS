@@ -7,6 +7,8 @@ package rts.units;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import org.jdom.Element;
+import util.XMLWriter;
 
 /**
  *
@@ -34,6 +36,19 @@ public class UnitTypeTable implements Serializable {
         
     public UnitTypeTable(int version, int crs) {
         setUnitTypeTable(version, crs);
+    }
+    
+    
+    public UnitTypeTable(Element e) {
+        moveConflictResolutionStrategy = Integer.parseInt(e.getAttributeValue("moveConflictResolutionStrategy"));
+        for(Object o:e.getChildren()) {
+            Element unittype_e = (Element)o;
+            unitTypes.add(UnitType.createStub(unittype_e));
+        }
+        for(Object o:e.getChildren()) {
+            Element unittype_e = (Element)o;
+            getUnitType(unittype_e.getAttributeValue("name")).fromxml(unittype_e, this);
+        }        
     }
     
     
@@ -248,4 +263,9 @@ public class UnitTypeTable implements Serializable {
     }
     
     
+    public void toxml(XMLWriter w) {
+        w.tagWithAttributes(this.getClass().getName(),"moveConflictResolutionStrategy=\""+moveConflictResolutionStrategy+"\"");
+        for(UnitType ut:unitTypes) ut.toxml(w);
+        w.tag("/" + this.getClass().getName());
+    }    
 }

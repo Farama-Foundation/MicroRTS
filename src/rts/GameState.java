@@ -179,8 +179,14 @@ public class GameState implements Serializable{
                             }
                             int duration1 = uaa.action.ETA(uaa.unit);
                             int duration2 = p.m_b.ETA(p.m_a);
-                            if (cancel_old) uaa.action = new UnitAction(UnitAction.TYPE_NONE,Math.min(duration1,duration2));
-                            if (cancel_new) p.m_b = new UnitAction(UnitAction.TYPE_NONE,Math.min(duration1,duration2));
+                            if (cancel_old) {
+//                                System.out.println("Old action canceled: " + uaa.unit.getID() + ", " + uaa.action);
+                                uaa.action = new UnitAction(UnitAction.TYPE_NONE,Math.min(duration1,duration2));
+                            }
+                            if (cancel_new) {
+//                                System.out.println("New action canceled: " + p.m_a.getID() + ", " + p.m_b);
+                                p = new Pair<>(p.m_a, new UnitAction(UnitAction.TYPE_NONE,Math.min(duration1,duration2)));
+                            }
                         } else {
                             // This is more a problem, since it means there is a bug somewhere...
                             // (probably in one of the AIs)

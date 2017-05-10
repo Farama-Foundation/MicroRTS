@@ -217,8 +217,10 @@ public class PhysicalGameStatePanel extends JPanel {
     public void paint(Graphics g) {
         super.paint(g);
         Graphics2D g2d = (Graphics2D)g;
-        synchronized(gs) {
-            draw(g2d, this, this.getWidth(), this.getHeight(), gs, pogs, colorScheme, fullObservability, drawFromPerspectiveOfPlayer, evalFunction);
+        if (gs!=null) {
+            synchronized(gs) {
+                draw(g2d, this, this.getWidth(), this.getHeight(), gs, pogs, colorScheme, fullObservability, drawFromPerspectiveOfPlayer, evalFunction);
+            }
         }
 
         if (m_mouse_selection_x0>=0) {

@@ -57,7 +57,7 @@ public class PretrainNaiveBayesModels {
 //        List<Trace> traces = FeatureGeneration.loadTraces(tracesFolder, utt);
 //        System.out.println(traces.size() + " traces loaded.");
 //        List<TrainingInstance> instances = FeatureGeneration.generateInstances(traces);
-        List<TrainingInstance> instances = generateInstances(tracesFolder, utt, AIname);
+        List<TrainingInstance> instances = generateInstances(tracesFolder, AIname);
         System.out.println(instances.size() + " instances generated.");
         
         // translate to feature vectors:        
@@ -108,7 +108,7 @@ public class PretrainNaiveBayesModels {
     }
     
     
-    public static List<TrainingInstance> generateInstances(String tracesFolder, UnitTypeTable utt, String targetAIID) throws Exception {
+    public static List<TrainingInstance> generateInstances(String tracesFolder, String targetAIID) throws Exception {
         List<TrainingInstance> instances = new ArrayList<>();
         
         File folder = new File(tracesFolder);
@@ -129,7 +129,7 @@ public class PretrainNaiveBayesModels {
                 if (ai1.equals(targetAIID)) playerToLearnFrom = 0;
                 if (ai2.equals(targetAIID)) playerToLearnFrom = 1;
                 if (playerToLearnFrom>=0) {                
-                    Trace t = new Trace(new SAXBuilder().build(fileName).getRootElement(), utt);                    
+                    Trace t = new Trace(new SAXBuilder().build(fileName).getRootElement());                    
                     for(TraceEntry te:t.getEntries()) {
                         GameState gs = t.getGameStateAtCycle(te.getTime());
                         for(Pair<Unit,UnitAction> tmp:te.getActions()) {
