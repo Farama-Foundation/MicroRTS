@@ -14,6 +14,7 @@ import java.io.Writer;
  */
 public class XMLWriter {
 	private static final int tabsize = 2;
+        private String lineSeparator = "\n";
 
 	/**
 	 * Number of spaces indentation currently being used.
@@ -33,7 +34,22 @@ public class XMLWriter {
 		writer = w;
 		spaces = 0;
 	}	
+
+        
 	/**
+	 * XMLWriter constructor.
+	 *  
+	 * @param w Writer to use for XML output.
+         * @param a_lineSeparator is the character to be used to separate lines
+	 */
+	public XMLWriter(Writer w, String a_lineSeparator) {
+		writer = w;
+                lineSeparator = a_lineSeparator;
+		spaces = 0;
+	}	
+
+        
+        /**
 	 * Reset the number of spaces being used for indentation.
 	 */
 	public void resetTab() {
@@ -79,7 +95,7 @@ public class XMLWriter {
 	public void tag(String tagname, String value) {
 		indent();
 		try {
-			writer.write("<"+tagname+">"+value+"</"+tagname+">\n");
+			writer.write("<"+tagname+">"+value+"</"+tagname+">" + lineSeparator);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -103,7 +119,7 @@ public class XMLWriter {
 		if (tagname.charAt(0) == '/') untab();
 		indent();
 		try {
-			writer.write("<"+tagname+">\n");
+			writer.write("<"+tagname+">" + lineSeparator);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -114,7 +130,7 @@ public class XMLWriter {
 		if (tagname.charAt(0) == '/') untab();
 		indent();
 		try {
-			writer.write("<"+tagname+" "+attributesString+">\n");
+			writer.write("<"+tagname+" "+attributesString+">" + lineSeparator);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

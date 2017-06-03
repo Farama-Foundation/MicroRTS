@@ -4,6 +4,9 @@
  */
 package rts;
 
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
 import java.io.Serializable;
 import java.io.Writer;
 import java.util.Objects;
@@ -342,6 +345,29 @@ public class UnitAction implements Serializable {
         if (xStr!=null) x = Integer.parseInt(xStr);
         if (yStr!=null) y = Integer.parseInt(yStr);
         if (unitTypeStr!=null) unitType = utt.getUnitType(unitTypeStr);
+    }
+    
+    
+    public static UnitAction fromXML(Element e, UnitTypeTable utt) {
+        return new UnitAction(e, utt);
+    }
+    
+    
+    public static UnitAction fromJSON(String JSON, UnitTypeTable utt) {
+        JsonObject o = Json.parse(JSON).asObject();
+        return fromJSON(o, utt);
+    }
+
+
+    public static UnitAction fromJSON(JsonObject o, UnitTypeTable utt) {
+        UnitAction ua = new UnitAction(o.getInt("type", TYPE_NONE));
+        ua.parameter = o.getInt("parameter", DIRECTION_NONE);
+        ua.x = o.getInt("x", DIRECTION_NONE);
+        ua.y = o.getInt("y", DIRECTION_NONE);
+        String ut = o.getString("unitType", null);
+        if (ut!=null) ua.unitType = utt.getUnitType(ut);
+        
+        return ua;
     }
     
 }
