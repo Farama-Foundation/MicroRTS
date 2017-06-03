@@ -5,6 +5,7 @@
 package rts.units;
 
 import java.io.Serializable;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import org.jdom.Element;
@@ -267,5 +268,16 @@ public class UnitTypeTable implements Serializable {
         w.tagWithAttributes(this.getClass().getName(),"moveConflictResolutionStrategy=\""+moveConflictResolutionStrategy+"\"");
         for(UnitType ut:unitTypes) ut.toxml(w);
         w.tag("/" + this.getClass().getName());
+    }    
+    
+    public void toJSON(Writer w) throws Exception {
+        boolean first = true;
+        w.write("[");
+        for(UnitType ut:unitTypes) {
+            if (!first) w.write(", ");
+            ut.toJSON(w);
+            first = false;
+        }
+        w.write("]");
     }    
 }

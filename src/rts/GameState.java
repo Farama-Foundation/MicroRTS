@@ -557,20 +557,20 @@ public class GameState implements Serializable{
     
 
     public void toJSON(Writer w) throws Exception {
-        w.write("{\n");
-        w.write("\"time\":" + time + ",\n\"pgs\":");
+        w.write("{");
+        w.write("\"time\":" + time + ",\"pgs\":");
         pgs.toJSON(w);
-        w.write(",\n\"actions\":[\n");
+        w.write(",\"actions\":[");
         boolean first = true;
         for(Unit u:unitActions.keySet()) {
-            if (!first) w.write(",\n");
+            if (!first) w.write(",");
             first = false;
             UnitActionAssignment uaa = unitActions.get(u);
             w.write("{\"ID\":" + uaa.unit.getID() + ", \"time\":"+uaa.time+", \"action\":");
             uaa.action.toJSON(w);
             w.write("}");
         }
-        w.write("]\n");
+        w.write("]");
         w.write("}");
     }
 

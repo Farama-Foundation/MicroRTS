@@ -299,6 +299,7 @@ public class UnitAction implements Serializable {
         return y;
     }
     
+    
     public void toxml(XMLWriter w) {
         String attributes = "type=\"" + type + "\" ";
         if (type==TYPE_ATTACK_LOCATION) {

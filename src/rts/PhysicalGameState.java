@@ -273,23 +273,23 @@ public class PhysicalGameState implements Serializable {
     
     
     public void toJSON(Writer w) throws Exception {
-        w.write("{\n");
-        w.write("\"width\":"+width+",\"height\":" + height + ",\n");
+        w.write("{");
+        w.write("\"width\":"+width+",\"height\":" + height + ",");
         w.write("\"terrain\":\"");
         for(int i = 0;i<height*width;i++) w.write("" + terrain[i]);
-        w.write("\",\n");
-        w.write("\"players\":[\n");
+        w.write("\",");
+        w.write("\"players\":[");
         for(int i = 0;i<players.size();i++) {
             players.get(i).toJSON(w);
-            if (i<players.size()-1) w.write(",\n");
+            if (i<players.size()-1) w.write(",");
         }
-        w.write("],\n");
-        w.write("\"units\":[\n");
+        w.write("],");
+        w.write("\"units\":[");
         for(int i = 0;i<units.size();i++) {
             units.get(i).toJSON(w);
-            if (i<units.size()-1) w.write(",\n");
+            if (i<units.size()-1) w.write(",");
         }
-        w.write("]\n");
+        w.write("]");
         w.write("}");
     }
     

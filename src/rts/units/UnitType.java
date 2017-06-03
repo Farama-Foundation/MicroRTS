@@ -1,6 +1,7 @@
 package rts.units;
 
 import java.io.Serializable;
+import java.io.Writer;
 import java.util.ArrayList;
 
 import org.jdom.Element;
@@ -134,5 +135,48 @@ public class UnitType implements Serializable {
             w.tag("/producedBy");
         }
         w.tag("/" + this.getClass().getName());
+    }     
+
+
+    public void toJSON(Writer w) throws Exception {
+        w.write("{" +
+                "ID:"+ID+", "+
+                "name:\""+name+"\", "+
+                "cost:"+cost+", "+
+                "hp:"+hp+", "+
+                "minDamage="+minDamage+", "+
+                "maxDamage="+maxDamage+", "+
+                "attackRange="+attackRange+", "+
+
+                "produceTime="+produceTime+", "+
+                "moveTime="+moveTime+", "+
+                "attackTime="+attackTime+", "+
+                "harvestTime="+harvestTime+", "+
+                "returnTime="+returnTime+", "+
+
+                "harvestAmount="+harvestAmount+", "+
+                "sightRadius="+sightRadius+", "+
+
+                "isResource="+isResource+", "+
+                "isStockpile="+isStockpile+", "+
+                "canHarvest="+canHarvest+", "+
+                "canMove="+canMove+", "+
+                "canAttack="+canAttack+", ");
+
+        boolean first = true;
+        w.write("procudes:[");
+        for(UnitType ut:produces) {
+            if (!first) w.write(", ");
+            w.write("\""+ut.name+"\"");
+            first = false;
+        }
+        first = true;
+        w.write("], procudedby:[");
+        for(UnitType ut:producedBy) {
+            if (!first) w.write(", ");
+            w.write("\""+ut.name+"\"");
+            first = false;
+        }
+        w.write("]}");
     }     
 }

@@ -4,10 +4,12 @@
  */
 package rts;
 
+import java.io.Writer;
 import rts.units.Unit;
 import java.util.LinkedList;
 import java.util.List;
 import util.Pair;
+import util.XMLWriter;
 
 /**
  *
@@ -184,4 +186,29 @@ public class PlayerAction {
         }
         return tmp + " }";
     }    
+    
+    
+    public void toxml(XMLWriter w) {
+        w.tag("PlayerAction");
+        for(Pair<Unit,UnitAction> ua:actions) {
+            w.tagWithAttributes("action", "unitID=\"" + ua.m_a.getID() + "\"");
+            ua.m_b.toxml(w);
+            w.tag("/action");
+        }
+        w.tag("/PlayerAction");           
+    }    
+    
+
+    public void toJSON(Writer w) throws Exception {
+        boolean first = true;
+        w.write("[");
+        for(Pair<Unit,UnitAction> ua:actions) {
+            if (!first) w.write(" ,");
+            w.write("{unit:" + ua.m_a.getID() + ", unitAction:");
+            ua.m_b.toJSON(w);
+            w.write("}");
+            first = false;
+        }
+        w.write("]");
+    }        
 }
