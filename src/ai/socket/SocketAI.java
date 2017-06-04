@@ -27,6 +27,7 @@ import util.XMLWriter;
  * @author santi
  */
 public class SocketAI extends AIWithComputationBudget {
+    public static int DEBUG = 0;
     
     public static final int LANGUAGE_XML = 1;
     public static final int LANGUAGE_JSON = 2;
@@ -84,6 +85,9 @@ public class SocketAI extends AIWithComputationBudget {
             // set the game parameters:
             out_pipe.append("budget " + TIME_BUDGET + " " + ITERATIONS_BUDGET + "\n");
             out_pipe.flush();
+            
+            // wait for ack:
+            in_pipe.readLine();
 
             // send the utt:
             while(in_pipe.ready()) in_pipe.readLine();
@@ -101,6 +105,11 @@ public class SocketAI extends AIWithComputationBudget {
             } else {
                 throw new Exception("Communication language " + communication_language + " not supported!");
             }
+            
+            // wait for ack:
+            in_pipe.readLine();
+            
+            // read any extra left-over lines
             while(in_pipe.ready()) in_pipe.readLine();
         }catch(Exception e) {
             e.printStackTrace();
@@ -124,7 +133,7 @@ public class SocketAI extends AIWithComputationBudget {
                 
             // parse the action:
             String actionString = in_pipe.readLine();
-            // System.out.println("action received from server: " + actionString);
+            if (DEBUG>=1) System.out.println("action received from server: " + actionString);
             Element action_e = new SAXBuilder().build(new StringReader(actionString)).getRootElement();
             PlayerAction pa = PlayerAction.fromXML(action_e, gs, utt);
             pa.fillWithNones(gs, player, 10);
@@ -143,6 +152,33 @@ public class SocketAI extends AIWithComputationBudget {
             PlayerAction pa = PlayerAction.fromJSON(actionString, gs, utt);
             pa.fillWithNones(gs, player, 10);
             return pa;
+        } else {
+            throw new Exception("Communication language " + communication_language + " not supported!");
+        }        
+    }
+    
+
+    @Override
+    public void preGameAnalysis(GameState gs, long milliseconds) throws Exception 
+    {
+        // send the game state:
+        out_pipe.append("preGameAnalysis " + milliseconds + "\n");
+        if (communication_language == LANGUAGE_XML) {
+            XMLWriter w = new XMLWriter(out_pipe, " ");
+            gs.toxml(w);
+            w.flush();
+            out_pipe.append("\n");
+            out_pipe.flush();
+                
+            // wait for ack:
+            in_pipe.readLine();
+        } else if (communication_language == LANGUAGE_JSON) {
+            gs.toJSON(out_pipe);
+            out_pipe.append("\n");
+            out_pipe.flush();
+            
+            // wait for ack:
+            in_pipe.readLine();
         } else {
             throw new Exception("Communication language " + communication_language + " not supported!");
         }        

@@ -73,9 +73,6 @@ public class XMLSocketWrapperAI {
                         new InputStreamReader(socket.getInputStream()));
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
-                // Send a welcome message to the client.
-                out.println("EmptyAI server: you are client #" + clientNumber);
-
                 // Get messages from the client, line by line
                 while (true) {
                     String input = in.readLine();
@@ -93,22 +90,26 @@ public class XMLSocketWrapperAI {
                         ai.reset();
                         ai.setTimeBudget(time_budget);
                         ai.setIterationsBudget(iterations_budget);
+                        out.append("ack\n");
+                        out.flush();
                     } else if (input.startsWith("utt")) {
                         input = in.readLine();
                         if (DEBUG>=1) System.out.println("setting the utt to: " + input);
                         // parse the unit type table:
                         utt = UnitTypeTable.fromXML(new SAXBuilder().build(new StringReader(input)).getRootElement());
                         ai.reset(utt);
+                        out.append("ack\n");
+                        out.flush();
                     } else if (input.startsWith("getAction")) {
                         String []tokens = input.split(" ");
                         int player = Integer.parseInt(tokens[1]);
                         if (DEBUG>=1) System.out.println("getAction for player " + player);
                         
                         input = in.readLine();
-//                        System.out.println("with game state: " + input);
+                        if (DEBUG>=1) System.out.println("with game state: " + input);
                         // parse the game state:
                         GameState gs = GameState.fromXML(new SAXBuilder().build(new StringReader(input)).getRootElement(), utt);
-//                        System.out.println(gs);
+                        if (DEBUG>=1) System.out.println(gs);
                         
                         // generate an action and send it through the socket:
                         PlayerAction pa = ai.getAction(player, gs);
@@ -118,6 +119,21 @@ public class XMLSocketWrapperAI {
                         out.append("\n");
                         out.flush();
                         if (DEBUG>=1) System.out.println("action sent!");
+                    } else if (input.startsWith("preGameAnalysis")) {
+                        String []tokens = input.split(" ");
+                        int milliseconds = Integer.parseInt(tokens[1]);
+                        if (DEBUG>=1) System.out.println("preGameAnalysis");
+                        
+                        input = in.readLine();
+                        if (DEBUG>=1) System.out.println("with game state: " + input);
+                        // parse the game state:
+                        GameState gs = GameState.fromXML(new SAXBuilder().build(new StringReader(input)).getRootElement(), utt);
+                        if (DEBUG>=1) System.out.println(gs);
+
+                        ai.preGameAnalysis(gs, milliseconds);
+                        
+                        out.append("ack\n");
+                        out.flush();
                     }
                 }
             } catch (Exception e) {

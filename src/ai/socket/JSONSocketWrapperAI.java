@@ -91,14 +91,17 @@ public class JSONSocketWrapperAI {
                         // reset the AI:
                         ai.reset();
                         ai.setTimeBudget(time_budget);
-                        ai.setIterationsBudget(iterations_budget);
-                        
+                        ai.setIterationsBudget(iterations_budget);                        
+                        out.append("ack\n");
+                        out.flush();
                     } else if (input.startsWith("utt")) {
                         input = in.readLine();
                         // parse the unit type table:
                         if (DEBUG>=1) System.out.println("setting the utt to: " + input);
                         utt = UnitTypeTable.fromJSON(input);
                         ai.reset(utt);
+                        out.append("ack\n");
+                        out.flush();
                     } else if (input.startsWith("getAction")) {
                         String []tokens = input.split(" ");
                         int player = Integer.parseInt(tokens[1]);
@@ -116,6 +119,21 @@ public class JSONSocketWrapperAI {
                         out.append("\n");
                         out.flush();
                         if (DEBUG>=1) System.out.println("action sent!");
+                    } else if (input.startsWith("preGameAnalysis")) {
+                        String []tokens = input.split(" ");
+                        int milliseconds = Integer.parseInt(tokens[1]);
+                        if (DEBUG>=1) System.out.println("preGameAnalysis");
+                        
+                        input = in.readLine();
+                        if (DEBUG>=1) System.out.println("with game state: " + input);
+                        // parse the game state:
+                        GameState gs = GameState.fromJSON(input, utt);
+                        if (DEBUG>=1) System.out.println(gs);
+
+                        ai.preGameAnalysis(gs, milliseconds);
+                        
+                        out.append("ack\n");
+                        out.flush();
                     }
                 }
             } catch (Exception e) {

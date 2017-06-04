@@ -59,7 +59,7 @@ public abstract class AI {
     // - If "milliseconds" is > 0, then this is a time bound that the AI should respect.
     // - Even if the game is partially observable, the game state received by this function
     //   might be fully observable.
-    public void preGameAnalysis(GameState gs, long milliseconds)
+    public void preGameAnalysis(GameState gs, long milliseconds) throws Exception
     {
     }
 } 
