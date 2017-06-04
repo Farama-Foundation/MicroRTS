@@ -4,9 +4,14 @@
  */
 package rts;
 
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 import java.io.Serializable;
 import java.io.Writer;
 import java.util.*;
+import org.jdom.Element;
 import rts.units.Unit;
 import rts.units.UnitType;
 import rts.units.UnitTypeTable;
@@ -572,6 +577,47 @@ public class GameState implements Serializable{
         }
         w.write("]");
         w.write("}");
+    }
+    
+    
+    public static GameState fromXML(Element e, UnitTypeTable utt) {        
+        PhysicalGameState pgs = PhysicalGameState.fromXML(e.getChild(PhysicalGameState.class.getName()), utt);
+        GameState gs = new GameState(pgs, utt);
+        gs.time = Integer.parseInt(e.getAttributeValue("time"));
+        
+        Element actions_e = e.getChild("actions");
+        for(Object o:actions_e.getChildren()) {
+            Element action_e = (Element)o;
+            long ID = Long.parseLong(action_e.getAttributeValue("ID"));
+            Unit u = gs.getUnit(ID);
+            int time = Integer.parseInt(action_e.getAttributeValue("time"));
+            UnitAction ua = UnitAction.fromXML(action_e.getChild("UnitAction"), utt);
+            UnitActionAssignment uaa = new UnitActionAssignment(u, ua, time);
+            gs.unitActions.put(u, uaa);
+        }
+        
+        return gs;
+    }
+    
+    
+    public static GameState fromJSON(String JSON, UnitTypeTable utt) {        
+        JsonObject o = Json.parse(JSON).asObject();
+        PhysicalGameState pgs = PhysicalGameState.fromJSON(o.get("pgs").asObject(), utt);
+        GameState gs = new GameState(pgs, utt);
+        gs.time = o.getInt("time", 0);
+        
+        JsonArray actions_a = o.get("actions").asArray();
+        for(JsonValue v:actions_a.values()) {
+            JsonObject uaa_o = v.asObject();
+            long ID = uaa_o.getLong("ID", -1);
+            Unit u = gs.getUnit(ID);
+            int time = uaa_o.getInt("time", 0);;
+            UnitAction ua = UnitAction.fromJSON(uaa_o.get("action").asObject(), utt);
+            UnitActionAssignment uaa = new UnitActionAssignment(u, ua, time);
+            gs.unitActions.put(u, uaa);
+        }
+        
+        return gs;
     }
 
 }

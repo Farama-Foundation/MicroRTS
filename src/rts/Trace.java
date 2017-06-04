@@ -51,7 +51,7 @@ public class Trace {
         
     
     public Trace(Element e) {
-        utt = new UnitTypeTable(e.getChild(UnitTypeTable.class.getName()));
+        utt = UnitTypeTable.fromXML(e.getChild(UnitTypeTable.class.getName()));
         Element entries_e = e.getChild("entries");
         
         for(Object o:entries_e.getChildren()) {

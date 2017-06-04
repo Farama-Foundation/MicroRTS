@@ -44,16 +44,21 @@ public class HeavyRush extends AbstractionLayerAI {
     
     public HeavyRush(UnitTypeTable a_utt, PathFinding a_pf) {
         super(a_pf);
-        utt = a_utt;
-        workerType = utt.getUnitType("Worker");
-        baseType = utt.getUnitType("Base");
-        barracksType = utt.getUnitType("Barracks");
-        heavyType = utt.getUnitType("Heavy");
+        reset(utt);
     }
 
     public void reset() {
     	super.reset();
     }
+    
+    public void reset(UnitTypeTable a_utt)  
+    {
+        utt = a_utt;
+        workerType = utt.getUnitType("Worker");
+        baseType = utt.getUnitType("Base");
+        barracksType = utt.getUnitType("Barracks");
+        heavyType = utt.getUnitType("Heavy");
+    }      
 
     public AI clone() {
         return new HeavyRush(utt, pf);

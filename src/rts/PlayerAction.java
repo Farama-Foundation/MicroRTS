@@ -211,7 +211,7 @@ public class PlayerAction {
         w.write("[");
         for(Pair<Unit,UnitAction> ua:actions) {
             if (!first) w.write(" ,");
-            w.write("{unitID:" + ua.m_a.getID() + ", unitAction:");
+            w.write("{\"unitID\":" + ua.m_a.getID() + ", \"unitAction\":");
             ua.m_b.toJSON(w);
             w.write("}");
             first = false;
@@ -239,7 +239,7 @@ public class PlayerAction {
         JsonArray a = Json.parse(JSON).asArray();
         for(JsonValue v:a.values()) {
             JsonObject o = v.asObject();
-            int id = o.getInt("unitIA", -1);
+            int id = o.getInt("unitID", -1);
             Unit u = gs.getUnit(id);
             UnitAction ua = UnitAction.fromJSON(o.get("unitAction").asObject(), utt);
             pa.addUnitAction(u, ua);

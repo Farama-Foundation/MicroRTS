@@ -1,5 +1,9 @@
 package rts.units;
 
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 import java.io.Serializable;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -66,9 +70,18 @@ public class UnitType implements Serializable {
         ut.name = unittype_e.getAttributeValue("name");
         return ut;
     }
+
+
+    // creates a temporary instance with just the name and ID:
+    static UnitType createStub(JsonObject o) {
+        UnitType ut = new UnitType();
+        ut.ID = o.getInt("ID",-1);
+        ut.name = o.getString("name",null);
+        return ut;
+    }
     
     
-    void fromxml(Element unittype_e, UnitTypeTable utt) {
+    void updateFromXML(Element unittype_e, UnitTypeTable utt) {
         cost = Integer.parseInt(unittype_e.getAttributeValue("cost"));
         hp = Integer.parseInt(unittype_e.getAttributeValue("hp"));
         minDamage = Integer.parseInt(unittype_e.getAttributeValue("minDamage"));
@@ -100,6 +113,46 @@ public class UnitType implements Serializable {
             producedBy.add(utt.getUnitType(producedby_e.getAttributeValue("type")));
         }
     }    
+    
+    
+    void updateFromJSON(String JSON, UnitTypeTable utt) {
+        JsonObject o = Json.parse(JSON).asObject();
+        updateFromJSON(o, utt);
+    }
+    
+        
+    void updateFromJSON(JsonObject o, UnitTypeTable utt) {
+        cost = o.getInt("cost", 1);
+        hp = o.getInt("hp", 1);
+        minDamage = o.getInt("minDamage", 1);
+        maxDamage = o.getInt("maxDamage", 1);
+        attackRange = o.getInt("attackRange", 1);
+
+        produceTime = o.getInt("produceTime", 10);
+        moveTime = o.getInt("moveTime", 10);
+        attackTime = o.getInt("attackTime", 10);
+        harvestTime = o.getInt("produceTime", 10);
+        produceTime = o.getInt("produceTime", 10);
+
+        harvestAmount = o.getInt("harvestAmount", 10);
+        sightRadius = o.getInt("sightRadius", 10);
+
+        isResource = o.getBoolean("isResource", false);
+        isStockpile = o.getBoolean("isStockpile", false);
+        canHarvest = o.getBoolean("canHarvest", false);
+        canMove = o.getBoolean("canMove", false);
+        canAttack = o.getBoolean("canAttack", false);
+        
+        JsonArray produces_a = o.get("produces").asArray();        
+        for(JsonValue v:produces_a.values()) {
+            produces.add(utt.getUnitType(v.asString()));
+        }
+
+        JsonArray producedBy_a = o.get("producedBy").asArray();        
+        for(JsonValue v:producedBy_a.values()) {
+            producedBy.add(utt.getUnitType(v.asString()));
+        }
+    }   
     
     
     public void toxml(XMLWriter w) {
@@ -140,38 +193,38 @@ public class UnitType implements Serializable {
 
     public void toJSON(Writer w) throws Exception {
         w.write("{" +
-                "ID:"+ID+", "+
-                "name:\""+name+"\", "+
-                "cost:"+cost+", "+
-                "hp:"+hp+", "+
-                "minDamage="+minDamage+", "+
-                "maxDamage="+maxDamage+", "+
-                "attackRange="+attackRange+", "+
+                "\"ID\":"+ID+", "+
+                "\"name\":\""+name+"\", "+
+                "\"cost\":"+cost+", "+
+                "\"hp\":"+hp+", "+
+                "\"minDamage\":"+minDamage+", "+
+                "\"maxDamage\":"+maxDamage+", "+
+                "\"attackRange\":"+attackRange+", "+
 
-                "produceTime="+produceTime+", "+
-                "moveTime="+moveTime+", "+
-                "attackTime="+attackTime+", "+
-                "harvestTime="+harvestTime+", "+
-                "returnTime="+returnTime+", "+
+                "\"produceTime\":"+produceTime+", "+
+                "\"moveTime\":"+moveTime+", "+
+                "\"attackTime\":"+attackTime+", "+
+                "\"harvestTime\":"+harvestTime+", "+
+                "\"returnTime\":"+returnTime+", "+
 
-                "harvestAmount="+harvestAmount+", "+
-                "sightRadius="+sightRadius+", "+
+                "\"harvestAmount\":"+harvestAmount+", "+
+                "\"sightRadius\":"+sightRadius+", "+
 
-                "isResource="+isResource+", "+
-                "isStockpile="+isStockpile+", "+
-                "canHarvest="+canHarvest+", "+
-                "canMove="+canMove+", "+
-                "canAttack="+canAttack+", ");
+                "\"isResource\":"+isResource+", "+
+                "\"isStockpile\":"+isStockpile+", "+
+                "\"canHarvest\":"+canHarvest+", "+
+                "\"canMove\":"+canMove+", "+
+                "\"canAttack\":"+canAttack+", ");
 
         boolean first = true;
-        w.write("procudes:[");
+        w.write("\"produces\":[");
         for(UnitType ut:produces) {
             if (!first) w.write(", ");
             w.write("\""+ut.name+"\"");
             first = false;
         }
         first = true;
-        w.write("], procudedby:[");
+        w.write("], \"producedBy\":[");
         for(UnitType ut:producedBy) {
             if (!first) w.write(", ");
             w.write("\""+ut.name+"\"");
@@ -179,4 +232,25 @@ public class UnitType implements Serializable {
         }
         w.write("]}");
     }     
+    
+    
+    public static UnitType fromXML(Element e, UnitTypeTable utt) {
+        UnitType ut = new UnitType();
+        ut.updateFromXML(e, utt);
+        return ut;
+    }
+    
+    
+    public static UnitType fromJSON(String JSON, UnitTypeTable utt) {
+        UnitType ut = new UnitType();
+        ut.updateFromJSON(JSON, utt);
+        return ut;
+    }    
+
+
+    public static UnitType fromJSON(JsonObject o, UnitTypeTable utt) {
+        UnitType ut = new UnitType();
+        ut.updateFromJSON(o, utt);
+        return ut;
+    }    
 }

@@ -4,6 +4,10 @@
  */
 package rts.units;
 
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 import java.io.Serializable;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -16,6 +20,7 @@ import util.XMLWriter;
  * @author santi
  */
 public class UnitTypeTable implements Serializable {
+    public static final int EMPTY_TYPE_TABLE = -1;
     public static final int VERSION_ORIGINAL = 1;
     public static final int VERSION_ORIGINAL_FINETUNED = 2;
     public static final int VERSION_NON_DETERMINISTIC = 3;
@@ -40,22 +45,10 @@ public class UnitTypeTable implements Serializable {
     }
     
     
-    public UnitTypeTable(Element e) {
-        moveConflictResolutionStrategy = Integer.parseInt(e.getAttributeValue("moveConflictResolutionStrategy"));
-        for(Object o:e.getChildren()) {
-            Element unittype_e = (Element)o;
-            unitTypes.add(UnitType.createStub(unittype_e));
-        }
-        for(Object o:e.getChildren()) {
-            Element unittype_e = (Element)o;
-            getUnitType(unittype_e.getAttributeValue("name")).fromxml(unittype_e, this);
-        }        
-    }
-    
-    
-    public void setUnitTypeTable(int version, int crs) {
-        
+    public void setUnitTypeTable(int version, int crs) {       
         moveConflictResolutionStrategy = crs;
+        
+        if (version == EMPTY_TYPE_TABLE) return;        
         
         // Create the unit types:
         // RESOURCE:
@@ -272,12 +265,46 @@ public class UnitTypeTable implements Serializable {
     
     public void toJSON(Writer w) throws Exception {
         boolean first = true;
-        w.write("[");
+        w.write("{\"moveConflictResolutionStrategy\":" + moveConflictResolutionStrategy + ",");
+        w.write("\"unitTypes\":[");
         for(UnitType ut:unitTypes) {
             if (!first) w.write(", ");
             ut.toJSON(w);
             first = false;
         }
-        w.write("]");
+        w.write("]}");
     }    
+    
+   
+    public static UnitTypeTable fromXML(Element e) {
+        UnitTypeTable utt = new UnitTypeTable(EMPTY_TYPE_TABLE);
+        utt.moveConflictResolutionStrategy = Integer.parseInt(e.getAttributeValue("moveConflictResolutionStrategy"));
+        for(Object o:e.getChildren()) {
+            Element unittype_e = (Element)o;
+            utt.unitTypes.add(UnitType.createStub(unittype_e));
+        }
+        for(Object o:e.getChildren()) {
+            Element unittype_e = (Element)o;
+            utt.getUnitType(unittype_e.getAttributeValue("name")).updateFromXML(unittype_e, utt);
+        }       
+        return utt;
+    }
+    
+    
+    public static UnitTypeTable fromJSON(String JSON) {
+        JsonObject o = Json.parse(JSON).asObject();
+        UnitTypeTable utt = new UnitTypeTable(EMPTY_TYPE_TABLE);
+        utt.moveConflictResolutionStrategy = o.getInt("moveConflictResolutionStrategy", MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH);
+        JsonArray a = o.get("unitTypes").asArray();
+        for(JsonValue v:a.values()) {
+            JsonObject uto = v.asObject();
+            utt.unitTypes.add(UnitType.createStub(uto));
+        }
+        for(JsonValue v:a.values()) {
+            JsonObject uto = v.asObject();
+            utt.getUnitType(uto.getString("name",null)).updateFromJSON(uto, utt);
+        }       
+        return utt;
+    }
+    
 }

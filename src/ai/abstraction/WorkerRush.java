@@ -39,14 +39,22 @@ public class WorkerRush extends AbstractionLayerAI {
         
     public WorkerRush(UnitTypeTable a_utt, PathFinding a_pf) {
         super(a_pf);
-        utt = a_utt;
-        workerType = utt.getUnitType("Worker");
-        baseType = utt.getUnitType("Base");
+        reset(a_utt);
     }
     
     public void reset() {
     	super.reset();
     }
+    
+    public void reset(UnitTypeTable a_utt)  
+    {
+        utt = a_utt;
+        if (utt!=null) {
+            workerType = utt.getUnitType("Worker");
+            baseType = utt.getUnitType("Base");
+        }
+    }   
+    
     
     public AI clone() {
         return new WorkerRush(utt, pf);

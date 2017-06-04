@@ -44,16 +44,22 @@ public class LightRush extends AbstractionLayerAI {
     
     public LightRush(UnitTypeTable a_utt, PathFinding a_pf) {
         super(a_pf);
-        utt = a_utt;
-        workerType = utt.getUnitType("Worker");
-        baseType = utt.getUnitType("Base");
-        barracksType = utt.getUnitType("Barracks");
-        lightType = utt.getUnitType("Light");
+        reset(a_utt);
     }
 
     public void reset() {
     	super.reset();
     }
+    
+    public void reset(UnitTypeTable a_utt)  
+    {
+        utt = a_utt;
+        workerType = utt.getUnitType("Worker");
+        baseType = utt.getUnitType("Base");
+        barracksType = utt.getUnitType("Barracks");
+        lightType = utt.getUnitType("Light");
+    }   
+    
 
     public AI clone() {
         return new LightRush(utt, pf);

@@ -4,6 +4,7 @@
  */
 package rts;
 
+import com.eclipsesource.json.JsonObject;
 import java.io.Serializable;
 import java.io.Writer;
 
@@ -53,8 +54,16 @@ public class Player  implements Serializable {
         w.write("{\"ID\":"+ID+", \"resources\":"+resources+"}");
     }
     
-    public Player(Element e) {
-        ID = Integer.parseInt(e.getAttributeValue("ID"));
-        resources = Integer.parseInt(e.getAttributeValue("resources"));
+    public static Player fromXML(Element e) {
+        Player p = new Player(Integer.parseInt(e.getAttributeValue("ID")),
+                              Integer.parseInt(e.getAttributeValue("resources")));
+        return p;
     }         
+
+    public static Player fromJSON(JsonObject o) {
+        Player p = new Player(o.getInt("ID",-1),
+                              o.getInt("resources",0));
+        return p;
+    }         
+
 }

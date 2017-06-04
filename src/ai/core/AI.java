@@ -7,6 +7,7 @@ package ai.core;
 import java.util.List;
 import rts.GameState;
 import rts.PlayerAction;
+import rts.units.UnitTypeTable;
 
 /**
  *
@@ -14,6 +15,12 @@ import rts.PlayerAction;
  */
 public abstract class AI {
     public abstract void reset();
+    
+    // indicates to the AI that the new game will be played with a new UTT (in case the AI needs to do anything with it)
+    public void reset(UnitTypeTable utt)  
+    {
+        reset();
+    }
     
     
     public abstract PlayerAction getAction(int player, GameState gs) throws Exception;
