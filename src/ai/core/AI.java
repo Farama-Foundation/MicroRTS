@@ -28,7 +28,7 @@ public abstract class AI {
     
     @Override
     public abstract AI clone();   // this function is not supposed to do an exact clone with all the internal state, etc.
-                                  // just a copy of the AI witht he same configuration.
+                                  // just a copy of the AI with the same configuration.
         
     public abstract List<ParameterSpecification> getParameters();
 
