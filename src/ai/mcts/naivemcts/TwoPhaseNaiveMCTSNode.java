@@ -6,6 +6,7 @@ package ai.mcts.naivemcts;
 
 import static ai.mcts.MCTSNode.r;
 import static ai.mcts.naivemcts.NaiveMCTSNode.DEBUG;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,8 +20,8 @@ import util.Sampler;
  */
 public class TwoPhaseNaiveMCTSNode extends NaiveMCTSNode {
 
-    public TwoPhaseNaiveMCTSNode(int maxplayer, int minplayer, GameState a_gs, NaiveMCTSNode a_parent, double a_evaluation_bound, int a_creation_ID) throws Exception {
-        super(maxplayer, minplayer, a_gs, a_parent, a_evaluation_bound, a_creation_ID);
+    public TwoPhaseNaiveMCTSNode(int maxplayer, int minplayer, GameState a_gs, NaiveMCTSNode a_parent, double a_evaluation_bound, int a_creation_ID, boolean fensa) throws Exception {
+        super(maxplayer, minplayer, a_gs, a_parent, a_evaluation_bound, a_creation_ID, fensa);
     }
     
     // Naive Sampling:
@@ -53,7 +54,7 @@ public class TwoPhaseNaiveMCTSNode extends NaiveMCTSNode {
                                                                                         int phase1_budget,
                                                                                         int max_depth, int a_creation_ID) throws Exception {   
         PlayerAction pa2;
-        long actionCode;       
+        BigInteger actionCode;       
         
         float epsilon_l = (visit_count<phase1_budget ? el1 : el2);      
 
@@ -120,7 +121,7 @@ public class TwoPhaseNaiveMCTSNode extends NaiveMCTSNode {
         }
 
         pa2 = new PlayerAction();
-        actionCode = 0;
+        actionCode = BigInteger.ZERO;
         pa2.setResourceUsage(base_ru.clone());            
         while(!notSampledYet.isEmpty()) {
             int i = notSampledYet.remove(r.nextInt(notSampledYet.size()));
@@ -162,8 +163,8 @@ public class TwoPhaseNaiveMCTSNode extends NaiveMCTSNode {
                 pa2.getResourceUsage().merge(r2);
                 pa2.addUnitAction(ate.u, ua);
 
-                actionCode+= ((long)code)*multipliers[i];
-
+                actionCode = actionCode.add(BigInteger.valueOf(code).multiply(multipliers[i]));
+                
             } catch(Exception e) {
                 e.printStackTrace();
             }
@@ -173,7 +174,7 @@ public class TwoPhaseNaiveMCTSNode extends NaiveMCTSNode {
         if (pate==null) {
             actions.add(pa2);            
             GameState gs2 = gs.cloneIssue(pa2);
-            TwoPhaseNaiveMCTSNode node = new TwoPhaseNaiveMCTSNode(maxplayer, minplayer, gs2.clone(), this, evaluation_bound, a_creation_ID);
+            TwoPhaseNaiveMCTSNode node = new TwoPhaseNaiveMCTSNode(maxplayer, minplayer, gs2.clone(), this, evaluation_bound, a_creation_ID, forceExplorationOfNonSampledActions);
             childrenMap.put(actionCode,node);
             children.add(node);          
             return node;                

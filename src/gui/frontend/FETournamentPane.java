@@ -13,7 +13,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -65,12 +64,15 @@ public class FETournamentPane extends JPanel {
     JFormattedTextField maxGameLengthField = null;
     JFormattedTextField timeBudgetField = null;
     JFormattedTextField iterationsBudgetField = null;
+    JFormattedTextField preAnalysisTimeField = null;
     
+    JComboBox unitTypeTableBox = null;
     JCheckBox fullObservabilityCheckBox = null;
     JCheckBox selfMatchesCheckBox = null;
     JCheckBox timeoutCheckBox = null;
     JCheckBox gcCheckBox = null;
     JCheckBox tracesCheckBox = null;
+    JCheckBox preGameAnalysisCheckBox = null;
     
     JTextArea tournamentProgressTextArea = null;
     
@@ -319,6 +321,7 @@ public class FETournamentPane extends JPanel {
                 maxGameLengthField = FEStatePane.addTextField(p2left,"Max Game Length:", "3000", 4);
                 timeBudgetField = FEStatePane.addTextField(p2left,"Time Budget:", "100", 5);
                 iterationsBudgetField = FEStatePane.addTextField(p2left,"Iterations Budget:", "-1", 8);
+                preAnalysisTimeField = FEStatePane.addTextField(p2left,"pre-Analisys time budget:", "1000", 8);
                 
                 p2.add(p2left);            
             }            
@@ -327,6 +330,18 @@ public class FETournamentPane extends JPanel {
             {
                 JPanel p2right = new JPanel();
                 p2right.setLayout(new BoxLayout(p2right, BoxLayout.Y_AXIS));
+                
+                {
+                    JPanel ptmp = new JPanel();
+                    ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
+                    ptmp.add(new JLabel("UnitTypeTable"));
+                    unitTypeTableBox = new JComboBox(FEStatePane.unitTypeTableNames);
+                    unitTypeTableBox.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    unitTypeTableBox.setAlignmentY(Component.CENTER_ALIGNMENT);
+                    unitTypeTableBox.setMaximumSize(new Dimension(160,20));
+                    ptmp.add(unitTypeTableBox);
+                    p2right.add(ptmp);
+                }                
                 
                 fullObservabilityCheckBox = new JCheckBox("Full Obsservability");
                 fullObservabilityCheckBox.setSelected(true);
@@ -343,6 +358,9 @@ public class FETournamentPane extends JPanel {
                 tracesCheckBox = new JCheckBox("Save game traces");
                 tracesCheckBox.setSelected(false);                
                 p2right.add(tracesCheckBox);
+                preGameAnalysisCheckBox = new JCheckBox("Give time to the AIs before game starts to analyze initial game state");
+                preGameAnalysisCheckBox.setSelected(false);                
+                p2right.add(preGameAnalysisCheckBox);
                 p2.add(p2right);
             }            
             add(p2);
@@ -355,7 +373,7 @@ public class FETournamentPane extends JPanel {
             {
                 try {
                     // get all the necessary info:
-                    UnitTypeTable utt = new UnitTypeTable();
+                    UnitTypeTable utt = FEStatePane.unitTypeTables[unitTypeTableBox.getSelectedIndex()];
                     String tournamentType = (String)tournamentTypeComboBox.getSelectedItem();
                     List<AI> selectedAIs = new ArrayList<>();
                     List<AI> opponentAIs = new ArrayList<>();
@@ -379,11 +397,13 @@ public class FETournamentPane extends JPanel {
                     int maxGameLength = Integer.parseInt(maxGameLengthField.getText());
                     int timeBudget = Integer.parseInt(timeBudgetField.getText());
                     int iterationsBudget = Integer.parseInt(iterationsBudgetField.getText());
+                    int preAnalysisBudget = Integer.parseInt(preAnalysisTimeField.getText());
                     
                     boolean fullObservability = fullObservabilityCheckBox.isSelected();
                     boolean selfMatches = selfMatchesCheckBox.isSelected();
                     boolean timeOutCheck = timeoutCheckBox.isSelected();
                     boolean gcCheck = gcCheckBox.isSelected();
+                    boolean preGameAnalysis = preGameAnalysisCheckBox.isSelected();
 
                     String prefix = "tournament_";
                     int idx = 0;
@@ -409,8 +429,8 @@ public class FETournamentPane extends JPanel {
                                             Writer writer = new FileWriter(fileToUse);
                                             Writer writerProgress = new JTextAreaWriter(tournamentProgressTextArea);
                                             RoundRobinTournament.runTournament(selectedAIs, maps, 
-                                                                               iterations, maxGameLength, timeBudget, iterationsBudget,
-                                                                               fullObservability, selfMatches, timeOutCheck, gcCheck, 
+                                                                               iterations, maxGameLength, timeBudget, iterationsBudget, preAnalysisBudget, 
+                                                                               fullObservability, selfMatches, timeOutCheck, gcCheck, preGameAnalysis, 
                                                                                utt, tracesFolder,
                                                                                writer, writerProgress);
                                             writer.close();
@@ -439,8 +459,8 @@ public class FETournamentPane extends JPanel {
                                             Writer writer = new FileWriter(fileToUse);
                                             Writer writerProgress = new JTextAreaWriter(tournamentProgressTextArea);
                                             FixedOpponentsTournament.runTournament(selectedAIs, opponentAIs, maps, 
-                                                                               iterations, maxGameLength, timeBudget, iterationsBudget,
-                                                                               fullObservability, timeOutCheck, gcCheck, 
+                                                                               iterations, maxGameLength, timeBudget, iterationsBudget, preAnalysisBudget, 
+                                                                               fullObservability, timeOutCheck, gcCheck, preGameAnalysis, 
                                                                                utt, tracesFolder,
                                                                                writer, writerProgress);
                                             writer.close();

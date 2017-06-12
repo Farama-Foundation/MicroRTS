@@ -4,10 +4,18 @@
  */
 package rts;
 
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
+import java.io.Writer;
 import rts.units.Unit;
 import java.util.LinkedList;
 import java.util.List;
+import org.jdom.Element;
+import rts.units.UnitTypeTable;
 import util.Pair;
+import util.XMLWriter;
 
 /**
  *
@@ -177,6 +185,7 @@ public class PlayerAction {
         r = new ResourceUsage();
     }
 
+    
     public String toString() {
         String tmp = "{ ";
         for(Pair<Unit,UnitAction> ua:actions) {
@@ -184,4 +193,58 @@ public class PlayerAction {
         }
         return tmp + " }";
     }    
+    
+    
+    public void toxml(XMLWriter w) {
+        w.tag("PlayerAction");
+        for(Pair<Unit,UnitAction> ua:actions) {
+            w.tagWithAttributes("action", "unitID=\"" + ua.m_a.getID() + "\"");
+            ua.m_b.toxml(w);
+            w.tag("/action");
+        }
+        w.tag("/PlayerAction");           
+    }    
+    
+
+    public void toJSON(Writer w) throws Exception {
+        boolean first = true;
+        w.write("[");
+        for(Pair<Unit,UnitAction> ua:actions) {
+            if (!first) w.write(" ,");
+            w.write("{\"unitID\":" + ua.m_a.getID() + ", \"unitAction\":");
+            ua.m_b.toJSON(w);
+            w.write("}");
+            first = false;
+        }
+        w.write("]");
+    }    
+
+
+    public static PlayerAction fromXML(Element e, GameState gs, UnitTypeTable utt) {
+        PlayerAction pa = new PlayerAction();
+        List l = e.getChildren("action");
+        for(Object o:l) {
+            Element action_e = (Element)o;
+            int id = Integer.parseInt(action_e.getAttributeValue("unitID"));
+            Unit u = gs.getUnit(id);
+            UnitAction ua = UnitAction.fromXML(action_e.getChild("UnitAction"), utt);
+            pa.addUnitAction(u, ua);
+        }
+        return pa;
+    }
+
+
+    public static PlayerAction fromJSON(String JSON, GameState gs, UnitTypeTable utt) {
+        PlayerAction pa = new PlayerAction();
+        JsonArray a = Json.parse(JSON).asArray();
+        for(JsonValue v:a.values()) {
+            JsonObject o = v.asObject();
+            int id = o.getInt("unitID", -1);
+            Unit u = gs.getUnit(id);
+            UnitAction ua = UnitAction.fromJSON(o.get("unitAction").asObject(), utt);
+            pa.addUnitAction(u, ua);
+        }
+        return pa;
+    }
+    
 }

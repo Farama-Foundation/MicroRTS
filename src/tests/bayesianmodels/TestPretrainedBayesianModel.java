@@ -45,7 +45,7 @@ public class TestPretrainedBayesianModel {
     
     
     public static void test(BayesianModel model, String tracesFolder, String AIname, UnitTypeTable utt, FeatureGenerator fg) throws Exception {
-        List<TrainingInstance> instances = PretrainNaiveBayesModels.generateInstances(tracesFolder, utt, AIname);
+        List<TrainingInstance> instances = PretrainNaiveBayesModels.generateInstances(tracesFolder, AIname);
         System.out.println(instances.size() + " instances generated.");
         
         // translate to feature vectors:        

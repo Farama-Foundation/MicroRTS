@@ -4,8 +4,13 @@
  */
 package rts;
 
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
 import java.io.Serializable;
 import java.io.Writer;
+import java.util.Objects;
+import java.util.Random;
 
 import org.jdom.Element;
 import rts.units.*;
@@ -16,6 +21,8 @@ import util.XMLWriter;
  * @author santi
  */
 public class UnitAction implements Serializable {
+    public static Random r = new Random();  // only used for non-deterministic events    
+    
     public static final int TYPE_NONE = 0;
     public static final int TYPE_MOVE = 1;
     public static final int TYPE_HARVEST = 2;
@@ -24,7 +31,7 @@ public class UnitAction implements Serializable {
     public static final int TYPE_ATTACK_LOCATION = 5;
     public static final int NUMBER_OF_ACTION_TYPES = 6;
 
-    public static String actionName[] ={"none","move","harvest","return","produce","attack_location"};
+    public static String actionName[] ={"wait","move","harvest","return","produce","attack_location"};
     
     public static final int DIRECTION_NONE = -1;
     public static final int DIRECTION_UP = 0;
@@ -71,6 +78,7 @@ public class UnitAction implements Serializable {
         unitType = ua.unitType;
     }
     
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof UnitAction)) return false;
         UnitAction a = (UnitAction)o;
@@ -86,6 +94,16 @@ public class UnitAction implements Serializable {
         }
         
         return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = this.type;
+        hash = 19 * hash + this.parameter;
+        hash = 19 * hash + this.x;
+        hash = 19 * hash + this.y;
+        hash = 19 * hash + Objects.hashCode(this.unitType);
+        return hash;
     }
     
    
@@ -172,7 +190,13 @@ public class UnitAction implements Serializable {
                 {
                     Unit u2 = pgs.getUnitAt(x, y);
                     if (u2!=null) {
-                        u2.setHitPoints(u2.getHitPoints() - u.getDamage());
+                        int damage;
+                        if (u.getMinDamage() == u.getMaxDamage()) {
+                            damage = u.getMinDamage();
+                        } else {
+                            damage = u.getMinDamage() + r.nextInt(1 + (u.getMaxDamage() - u.getMinDamage()));
+                        }
+                        u2.setHitPoints(u2.getHitPoints() - damage);
                         if (u2.getHitPoints()<=0) {
                             s.removeUnit(u2);
                         }
@@ -245,6 +269,8 @@ public class UnitAction implements Serializable {
         
         if (type==TYPE_ATTACK_LOCATION) {
             tmp+=x + "," + y;
+        } else if (type==TYPE_NONE) {
+            tmp+=parameter;
         } else {
             if (parameter != DIRECTION_NONE) {
                 if (parameter == DIRECTION_UP) tmp += "up";
@@ -275,6 +301,7 @@ public class UnitAction implements Serializable {
     public int getLocationY() {
         return y;
     }
+    
     
     public void toxml(XMLWriter w) {
         String attributes = "type=\"" + type + "\" ";
@@ -318,6 +345,29 @@ public class UnitAction implements Serializable {
         if (xStr!=null) x = Integer.parseInt(xStr);
         if (yStr!=null) y = Integer.parseInt(yStr);
         if (unitTypeStr!=null) unitType = utt.getUnitType(unitTypeStr);
+    }
+    
+    
+    public static UnitAction fromXML(Element e, UnitTypeTable utt) {
+        return new UnitAction(e, utt);
+    }
+    
+    
+    public static UnitAction fromJSON(String JSON, UnitTypeTable utt) {
+        JsonObject o = Json.parse(JSON).asObject();
+        return fromJSON(o, utt);
+    }
+
+
+    public static UnitAction fromJSON(JsonObject o, UnitTypeTable utt) {
+        UnitAction ua = new UnitAction(o.getInt("type", TYPE_NONE));
+        ua.parameter = o.getInt("parameter", DIRECTION_NONE);
+        ua.x = o.getInt("x", DIRECTION_NONE);
+        ua.y = o.getInt("y", DIRECTION_NONE);
+        String ut = o.getString("unitType", null);
+        if (ut!=null) ua.unitType = utt.getUnitType(ut);
+        
+        return ua;
     }
     
 }

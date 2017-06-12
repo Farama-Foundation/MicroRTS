@@ -4,8 +4,8 @@
  */
 package ai.abstraction;
 
-import ai.core.AI;
 import ai.abstraction.pathfinding.PathFinding;
+import ai.core.AIWithComputationBudget;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -19,7 +19,7 @@ import util.Pair;
  *
  * @author santi
  */
-public abstract class AbstractionLayerAI extends AI {
+public abstract class AbstractionLayerAI extends AIWithComputationBudget {
     // set this to true, if you believe there is a bug, and want to verify that actions
     // being generated are actually possible before sending to the game.
     public static boolean VERIFY_ACTION_CORRECTNESS = false;
@@ -37,18 +37,20 @@ public abstract class AbstractionLayerAI extends AI {
     protected PathFinding pf = null;
             
     public AbstractionLayerAI(PathFinding a_pf) {
+        super(-1,-1);
         pf = a_pf;
     }
            
+
+    public AbstractionLayerAI(PathFinding a_pf, int timebudget, int cyclesbudget) {
+        super(timebudget,cyclesbudget);
+        pf = a_pf;
+    }
+
     
-    @Override
     public void reset(){
     	actions.clear();
     }
-    
-
-    @Override
-    public abstract AI clone();
     
     
     public PlayerAction translateActions(int player, GameState gs) {

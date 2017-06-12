@@ -65,7 +65,7 @@ public class TraceEntry {
         time = Integer.parseInt(e.getAttributeValue("time"));
   
         Element pgs_e = e.getChild(PhysicalGameState.class.getName());
-        pgs = new PhysicalGameState(pgs_e, utt);
+        pgs = PhysicalGameState.fromXML(pgs_e, utt);
         
         for(Object o:actions_e.getChildren()) {
             Element action_e = (Element)o;

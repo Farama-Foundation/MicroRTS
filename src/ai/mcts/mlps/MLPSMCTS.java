@@ -6,10 +6,9 @@ package ai.mcts.mlps;
 
 import ai.*;
 import ai.core.AI;
-import ai.core.InterruptibleAIWithComputationBudget;
+import ai.core.AIWithComputationBudget;
 import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
-import ai.evaluation.SimpleEvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,12 +16,13 @@ import java.util.Random;
 import rts.GameState;
 import rts.PlayerAction;
 import rts.units.UnitTypeTable;
+import ai.core.InterruptibleAI;
 
 /**
  *
  * @author santi
  */
-public class MLPSMCTS extends InterruptibleAIWithComputationBudget {
+public class MLPSMCTS extends AIWithComputationBudget implements InterruptibleAI {
     public static int DEBUG = 0;
     public EvaluationFunction ef = null;
        
@@ -83,13 +83,27 @@ public class MLPSMCTS extends InterruptibleAIWithComputationBudget {
     }    
     
     
+    public PlayerAction getAction(int player, GameState gs) throws Exception
+    {
+        if (gs.canExecuteAnyAction(player)) {
+            startNewComputation(player,gs.clone());
+            computeDuringOneGameFrame();
+            return getBestActionSoFar();
+        } else {
+            return new PlayerAction();        
+        }       
+    }
+    
+    
     public void startNewComputation(int a_player, GameState gs) throws Exception {
     	playerForThisComputation = a_player;
         current_iteration = 0;
         float evaluation_bound = ef.upperBound(gs);
         tree = new MLPSNode(playerForThisComputation, 1-playerForThisComputation, gs, null, evaluation_bound, current_iteration++);
         
-        max_actions_so_far = Math.max(tree.moveGenerator.getSize(),max_actions_so_far);
+        if (tree.moveGenerator!=null) {
+            max_actions_so_far = Math.max(tree.moveGenerator.getSize(),max_actions_so_far);
+        }
         gs_to_start_from = gs;        
     }    
     
@@ -162,12 +176,12 @@ public class MLPSMCTS extends InterruptibleAIWithComputationBudget {
         int bestIdx = -1;
         MLPSNode best = null;
         if (DEBUG>=2) {
-//            for(Player p:gs_to_start_from.getPlayers()) {
-//                System.out.println("Resources P" + p.getID() + ": " + p.getResources());
-//            }
             System.out.println("Number of playouts: " + tree.visit_count);
             tree.printUnitActionTable();
         }
+
+        if (tree.children==null) return -1;
+
         for(int i = 0;i<tree.children.size();i++) {
             MLPSNode child = (MLPSNode)tree.children.get(i);
             if (DEBUG>=2) {

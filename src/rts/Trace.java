@@ -42,12 +42,26 @@ public class Trace {
     
     public void toxml(XMLWriter w) {
        w.tag(this.getClass().getName());
+       utt.toxml(w);
        w.tag("entries");
        for(TraceEntry te:entries) te.toxml(w);
        w.tag("/entries");
        w.tag("/" + this.getClass().getName());
     }
         
+    
+    public Trace(Element e) {
+        utt = UnitTypeTable.fromXML(e.getChild(UnitTypeTable.class.getName()));
+        Element entries_e = e.getChild("entries");
+        
+        for(Object o:entries_e.getChildren()) {
+            Element entry_e = (Element)o;
+            entries.add(new TraceEntry(entry_e, utt));
+        }
+    }    
+    
+
+    // this loads a trace ignoring the UTT specified in the trace:
     public Trace(Element e, UnitTypeTable a_utt) {
         utt = a_utt;
         Element entries_e = e.getChild("entries");
@@ -57,7 +71,7 @@ public class Trace {
             entries.add(new TraceEntry(entry_e, utt));
         }
     }    
-    
+
     
     // Note: this function is slow, since it has to simulate the game from the very beginning
     //       in order to get the appropriate unit actions. So, do not use in the internal loop
@@ -82,10 +96,6 @@ public class Trace {
                 gs.cycle();
             }
 
-            if (gs.getTime()==cycle) {
-                getGameStateAtCycle_cache = gs;
-                return gs;
-            }
             
             // synchronize the traces (some times the unit IDs might go off):
             for(Unit u1:gs.getUnits()) {
@@ -103,7 +113,7 @@ public class Trace {
                 getGameStateAtCycle_cache = gs;
                 return gs;
             }
-
+            
             PlayerAction pa0 = new PlayerAction();
             PlayerAction pa1 = new PlayerAction();
             for(Pair<Unit,UnitAction> tmp:te.getActions()) {
@@ -112,6 +122,12 @@ public class Trace {
             }
             gs.issueSafe(pa0);
             gs.issueSafe(pa1);
+
+            if (gs.getTime()==cycle) {
+                getGameStateAtCycle_cache = gs;
+                return gs;
+            }
+
         }
         while(gs.getTime()<cycle) gs.cycle();
         

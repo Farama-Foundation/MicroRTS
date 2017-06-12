@@ -4,11 +4,13 @@
  */
 package rts;
 
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 
 import rts.units.Unit;
@@ -38,7 +40,7 @@ public class PhysicalGameState implements Serializable {
     
     public static PhysicalGameState load(String fileName, UnitTypeTable utt) throws JDOMException, IOException {
         try{
-        	return new PhysicalGameState(new SAXBuilder().build(fileName).getRootElement(), utt);        
+        	return PhysicalGameState.fromXML(new SAXBuilder().build(fileName).getRootElement(), utt);        
         }catch(IllegalArgumentException ex){
         	throw new IllegalArgumentException("Error loading map: "+fileName,ex);
         }
@@ -257,6 +259,23 @@ public class PhysicalGameState implements Serializable {
     }
     
     
+    
+     public boolean[][] getAllFree() {
+    	
+    	boolean free[][]=new boolean[getWidth()][getHeight()];
+    	for(int x=0;x<getWidth();x++){
+    		for(int y=0;y<getHeight();y++){
+    			free[x][y]=(getTerrain(x, y)==PhysicalGameState.TERRAIN_NONE);
+    		}
+    	}
+        for(Unit u:units) {
+        	free[u.getX()][u.getY()]=false;
+        }
+      
+        return free;
+    }
+     
+    
     public void toxml(XMLWriter w) {
        w.tagWithAttributes(this.getClass().getName(), "width=\"" + width + "\" height=\"" + height + "\"");
        String tmp = "";
@@ -273,66 +292,83 @@ public class PhysicalGameState implements Serializable {
     
     
     public void toJSON(Writer w) throws Exception {
-        w.write("{\n");
-        w.write("\"width\":"+width+",\"height\":" + height + ",\n");
+        w.write("{");
+        w.write("\"width\":"+width+",\"height\":" + height + ",");
         w.write("\"terrain\":\"");
         for(int i = 0;i<height*width;i++) w.write("" + terrain[i]);
-        w.write("\",\n");
-        w.write("\"players\":[\n");
+        w.write("\",");
+        w.write("\"players\":[");
         for(int i = 0;i<players.size();i++) {
             players.get(i).toJSON(w);
-            if (i<players.size()-1) w.write(",\n");
+            if (i<players.size()-1) w.write(",");
         }
-        w.write("],\n");
-        w.write("\"units\":[\n");
+        w.write("],");
+        w.write("\"units\":[");
         for(int i = 0;i<units.size();i++) {
             units.get(i).toJSON(w);
-            if (i<units.size()-1) w.write(",\n");
+            if (i<units.size()-1) w.write(",");
         }
-        w.write("]\n");
+        w.write("]");
         w.write("}");
     }
     
        
-    public PhysicalGameState(Element e, UnitTypeTable utt) {
+    public static PhysicalGameState fromXML(Element e, UnitTypeTable utt) {
         Element terrain_e = e.getChild("terrain");
         Element players_e = e.getChild("players");
         Element units_e = e.getChild("units");
         
-        width = Integer.parseInt(e.getAttributeValue("width"));
-        height = Integer.parseInt(e.getAttributeValue("height"));
-        
-        terrain = new int[width*height];
+        int width = Integer.parseInt(e.getAttributeValue("width"));
+        int height = Integer.parseInt(e.getAttributeValue("height"));        
+        int terrain[] = new int[width*height];
         String terrainString = terrain_e.getValue();
         for(int i = 0;i<width*height;i++) {
             String c = terrainString.substring(i, i+1);
             terrain[i] = Integer.parseInt(c);
         }
+        PhysicalGameState pgs = new PhysicalGameState(width, height, terrain);
+
         
         for(Object o:players_e.getChildren()) {
             Element player_e = (Element)o;
-            addPlayer(new Player(player_e));
+            pgs.addPlayer(Player.fromXML(player_e));
         }
         for(Object o:units_e.getChildren()) {
             Element unit_e = (Element)o;
-            addUnit(new Unit(unit_e, utt));
-
+            pgs.addUnit(Unit.fromXML(unit_e, utt));
         }
+        
+        return pgs;
+    }    
+
+    
+  
+    public static PhysicalGameState fromJSON(JsonObject o, UnitTypeTable utt) {
+        
+        String terrainString = o.getString("terrain",null);
+        JsonArray players_o = o.get("players").asArray();
+        JsonArray units_o = o.get("units").asArray();
+        
+        int width = o.getInt("width",8);
+        int height = o.getInt("height",8);
+        int terrain[] = new int[width*height];
+        for(int i = 0;i<width*height;i++) {
+            String c = terrainString.substring(i, i+1);
+            terrain[i] = Integer.parseInt(c);
+        }
+        PhysicalGameState pgs = new PhysicalGameState(width, height, terrain);
+
+        
+        for(JsonValue v:players_o.values()) {
+            JsonObject player_o = (JsonObject)v;
+            pgs.addPlayer(Player.fromJSON(player_o));
+        }
+        for(JsonValue v:units_o.values()) {
+            JsonObject unit_o = (JsonObject)v;
+            pgs.addUnit(Unit.fromJSON(unit_o, utt));
+        }
+        
+        return pgs;
     }    
     
-    
-     public boolean[][] getAllFree() {
-    	
-    	boolean free[][]=new boolean[getWidth()][getHeight()];
-    	for(int x=0;x<getWidth();x++){
-    		for(int y=0;y<getHeight();y++){
-    			free[x][y]=(getTerrain(x, y)==PhysicalGameState.TERRAIN_NONE);
-    		}
-    	}
-        for(Unit u:units) {
-        	free[u.getX()][u.getY()]=false;
-        }
-      
-        return free;
-    }
 }

@@ -25,7 +25,7 @@ import rts.units.*;
 public class HeavyRush extends AbstractionLayerAI {
 
     Random r = new Random();
-    UnitTypeTable utt;
+    protected UnitTypeTable utt;
     UnitType workerType;
     UnitType baseType;
     UnitType barracksType;
@@ -44,16 +44,21 @@ public class HeavyRush extends AbstractionLayerAI {
     
     public HeavyRush(UnitTypeTable a_utt, PathFinding a_pf) {
         super(a_pf);
-        utt = a_utt;
-        workerType = utt.getUnitType("Worker");
-        baseType = utt.getUnitType("Base");
-        barracksType = utt.getUnitType("Barracks");
-        heavyType = utt.getUnitType("Heavy");
+        reset(utt);
     }
 
     public void reset() {
     	super.reset();
     }
+    
+    public void reset(UnitTypeTable a_utt)  
+    {
+        utt = a_utt;
+        workerType = utt.getUnitType("Worker");
+        baseType = utt.getUnitType("Base");
+        barracksType = utt.getUnitType("Barracks");
+        heavyType = utt.getUnitType("Heavy");
+    }      
 
     public AI clone() {
         return new HeavyRush(utt, pf);
@@ -71,7 +76,6 @@ public class HeavyRush extends AbstractionLayerAI {
     public PlayerAction getAction(int player, GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         Player p = gs.getPlayer(player);
-        PlayerAction pa = new PlayerAction();
 //        System.out.println("HeavyRushAI for player " + player + " (cycle " + gs.getTime() + ")");
 
         // behavior of bases:
@@ -97,7 +101,7 @@ public class HeavyRush extends AbstractionLayerAI {
             if (u.getType().canAttack && !u.getType().canHarvest
                     && u.getPlayer() == player
                     && gs.getActionAssignment(u) == null) {
-                meleeUnitBehavior(u, p, pgs);
+                meleeUnitBehavior(u, p, gs);
             }
         }
 
@@ -134,7 +138,8 @@ public class HeavyRush extends AbstractionLayerAI {
         }
     }
 
-    public void meleeUnitBehavior(Unit u, Player p, PhysicalGameState pgs) {
+    public void meleeUnitBehavior(Unit u, Player p, GameState gs) {
+        PhysicalGameState pgs = gs.getPhysicalGameState();
         Unit closestEnemy = null;
         int closestDistance = 0;
         for (Unit u2 : pgs.getUnits()) {

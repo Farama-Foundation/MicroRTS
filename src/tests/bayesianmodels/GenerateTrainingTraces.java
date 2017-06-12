@@ -56,16 +56,16 @@ public class GenerateTrainingTraces {
                          false,
                          randomAI, ef));
         // NaiveMCTS up to depth 8:
-        bots.add(new NaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 16, 0.33f, 0.0f, 0.4f, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3()));
+        bots.add(new NaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 16, 0.33f, 0.0f, 0.4f, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3(), true));
 
-        String mapnames[] = {"maps/OneBaseWorker8x8.xml",
-                             "maps/TwoBasesWorkers8x8.xml",
-                             "maps/ThreeBasesWorkers8x8.xml",
-                             "maps/FourBasesWorkers8x8.xml",
-                             "maps/OneBaseWorker12x12.xml",
-                             "maps/TwoBasesWorkers12x12.xml",
-                             "maps/ThreeBasesWorkers12x12.xml",
-                             "maps/FourBasesWorkers12x12.xml",
+        String mapnames[] = {"maps/8x8/OneBaseWorker8x8.xml",
+                             "maps/8x8/TwoBasesWorkers8x8.xml",
+                             "maps/8x8/ThreeBasesWorkers8x8.xml",
+                             "maps/8x8/FourBasesWorkers8x8.xml",
+                             "maps/12x12/OneBaseWorker12x12.xml",
+                             "maps/12x12/TwoBasesWorkers12x12.xml",
+                             "maps/12x12/ThreeBasesWorkers12x12.xml",
+                             "maps/12x12/FourBasesWorkers12x12.xml",
                             };
         PrintStream out = new PrintStream(new File("learningtracegeneration-"+MAX_PLAYOUTS+".txt"));
         List<PhysicalGameState> maps = new LinkedList<>();

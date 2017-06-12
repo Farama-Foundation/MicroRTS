@@ -4,11 +4,9 @@
  */
 package ai.minimax.RTMiniMax;
 
-import ai.abstraction.WorkerRush;
-import ai.abstraction.pathfinding.AStarPathFinding;
 import ai.evaluation.EvaluationFunctionForwarding;
 import ai.core.AI;
-import ai.core.InterruptibleAIWithComputationBudget;
+import ai.core.AIWithComputationBudget;
 import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
@@ -21,12 +19,13 @@ import rts.PlayerAction;
 import rts.PlayerActionGenerator;
 import rts.units.UnitTypeTable;
 import util.Pair;
+import ai.core.InterruptibleAI;
 
 /**
  *
  * @author santi
  */
-public class IDRTMinimax extends InterruptibleAIWithComputationBudget {
+public class IDRTMinimax extends AIWithComputationBudget implements InterruptibleAI {
     public static int DEBUG = 0;
     
     // reset at each execution of minimax:
@@ -87,6 +86,18 @@ public class IDRTMinimax extends InterruptibleAIWithComputationBudget {
     }  
     
     
+    public final PlayerAction getAction(int player, GameState gs) throws Exception
+    {
+        if (gs.canExecuteAnyAction(player)) {
+            startNewComputation(player,gs.clone());
+            computeDuringOneGameFrame();
+            return getBestActionSoFar();
+        } else {
+            return new PlayerAction();        
+        }       
+    }
+
+
     @Override
     public void startNewComputation(int a_player, GameState gs) throws Exception
     {

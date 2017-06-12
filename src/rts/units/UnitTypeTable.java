@@ -4,17 +4,26 @@
  */
 package rts.units;
 
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 import java.io.Serializable;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import org.jdom.Element;
+import util.XMLWriter;
 
 /**
  *
  * @author santi
  */
 public class UnitTypeTable implements Serializable {
+    public static final int EMPTY_TYPE_TABLE = -1;
     public static final int VERSION_ORIGINAL = 1;
     public static final int VERSION_ORIGINAL_FINETUNED = 2;
+    public static final int VERSION_NON_DETERMINISTIC = 3;
     
     public static final int MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH = 1;   // (default)
     public static final int MOVE_CONFLICT_RESOLUTION_CANCEL_RANDOM = 2;   // (makes game non-deterministic)
@@ -36,9 +45,10 @@ public class UnitTypeTable implements Serializable {
     }
     
     
-    public void setUnitTypeTable(int version, int crs) {
-        
+    public void setUnitTypeTable(int version, int crs) {       
         moveConflictResolutionStrategy = crs;
+        
+        if (version == EMPTY_TYPE_TABLE) return;        
         
         // Create the unit types:
         // RESOURCE:
@@ -77,10 +87,13 @@ public class UnitTypeTable implements Serializable {
         barracks.cost = 5;
         barracks.hp = 4;
         switch(version) {
-            case VERSION_ORIGINAL: barracks.produceTime = 200;
-                                   break;
-            case VERSION_ORIGINAL_FINETUNED: barracks.produceTime = 100;
-                                   break;
+            case VERSION_ORIGINAL: 
+                barracks.produceTime = 200;
+                break;
+            case VERSION_ORIGINAL_FINETUNED: 
+            case VERSION_NON_DETERMINISTIC:
+                barracks.produceTime = 100;
+                break;
         }
         barracks.isResource = false;
         barracks.isStockpile = false;
@@ -95,7 +108,16 @@ public class UnitTypeTable implements Serializable {
         worker.name = "Worker";
         worker.cost = 1;
         worker.hp = 1;
-        worker.damage = 1;
+        switch(version) {
+            case VERSION_ORIGINAL:
+            case VERSION_ORIGINAL_FINETUNED:
+                worker.minDamage = worker.maxDamage = 1;
+                break;
+            case VERSION_NON_DETERMINISTIC:
+                worker.minDamage = 0;
+                worker.maxDamage = 2;
+                break;
+        }
         worker.attackRange = 1;
         worker.produceTime = 50;
         worker.moveTime = 10;
@@ -115,7 +137,16 @@ public class UnitTypeTable implements Serializable {
         light.name = "Light";
         light.cost = 2;
         light.hp = 4;
-        light.damage = 2;
+        switch(version) {
+            case VERSION_ORIGINAL:
+            case VERSION_ORIGINAL_FINETUNED:
+                light.minDamage = light.maxDamage = 2;
+                break;
+            case VERSION_NON_DETERMINISTIC:
+                light.minDamage = 1;
+                light.maxDamage = 3;
+                break;
+        }
         light.attackRange = 1;
         light.produceTime = 80;
         light.moveTime = 8;
@@ -131,18 +162,30 @@ public class UnitTypeTable implements Serializable {
         // HEAVY: 
         UnitType heavy = new UnitType();
         heavy.name = "Heavy";
-        heavy.damage = 4;
+        switch(version) {
+            case VERSION_ORIGINAL:
+            case VERSION_ORIGINAL_FINETUNED:
+                heavy.minDamage = heavy.maxDamage = 4;
+                break;
+            case VERSION_NON_DETERMINISTIC:
+                heavy.minDamage = 0;
+                heavy.maxDamage = 6;
+                break;
+        }
         heavy.attackRange = 1;
         heavy.produceTime = 120;
         switch(version) {
-            case VERSION_ORIGINAL: heavy.moveTime = 12;
-                                   heavy.hp = 4;
-                                   heavy.cost = 2;
-                                   break;
-            case VERSION_ORIGINAL_FINETUNED: heavy.moveTime = 10;
-                                             heavy.hp = 8;
-                                             heavy.cost = 3;
-                                             break;
+            case VERSION_ORIGINAL: 
+                heavy.moveTime = 12;
+                heavy.hp = 4;
+                heavy.cost = 2;
+                break;
+            case VERSION_ORIGINAL_FINETUNED: 
+            case VERSION_NON_DETERMINISTIC:
+                heavy.moveTime = 10;
+                heavy.hp = 8;
+                heavy.cost = 3;
+                break;
         }
         heavy.attackTime = 5;
         heavy.isResource = false;
@@ -158,7 +201,16 @@ public class UnitTypeTable implements Serializable {
         ranged.name = "Ranged";
         ranged.cost = 2;
         ranged.hp = 1;
-        ranged.damage = 1;
+        switch(version) {
+            case VERSION_ORIGINAL:
+            case VERSION_ORIGINAL_FINETUNED:
+                ranged.minDamage = ranged.maxDamage = 1;
+                break;
+            case VERSION_NON_DETERMINISTIC:
+                ranged.minDamage = 1;
+                ranged.maxDamage = 2;
+                break;
+        }
         ranged.attackRange = 3;
         ranged.produceTime = 100;
         ranged.moveTime = 10;
@@ -172,12 +224,12 @@ public class UnitTypeTable implements Serializable {
         addUnitType(ranged);     
         
 
-        base.produces.add(worker);  
-        barracks.produces.add(light);
-        barracks.produces.add(heavy); 
-        barracks.produces.add(ranged);
-        worker.produces.add(base);
-        worker.produces.add(barracks);
+        base.produces(worker);  
+        barracks.produces(light);
+        barracks.produces(heavy); 
+        barracks.produces(ranged);
+        worker.produces(base);
+        worker.produces(barracks);
     }
     
     public void addUnitType(UnitType ut) {
@@ -204,5 +256,55 @@ public class UnitTypeTable implements Serializable {
         return moveConflictResolutionStrategy;
     }
     
+    
+    public void toxml(XMLWriter w) {
+        w.tagWithAttributes(this.getClass().getName(),"moveConflictResolutionStrategy=\""+moveConflictResolutionStrategy+"\"");
+        for(UnitType ut:unitTypes) ut.toxml(w);
+        w.tag("/" + this.getClass().getName());
+    }    
+    
+    public void toJSON(Writer w) throws Exception {
+        boolean first = true;
+        w.write("{\"moveConflictResolutionStrategy\":" + moveConflictResolutionStrategy + ",");
+        w.write("\"unitTypes\":[");
+        for(UnitType ut:unitTypes) {
+            if (!first) w.write(", ");
+            ut.toJSON(w);
+            first = false;
+        }
+        w.write("]}");
+    }    
+    
+   
+    public static UnitTypeTable fromXML(Element e) {
+        UnitTypeTable utt = new UnitTypeTable(EMPTY_TYPE_TABLE);
+        utt.moveConflictResolutionStrategy = Integer.parseInt(e.getAttributeValue("moveConflictResolutionStrategy"));
+        for(Object o:e.getChildren()) {
+            Element unittype_e = (Element)o;
+            utt.unitTypes.add(UnitType.createStub(unittype_e));
+        }
+        for(Object o:e.getChildren()) {
+            Element unittype_e = (Element)o;
+            utt.getUnitType(unittype_e.getAttributeValue("name")).updateFromXML(unittype_e, utt);
+        }       
+        return utt;
+    }
+    
+    
+    public static UnitTypeTable fromJSON(String JSON) {
+        JsonObject o = Json.parse(JSON).asObject();
+        UnitTypeTable utt = new UnitTypeTable(EMPTY_TYPE_TABLE);
+        utt.moveConflictResolutionStrategy = o.getInt("moveConflictResolutionStrategy", MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH);
+        JsonArray a = o.get("unitTypes").asArray();
+        for(JsonValue v:a.values()) {
+            JsonObject uto = v.asObject();
+            utt.unitTypes.add(UnitType.createStub(uto));
+        }
+        for(JsonValue v:a.values()) {
+            JsonObject uto = v.asObject();
+            utt.getUnitType(uto.getString("name",null)).updateFromJSON(uto, utt);
+        }       
+        return utt;
+    }
     
 }

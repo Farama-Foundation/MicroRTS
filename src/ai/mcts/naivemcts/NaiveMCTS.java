@@ -6,7 +6,7 @@ package ai.mcts.naivemcts;
 
 import ai.*;
 import ai.core.AI;
-import ai.core.InterruptibleAIWithComputationBudget;
+import ai.core.AIWithComputationBudget;
 import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
@@ -16,12 +16,13 @@ import java.util.Random;
 import rts.GameState;
 import rts.PlayerAction;
 import rts.units.UnitTypeTable;
+import ai.core.InterruptibleAI;
 
 /**
  *
  * @author santi
  */
-public class NaiveMCTS extends InterruptibleAIWithComputationBudget {
+public class NaiveMCTS extends AIWithComputationBudget implements InterruptibleAI {
     public static int DEBUG = 0;
     public EvaluationFunction ef = null;
        
@@ -52,6 +53,7 @@ public class NaiveMCTS extends InterruptibleAIWithComputationBudget {
     public float discount_g = 0.999f;
     
     public int global_strategy = NaiveMCTSNode.E_GREEDY;
+    public boolean forceExplorationOfNonSampledActions = true;
     
     // statistics:
     public long total_runs = 0;
@@ -64,55 +66,59 @@ public class NaiveMCTS extends InterruptibleAIWithComputationBudget {
         this(100,-1,100,10,
              0.3f, 0.0f, 0.4f,
              new RandomBiasedAI(),
-             new SimpleSqrtEvaluationFunction3());
+             new SimpleSqrtEvaluationFunction3(), true);
     }    
     
     
     public NaiveMCTS(int available_time, int max_playouts, int lookahead, int max_depth, 
-                               float e1, float discout1,
-                               float e2, float discout2, 
-                               float e3, float discout3, 
-                               AI policy, EvaluationFunction a_ef) {
+                               float e_l, float discout_l,
+                               float e_g, float discout_g, 
+                               float e_0, float discout_0, 
+                               AI policy, EvaluationFunction a_ef,
+                               boolean fensa) {
         super(available_time, max_playouts);
         MAXSIMULATIONTIME = lookahead;
         playoutPolicy = policy;
         MAX_TREE_DEPTH = max_depth;
-        initial_epsilon_l = epsilon_l = e1;
-        initial_epsilon_g = epsilon_g = e2;
-        initial_epsilon_0 = epsilon_0 = e3;
-        discount_l = discout1;
-        discount_g = discout2;
-        discount_0 = discout3;
+        initial_epsilon_l = epsilon_l = e_l;
+        initial_epsilon_g = epsilon_g = e_g;
+        initial_epsilon_0 = epsilon_0 = e_0;
+        discount_l = discout_l;
+        discount_g = discout_g;
+        discount_0 = discout_0;
         ef = a_ef;
+        forceExplorationOfNonSampledActions = fensa;
     }    
 
-    public NaiveMCTS(int available_time, int max_playouts, int lookahead, int max_depth, float e1, float e2, float e3, AI policy, EvaluationFunction a_ef) {
+    public NaiveMCTS(int available_time, int max_playouts, int lookahead, int max_depth, float e_l, float e_g, float e_0, AI policy, EvaluationFunction a_ef, boolean fensa) {
         super(available_time, max_playouts);
         MAXSIMULATIONTIME = lookahead;
         playoutPolicy = policy;
         MAX_TREE_DEPTH = max_depth;
-        initial_epsilon_l = epsilon_l = e1;
-        initial_epsilon_g = epsilon_g = e2;
-        initial_epsilon_0 = epsilon_0 = e3;
+        initial_epsilon_l = epsilon_l = e_l;
+        initial_epsilon_g = epsilon_g = e_g;
+        initial_epsilon_0 = epsilon_0 = e_0;
         discount_l = 1.0f;
         discount_g = 1.0f;
         discount_0 = 1.0f;
         ef = a_ef;
+        forceExplorationOfNonSampledActions = fensa;
     }    
     
-    public NaiveMCTS(int available_time, int max_playouts, int lookahead, int max_depth, float e1, float e2, float e3, int a_global_strategy, AI policy, EvaluationFunction a_ef) {
+    public NaiveMCTS(int available_time, int max_playouts, int lookahead, int max_depth, float e_l, float e_g, float e_0, int a_global_strategy, AI policy, EvaluationFunction a_ef, boolean fensa) {
         super(available_time, max_playouts);
         MAXSIMULATIONTIME = lookahead;
         playoutPolicy = policy;
         MAX_TREE_DEPTH = max_depth;
-        initial_epsilon_l = epsilon_l = e1;
-        initial_epsilon_g = epsilon_g = e2;
-        initial_epsilon_0 = epsilon_0 = e3;
+        initial_epsilon_l = epsilon_l = e_l;
+        initial_epsilon_g = epsilon_g = e_g;
+        initial_epsilon_0 = epsilon_0 = e_0;
         discount_l = 1.0f;
         discount_g = 1.0f;
         discount_0 = 1.0f;
         global_strategy = a_global_strategy;
         ef = a_ef;
+        forceExplorationOfNonSampledActions = fensa;
     }        
     
     public void reset() {
@@ -127,16 +133,32 @@ public class NaiveMCTS extends InterruptibleAIWithComputationBudget {
         
     
     public AI clone() {
-        return new NaiveMCTS(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME, MAX_TREE_DEPTH, epsilon_l, discount_l, epsilon_g, discount_g, epsilon_0, discount_0, playoutPolicy, ef);
+        return new NaiveMCTS(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME, MAX_TREE_DEPTH, epsilon_l, discount_l, epsilon_g, discount_g, epsilon_0, discount_0, playoutPolicy, ef, forceExplorationOfNonSampledActions);
     }    
+    
+    
+    public PlayerAction getAction(int player, GameState gs) throws Exception
+    {
+        if (gs.canExecuteAnyAction(player)) {
+            startNewComputation(player,gs.clone());
+            computeDuringOneGameFrame();
+            return getBestActionSoFar();
+        } else {
+            return new PlayerAction();        
+        }       
+    }
     
     
     public void startNewComputation(int a_player, GameState gs) throws Exception {
         player = a_player;
         current_iteration = 0;
-        tree = new NaiveMCTSNode(player, 1-player, gs, null, ef.upperBound(gs), current_iteration++);
+        tree = new NaiveMCTSNode(player, 1-player, gs, null, ef.upperBound(gs), current_iteration++, forceExplorationOfNonSampledActions);
         
-        max_actions_so_far = Math.max(tree.moveGenerator.getSize(),max_actions_so_far);
+        if (tree.moveGenerator==null) {
+            max_actions_so_far = 0;
+        } else {
+            max_actions_so_far = Math.max(tree.moveGenerator.getSize(),max_actions_so_far);        
+        }
         gs_to_start_from = gs;
         
         epsilon_l = initial_epsilon_l;
@@ -226,6 +248,7 @@ public class NaiveMCTS extends InterruptibleAIWithComputationBudget {
             System.out.println("Number of playouts: " + tree.visit_count);
             tree.printUnitActionTable();
         }
+        if (tree.children==null) return -1;
         for(int i = 0;i<tree.children.size();i++) {
             NaiveMCTSNode child = (NaiveMCTSNode)tree.children.get(i);
             if (DEBUG>=2) {
@@ -326,6 +349,8 @@ public class NaiveMCTS extends InterruptibleAIWithComputationBudget {
         parameters.add(new ParameterSpecification("DefaultPolicy",AI.class, playoutPolicy));
         parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class, new SimpleSqrtEvaluationFunction3()));
 
+        parameters.add(new ParameterSpecification("ForceExplorationOfNonSampledActions",boolean.class,true));
+        
         return parameters;
     }    
     
@@ -429,4 +454,13 @@ public class NaiveMCTS extends InterruptibleAIWithComputationBudget {
     public void setEvaluationFunction(EvaluationFunction a_ef) {
         ef = a_ef;
     }
+    
+    public boolean getForceExplorationOfNonSampledActions() {
+        return forceExplorationOfNonSampledActions;
+    }
+    
+    public void setForceExplorationOfNonSampledActions(boolean fensa)
+    {
+        forceExplorationOfNonSampledActions = fensa;
+    }    
 }

@@ -4,10 +4,16 @@
  */
 package rts;
 
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 import java.io.Serializable;
 import java.io.Writer;
 import java.util.*;
+import org.jdom.Element;
 import rts.units.Unit;
+import rts.units.UnitType;
 import rts.units.UnitTypeTable;
 import util.Pair;
 import util.XMLWriter;
@@ -30,7 +36,7 @@ public class GameState implements Serializable{
         pgs = a_pgs;
         utt = a_utt;
     }
-    
+        
     public int getTime() {
         return time;
     }
@@ -178,8 +184,14 @@ public class GameState implements Serializable{
                             }
                             int duration1 = uaa.action.ETA(uaa.unit);
                             int duration2 = p.m_b.ETA(p.m_a);
-                            if (cancel_old) uaa.action = new UnitAction(UnitAction.TYPE_NONE,Math.min(duration1,duration2));
-                            if (cancel_new) p.m_b = new UnitAction(UnitAction.TYPE_NONE,Math.min(duration1,duration2));
+                            if (cancel_old) {
+//                                System.out.println("Old action canceled: " + uaa.unit.getID() + ", " + uaa.action);
+                                uaa.action = new UnitAction(UnitAction.TYPE_NONE,Math.min(duration1,duration2));
+                            }
+                            if (cancel_new) {
+//                                System.out.println("New action canceled: " + p.m_a.getID() + ", " + p.m_b);
+                                p = new Pair<>(p.m_a, new UnitAction(UnitAction.TYPE_NONE,Math.min(duration1,duration2)));
+                            }
                         } else {
                             // This is more a problem, since it means there is a bug somewhere...
                             // (probably in one of the AIs)
@@ -427,19 +439,23 @@ public class GameState implements Serializable{
         GameState gs = new GameState(pgs, utt);
         gs.time = time;
         gs.unitCancelationCounter = unitCancelationCounter;
-//        if (!integrityCheck()) throw new Error("Game State inconsistent before adding action");
         gs.unitActions.putAll(unitActions);
-/*
-        for(Pair<Unit,UnitAction> ua:pa.actions) {
-            if (pgs.units.indexOf(ua.m_a)==-1) {
-                System.err.println("Unit " + ua.m_a + " does not exist in game state:\n" + pgs);
-                System.exit(1);
-            }
-        }
-*/
         gs.issue(pa);
-//        if (!integrityCheck()) throw new Error("Game State inconsistent after adding action");
         return gs;        
+    }
+    
+    
+    public GameState cloneChangingUTT(UnitTypeTable new_utt)
+    {
+        GameState gs = clone();
+        gs.utt = new_utt;
+        for(Unit u:gs.getUnits()) {
+            UnitType new_type = new_utt.getUnitType(u.getType().name);
+            if (new_type == null) return null;
+            if (u.getHitPoints() == u.getType().hp) u.setHitPoints(new_type.hp);
+            u.setType(new_type);
+        }
+        return gs;
     }
     
     
@@ -455,6 +471,29 @@ public class GameState implements Serializable{
         }
         
         return base_ru;
+    }
+    
+    
+    public boolean equals(Object o) {
+        if (!(o instanceof GameState)) return false;
+        GameState s2 = (GameState)o;
+        if (!pgs.equivalents(s2.pgs)) return false;
+        
+        // compare actions:
+        int n = pgs.units.size();
+        for(int i = 0;i<n;i++) {
+            UnitActionAssignment uaa = unitActions.get(pgs.units.get(i)); 
+            UnitActionAssignment uaa2 = s2.unitActions.get(s2.pgs.units.get(i));
+            if (uaa==null) {
+                if (uaa2!=null) return false;
+            } else {
+                if (uaa2==null) return false;
+                if (uaa.time!=uaa2.time) return false;
+                if (!uaa.action.equals(uaa2.action)) return false;
+            }
+        }
+        
+        return true;
     }
     
     
@@ -523,21 +562,62 @@ public class GameState implements Serializable{
     
 
     public void toJSON(Writer w) throws Exception {
-        w.write("{\n");
-        w.write("\"time\":" + time + ",\n\"pgs\":");
+        w.write("{");
+        w.write("\"time\":" + time + ",\"pgs\":");
         pgs.toJSON(w);
-        w.write(",\n\"actions\":[\n");
+        w.write(",\"actions\":[");
         boolean first = true;
         for(Unit u:unitActions.keySet()) {
-            if (!first) w.write(",\n");
+            if (!first) w.write(",");
             first = false;
             UnitActionAssignment uaa = unitActions.get(u);
             w.write("{\"ID\":" + uaa.unit.getID() + ", \"time\":"+uaa.time+", \"action\":");
             uaa.action.toJSON(w);
             w.write("}");
         }
-        w.write("]\n");
+        w.write("]");
         w.write("}");
+    }
+    
+    
+    public static GameState fromXML(Element e, UnitTypeTable utt) {        
+        PhysicalGameState pgs = PhysicalGameState.fromXML(e.getChild(PhysicalGameState.class.getName()), utt);
+        GameState gs = new GameState(pgs, utt);
+        gs.time = Integer.parseInt(e.getAttributeValue("time"));
+        
+        Element actions_e = e.getChild("actions");
+        for(Object o:actions_e.getChildren()) {
+            Element action_e = (Element)o;
+            long ID = Long.parseLong(action_e.getAttributeValue("ID"));
+            Unit u = gs.getUnit(ID);
+            int time = Integer.parseInt(action_e.getAttributeValue("time"));
+            UnitAction ua = UnitAction.fromXML(action_e.getChild("UnitAction"), utt);
+            UnitActionAssignment uaa = new UnitActionAssignment(u, ua, time);
+            gs.unitActions.put(u, uaa);
+        }
+        
+        return gs;
+    }
+    
+    
+    public static GameState fromJSON(String JSON, UnitTypeTable utt) {        
+        JsonObject o = Json.parse(JSON).asObject();
+        PhysicalGameState pgs = PhysicalGameState.fromJSON(o.get("pgs").asObject(), utt);
+        GameState gs = new GameState(pgs, utt);
+        gs.time = o.getInt("time", 0);
+        
+        JsonArray actions_a = o.get("actions").asArray();
+        for(JsonValue v:actions_a.values()) {
+            JsonObject uaa_o = v.asObject();
+            long ID = uaa_o.getLong("ID", -1);
+            Unit u = gs.getUnit(ID);
+            int time = uaa_o.getInt("time", 0);;
+            UnitAction ua = UnitAction.fromJSON(uaa_o.get("action").asObject(), utt);
+            UnitActionAssignment uaa = new UnitActionAssignment(u, ua, time);
+            gs.unitActions.put(u, uaa);
+        }
+        
+        return gs;
     }
 
 }

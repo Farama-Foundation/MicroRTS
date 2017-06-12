@@ -6,10 +6,10 @@
 
 package gui.frontend;
 
+import ai.BranchingFactorCalculatorBigInteger;
 import ai.core.AI;
 import ai.core.AIWithComputationBudget;
 import ai.core.ContinuingAI;
-import ai.core.InterruptibleAIWithComputationBudget;
 import ai.core.PseudoContinuingAI;
 import ai.BranchingFactorCalculatorDouble;
 import ai.BranchingFactorCalculatorLong;
@@ -20,6 +20,10 @@ import ai.abstraction.HeavyRush;
 import ai.abstraction.LightRush;
 import ai.abstraction.RangedRush;
 import ai.abstraction.WorkerRush;
+import ai.abstraction.partialobservability.POHeavyRush;
+import ai.abstraction.partialobservability.POLightRush;
+import ai.abstraction.partialobservability.PORangedRush;
+import ai.abstraction.partialobservability.POWorkerRush;
 import ai.abstraction.pathfinding.AStarPathFinding;
 import ai.abstraction.pathfinding.BFSPathFinding;
 import ai.abstraction.pathfinding.FloodFillPathFinding;
@@ -92,6 +96,8 @@ import rts.units.UnitTypeTable;
 import tests.MapGenerator;
 import util.Pair;
 import util.XMLWriter;
+import ai.core.InterruptibleAI;
+import ai.evaluation.SimpleOptEvaluationFunction;
 
 /**
  *
@@ -108,7 +114,8 @@ public class FEStatePane extends JPanel {
                                 new SimpleSqrtEvaluationFunction(),
                                 new SimpleSqrtEvaluationFunction2(),
                                 new SimpleSqrtEvaluationFunction3(),
-                                new EvaluationFunctionForwarding(new SimpleEvaluationFunction())};
+                                new EvaluationFunctionForwarding(new SimpleEvaluationFunction()),
+                                new SimpleOptEvaluationFunction()};
 
     public static Class AIs[] = {PassiveAI.class,
                    MouseController.class,
@@ -118,6 +125,10 @@ public class FEStatePane extends JPanel {
                    LightRush.class,
                    HeavyRush.class,
                    RangedRush.class,
+                   POWorkerRush.class,
+                   POLightRush.class,
+                   POHeavyRush.class,
+                   PORangedRush.class,
                    PortfolioAI.class,
                    PGSAI.class,
                    IDRTMinimax.class,
@@ -149,27 +160,38 @@ public class FEStatePane extends JPanel {
                                  new BFSPathFinding(),
                                  new GreedyPathFinding(),
                                  new FloodFillPathFinding()};
+    
+    public static UnitTypeTable unitTypeTables[] = {new UnitTypeTable(UnitTypeTable.VERSION_ORIGINAL, UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH),
+                                      new UnitTypeTable(UnitTypeTable.VERSION_ORIGINAL, UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_ALTERNATING),
+                                      new UnitTypeTable(UnitTypeTable.VERSION_ORIGINAL, UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_RANDOM),
+                                      new UnitTypeTable(UnitTypeTable.VERSION_ORIGINAL_FINETUNED, UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH),
+                                      new UnitTypeTable(UnitTypeTable.VERSION_ORIGINAL_FINETUNED, UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_ALTERNATING),
+                                      new UnitTypeTable(UnitTypeTable.VERSION_ORIGINAL_FINETUNED, UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_RANDOM),
+                                      new UnitTypeTable(UnitTypeTable.VERSION_NON_DETERMINISTIC, UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH),
+                                      new UnitTypeTable(UnitTypeTable.VERSION_NON_DETERMINISTIC, UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_ALTERNATING),
+                                      new UnitTypeTable(UnitTypeTable.VERSION_NON_DETERMINISTIC, UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_RANDOM),   
+    };
+    public static String unitTypeTableNames[] = {"Original-Both",
+                                   "Original-Alternating",
+                                   "Original-Random",
+                                   "Finetuned-Both",
+                                   "Finetuned-Alternating",
+                                   "Finetuned-Random",
+                                   "Nondeterministic-Both",
+                                   "Nondeterministic-Alternating",
+                                   "Nondeterministic-Random"};
 
     JFormattedTextField mapWidthField = null;
     JFormattedTextField mapHeightField = null;
     JFormattedTextField maxCyclesField = null;
     JFormattedTextField defaultDelayField = null;
     JCheckBox fullObservabilityBox = null;
+    JComboBox unitTypeTableBox = null;
     JCheckBox saveTraceBox = null;
     JCheckBox slowDownBox = null;    
     
     JComboBox aiComboBox[] = {null,null};    
     JCheckBox continuingBox[] = {null,null};
-    /*
-    JComboBox pfComboBox[] = {null,null};    
-    JComboBox efComboBox[] = {null,null};    
-    JFormattedTextField cpuTimeField[] = {null,null};    
-    JFormattedTextField maxPlayoutsField[] = {null,null};    
-    JFormattedTextField playoutTimeField[] = {null,null};    
-    JFormattedTextField maxActionsField[] = {null,null};    
-    JFormattedTextField LSIsplitField[] = {null,null};    
-    JFormattedTextField fpuField[] = {null,null};    
-    */
     JPanel AIOptionsPanel[] = {null, null};
     HashMap AIOptionsPanelComponents[] = {new HashMap<String, JComponent>(), new HashMap<String, JComponent>()};
     
@@ -384,13 +406,17 @@ public class FEStatePane extends JPanel {
                             }
 
                             // Branching:
-                            textArea.append("Braching Factor (long, might overflow):\n");
-                            textArea.append("  - player 0: " + BranchingFactorCalculatorLong.branchingFactorByResourceUsageSeparatingFast(statePanel.getGameState(), 0) + "\n");
-                            textArea.append("  - player 1: " + BranchingFactorCalculatorLong.branchingFactorByResourceUsageSeparatingFast(statePanel.getGameState(), 1) + "\n");
-                            textArea.append("\n");
-                            textArea.append("Braching Factor (double):\n");
-                            textArea.append("  - player 0: " + BranchingFactorCalculatorDouble.branchingFactorByResourceUsageSeparatingFast(statePanel.getGameState(), 0) + "\n");
-                            textArea.append("  - player 1: " + BranchingFactorCalculatorDouble.branchingFactorByResourceUsageSeparatingFast(statePanel.getGameState(), 1) + "\n");
+//                            textArea.append("Braching Factor (long, might overflow):\n");
+//                            textArea.append("  - player 0: " + BranchingFactorCalculatorLong.branchingFactorByResourceUsageSeparatingFast(statePanel.getGameState(), 0) + "\n");
+//                            textArea.append("  - player 1: " + BranchingFactorCalculatorLong.branchingFactorByResourceUsageSeparatingFast(statePanel.getGameState(), 1) + "\n");
+//                            textArea.append("\n");
+//                            textArea.append("Braching Factor (double):\n");
+//                            textArea.append("  - player 0: " + BranchingFactorCalculatorDouble.branchingFactorByResourceUsageSeparatingFast(statePanel.getGameState(), 0) + "\n");
+//                            textArea.append("  - player 1: " + BranchingFactorCalculatorDouble.branchingFactorByResourceUsageSeparatingFast(statePanel.getGameState(), 1) + "\n");
+//                            textArea.append("\n");
+                            textArea.append("Braching Factor (BigInteger):\n");
+                            textArea.append("  - player 0: " + BranchingFactorCalculatorBigInteger.branchingFactorByResourceUsageSeparatingFast(statePanel.getGameState(), 0) + "\n");
+                            textArea.append("  - player 1: " + BranchingFactorCalculatorBigInteger.branchingFactorByResourceUsageSeparatingFast(statePanel.getGameState(), 1) + "\n");
                             textArea.append("\n");
 
                             // Branching:
@@ -448,7 +474,7 @@ public class FEStatePane extends JPanel {
             JPanel ptmp = new JPanel();
             ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
             maxCyclesField = addTextField(ptmp,"Max Cycles:", "3000", 5);
-            defaultDelayField = addTextField(ptmp,"Default Delay:", "50", 5);
+            defaultDelayField = addTextField(ptmp,"Default Delay:", "10", 5);
             p1.add(ptmp);
         }
         {
@@ -473,11 +499,37 @@ public class FEStatePane extends JPanel {
                 slowDownBox.setAlignmentX(Component.CENTER_ALIGNMENT);
                 slowDownBox.setAlignmentY(Component.TOP_ALIGNMENT);
                 slowDownBox.setMaximumSize(new Dimension(120,20));
+                slowDownBox.setSelected(true);
                 ptmp.add(slowDownBox);
             }
             p1.add(ptmp);
         }
-
+        {
+            JPanel ptmp = new JPanel();
+            ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
+            ptmp.add(new JLabel("UnitTypeTable"));
+            unitTypeTableBox = new JComboBox(unitTypeTableNames);
+            unitTypeTableBox.setAlignmentX(Component.CENTER_ALIGNMENT);
+            unitTypeTableBox.setAlignmentY(Component.CENTER_ALIGNMENT);
+            unitTypeTableBox.setMaximumSize(new Dimension(240,20));
+            unitTypeTableBox.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    int idx = unitTypeTableBox.getSelectedIndex();
+                    UnitTypeTable new_utt = unitTypeTables[idx];
+                    
+                    GameState gs = statePanel.getGameState().cloneChangingUTT(new_utt);
+                    if (gs!=null) {
+                        statePanel.setStateDirect(gs);
+                        currentUtt = new_utt;
+                        mouseListener.utt = new_utt;
+                    } else {
+                        System.err.println("Could not change unit type table!");
+                    }
+                }
+            });
+            ptmp.add(unitTypeTableBox);
+            p1.add(ptmp);
+        }
         {
             JPanel ptmp = new JPanel();
             ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
@@ -510,8 +562,13 @@ public class FEStatePane extends JPanel {
 
                                     JFrame w = null;
 
-                                    if (ai1 instanceof MouseController ||
-                                        ai2 instanceof MouseController) {
+                                    boolean isMouseController = false;
+                                    if (ai1 instanceof MouseController) isMouseController = true;
+                                    if (ai2 instanceof MouseController) isMouseController = true;
+                                    if ((ai1 instanceof PseudoContinuingAI) && (((PseudoContinuingAI)ai1).getbaseAI() instanceof MouseController)) isMouseController = true;
+                                    if ((ai2 instanceof PseudoContinuingAI) && (((PseudoContinuingAI)ai2).getbaseAI() instanceof MouseController)) isMouseController = true;
+                                    
+                                    if (isMouseController) {
                                         PhysicalGameStatePanel pgsp = new PhysicalGameStatePanel(statePanel);
                                         pgsp.setStateDirect(gs);
                                         w = new PhysicalGameStateMouseJFrame("Game State Visualizer (Mouse)",640,640,pgsp);
@@ -521,9 +578,15 @@ public class FEStatePane extends JPanel {
                                         if (ai1 instanceof MouseController) {
                                             ((MouseController)ai1).setFrame((PhysicalGameStateMouseJFrame)w);
                                             mousep1 = true;
+                                        } else if ((ai1 instanceof PseudoContinuingAI) && (((PseudoContinuingAI)ai1).getbaseAI() instanceof MouseController)) {
+                                            ((MouseController)((PseudoContinuingAI)ai1).getbaseAI()).setFrame((PhysicalGameStateMouseJFrame)w);
+                                            mousep1 = true;
                                         }
                                         if (ai2 instanceof MouseController) {
                                             ((MouseController)ai2).setFrame((PhysicalGameStateMouseJFrame)w);
+                                            mousep2 = true;
+                                        } else if ((ai2 instanceof PseudoContinuingAI) && (((PseudoContinuingAI)ai2).getbaseAI() instanceof MouseController)) {
+                                            ((MouseController)((PseudoContinuingAI)ai2).getbaseAI()).setFrame((PhysicalGameStateMouseJFrame)w);
                                             mousep2 = true;
                                         }
                                         if (mousep1 && !mousep2) pgsp.setDrawFromPerspectiveOfPlayer(0);
@@ -542,6 +605,10 @@ public class FEStatePane extends JPanel {
                                     long nextTimeToUpdate = System.currentTimeMillis() + PERIOD;
                                     do{
                                         if (System.currentTimeMillis()>=nextTimeToUpdate) {
+                                            
+//                                            System.out.println("----------------------------------------");
+//                                            System.out.println(gs);
+                                            
                                             PlayerAction pa1 = null;
                                             PlayerAction pa2 = null;
                                             if (fullObservabilityBox.isSelected()) {
@@ -551,17 +618,23 @@ public class FEStatePane extends JPanel {
                                                 pa1 = ai1.getAction(0, new PartiallyObservableGameState(gs,0));
                                                 pa2 = ai2.getAction(1, new PartiallyObservableGameState(gs,1));
                                             }
-                                            gs.issueSafe(pa1);
-                                            gs.issueSafe(pa2);
                                             if (trace!=null && (!pa1.isEmpty() || !pa2.isEmpty())) {
+//                                                System.out.println("- (for trace) ---------------------------------------");
+//                                                System.out.println(gs);
                                                 TraceEntry te = new TraceEntry(gs.getPhysicalGameState().clone(),gs.getTime());
                                                 te.addPlayerAction(pa1);
                                                 te.addPlayerAction(pa2);
                                                 trace.addEntry(te);
                                             }
+                                            synchronized(gs) {
+                                                gs.issueSafe(pa1);
+                                                gs.issueSafe(pa2);
+                                            }
 
                                             // simulate:
-                                            gameover = gs.cycle();
+                                            synchronized(gs) {
+                                                gameover = gs.cycle();
+                                            }
                                             w.repaint();
                                             nextTimeToUpdate+=PERIOD;
                                         } else {
@@ -575,6 +648,8 @@ public class FEStatePane extends JPanel {
                                         trace.addEntry(te);
                                    
                                         String traceFileName = FEStatePane.nextTraceName();
+                                        
+//                                        System.out.println("Trace saved as " + traceFileName);
 
                                         XMLWriter xml = new XMLWriter(new FileWriter(traceFileName));
                                         trace.toxml(xml);
@@ -696,6 +771,7 @@ public class FEStatePane extends JPanel {
             String name = "trace" + idx + ".xml";
             File f = new File(name);
             if (!f.exists()) return name;
+            idx++;
         }while(true);
     }
     
@@ -765,8 +841,8 @@ public class FEStatePane extends JPanel {
             if (continuingBox[player].isSelected()) {
                 // If the user wants a "continuous" AI, check if we can wrap it around a continuing decorator:
                 if (ai instanceof AIWithComputationBudget) {
-                    if (ai instanceof InterruptibleAIWithComputationBudget) {
-                        ai = new ContinuingAI((InterruptibleAIWithComputationBudget)ai);
+                    if (ai instanceof InterruptibleAI) {
+                        ai = new ContinuingAI(ai);
                     } else {
                         ai = new PseudoContinuingAI((AIWithComputationBudget)ai);        				
                     }

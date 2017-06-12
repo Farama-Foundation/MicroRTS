@@ -4,6 +4,7 @@
  */
 package rts.units;
 
+import com.eclipsesource.json.JsonObject;
 import java.io.Serializable;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -30,6 +31,18 @@ public class Unit implements Serializable {
     int resources;
     int hitpoints = 0;
     
+    public Unit(long a_ID, int a_player, UnitType a_type, int a_x, int a_y, int a_resources) {
+        player = a_player;
+        type = a_type;
+        x = a_x;
+        y = a_y;
+        resources = a_resources;
+        hitpoints = a_type.hp;
+        ID = a_ID;
+        if (ID>=next_ID) next_ID = ID+1;
+    }
+    
+
     public Unit(int a_player, UnitType a_type, int a_x, int a_y, int a_resources) {
         player = a_player;
         type = a_type;
@@ -69,6 +82,13 @@ public class Unit implements Serializable {
     public UnitType getType() {
         return type;
     }
+    
+    // note: this should not be done lightly. It is currently thought to be used only when the GUI changes the
+    //       unit type table, and tries to create a clone of the current game state, but changing the UTT.
+    public void setType(UnitType a_type) {
+        type = a_type;
+    }
+            
     
     public long getID() {
         return ID;
@@ -135,8 +155,12 @@ public class Unit implements Serializable {
         return type.attackRange;
     }
     
-    public int getDamage() {
-        return type.damage;
+    public int getMinDamage() {
+        return type.minDamage;
+    }
+
+    public int getMaxDamage() {
+        return type.maxDamage;
     }
     
     public int getHarvestAmount() {
@@ -292,7 +316,7 @@ public class Unit implements Serializable {
     }
 
     
-    public Unit(Element e, UnitTypeTable utt) {
+    public static  Unit fromXML(Element e, UnitTypeTable utt) {
         String typeName = e.getAttributeValue("type");
         String IDStr = e.getAttributeValue("ID");
         String playerStr = e.getAttributeValue("player");
@@ -301,14 +325,29 @@ public class Unit implements Serializable {
         String resourcesStr = e.getAttributeValue("resources");
         String hitpointsStr = e.getAttributeValue("hitpoints");
         
-        type = utt.getUnitType(typeName);
-        ID = Integer.parseInt(IDStr);
+        long ID = Integer.parseInt(IDStr);
         if (ID>=next_ID) next_ID = ID+1;
-        player = Integer.parseInt(playerStr);
-        x = Integer.parseInt(xStr);
-        y = Integer.parseInt(yStr);
-        resources = Integer.parseInt(resourcesStr);
-        hitpoints = Integer.parseInt(hitpointsStr);
+        UnitType type = utt.getUnitType(typeName);
+        int player = Integer.parseInt(playerStr);
+        int x = Integer.parseInt(xStr);
+        int y = Integer.parseInt(yStr);
+        int resources = Integer.parseInt(resourcesStr);
+        int hitpoints = Integer.parseInt(hitpointsStr);
+        
+        Unit u = new Unit(ID, player, type, x, y, resources);
+        u.hitpoints = hitpoints;
+        return u;
     }    
-    
+
+    public static  Unit fromJSON(JsonObject o, UnitTypeTable utt) {
+ 
+        Unit u = new Unit(o.getLong("ID",-1), 
+                          o.getInt("player",-1), 
+                          utt.getUnitType(o.getString("type", null)), 
+                          o.getInt("x",0), 
+                          o.getInt("y",0), 
+                          o.getInt("resources",0));
+        u.hitpoints = o.getInt("hitpoints",1);
+        return u;
+    }     
 }

@@ -25,7 +25,7 @@ import rts.units.*;
 public class RangedRush extends AbstractionLayerAI {
 
     Random r = new Random();
-    UnitTypeTable utt;
+    protected UnitTypeTable utt;
     UnitType workerType;
     UnitType baseType;
     UnitType barracksType;
@@ -42,15 +42,19 @@ public class RangedRush extends AbstractionLayerAI {
 
     public RangedRush(UnitTypeTable a_utt, PathFinding a_pf) {
         super(a_pf);
+        reset(a_utt);
+    }
+
+    public void reset() {
+    	super.reset();
+    }
+    
+    public void reset(UnitTypeTable a_utt) {
         utt = a_utt;
         workerType = utt.getUnitType("Worker");
         baseType = utt.getUnitType("Base");
         barracksType = utt.getUnitType("Barracks");
         rangedType = utt.getUnitType("Ranged");
-    }
-
-    public void reset() {
-    	super.reset();
     }
 
     public AI clone() {
@@ -60,7 +64,6 @@ public class RangedRush extends AbstractionLayerAI {
     public PlayerAction getAction(int player, GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         Player p = gs.getPlayer(player);
-        PlayerAction pa = new PlayerAction();
 //        System.out.println("LightRushAI for player " + player + " (cycle " + gs.getTime() + ")");
 
         // behavior of bases:
@@ -86,7 +89,7 @@ public class RangedRush extends AbstractionLayerAI {
             if (u.getType().canAttack && !u.getType().canHarvest
                     && u.getPlayer() == player
                     && gs.getActionAssignment(u) == null) {
-                meleeUnitBehavior(u, p, pgs);
+                meleeUnitBehavior(u, p, gs);
             }
         }
 
@@ -123,7 +126,8 @@ public class RangedRush extends AbstractionLayerAI {
         }
     }
 
-    public void meleeUnitBehavior(Unit u, Player p, PhysicalGameState pgs) {
+    public void meleeUnitBehavior(Unit u, Player p, GameState gs) {
+        PhysicalGameState pgs = gs.getPhysicalGameState();
         Unit closestEnemy = null;
         int closestDistance = 0;
         for (Unit u2 : pgs.getUnits()) {

@@ -23,7 +23,7 @@ import util.XMLWriter;
 
  public class LMCTest {
     public static void main(String args[]) throws Exception {
-        String scenarioFileName = "maps/basesWorkers8x8.xml";
+        String scenarioFileName = "maps/8x8/basesWorkers8x8.xml";
 
         UnitTypeTable utt = new UnitTypeTable(); // original game (NOOP length = move length)
 
@@ -55,7 +55,7 @@ import util.XMLWriter;
 //        AI ai2 = new LightRush(utt, new AStarPathFinding());
 //        AI ai2 = new RangedRush(utt, new AStarPathFinding());
         // by setting "MAX_DEPTH = 1" in the next bot, this effectively makes it Monte Carlo search, instead of Monte Carlo Tree Search
-        AI ai2 = new NaiveMCTS(-1, SIMULATION_BUDGET, LOOKAHEAD_CYCLES, 1, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), evalFunction);
+        AI ai2 = new NaiveMCTS(-1, SIMULATION_BUDGET, LOOKAHEAD_CYCLES, 1, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), evalFunction, true);
 //        AI ai2 = new GenerateEvaluateMonteCarlo(SIMULATION_BUDGET, LOOKAHEAD_CYCLES,
 //                0.25, EstimateType.RANDOM_TAIL, EstimateReuseType.ALL,
 //                GenerateType.PER_AGENT, AgentOrderingType.ENTROPY,

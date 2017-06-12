@@ -24,7 +24,7 @@ import rts.units.*;
  */
 public class WorkerRush extends AbstractionLayerAI {
     Random r = new Random();
-    UnitTypeTable utt;
+    protected UnitTypeTable utt;
     UnitType workerType;
     UnitType baseType;
 
@@ -39,14 +39,22 @@ public class WorkerRush extends AbstractionLayerAI {
         
     public WorkerRush(UnitTypeTable a_utt, PathFinding a_pf) {
         super(a_pf);
-        utt = a_utt;
-        workerType = utt.getUnitType("Worker");
-        baseType = utt.getUnitType("Base");
+        reset(a_utt);
     }
     
     public void reset() {
     	super.reset();
     }
+    
+    public void reset(UnitTypeTable a_utt)  
+    {
+        utt = a_utt;
+        if (utt!=null) {
+            workerType = utt.getUnitType("Worker");
+            baseType = utt.getUnitType("Base");
+        }
+    }   
+    
     
     public AI clone() {
         return new WorkerRush(utt, pf);
@@ -72,7 +80,7 @@ public class WorkerRush extends AbstractionLayerAI {
             if (u.getType().canAttack && !u.getType().canHarvest && 
                 u.getPlayer() == player && 
                 gs.getActionAssignment(u)==null) {
-                meleeUnitBehavior(u,p,pgs);
+                meleeUnitBehavior(u,p,gs);
             }        
         }
 
@@ -84,7 +92,7 @@ public class WorkerRush extends AbstractionLayerAI {
                 workers.add(u);
             }        
         }
-        workersBehavior(workers,p,pgs);
+        workersBehavior(workers,p,gs);
         
                 
         return translateActions(player,gs);
@@ -95,7 +103,8 @@ public class WorkerRush extends AbstractionLayerAI {
         if (p.getResources()>=workerType.cost) train(u, workerType);
     }
     
-    public void meleeUnitBehavior(Unit u,Player p, PhysicalGameState pgs) {
+    public void meleeUnitBehavior(Unit u, Player p, GameState gs) {
+        PhysicalGameState pgs = gs.getPhysicalGameState();
         Unit closestEnemy = null;
         int closestDistance = 0;
         for(Unit u2:pgs.getUnits()) {
@@ -112,7 +121,8 @@ public class WorkerRush extends AbstractionLayerAI {
         }
     }
     
-    public void workersBehavior(List<Unit> workers,Player p, PhysicalGameState pgs) {
+    public void workersBehavior(List<Unit> workers,Player p, GameState gs) {
+        PhysicalGameState pgs = gs.getPhysicalGameState();
         int nbases = 0;
         int resourcesUsed = 0;
         Unit harvestWorker = null;
@@ -173,7 +183,7 @@ public class WorkerRush extends AbstractionLayerAI {
             }
         }
         
-        for(Unit u:freeWorkers) meleeUnitBehavior(u, p, pgs);
+        for(Unit u:freeWorkers) meleeUnitBehavior(u, p, gs);
         
     }
     

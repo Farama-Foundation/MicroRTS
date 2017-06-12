@@ -7,7 +7,7 @@ package ai.minimax.ABCD;
 import ai.abstraction.WorkerRush;
 import ai.abstraction.pathfinding.AStarPathFinding;
 import ai.core.AI;
-import ai.core.InterruptibleAIWithComputationBudget;
+import ai.core.AIWithComputationBudget;
 import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
@@ -19,12 +19,13 @@ import rts.PlayerAction;
 import rts.PlayerActionGenerator;
 import rts.units.UnitTypeTable;
 import util.Pair;
+import ai.core.InterruptibleAI;
 
 /**
  *
  * @author santi
  */
-public class IDABCD extends InterruptibleAIWithComputationBudget {
+public class IDABCD extends AIWithComputationBudget implements InterruptibleAI {
 
     public static int DEBUG = 0;
     
@@ -138,6 +139,18 @@ public class IDABCD extends InterruptibleAIWithComputationBudget {
     }
     
 
+    public final PlayerAction getAction(int player, GameState gs) throws Exception
+    {
+        if (gs.canExecuteAnyAction(player)) {
+            startNewComputation(player,gs.clone());
+            computeDuringOneGameFrame();
+            return getBestActionSoFar();
+        } else {
+            return new PlayerAction();        
+        }       
+    }
+
+    
     public void startNewComputation(int a_player, GameState gs) throws Exception
     {
         consecutive_frames_searching = 0;

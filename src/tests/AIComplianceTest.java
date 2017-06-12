@@ -93,7 +93,7 @@ public class AIComplianceTest {
                 }
             }
             
-            PhysicalGameState pgs = PhysicalGameState.load("maps/basesWorkers16x16.xml", utt);
+            PhysicalGameState pgs = PhysicalGameState.load("maps/16x16/basesWorkers16x16.xml", utt);
             GameState gs = new GameState(pgs, utt);
             PlayerAction pa = AI_instance.getAction(0, gs);
             if (pa==null) {

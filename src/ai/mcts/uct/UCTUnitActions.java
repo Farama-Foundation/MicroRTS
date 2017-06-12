@@ -6,7 +6,7 @@ package ai.mcts.uct;
 
 import ai.core.AI;
 import ai.RandomBiasedAI;
-import ai.core.InterruptibleAIWithComputationBudget;
+import ai.core.AIWithComputationBudget;
 import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
@@ -16,12 +16,14 @@ import java.util.Random;
 import rts.GameState;
 import rts.PlayerAction;
 import rts.units.UnitTypeTable;
+import ai.core.InterruptibleAI;
+import static ai.mcts.uct.UCT.DEBUG;
 
 /**
  *
  * @author santi
  */
-public class UCTUnitActions extends InterruptibleAIWithComputationBudget {
+public class UCTUnitActions extends AIWithComputationBudget implements InterruptibleAI {
     public static final int DEBUG = 0;
     EvaluationFunction ef = null;
        
@@ -78,6 +80,18 @@ public class UCTUnitActions extends InterruptibleAIWithComputationBudget {
     }  
     
     
+    public PlayerAction getAction(int player, GameState gs) throws Exception
+    {
+        if (gs.canExecuteAnyAction(player)) {
+            startNewComputation(player,gs.clone());
+            computeDuringOneGameFrame();
+            return getBestActionSoFar();
+        } else {
+            return new PlayerAction();        
+        }       
+    }
+    
+    
     public void startNewComputation(int a_player, GameState gs) {
     	playerForThisComputation = a_player;
         float evaluation_bound = ef.upperBound(gs);
@@ -128,6 +142,10 @@ public class UCTUnitActions extends InterruptibleAIWithComputationBudget {
     
     
     public PlayerAction getBestActionSoFar() {
+        if (tree.children==null) {
+            if (DEBUG>=1) System.out.println(this.getClass().getSimpleName() + " no children selected. Returning an empty asction");
+            return new PlayerAction();
+        }
         return getMostVisited(tree, gs_to_start_from.getTime());
     }
     

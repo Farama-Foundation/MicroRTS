@@ -25,7 +25,7 @@ import rts.units.*;
 public class LightRush extends AbstractionLayerAI {
 
     Random r = new Random();
-    UnitTypeTable utt;
+    protected UnitTypeTable utt;
     UnitType workerType;
     UnitType baseType;
     UnitType barracksType;
@@ -44,16 +44,22 @@ public class LightRush extends AbstractionLayerAI {
     
     public LightRush(UnitTypeTable a_utt, PathFinding a_pf) {
         super(a_pf);
-        utt = a_utt;
-        workerType = utt.getUnitType("Worker");
-        baseType = utt.getUnitType("Base");
-        barracksType = utt.getUnitType("Barracks");
-        lightType = utt.getUnitType("Light");
+        reset(a_utt);
     }
 
     public void reset() {
     	super.reset();
     }
+    
+    public void reset(UnitTypeTable a_utt)  
+    {
+        utt = a_utt;
+        workerType = utt.getUnitType("Worker");
+        baseType = utt.getUnitType("Base");
+        barracksType = utt.getUnitType("Barracks");
+        lightType = utt.getUnitType("Light");
+    }   
+    
 
     public AI clone() {
         return new LightRush(utt, pf);
@@ -71,7 +77,6 @@ public class LightRush extends AbstractionLayerAI {
     public PlayerAction getAction(int player, GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         Player p = gs.getPlayer(player);
-        PlayerAction pa = new PlayerAction();
 //        System.out.println("LightRushAI for player " + player + " (cycle " + gs.getTime() + ")");
 
         // behavior of bases:
@@ -97,7 +102,7 @@ public class LightRush extends AbstractionLayerAI {
             if (u.getType().canAttack && !u.getType().canHarvest
                     && u.getPlayer() == player
                     && gs.getActionAssignment(u) == null) {
-                meleeUnitBehavior(u, p, pgs);
+                meleeUnitBehavior(u, p, gs);
             }
         }
 
@@ -134,7 +139,8 @@ public class LightRush extends AbstractionLayerAI {
         }
     }
 
-    public void meleeUnitBehavior(Unit u, Player p, PhysicalGameState pgs) {
+    public void meleeUnitBehavior(Unit u, Player p, GameState gs) {
+        PhysicalGameState pgs = gs.getPhysicalGameState();
         Unit closestEnemy = null;
         int closestDistance = 0;
         for (Unit u2 : pgs.getUnits()) {
@@ -223,7 +229,7 @@ public class LightRush extends AbstractionLayerAI {
                 AbstractAction aa = getAbstractAction(u);
                 if (aa instanceof Harvest) {
                     Harvest h_aa = (Harvest)aa;
-                    if (h_aa.target != closestResource || h_aa.base!=closestBase) harvest(u, closestResource, closestBase);
+                    if (h_aa.getTarget() != closestResource || h_aa.getBase()!=closestBase) harvest(u, closestResource, closestBase);
                 } else {
                     harvest(u, closestResource, closestBase);
                 }

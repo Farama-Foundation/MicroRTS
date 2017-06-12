@@ -6,7 +6,7 @@ package ai.mcts.uct;
 
 import ai.core.AI;
 import ai.RandomBiasedAI;
-import ai.core.InterruptibleAIWithComputationBudget;
+import ai.core.AIWithComputationBudget;
 import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
@@ -16,12 +16,14 @@ import java.util.Random;
 import rts.GameState;
 import rts.PlayerAction;
 import rts.units.UnitTypeTable;
+import ai.core.InterruptibleAI;
+import static ai.mcts.uct.UCT.DEBUG;
 
 /**
  *
  * @author santi
  */
-public class UCTFirstPlayUrgency extends InterruptibleAIWithComputationBudget {
+public class UCTFirstPlayUrgency extends AIWithComputationBudget implements InterruptibleAI {
     public static int DEBUG = 0;
     EvaluationFunction ef = null;
        
@@ -85,6 +87,18 @@ public class UCTFirstPlayUrgency extends InterruptibleAIWithComputationBudget {
     }  
      
     
+    public PlayerAction getAction(int player, GameState gs) throws Exception
+    {
+        if (gs.canExecuteAnyAction(player)) {
+            startNewComputation(player,gs.clone());
+            computeDuringOneGameFrame();
+            return getBestActionSoFar();
+        } else {
+            return new PlayerAction();        
+        }       
+    }
+    
+    
     public void startNewComputation(int a_player, GameState gs) throws Exception {
     	playerForThisComputation = a_player;
         float evaluation_bound = ef.upperBound(gs);
@@ -147,9 +161,9 @@ public class UCTFirstPlayUrgency extends InterruptibleAIWithComputationBudget {
             total_runs_this_move++;
             return evaluation;
         } else {
-            // no actions to choose from :)
-            System.err.println(this.getClass().getSimpleName() + ": claims there are no more leafs to explore...");
-            return 0;
+            // no actions to choose from! (this can happen in partialy observable games, when we do not see any enemy unit)
+//            System.err.println(this.getClass().getSimpleName() + ": claims there are no more leafs to explore...");
+            return ef.evaluate(player, 1-player, gs_to_start_from);
         }
     }
     
@@ -157,6 +171,11 @@ public class UCTFirstPlayUrgency extends InterruptibleAIWithComputationBudget {
     public PlayerAction getBestActionSoFar() {
         total_actions_issued++;
                 
+        if (tree.children==null) {
+            if (DEBUG>=1) System.out.println(this.getClass().getSimpleName() + " no children selected. Returning an empty asction");
+            return new PlayerAction();
+        }
+        
         int mostVisitedIdx = -1;
         UCTNodeFirstPlayUrgency mostVisited = null;
         for(int i = 0;i<tree.children.size();i++) {

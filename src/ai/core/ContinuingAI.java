@@ -16,22 +16,32 @@ import rts.PlayerAction;
 public class ContinuingAI extends AI {
     public static int DEBUG = 0;
     
-    protected InterruptibleAIWithComputationBudget m_AI;
+    protected AI m_AI;
     protected boolean m_isThereAComputationGoingOn = false;
     protected GameState m_gameStateUsedForComputation = null;
     
-    public ContinuingAI(InterruptibleAIWithComputationBudget ai) {
+    public ContinuingAI(AI ai) throws Exception {
+        if (!(ai instanceof InterruptibleAI)) throw new Exception("ContinuingAI: ai does not implement InterruptibleAI!");
         m_AI = ai;
     }
     
     public PlayerAction getAction(int player, GameState gs) throws Exception
     {
         if (gs.canExecuteAnyAction(player)) {
+            // check to make sure game is deterministic:
+            if (m_gameStateUsedForComputation!=null &&
+                !m_gameStateUsedForComputation.equals(gs)) {
+                if (DEBUG>=1) System.out.println("The game state is different from the predicted one (this can happen in non-deterministic games), restarring search.");
+                m_isThereAComputationGoingOn = false;
+                m_gameStateUsedForComputation = null;
+            }
+            
             if (DEBUG>=1) System.out.println("ContinuingAI: this cycle we need an action");
-            if (!m_isThereAComputationGoingOn) m_AI.startNewComputation(player, gs.clone());
-            m_AI.computeDuringOneGameFrame();
+            if (!m_isThereAComputationGoingOn) ((InterruptibleAI)m_AI).startNewComputation(player, gs.clone());
+            ((InterruptibleAI)m_AI).computeDuringOneGameFrame();
             m_isThereAComputationGoingOn = false;
-            return m_AI.getBestActionSoFar();
+            m_gameStateUsedForComputation = null;
+            return ((InterruptibleAI)m_AI).getBestActionSoFar();
         } else {
             if (!m_isThereAComputationGoingOn) {
                 GameState gs2 = gs.clone();
@@ -44,14 +54,14 @@ public class ContinuingAI extends AI {
                     if (DEBUG>=1) System.out.println("ContinuingAI: this cycle we do not need an action, but we will be next to move");
                     m_isThereAComputationGoingOn = true;
                     m_gameStateUsedForComputation = gs2;
-                    m_AI.startNewComputation(player, m_gameStateUsedForComputation);
-                    m_AI.computeDuringOneGameFrame();
+                    ((InterruptibleAI)m_AI).startNewComputation(player, m_gameStateUsedForComputation);
+                    ((InterruptibleAI)m_AI).computeDuringOneGameFrame();
                 } else {
                     if (DEBUG>=1) System.out.println("ContinuingAI: this cycle we do not need an action, but we will not be next to move, so we can do nothing");
                 }
             } else {
                 if (DEBUG>=1) System.out.println("ContinuingAI: continuing a computation from a previous frame");
-                m_AI.computeDuringOneGameFrame();
+                ((InterruptibleAI)m_AI).computeDuringOneGameFrame();
             }
 
             return new PlayerAction();        
@@ -67,7 +77,12 @@ public class ContinuingAI extends AI {
     
     public AI clone()
     {
-        return new ContinuingAI((InterruptibleAIWithComputationBudget) m_AI.clone());
+        try {
+            return new ContinuingAI(m_AI.clone());
+        } catch(Exception e) {
+            // given the check iun the constructor, this will never happen
+            return null;
+        }
     }
 
     
