@@ -13,7 +13,10 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -59,7 +62,13 @@ public class FETracePane extends JPanel {
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
                         File file = fileChooser.getSelectedFile();
                         try {
-                            currentTrace = new Trace(new SAXBuilder().build(file.getAbsolutePath()).getRootElement());
+                            if (file.getAbsolutePath().endsWith(".zip")) {
+                                ZipInputStream zip = new ZipInputStream(new FileInputStream(file));
+                                zip.getNextEntry(); // note: this assumes the zip file contains a single trace!
+                                currentTrace = new Trace(new SAXBuilder().build(zip).getRootElement());
+                            } else {
+                                currentTrace = new Trace(new SAXBuilder().build(file.getAbsolutePath()).getRootElement());
+                            }
                             currentGameCycle = 0;
                             statePanel.setStateDirect(currentTrace.getGameStateAtCycle(currentGameCycle));
                             statePanel.repaint();
