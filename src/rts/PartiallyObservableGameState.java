@@ -13,7 +13,7 @@ import rts.units.Unit;
  * @author santi
  */
 public class PartiallyObservableGameState extends GameState {
-    int player;   // the observer player
+    protected int player;   // the observer player
 
     // creates a partially observable game state, from the point of view of 'player':
     public PartiallyObservableGameState(GameState gs, int a_player) {

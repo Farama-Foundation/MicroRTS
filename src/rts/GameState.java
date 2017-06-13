@@ -24,13 +24,12 @@ import util.XMLWriter;
  */
 public class GameState implements Serializable{
     static Random r = new Random();         // only used if the action conflict resolution strategy is set to random
-    int unitCancelationCounter = 0;  // only used if the action conflict resolution strategy is set to alternating
+    protected int unitCancelationCounter = 0;  // only used if the action conflict resolution strategy is set to alternating
     
-    int time = 0;
-    PhysicalGameState pgs = null;
-    HashMap<Unit,UnitActionAssignment> unitActions = new LinkedHashMap<Unit,UnitActionAssignment>();
-
-    UnitTypeTable utt = null;
+    protected int time = 0;
+    protected PhysicalGameState pgs = null;
+    protected HashMap<Unit,UnitActionAssignment> unitActions = new LinkedHashMap<Unit,UnitActionAssignment>();
+    protected UnitTypeTable utt = null;
 
     public GameState(PhysicalGameState a_pgs, UnitTypeTable a_utt) {
         pgs = a_pgs;
