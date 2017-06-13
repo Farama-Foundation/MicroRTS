@@ -44,7 +44,7 @@ public class HeavyRush extends AbstractionLayerAI {
     
     public HeavyRush(UnitTypeTable a_utt, PathFinding a_pf) {
         super(a_pf);
-        reset(utt);
+        reset(a_utt);
     }
 
     public void reset() {
