@@ -72,6 +72,9 @@ public class TraceEntry {
             long ID = Long.parseLong(action_e.getAttributeValue("unitID"));
             UnitAction a = new UnitAction(action_e.getChild("UnitAction"), utt);
             Unit u = pgs.getUnit(ID);
+            if(u==null){
+            	throw new IllegalArgumentException("Trying to load an action for an unknown Unit ID: "+ID);
+            }
             actions.add(new Pair<Unit,UnitAction>(u,a));
         }
     }        
