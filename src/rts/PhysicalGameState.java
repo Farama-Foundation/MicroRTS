@@ -107,7 +107,7 @@ public class PhysicalGameState implements Serializable {
     
     public void addUnit(Unit u) {
     	for(Unit u2:units){
-    		if(u.getX()==u2.getX() && u.getY()==u2.getY() ){
+    		if((u.getX()==u2.getX() && u.getY()==u2.getY())|| getTerrain(u.getX(), u.getY())==TERRAIN_WALL ){
     			throw new IllegalArgumentException("PhysicalGameState.addUnit: added two units in position: ("
     					+u.getX()+", "+u.getY()+")");
     		}
