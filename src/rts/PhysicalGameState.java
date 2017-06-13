@@ -30,6 +30,7 @@ import rts.units.UnitTypeTable;
 public class PhysicalGameState implements Serializable {
     public static final int TERRAIN_NONE = 0;
     public static final int TERRAIN_WALL = 1;
+    long maxID = -1;
     
     int width = 8;
     int height = 8;
@@ -90,6 +91,15 @@ public class PhysicalGameState implements Serializable {
         terrain = t;
     }
     
+    private void updateMaxID(long newID){
+    	if(newID>maxID){
+    		maxID=newID;
+    	}
+    }
+    private long getNextID(){
+    	return ++maxID;
+    }
+    	    
     public void addPlayer(Player p) {
         if (p.getID()!=players.size()) throw new IllegalArgumentException("PhysicalGameState.addPlayer: player added in the wrong order.");
         players.add(p);
@@ -102,7 +112,11 @@ public class PhysicalGameState implements Serializable {
     					+u.getX()+", "+u.getY()+")");
     		}
     	}
-        units.add(u);
+    	units.add(u);
+    	if(u.getID()==-1)
+    		u.setID(getNextID());
+    	else
+    		updateMaxID(u.getID());
     }
     
     public void removeUnit(Unit u) {
@@ -199,6 +213,7 @@ public class PhysicalGameState implements Serializable {
         for(Unit u:units) {
             pgs.units.add(u.clone());
         }
+        pgs.maxID=maxID;
         return pgs;
     }
 
@@ -211,6 +226,7 @@ public class PhysicalGameState implements Serializable {
         for(Unit u:units) {
             pgs.units.add(u);
         }
+        pgs.maxID=maxID;
         return pgs;
     }
 
@@ -225,6 +241,7 @@ public class PhysicalGameState implements Serializable {
         for(Unit u:units) {
             pgs.units.add(u.clone());
         }
+        pgs.maxID=maxID;
         return pgs;
     }
     
