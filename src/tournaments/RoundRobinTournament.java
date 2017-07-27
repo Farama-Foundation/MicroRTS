@@ -7,6 +7,8 @@ package tournaments;
 
 import ai.core.AI;
 import ai.core.AIWithComputationBudget;
+import ai.core.ContinuingAI;
+import ai.core.InterruptibleAI;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
@@ -30,6 +32,7 @@ import util.XMLWriter;
 public class RoundRobinTournament {
 
     public static int TIMEOUT_CHECK_TOLERANCE = 20;
+    public static boolean USE_CONTINUING_ON_INTERRUPTIBLE = true;
 
     public static void runTournament(List<AI> AIs,
             List<String> maps,
@@ -93,6 +96,11 @@ public class RoundRobinTournament {
                         if (ai2 instanceof AIWithComputationBudget) {
                             ((AIWithComputationBudget) ai2).setTimeBudget(timeBudget);
                             ((AIWithComputationBudget) ai2).setIterationsBudget(iterationsBudget);
+                        }
+                        
+                        if (USE_CONTINUING_ON_INTERRUPTIBLE) {
+                            if (ai1 instanceof InterruptibleAI) ai1 = new ContinuingAI(ai1);
+                            if (ai2 instanceof InterruptibleAI) ai2 = new ContinuingAI(ai2);
                         }
 
                         ai1.reset();
