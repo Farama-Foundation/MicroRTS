@@ -23,7 +23,9 @@ import util.XMLWriter;
 public class Unit implements Serializable {
     UnitType type;
     
-    long ID=-1;
+    public static long next_ID = 0;
+    
+    long ID;
     int player;
     int x,y;
     int resources;
@@ -37,6 +39,7 @@ public class Unit implements Serializable {
         resources = a_resources;
         hitpoints = a_type.hp;
         ID = a_ID;
+        if (ID>=next_ID) next_ID = ID+1;
     }
     
 
@@ -47,6 +50,7 @@ public class Unit implements Serializable {
         y = a_y;
         resources = a_resources;
         hitpoints = a_type.hp;
+        ID = next_ID++;
     }
 
     public Unit(int a_player, UnitType a_type, int a_x, int a_y) {
@@ -56,6 +60,7 @@ public class Unit implements Serializable {
         y = a_y;
         resources = 0;
         hitpoints = a_type.hp;
+        ID = next_ID++;
     }
     
     
@@ -321,6 +326,7 @@ public class Unit implements Serializable {
         String hitpointsStr = e.getAttributeValue("hitpoints");
         
         long ID = Integer.parseInt(IDStr);
+        if (ID>=next_ID) next_ID = ID+1;
         UnitType type = utt.getUnitType(typeName);
         int player = Integer.parseInt(playerStr);
         int x = Integer.parseInt(xStr);
