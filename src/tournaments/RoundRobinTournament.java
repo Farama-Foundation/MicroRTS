@@ -275,6 +275,8 @@ public class RoundRobinTournament {
                             ties[ai1_idx][ai2_idx]++;
                         } else if (winner == 0) {
                             wins[ai1_idx][ai2_idx]++;
+                        } else if (winner == 1) {
+                            wins[ai2_idx][ai1_idx]++;
                         }
                         accumTime[ai1_idx][ai2_idx] += gs.getTime();
                     }
