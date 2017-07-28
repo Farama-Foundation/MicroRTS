@@ -179,22 +179,15 @@ public class UnitAction implements Serializable {
             case TYPE_NONE:
                 break;
             case TYPE_MOVE:
-            	int targetx = u.getX();
-            	int targety = u.getY();
-            	switch(parameter) {
-            		case DIRECTION_UP:      targety--; break;
-            		case DIRECTION_RIGHT:   targetx++; break;
-            		case DIRECTION_DOWN:    targety++; break;
-            		case DIRECTION_LEFT:    targetx--; break;
-            	}
-            	if(pgs.getUnitAt(targetx, targety)!=null || pgs.getTerrain(targetx, targety)!=PhysicalGameState.TERRAIN_NONE){
-            		throw new IllegalArgumentException("Trying to move to occupied position: ("+targetx+", "+targety+")");
-            	}
-            	u.setX(targetx);
-            	u.setY(targety);
-            	break;
+                switch(parameter) {
+                    case DIRECTION_UP:      u.setY(u.getY()-1); break;
+                    case DIRECTION_RIGHT:   u.setX(u.getX()+1); break;
+                    case DIRECTION_DOWN:    u.setY(u.getY()+1); break;
+                    case DIRECTION_LEFT:    u.setX(u.getX()-1); break;
+                }
+                break;
             case TYPE_ATTACK_LOCATION:
-            {
+                {
                     Unit u2 = pgs.getUnitAt(x, y);
                     if (u2!=null) {
                         int damage;
@@ -249,8 +242,8 @@ public class UnitAction implements Serializable {
             case TYPE_PRODUCE:
                 {
                     Unit newUnit = null;
-                    targetx = u.getX();
-                    targety = u.getY();
+                    int targetx = u.getX();
+                    int targety = u.getY();
                     switch(parameter) {
                         case DIRECTION_UP:      targety--; break;
                         case DIRECTION_RIGHT:   targetx++; break;
