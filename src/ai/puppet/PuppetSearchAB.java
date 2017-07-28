@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Stack;
 
 import ai.core.AI;
+import ai.core.InterruptibleAI;
 import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
@@ -182,7 +183,7 @@ public class PuppetSearchAB extends PuppetBase {
 	//todo:this clone method is broken
 	@Override
 	public AI clone() {
-		PuppetSearchAB ps = new PuppetSearchAB(MAX_TIME, MAX_ITERATIONS,PLAN_TIME,PLAN_PLAYOUTS,STEP_PLAYOUT_TIME, script.clone(), eval);
+		PuppetSearchAB ps = new PuppetSearchAB(TIME_BUDGET, ITERATIONS_BUDGET,PLAN_TIME,PLAN_PLAYOUTS,STEP_PLAYOUT_TIME, script.clone(), eval);
 		ps.currentPlan = currentPlan;
 		ps.lastSearchFrame = lastSearchFrame;
 		ps.lastSearchTime = lastSearchTime;
@@ -197,10 +198,10 @@ public class PuppetSearchAB extends PuppetBase {
 				System.out.println("Restarting after "+(gs.getTime()-lastSearchFrame)+" frames, "
 						+(System.currentTimeMillis()-lastSearchTime)+" ms");
 			}
-			restartSearch(gs, player);
+			startNewComputation(player, gs);
 
 		}
-		if (DEBUG>=2) System.out.println("Starting ABCD at frame "+gs.getTime()+", player " + player + " with " + MAX_TIME +" ms");
+		if (DEBUG>=2) System.out.println("Starting ABCD at frame "+gs.getTime()+", player " + player + " with " + TIME_BUDGET +" ms");
 		if(!stack.empty()){
 			computeDuringOneGameFrame();
 		}
@@ -230,7 +231,7 @@ public class PuppetSearchAB extends PuppetBase {
 	long allDepth;
 	long allSearches;
 	@Override
-	void restartSearch(GameState gs, int player){
+	public void startNewComputation(int player, GameState gs ){
 		MAXPLAYER=player;
 		lastSearchFrame=gs.getTime();
 		lastSearchTime=System.currentTimeMillis();
@@ -253,6 +254,7 @@ public class PuppetSearchAB extends PuppetBase {
 		DEPTH=0;
 	}
 	@Override
+	public
 	PlayerAction getBestActionSoFar() throws Exception {
 		assert(!PLAN):"This method can only be called when not using a standing plan";
 		if (DEBUG>=1) System.out.println("ABCD:\n" + currentPlan + " in " 
@@ -262,6 +264,7 @@ public class PuppetSearchAB extends PuppetBase {
 		return script.getAction(MAXPLAYER, head.gs.gs); 
 	}
 	@Override
+	public
 	void computeDuringOneGameFrame() throws Exception{
 		frameStartTime=System.currentTimeMillis();
 		long prev=frameStartTime;
@@ -440,7 +443,7 @@ public class PuppetSearchAB extends PuppetBase {
         @Override
 	public String toString(){
             return getClass().getSimpleName() + "("+
-                   MAX_TIME + ", " + MAX_ITERATIONS + ", " +
+                   TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", " +
                    PLAN_TIME + ", " + PLAN_PLAYOUTS + ", " + 
                    STEP_PLAYOUT_TIME + ", " + 
                    script + ", " + eval + ")"; 
@@ -463,44 +466,7 @@ public class PuppetSearchAB extends PuppetBase {
     }     
 
     
-    public int getTimeBudget() {
-        return MAX_TIME;
-    }
-    
-    
-    public void setTimeBudget(int a_tb) {
-        MAX_TIME = a_tb;
-    }
-
-
-    public int getIterationsBudget() {
-        return MAX_ITERATIONS;
-    }
-    
-    
-    public void setIterationsBudget(int a_ib) {
-        MAX_ITERATIONS = a_ib;
-    }    
-
-
-    public int getPlanTimeBudget() {
-        return PLAN_TIME;
-    }
-    
-    
-    public void setPlanTimeBudget(int a_ib) {
-        PLAN_TIME = a_ib;
-    }    
-
-
-    public int getPlanIterationsBudget() {
-        return PLAN_PLAYOUTS;
-    }
-    
-    
-    public void setPlanIterationsBudget(int a_ib) {
-        PLAN_PLAYOUTS = a_ib;
-    }    
+   
 
 
     public int getStepPlayoutTime() {

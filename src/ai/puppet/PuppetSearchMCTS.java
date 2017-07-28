@@ -109,7 +109,7 @@ public class PuppetSearchMCTS extends PuppetBase {
 	//todo:this clone method is broken
 	@Override
 	public AI clone() {
-		PuppetSearchMCTS clone = new PuppetSearchMCTS(MAX_TIME,MAX_ITERATIONS,
+		PuppetSearchMCTS clone = new PuppetSearchMCTS(TIME_BUDGET,ITERATIONS_BUDGET,
 				PLAN_TIME, PLAN_PLAYOUTS, STEP_PLAYOUT_TIME, EVAL_PLAYOUT_TIME,
 				policy1.clone(),script.clone(), eval);
 		clone.currentPlan = currentPlan;
@@ -138,10 +138,10 @@ public class PuppetSearchMCTS extends PuppetBase {
 				System.out.println("Restarting after "+(gs.getTime()-lastSearchFrame)+" frames, "
 						+(System.currentTimeMillis()-lastSearchTime)+" ms ("+totalTime+" ms)");
 			}
-			restartSearch(gs, player);
+			startNewComputation(player, gs);
 			
 		}
-        if (DEBUG>=3) System.out.println("Starting MCTS at frame "+gs.getTime()+", player " + player + " with " + MAX_TIME +" ms");
+        if (DEBUG>=3) System.out.println("Starting MCTS at frame "+gs.getTime()+", player " + player + " with " + TIME_BUDGET +" ms");
 		
         //Expand the tree
         if(root!=null){
@@ -161,7 +161,8 @@ public class PuppetSearchMCTS extends PuppetBase {
         }
 	}
 	@Override
-	void restartSearch(GameState gs, int player){
+	public
+	void startNewComputation(int player, GameState gs){
 		setC(gs);
 		lastSearchFrame=gs.getTime();
 		lastSearchTime=System.currentTimeMillis();
@@ -173,6 +174,7 @@ public class PuppetSearchMCTS extends PuppetBase {
 		totalTime=0;
 	}
 	@Override
+	public
 	PlayerAction getBestActionSoFar() throws Exception{
 		assert(!PLAN):"This method can only be called when not using s standing plan";
 		if (DEBUG>=1) System.out.println("Done. Moves:\n"+root+ " in " 
@@ -185,6 +187,7 @@ public class PuppetSearchMCTS extends PuppetBase {
 		
 	}
 	@Override
+	public
 	void computeDuringOneGameFrame() throws Exception{
 		frameStartTime = System.currentTimeMillis();
 		long prev=frameStartTime;
@@ -234,7 +237,7 @@ public class PuppetSearchMCTS extends PuppetBase {
         @Override
 	public String toString(){
             return getClass().getSimpleName() + "("+
-                   MAX_TIME + ", " + MAX_ITERATIONS + ", " +
+                   TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", " +
                    PLAN_TIME + ", " + PLAN_PLAYOUTS + ", " + STEP_PLAYOUT_TIME + ", " + EVAL_PLAYOUT_TIME + ", " +
                    policy1 + ", " + script + ", " + eval + ")"; 
 	}
@@ -258,46 +261,9 @@ public class PuppetSearchMCTS extends PuppetBase {
         
         return parameters;
     }   
-    
-    
-    public int getTimeBudget() {
-        return MAX_TIME;
-    }
-    
-    
-    public void setTimeBudget(int a_tb) {
-        MAX_TIME = a_tb;
-    }
+   
 
 
-    public int getIterationsBudget() {
-        return MAX_ITERATIONS;
-    }
-    
-    
-    public void setIterationsBudget(int a_ib) {
-        MAX_ITERATIONS = a_ib;
-    }    
-
-
-    public int getPlanTimeBudget() {
-        return PLAN_TIME;
-    }
-    
-    
-    public void setPlanTimeBudget(int a_ib) {
-        PLAN_TIME = a_ib;
-    }    
-
-
-    public int getPlanIterationsBudget() {
-        return PLAN_PLAYOUTS;
-    }
-    
-    
-    public void setPlanIterationsBudget(int a_ib) {
-        PLAN_PLAYOUTS = a_ib;
-    }    
 
 
     public int getStepPlayoutTime() {

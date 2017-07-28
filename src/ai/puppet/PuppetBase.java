@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import ai.core.AI;
+import ai.core.AIWithComputationBudget;
+import ai.core.InterruptibleAI;
 import ai.evaluation.EvaluationFunction;
 import rts.GameState;
 import rts.PlayerAction;
@@ -59,11 +61,11 @@ class Move{
 }
 
 
-public abstract class PuppetBase extends AI {
+public abstract class PuppetBase extends AIWithComputationBudget {
 
 
-   int MAX_TIME = 100;//ms
-   int MAX_ITERATIONS = -1;
+  // int MAX_TIME = 100;//ms
+  // int MAX_ITERATIONS = -1;
    int PLAN_TIME;
    int PLAN_PLAYOUTS;
 	int STEP_PLAYOUT_TIME;
@@ -79,10 +81,8 @@ public abstract class PuppetBase extends AI {
 	PuppetBase(int max_time_per_frame, int max_playouts_per_frame, 
 			int max_plan_time, int max_plan_playouts,int step_playout_time,
 			ConfigurableScript<?> script, EvaluationFunction evaluation) {
-		super();
+		super(max_time_per_frame,max_playouts_per_frame);
 		assert(max_time_per_frame>=0||max_playouts_per_frame>=0);
-		MAX_TIME=max_time_per_frame;
-		MAX_ITERATIONS=max_playouts_per_frame;
 		PLAN_TIME=max_plan_time;
 		PLAN_PLAYOUTS=max_plan_playouts;
 		STEP_PLAYOUT_TIME=step_playout_time;
@@ -112,10 +112,10 @@ public abstract class PuppetBase extends AI {
 				|| (PLAN_TIME>=0 && totalTime>PLAN_TIME);
 	}
 	boolean frameBudgetExpired(){
-		return (MAX_ITERATIONS>=0 && frameLeaves>=MAX_ITERATIONS) 
-				|| (MAX_TIME>=0 && frameTime>MAX_TIME);
+		return (ITERATIONS_BUDGET>=0 && frameLeaves>=ITERATIONS_BUDGET) 
+				|| (TIME_BUDGET>=0 && frameTime>TIME_BUDGET);
 	}
-	abstract void restartSearch(GameState gs, int player);
+	abstract void startNewComputation(int player, GameState gs)  throws Exception;
 	abstract void computeDuringOneGameFrame() throws Exception;
 	abstract PlayerAction getBestActionSoFar() throws Exception;
 	
@@ -136,4 +136,22 @@ public abstract class PuppetBase extends AI {
 		}    
 	}
 
+    public int getPlanTimeBudget() {
+        return PLAN_TIME;
+    }
+    
+    
+    public void setPlanTimeBudget(int a_ib) {
+        PLAN_TIME = a_ib;
+    }    
+
+
+    public int getPlanIterationsBudget() {
+        return PLAN_PLAYOUTS;
+    }
+    
+    
+    public void setPlanIterationsBudget(int a_ib) {
+        PLAN_PLAYOUTS = a_ib;
+    }    
 }
