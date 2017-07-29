@@ -1,19 +1,31 @@
 package ai.puppet;
 
+import ai.abstraction.pathfinding.FloodFillPathFinding;
 import ai.core.AI;
 import ai.core.AIWithComputationBudget;
 import ai.core.ParameterSpecification;
+import ai.evaluation.SimpleSqrtEvaluationFunction3;
+
 import java.util.List;
 import rts.GameState;
 import rts.PlayerAction;
+import rts.units.UnitTypeTable;
 import ai.core.InterruptibleAI;
 
 public class PuppetNoPlan extends AIWithComputationBudget implements InterruptibleAI {
 
     PuppetBase puppet;
-
+    
+    //By default use ABCD
+    public PuppetNoPlan(UnitTypeTable utt) {
+    	this(new PuppetSearchAB(100, -1,
+             -1, -1,
+             100,
+             new BasicConfigurableScript(utt, new FloodFillPathFinding()),
+             new SimpleSqrtEvaluationFunction3()));
+    }
     public PuppetNoPlan(PuppetBase puppet) {
-        super(puppet.MAX_TIME, puppet.MAX_ITERATIONS);
+        super(puppet.getTimeBudget(), puppet.getIterationsBudget());
         this.puppet = puppet;
     }
 
@@ -28,8 +40,28 @@ public class PuppetNoPlan extends AIWithComputationBudget implements Interruptib
     }
 
     @Override
+	public void setTimeBudget(int a_tb) {
+		puppet.setTimeBudget(a_tb);
+	}
+
+	@Override
+	public int getTimeBudget() {
+		return puppet.getTimeBudget();
+	}
+	
+    @Override
+	public int getIterationsBudget() {
+		return puppet.getIterationsBudget();
+	}
+
+	@Override
+	public void setIterationsBudget(int a_ib) {
+		puppet.setIterationsBudget(a_ib);
+	}
+	
+	@Override
     public void startNewComputation(int player, GameState gs) throws Exception {
-        puppet.restartSearch(gs, player);
+        puppet.startNewComputation(player, gs);
     }
 
     @Override
@@ -50,7 +82,7 @@ public class PuppetNoPlan extends AIWithComputationBudget implements Interruptib
 
     @Override
     public AI clone() {
-        PuppetNoPlan clone = new PuppetNoPlan(puppet);
+        PuppetNoPlan clone = new PuppetNoPlan((PuppetBase)puppet.clone());
         return clone;
     }
 

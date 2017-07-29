@@ -278,9 +278,9 @@ public class PhysicalGameState implements Serializable {
     
     public void toxml(XMLWriter w) {
        w.tagWithAttributes(this.getClass().getName(), "width=\"" + width + "\" height=\"" + height + "\"");
-       String tmp = "";
-       for(int i = 0;i<height*width;i++) tmp += terrain[i];
-       w.tag("terrain",tmp);
+       StringBuilder tmp = new StringBuilder(height*width);
+       for(int i = 0;i<height*width;i++) tmp.append(terrain[i]);
+       w.tag("terrain",tmp.toString());
        w.tag("players");
        for(Player p:players) p.toxml(w);
        w.tag("/players");
