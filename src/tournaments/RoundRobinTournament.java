@@ -9,6 +9,8 @@ import ai.core.AI;
 import ai.core.AIWithComputationBudget;
 import ai.core.ContinuingAI;
 import ai.core.InterruptibleAI;
+import gui.PhysicalGameStateJFrame;
+import gui.PhysicalGameStatePanel;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
@@ -31,6 +33,7 @@ import util.XMLWriter;
  */
 public class RoundRobinTournament {
 
+    public static boolean visualize = false;
     public static int TIMEOUT_CHECK_TOLERANCE = 20;
     public static boolean USE_CONTINUING_ON_INTERRUPTIBLE = true;
 
@@ -107,6 +110,8 @@ public class RoundRobinTournament {
                         ai2.reset();
                         
                         GameState gs = new GameState(pgs.clone(), utt);
+                        PhysicalGameStateJFrame w = null;
+                        if (visualize) w = PhysicalGameStatePanel.newVisualizer(gs, 600, 600, !fullObservability);
 
                         if (progress != null) {
                             progress.write("MATCH UP: " + ai1 + " vs " + ai2);
@@ -117,14 +122,14 @@ public class RoundRobinTournament {
                             ai1.preGameAnalysis(gs, preAnalysisBudget);
                             long pre_end1 = System.currentTimeMillis();
                             if (progress != null) {
-                                progress.write("preGameAnalysis player 1 took " + (pre_end1 - pre_start1));
+                                progress.write("preGameAnalysis player 1 took " + (pre_end1 - pre_start1) + "\n");
                                 if (preAnalysisBudget>0 && (pre_end1 - pre_start1)>preAnalysisBudget) progress.write("TIMEOUT PLAYER 1!");
                             }
                             long pre_start2 = System.currentTimeMillis();
                             ai2.preGameAnalysis(gs, preAnalysisBudget);
                             long pre_end2 = System.currentTimeMillis();
                             if (progress != null) {
-                                progress.write("preGameAnalysis player 2 took " + (pre_end2 - pre_start2));
+                                progress.write("preGameAnalysis player 2 took " + (pre_end2 - pre_start2) + "\n");
                                 if (preAnalysisBudget>0 && (pre_end2 - pre_start2)>preAnalysisBudget) progress.write("TIMEOUT PLAYER 2!");
                             }
                         }                        
@@ -214,8 +219,21 @@ public class RoundRobinTournament {
                             gs.issueSafe(pa1);
                             gs.issueSafe(pa2);
                             gameover = gs.cycle();
+                            
+                            if (w!=null) {
+                                w.setStateCloning(gs);
+                                w.repaint();
+                                try {
+                                    Thread.sleep(1);    // give time to the window to repaint
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            
                         } while (!gameover
                                 && (gs.getTime() < maxGameLength));
+                        
+                        if (w!=null) w.dispose();
                         
                         if (traceOutputfolder != null) {
                             File folder = new File(traceOutputfolder);
