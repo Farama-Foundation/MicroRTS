@@ -114,7 +114,7 @@ public class RoundRobinTournament {
                         if (visualize) w = PhysicalGameStatePanel.newVisualizer(gs, 600, 600, !fullObservability);
 
                         if (progress != null) {
-                            progress.write("MATCH UP: " + ai1 + " vs " + ai2);
+                            progress.write("MATCH UP: " + ai1 + " vs " + ai2 + "\n");
                         }
                         
                         if (preAnalysis) {
