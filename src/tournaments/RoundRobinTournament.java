@@ -280,7 +280,7 @@ public class RoundRobinTournament {
                                 + gs.getTime() + "\t" + winner + "\t" + crashed + "\t" + timedout + "\n");
                         out.flush();
                         if (progress != null) {
-                            progress.write("Winner: " + winner + "  in " + gs.getTime() + " cycles");
+                            progress.write("Winner: " + winner + "  in " + gs.getTime() + " cycles\n");
                         }
                         if (progress != null) {
                             progress.write(ai1 + " : " + ai1.statisticsString() + "\n");
