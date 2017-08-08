@@ -89,6 +89,20 @@ public class RoundRobinTournament {
                         if (!selfMatches && ai1_idx == ai2_idx) {
                             continue;
                         }
+                        // variables to keep track of time ussage amongst the AIs:
+                        int numTimes1 = 0;
+                        int numTimes2 = 0;
+                        double averageTime1 = 0;
+                        double averageTime2 = 0;
+                        int numberOfTimeOverBudget1 = 0;
+                        int numberOfTimeOverBudget2 = 0;
+                        double averageTimeOverBudget1 = 0;
+                        double averageTimeOverBudget2 = 0;
+                        int numberOfTimeOverTwiceBudget1 = 0;
+                        int numberOfTimeOverTwiceBudget2 = 0;
+                        double averageTimeOverTwiceBudget1 = 0;
+                        double averageTimeOverTwiceBudget2 = 0;
+                        
                         AI ai1 = AIs.get(ai1_idx).clone();
                         AI ai2 = AIs.get(ai2_idx).clone();
 
@@ -197,16 +211,39 @@ public class RoundRobinTournament {
                                     break;
                                 }
                             }
-                            if (timeoutCheck) {
+                                                        
+                            {
                                 long AI1time = AI1end - AI1start;
                                 long AI2time = AI2end - AI2start;
-                                if (AI1time > timeBudget + TIMEOUT_CHECK_TOLERANCE) {
-                                    timedout = 0;
-                                    break;
+                                numTimes1++;
+                                numTimes2++;
+                                averageTime1+=AI1time;
+                                averageTime2+=AI2time;
+                                if (AI1time > timeBudget) {
+                                    numberOfTimeOverBudget1++;
+                                    averageTimeOverBudget1 += AI1time;
+                                    if (AI1time > timeBudget*2) {
+                                        numberOfTimeOverTwiceBudget1++;
+                                        averageTimeOverTwiceBudget1 += AI1time;
+                                    }
                                 }
-                                if (AI2time > timeBudget + TIMEOUT_CHECK_TOLERANCE) {
-                                    timedout = 1;
-                                    break;
+                                if (AI2time > timeBudget) {
+                                    numberOfTimeOverBudget2++;
+                                    averageTimeOverBudget2 += AI2time;
+                                    if (AI2time > timeBudget*2) {
+                                        numberOfTimeOverTwiceBudget2++;
+                                        averageTimeOverTwiceBudget2 += AI2time;                                        
+                                    }
+                                }
+                                if (timeoutCheck) {
+                                    if (AI1time > timeBudget + TIMEOUT_CHECK_TOLERANCE) {
+                                        timedout = 0;
+                                        break;
+                                    }
+                                    if (AI2time > timeBudget + TIMEOUT_CHECK_TOLERANCE) {
+                                        timedout = 1;
+                                        break;
+                                    }
                                 }
                             }
                             if (traceOutputfolder != null && (!pa1.isEmpty() || !pa2.isEmpty())) {
@@ -281,12 +318,14 @@ public class RoundRobinTournament {
                         out.flush();
                         if (progress != null) {
                             progress.write("Winner: " + winner + "  in " + gs.getTime() + " cycles\n");
-                        }
-                        if (progress != null) {
                             progress.write(ai1 + " : " + ai1.statisticsString() + "\n");
-                        }
-                        if (progress != null) {
                             progress.write(ai2 + " : " + ai2.statisticsString() + "\n");
+                            progress.write("AI1 time usage, average:  " + (averageTime1/numTimes1) + 
+                                           ", # times over budget: " + numberOfTimeOverBudget1 + " (avg " + (averageTimeOverBudget1/numberOfTimeOverBudget1) + 
+                                           ") , # times over 2*budget: " + numberOfTimeOverTwiceBudget1 + " (avg " + (averageTimeOverTwiceBudget1/numberOfTimeOverTwiceBudget1) + ")\n");
+                            progress.write("AI2 time usage, average:  " + (averageTime2/numTimes2) + 
+                                           ", # times over budget: " + numberOfTimeOverBudget2 + " (avg " + (averageTimeOverBudget2/numberOfTimeOverBudget2) + 
+                                           ") , # times over 2*budget: " + numberOfTimeOverTwiceBudget2 + " (avg " + (averageTimeOverTwiceBudget2/numberOfTimeOverTwiceBudget2) + ")\n");
                         }
                         progress.flush();
                         if (winner == -1) {
