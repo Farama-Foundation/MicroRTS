@@ -63,15 +63,15 @@ public class FixedOpponentsTournament {
         out.write("FixedOpponentsTournament\n");
         out.write("AIs\n");
         for(int i = 0;i<AIs.size();i++) {
-            out.write("\t" + AIs.get(i).toString());
+            out.write("\t" + AIs.get(i).toString() + "\n");
         }
         out.write("opponent AIs\n");
         for(int i = 0;i<opponentAIs.size();i++) {
-            out.write("\t" + opponentAIs.get(i).toString());
+            out.write("\t" + opponentAIs.get(i).toString() + "\n");
         }
         out.write("maps\n");
         for(int i = 0;i<maps.size();i++) {
-            out.write("\t" + maps.get(i));
+            out.write("\t" + maps.get(i) + "\n");
         }
         out.write("iterations\t"+iterations+"\n");
         out.write("maxGameLength\t"+maxGameLength+"\n");
@@ -86,7 +86,21 @@ public class FixedOpponentsTournament {
             for(int map_idx = 0;map_idx<maps.size();map_idx++) {
                 PhysicalGameState pgs = PhysicalGameState.load(maps.get(map_idx),utt);
                 for(int ai1_idx = 0;ai1_idx<AIs.size();ai1_idx++) {
-                    for(int ai2_idx = 0;ai2_idx<AIs.size();ai2_idx++) {
+                    for(int ai2_idx = 0;ai2_idx<opponentAIs.size();ai2_idx++) {
+                        // variables to keep track of time ussage amongst the AIs:
+                        int numTimes1 = 0;
+                        int numTimes2 = 0;
+                        double averageTime1 = 0;
+                        double averageTime2 = 0;
+                        int numberOfTimeOverBudget1 = 0;
+                        int numberOfTimeOverBudget2 = 0;
+                        double averageTimeOverBudget1 = 0;
+                        double averageTimeOverBudget2 = 0;
+                        int numberOfTimeOverTwiceBudget1 = 0;
+                        int numberOfTimeOverTwiceBudget2 = 0;
+                        double averageTimeOverTwiceBudget1 = 0;
+                        double averageTimeOverTwiceBudget2 = 0;                        
+                        
                         AI ai1 = AIs.get(ai1_idx).clone();
                         AI ai2 = opponentAIs.get(ai2_idx).clone();
                         
@@ -109,22 +123,22 @@ public class FixedOpponentsTournament {
 
                         GameState gs = new GameState(pgs.clone(),utt);
 
-                        if (progress!=null) progress.write("MATCH UP: " + ai1+ " vs " + ai2);
+                        if (progress!=null) progress.write("MATCH UP: " + ai1+ " vs " + ai2 + "\n");
                         
                         if (preAnalysis) {
                             long pre_start1 = System.currentTimeMillis();
                             ai1.preGameAnalysis(gs, preAnalysisBudget);
                             long pre_end1 = System.currentTimeMillis();
                             if (progress != null) {
-                                progress.write("preGameAnalysis player 1 took " + (pre_end1 - pre_start1));
-                                if (preAnalysisBudget>0 && (pre_end1 - pre_start1)>preAnalysisBudget) progress.write("TIMEOUT PLAYER 1!");
+                                progress.write("preGameAnalysis player 1 took " + (pre_end1 - pre_start1) + "\n");
+                                if (preAnalysisBudget>0 && (pre_end1 - pre_start1)>preAnalysisBudget) progress.write("TIMEOUT PLAYER 1!\n");
                             }
                             long pre_start2 = System.currentTimeMillis();
                             ai2.preGameAnalysis(gs, preAnalysisBudget);
                             long pre_end2 = System.currentTimeMillis();
                             if (progress != null) {
-                                progress.write("preGameAnalysis player 2 took " + (pre_end2 - pre_start2));
-                                if (preAnalysisBudget>0 && (pre_end2 - pre_start2)>preAnalysisBudget) progress.write("TIMEOUT PLAYER 2!");
+                                progress.write("preGameAnalysis player 2 took " + (pre_end2 - pre_start2) + "\n");
+                                if (preAnalysisBudget>0 && (pre_end2 - pre_start2)>preAnalysisBudget) progress.write("TIMEOUT PLAYER 2!\n");
                             }
                         }
                         
@@ -183,18 +197,42 @@ public class FixedOpponentsTournament {
                                     break;
                                 }
                             }
-                            if (timeoutCheck) {
+                            
+                            {
                                 long AI1time = AI1end - AI1start;
                                 long AI2time = AI2end - AI2start;
-                                if (AI1time>timeBudget + TIMEOUT_CHECK_TOLERANCE) {
-                                    timedout = 0;
-                                    break;
+                                numTimes1++;
+                                numTimes2++;
+                                averageTime1+=AI1time;
+                                averageTime2+=AI2time;
+                                if (AI1time > timeBudget) {
+                                    numberOfTimeOverBudget1++;
+                                    averageTimeOverBudget1 += AI1time;
+                                    if (AI1time > timeBudget*2) {
+                                        numberOfTimeOverTwiceBudget1++;
+                                        averageTimeOverTwiceBudget1 += AI1time;
+                                    }
                                 }
-                                if (AI2time>timeBudget + TIMEOUT_CHECK_TOLERANCE) {
-                                    timedout = 1;
-                                    break;
+                                if (AI2time > timeBudget) {
+                                    numberOfTimeOverBudget2++;
+                                    averageTimeOverBudget2 += AI2time;
+                                    if (AI2time > timeBudget*2) {
+                                        numberOfTimeOverTwiceBudget2++;
+                                        averageTimeOverTwiceBudget2 += AI2time;                                        
+                                    }
+                                }
+                                if (timeoutCheck) {
+                                    if (AI1time > timeBudget + TIMEOUT_CHECK_TOLERANCE) {
+                                        timedout = 0;
+                                        break;
+                                    }
+                                    if (AI2time > timeBudget + TIMEOUT_CHECK_TOLERANCE) {
+                                        timedout = 1;
+                                        break;
+                                    }
                                 }
                             }
+                            
                             if (traceOutputfolder != null && (!pa1.isEmpty() || !pa2.isEmpty())) {
                                 te = new TraceEntry(gs.getPhysicalGameState().clone(), gs.getTime());
                                 te.addPlayerAction(pa1.clone());
@@ -244,17 +282,25 @@ public class FixedOpponentsTournament {
                         out.write(iteration + "\t" + map_idx + "\t" + ai1_idx + "\t" + ai2_idx + "\t" + 
                                   gs.getTime() + "\t" + winner + "\t"  + crashed + "\t" + timedout + "\n");
                         out.flush();
-                        if (progress!=null) progress.write("Winner: " + winner + "  in " + gs.getTime() + " cycles");
-                        if (progress!=null) progress.write(ai1 + " : " + ai1.statisticsString() + "\n");
-                        if (progress!=null) progress.write(ai2 + " : " + ai2.statisticsString() + "\n");
+                        if (progress != null) {
+                            progress.write("Winner: " + winner + "  in " + gs.getTime() + " cycles\n");
+                            progress.write(ai1 + " : " + ai1.statisticsString() + "\n");
+                            progress.write(ai2 + " : " + ai2.statisticsString() + "\n");
+                            progress.write("AI1 time usage, average:  " + (averageTime1/numTimes1) + 
+                                           ", # times over budget: " + numberOfTimeOverBudget1 + " (avg " + (averageTimeOverBudget1/numberOfTimeOverBudget1) + 
+                                           ") , # times over 2*budget: " + numberOfTimeOverTwiceBudget1 + " (avg " + (averageTimeOverTwiceBudget1/numberOfTimeOverTwiceBudget1) + ")\n");
+                            progress.write("AI2 time usage, average:  " + (averageTime2/numTimes2) + 
+                                           ", # times over budget: " + numberOfTimeOverBudget2 + " (avg " + (averageTimeOverBudget2/numberOfTimeOverBudget2) + 
+                                           ") , # times over 2*budget: " + numberOfTimeOverTwiceBudget2 + " (avg " + (averageTimeOverTwiceBudget2/numberOfTimeOverTwiceBudget2) + ")\n");
+                        }
                         progress.flush();
                         if (winner == -1) {
                             ties[ai1_idx][ai2_idx]++;
-                            ties[ai2_idx][ai1_idx]++;
+//                            ties[ai2_idx][ai1_idx]++;
                         } else if (winner == 0) {
                             wins[ai1_idx][ai2_idx]++;
                         } else if (winner == 1) {
-                            wins[ai2_idx][ai1_idx]++;
+//                            wins[ai2_idx][ai1_idx]++;
                         }        
                         accumTime[ai1_idx][ai2_idx] += gs.getTime();
                     }
