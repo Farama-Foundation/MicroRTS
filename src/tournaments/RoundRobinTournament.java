@@ -330,6 +330,7 @@ public class RoundRobinTournament {
                         progress.flush();
                         if (winner == -1) {
                             ties[ai1_idx][ai2_idx]++;
+                            ties[ai2_idx][ai1_idx]++;
                         } else if (winner == 0) {
                             wins[ai1_idx][ai2_idx]++;
                         } else if (winner == 1) {
