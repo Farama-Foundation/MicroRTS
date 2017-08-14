@@ -38,6 +38,7 @@ public class RoundRobinTournament {
     public static boolean USE_CONTINUING_ON_INTERRUPTIBLE = true;
 
     public static void runTournament(List<AI> AIs,
+            int playOnlyGamesInvolvingThisAI,
             List<String> maps,
             int iterations,
             int maxGameLength,
@@ -86,8 +87,10 @@ public class RoundRobinTournament {
                 PhysicalGameState pgs = PhysicalGameState.load(maps.get(map_idx), utt);
                 for (int ai1_idx = 0; ai1_idx < AIs.size(); ai1_idx++) {
                     for (int ai2_idx = 0; ai2_idx < AIs.size(); ai2_idx++) {
-                        if (!selfMatches && ai1_idx == ai2_idx) {
-                            continue;
+                        if (!selfMatches && ai1_idx == ai2_idx) continue;
+                        if (playOnlyGamesInvolvingThisAI!=-1) {
+                            if (ai1_idx != playOnlyGamesInvolvingThisAI &&
+                                ai2_idx != playOnlyGamesInvolvingThisAI) continue;
                         }
                         // variables to keep track of time ussage amongst the AIs:
                         int numTimes1 = 0;

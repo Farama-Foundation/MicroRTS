@@ -428,7 +428,7 @@ public class FETournamentPane extends JPanel {
                                         try {
                                             Writer writer = new FileWriter(fileToUse);
                                             Writer writerProgress = new JTextAreaWriter(tournamentProgressTextArea);
-                                            RoundRobinTournament.runTournament(selectedAIs, maps, 
+                                            RoundRobinTournament.runTournament(selectedAIs, -1, maps, 
                                                                                iterations, maxGameLength, timeBudget, iterationsBudget, preAnalysisBudget, 
                                                                                fullObservability, selfMatches, timeOutCheck, gcCheck, preGameAnalysis, 
                                                                                utt, tracesFolder,
