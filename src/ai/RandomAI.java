@@ -8,7 +8,6 @@ import ai.core.AI;
 import ai.core.ParameterSpecification;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import rts.*;
 import rts.units.UnitTypeTable;
 
@@ -16,10 +15,7 @@ import rts.units.UnitTypeTable;
  *
  * @author santi
  */
-public class RandomAI extends AI {
-    Random r = new Random();
-
-    
+public class RandomAI extends AI {    
     public RandomAI(UnitTypeTable utt) {
     }
     

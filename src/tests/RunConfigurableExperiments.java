@@ -105,7 +105,7 @@ public class RunConfigurableExperiments {
     public static AI getBot(String botName) {
         switch (botName) {
             case "RandomAI":
-                return new RandomAI();
+                return new RandomAI(utt);
             case "RandomBiasedAI":
                 return new RandomBiasedAI();
             case "LightRush":

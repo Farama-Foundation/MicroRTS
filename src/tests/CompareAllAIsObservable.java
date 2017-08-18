@@ -53,7 +53,7 @@ public class CompareAllAIsObservable {
         List<AI> bots = new LinkedList<>();
         UnitTypeTable utt = new UnitTypeTable();
         
-        bots.add(new RandomAI());
+        bots.add(new RandomAI(utt));
         bots.add(new RandomBiasedAI());
         bots.add(new LightRush(utt, new BFSPathFinding()));
         bots.add(new RangedRush(utt, new BFSPathFinding()));
