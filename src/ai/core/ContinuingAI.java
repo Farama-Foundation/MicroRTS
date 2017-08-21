@@ -103,4 +103,10 @@ public class ContinuingAI extends AI {
         return m_AI.getParameters();
     }
     
+    
+    public void preGameAnalysis(GameState gs, long milliseconds) throws Exception
+    {
+        m_AI.preGameAnalysis(gs, milliseconds);
+    }    
+    
 }

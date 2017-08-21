@@ -98,6 +98,7 @@ import util.Pair;
 import util.XMLWriter;
 import ai.core.InterruptibleAI;
 import ai.evaluation.SimpleOptEvaluationFunction;
+import ai.mcts.believestatemcts.BS3_NaiveMCTS;
 
 /**
  *
@@ -140,6 +141,7 @@ public class FEStatePane extends JPanel {
                    UCTUnitActions.class,
                    UCTFirstPlayUrgency.class,
                    NaiveMCTS.class,
+                   BS3_NaiveMCTS.class,
                    MLPSMCTS.class,
                    AHTNAI.class,
                    InformedNaiveMCTS.class,
@@ -558,6 +560,10 @@ public class FEStatePane extends JPanel {
                                     }
                                     int MAXCYCLES = Integer.parseInt(maxCyclesField.getText());
                                     GameState gs = statePanel.getState().clone();
+                                    
+                                    ai1.preGameAnalysis(gs, -1);
+                                    ai2.preGameAnalysis(gs, -1);
+                                    
                                     boolean gameover = false;
 
                                     JFrame w = null;

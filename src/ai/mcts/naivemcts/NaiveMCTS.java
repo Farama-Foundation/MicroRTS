@@ -28,16 +28,16 @@ public class NaiveMCTS extends AIWithComputationBudget implements InterruptibleA
        
     Random r = new Random();
     public AI playoutPolicy = new RandomBiasedAI();
-    long max_actions_so_far = 0;
+    protected long max_actions_so_far = 0;
     
-    GameState gs_to_start_from = null;
-    NaiveMCTSNode tree = null;
-    int current_iteration = 0;
+    protected GameState gs_to_start_from = null;
+    protected NaiveMCTSNode tree = null;
+    protected int current_iteration = 0;
             
     public int MAXSIMULATIONTIME = 1024;
     public int MAX_TREE_DEPTH = 10;
     
-    int player;
+    protected int player;
     
     public float epsilon_0 = 0.2f;
     public float epsilon_l = 0.25f;

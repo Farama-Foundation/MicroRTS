@@ -28,6 +28,7 @@ import rts.units.UnitTypeTable;
  */
 public class BS3_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
 
+    GameState initialGameState = null;
     List<Unit> lastKnownPosition = new LinkedList<Unit>();
     List<Unit> inferedUnits = new LinkedList<Unit>();
     PartiallyObservableGameState lastObservedGame = null;
@@ -59,22 +60,45 @@ public class BS3_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
 
     @Override
     public final PlayerAction getAction(int player, GameState gs) throws Exception {
-        updateBelieveState(player, (PartiallyObservableGameState) gs);
         if (gs.canExecuteAnyAction(player)) {
-            if (gs instanceof PartiallyObservableGameState) {
-                // create a sampling world from our believe-states
-                GameState world = sampleWorld(player, (PartiallyObservableGameState) gs);
-                startNewComputation(player, world);
-            } else {
-                startNewComputation(player, gs);
-            }
+            startNewComputation(player, gs);
             computeDuringOneGameFrame();
             return getBestActionSoFar();
         } else {
             return new PlayerAction();
         }
     }
-
+    
+    
+    @Override
+    public void startNewComputation(int a_player, GameState gs) throws Exception {
+        if (initialGameState!=null && gs.getTime()==0) {
+            setInitialBelieveState(player, initialGameState.clone(), new PartiallyObservableGameState(initialGameState, player));
+        }
+        updateBelieveState(player, (PartiallyObservableGameState) gs);
+        
+        if (gs instanceof PartiallyObservableGameState) {
+            // create a sampling world from our believe-states
+            gs = sampleWorld(player, (PartiallyObservableGameState) gs);
+        }        
+        
+        player = a_player;
+        current_iteration = 0;
+        tree = new NaiveMCTSNode(player, 1-player, gs, null, ef.upperBound(gs), current_iteration++, forceExplorationOfNonSampledActions);
+        
+        if (tree.moveGenerator==null) {
+            max_actions_so_far = 0;
+        } else {
+            max_actions_so_far = Math.max(tree.moveGenerator.getSize(),max_actions_so_far);        
+        }
+        gs_to_start_from = gs;
+        
+        epsilon_l = initial_epsilon_l;
+        epsilon_g = initial_epsilon_g;
+        epsilon_0 = initial_epsilon_0;        
+    }    
+    
+    
     @Override
     public int getMostVisitedActionIdx() {
         total_actions_issued++;
@@ -102,6 +126,19 @@ public class BS3_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
         System.out.println("Random action from " + bestIdxs.size());
         return r.nextInt(bestIdxs.size());
     }
+
+    
+    public void reset()
+    {
+        initialGameState = null;
+    }   
+    
+
+    public void preGameAnalysis(GameState gs, long milliseconds) throws Exception
+    {
+        initialGameState = gs.clone();
+    }    
+    
 
     @Override
     public void setInitialBelieveState(int player, GameState gs, PartiallyObservableGameState pogs) {
