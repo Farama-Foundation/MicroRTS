@@ -75,10 +75,10 @@ public class BS3_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
         if (initialGameState!=null && gs.getTime()==0) {
             setInitialBelieveState(player, initialGameState.clone(), new PartiallyObservableGameState(initialGameState, player));
         }
-        updateBelieveState(player, (PartiallyObservableGameState) gs);
         
         if (gs instanceof PartiallyObservableGameState) {
             // create a sampling world from our believe-states
+            updateBelieveState(player, (PartiallyObservableGameState) gs);
             gs = sampleWorld(player, (PartiallyObservableGameState) gs);
         }        
         
