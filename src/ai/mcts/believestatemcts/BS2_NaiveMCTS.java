@@ -3,6 +3,7 @@ package ai.mcts.believestatemcts;
 import ai.core.AI;
 import ai.evaluation.EvaluationFunction;
 import ai.mcts.naivemcts.NaiveMCTS;
+import ai.mcts.naivemcts.NaiveMCTSNode;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,6 +24,8 @@ import rts.units.UnitTypeTable;
  */
 public class BS2_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
 
+    GameState initialGameState = null;
+    
     // list of units we "believe" exist (for now it's just "last seen" position)
     List<Unit> lastKnownPosition = new LinkedList<Unit>();
     PartiallyObservableGameState lastObservedGame = null;
@@ -51,23 +54,58 @@ public class BS2_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
         return new BS2_NaiveMCTS(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME, MAX_TREE_DEPTH, epsilon_l, discount_l, epsilon_g, discount_g, epsilon_0, discount_0, playoutPolicy, ef, forceExplorationOfNonSampledActions);
     }
 
-    @Override
+   @Override
     public final PlayerAction getAction(int player, GameState gs) throws Exception {
-        updateBelieveState(player, (PartiallyObservableGameState) gs);
         if (gs.canExecuteAnyAction(player)) {
-            if (gs instanceof PartiallyObservableGameState) {
-                // create a sampling world from our believe-states
-                GameState world = sampleWorld(player, (PartiallyObservableGameState) gs);
-                startNewComputation(player, world);
-            } else {
-                startNewComputation(player, gs);
-            }
+            startNewComputation(player, gs);
             computeDuringOneGameFrame();
             return getBestActionSoFar();
         } else {
             return new PlayerAction();
         }
     }
+    
+    
+    @Override
+    public void startNewComputation(int a_player, GameState gs) throws Exception {
+        if (initialGameState!=null && gs.getTime()==0) {
+            setInitialBelieveState(a_player, initialGameState.clone(), new PartiallyObservableGameState(initialGameState, a_player));
+        }
+        
+        if (gs instanceof PartiallyObservableGameState) {
+            // create a sampling world from our believe-states
+            updateBelieveState(player, (PartiallyObservableGameState) gs);
+            gs = sampleWorld(player, (PartiallyObservableGameState) gs);
+        }        
+        
+        player = a_player;
+        current_iteration = 0;
+        tree = new NaiveMCTSNode(player, 1-player, gs, null, ef.upperBound(gs), current_iteration++, forceExplorationOfNonSampledActions);
+        
+        if (tree.moveGenerator==null) {
+            max_actions_so_far = 0;
+        } else {
+            max_actions_so_far = Math.max(tree.moveGenerator.getSize(),max_actions_so_far);        
+        }
+        gs_to_start_from = gs;
+        
+        epsilon_l = initial_epsilon_l;
+        epsilon_g = initial_epsilon_g;
+        epsilon_0 = initial_epsilon_0;        
+    }    
+
+    
+    public void reset()
+    {
+        initialGameState = null;
+    }   
+    
+
+    public void preGameAnalysis(GameState gs, long milliseconds) throws Exception
+    {
+        initialGameState = gs.clone();
+    }    
+    
 
     @Override
     public void setInitialBelieveState(int player, GameState gs, PartiallyObservableGameState pogs) {
