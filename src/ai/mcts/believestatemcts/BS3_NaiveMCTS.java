@@ -73,7 +73,7 @@ public class BS3_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
     @Override
     public void startNewComputation(int a_player, GameState gs) throws Exception {
         if (initialGameState!=null && gs.getTime()==0) {
-            setInitialBelieveState(player, initialGameState.clone(), new PartiallyObservableGameState(initialGameState, player));
+            setInitialBelieveState(a_player, initialGameState.clone(), new PartiallyObservableGameState(initialGameState, a_player));
         }
         
         if (gs instanceof PartiallyObservableGameState) {
