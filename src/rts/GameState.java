@@ -252,9 +252,26 @@ public class GameState implements Serializable{
                     System.err.println(this);
                     System.err.println("The problem was with unit " + p.m_a);
                 }
+            }   
+
+            {
+                // check to see if the action is legal!
+                ResourceUsage r = p.m_b.resourceUsage(p.m_a, pgs);
+                for(int position:r.getPositionsUsed()) {
+                    int y = position/pgs.getWidth();
+                    int x = position%pgs.getWidth();
+                    if (pgs.getTerrain(x, y) != PhysicalGameState.TERRAIN_NONE ||
+                        pgs.getUnitAt(x, y) != null) {
+                        UnitAction new_ua = new UnitAction(UnitAction.TYPE_NONE, p.m_b.ETA(p.m_a));
+                        System.err.println("Player " + p.m_a.getPlayer() + " issued an illegal move action, cancelling and replacing by " + new_ua);
+                        p.m_b = new_ua;
+                    }
+                }
             }
+            
+            
         }
-        
+                
         boolean returnValue = issue(pa);
         if (!integrityCheck()) throw new Error("GameState inconsistent after 'issueSafe': " + pa);        
         return returnValue;
