@@ -143,7 +143,12 @@ public abstract class BayesianModel extends UnitActionProbabilityDistribution {
     
     public static List<UnitAction> generateAllPossibleUnitActions(UnitTypeTable utt) {
         List<UnitAction> l = new ArrayList<>();
+        int maxAttackRange = 1;
         int directions[] = {UnitAction.DIRECTION_UP, UnitAction.DIRECTION_RIGHT, UnitAction.DIRECTION_DOWN, UnitAction.DIRECTION_LEFT};
+        
+        for(UnitType ut:utt.getUnitTypes()) {
+            if (ut.attackRange > maxAttackRange) maxAttackRange = ut.attackRange;
+        }
         
         l.add(new UnitAction(UnitAction.TYPE_NONE, 10));
         for(int d:directions) l.add(new UnitAction(UnitAction.TYPE_MOVE, d));
@@ -152,10 +157,10 @@ public abstract class BayesianModel extends UnitActionProbabilityDistribution {
         for(int d:directions) {
             for(UnitType ut:utt.getUnitTypes()) l.add(new UnitAction(UnitAction.TYPE_PRODUCE, d, ut));
         }
-        for(int ox = -3;ox<=3;ox++) {
-            for(int oy = -3;oy<=3;oy++) {
+        for(int ox = -maxAttackRange;ox<=maxAttackRange;ox++) {
+            for(int oy = -maxAttackRange;oy<=maxAttackRange;oy++) {
                 int d = (ox*ox) + (oy*oy);
-                if (d>0 && d<=9) {
+                if (d>0 && d<=maxAttackRange*maxAttackRange) {
                     l.add(new UnitAction(UnitAction.TYPE_ATTACK_LOCATION, ox, oy));
                 }
             }            
