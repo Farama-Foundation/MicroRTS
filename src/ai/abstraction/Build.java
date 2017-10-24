@@ -11,6 +11,7 @@ import rts.ResourceUsage;
 import rts.UnitAction;
 import rts.units.Unit;
 import rts.units.UnitType;
+import util.XMLWriter;
 
 /**
  *
@@ -35,7 +36,27 @@ public class Build extends AbstractAction  {
         if (u!=null) return true;
         return false;
     }
+    
+    
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof Build)) return false;
+        Build a = (Build)o;
+        if (type != a.type) return false;
+        if (x != a.x) return false;
+        if (y != a.y) return false;
+        if (pf.getClass() != a.pf.getClass()) return false;
+        
+        return true;
+    }
+    
 
+    public void toxml(XMLWriter w)
+    {
+        w.tagWithAttributes("Build","unitID=\""+unit.getID()+"\" type=\""+type.name+"\" x=\""+x+"\" y=\""+y+"\" pathfinding=\""+pf.getClass().getSimpleName()+"\"");
+        w.tag("/Build");
+    }    
+    
     public UnitAction execute(GameState gs, ResourceUsage ru) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
 //        System.out.println("findPathToAdjacentPosition from Build: (" + x + "," + y + ")");

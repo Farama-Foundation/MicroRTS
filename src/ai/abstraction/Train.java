@@ -10,6 +10,7 @@ import rts.ResourceUsage;
 import rts.UnitAction;
 import rts.units.Unit;
 import rts.units.UnitType;
+import util.XMLWriter;
 
 /**
  *
@@ -28,7 +29,24 @@ public class Train extends AbstractAction {
     public boolean completed(GameState pgs) {
         return completed;
     }
-
+    
+    
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof Train)) return false;
+        Train a = (Train)o;
+        if (type != a.type) return false;
+        
+        return true;
+    }
+    
+    
+    public void toxml(XMLWriter w)
+    {
+        w.tagWithAttributes("Train","unitID=\""+unit.getID()+"\" type=\""+type.name+"\"");
+        w.tag("/Train");
+    }     
+    
     public UnitAction execute(GameState gs, ResourceUsage ru) {
         // find the best location for the unit:
         PhysicalGameState pgs = gs.getPhysicalGameState();

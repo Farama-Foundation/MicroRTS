@@ -10,6 +10,7 @@ import rts.PhysicalGameState;
 import rts.ResourceUsage;
 import rts.UnitAction;
 import rts.units.Unit;
+import util.XMLWriter;
 
 /**
  *
@@ -30,6 +31,25 @@ public class Attack extends AbstractAction  {
         if (!pgs.getUnits().contains(target)) return true;
         return false;
     }
+    
+    
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof Attack)) return false;
+        Attack a = (Attack)o;
+        if (target.getID() != a.target.getID()) return false;
+        if (pf.getClass() != a.pf.getClass()) return false;
+        
+        return true;
+    }
+
+    
+    public void toxml(XMLWriter w)
+    {
+        w.tagWithAttributes("Attack","unitID=\""+unit.getID()+"\" target=\""+target.getID()+"\" pathfinding=\""+pf.getClass().getSimpleName()+"\"");
+        w.tag("/Attack");
+    }
+    
 
     public UnitAction execute(GameState gs, ResourceUsage ru) {
         

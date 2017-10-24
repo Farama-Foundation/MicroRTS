@@ -9,6 +9,7 @@ import rts.PhysicalGameState;
 import rts.ResourceUsage;
 import rts.UnitAction;
 import rts.units.Unit;
+import util.XMLWriter;
 
 /**
  *
@@ -23,6 +24,20 @@ public class Idle extends AbstractAction  {
     public boolean completed(GameState gs) {
         return false;
     }
+    
+    
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof Idle)) return false;        
+        return true;
+    }
+
+    
+    public void toxml(XMLWriter w)
+    {
+        w.tagWithAttributes("Idle","unitID=\""+unit.getID()+"\"");
+        w.tag("/Idle");
+    }             
 
     public UnitAction execute(GameState gs, ResourceUsage ru) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
