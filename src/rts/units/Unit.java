@@ -273,9 +273,9 @@ public class Unit implements Serializable {
     }
     
     
-    public boolean canExecuteAction(UnitAction ua, GameState gs, int noneDuration)
+    public boolean canExecuteAction(UnitAction ua, GameState gs)
     {
-        List<UnitAction> l = getUnitActions(gs, noneDuration);
+        List<UnitAction> l = getUnitActions(gs, ua.ETA(this));
         return l.contains(ua);
     }
     

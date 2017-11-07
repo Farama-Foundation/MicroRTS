@@ -234,6 +234,13 @@ public class GameState implements Serializable{
                 System.exit(1);
             }
             
+            if (!p.m_a.canExecuteAction(p.m_b, this)) {
+                System.err.println("Issuing a non legal action to unit " + p.m_a + "!! Ignoring it...");
+                // replace the action by a NONE action of the same duration:
+                int l = p.m_b.ETA(p.m_a);
+                p.m_b = new UnitAction(UnitAction.TYPE_NONE, l);
+            }
+            
             // get the unit that corresponds to that action (since the state might have been closed):
             if (pgs.units.indexOf(p.m_a)==-1) {
                 boolean found = false;
@@ -288,6 +295,10 @@ public class GameState implements Serializable{
     }
     
     
+    /*
+    This function assumes that the UnitAction ua is one of the actions that the unit can 
+    potentially execute, and only checks whether it has any conflicts with some other action.
+    */
     public boolean isUnitActionAllowed(Unit u, UnitAction ua) {
         PlayerAction empty = new PlayerAction();
 
@@ -314,7 +325,7 @@ public class GameState implements Serializable{
         
         return false;
     }
-    
+        
     
     public List<PlayerAction> getPlayerActionsSingleUnit(int pID, Unit unit) {
         List<PlayerAction> l = new LinkedList<PlayerAction>();
