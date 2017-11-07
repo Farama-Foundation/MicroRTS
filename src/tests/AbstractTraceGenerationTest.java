@@ -18,7 +18,6 @@ import java.io.IOException;
 import rts.*;
 import rts.units.Unit;
 import rts.units.UnitTypeTable;
-import tests.MapGenerator;
 import util.XMLWriter;
 
 /**
@@ -28,8 +27,7 @@ import util.XMLWriter;
 public class AbstractTraceGenerationTest {
     public static void main(String args[]) throws IOException, Exception {
         UnitTypeTable utt = new UnitTypeTable();
-        MapGenerator mg = new MapGenerator(utt);
-        PhysicalGameState pgs = mg.basesWorkers8x8Obstacle();
+        PhysicalGameState pgs = PhysicalGameState.load("maps/16x16/basesWorkers16x16.xml", utt);
         GameState gs = new GameState(pgs, utt);
         int MAXCYCLES = 5000;
         boolean gameover = false;

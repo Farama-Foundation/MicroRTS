@@ -168,11 +168,11 @@ public class Unit implements Serializable {
     }
 
     public List<UnitAction> getUnitActions(GameState s) {
-        // Unless specified, generate "NONE" actions with duration 8 cycles
+        // Unless specified, generate "NONE" actions with duration 10 cycles
         return getUnitActions(s, 10);
     }
 
-    public List<UnitAction> getUnitActions(GameState s, int duration) {
+    public List<UnitAction> getUnitActions(GameState s, int noneDuration) {
         List<UnitAction> l = new ArrayList<UnitAction>();
 
         PhysicalGameState pgs = s.getPhysicalGameState();
@@ -267,25 +267,29 @@ public class Unit implements Serializable {
         }
         
         // units can always stay idle:
-        l.add(new UnitAction(UnitAction.TYPE_NONE, duration));
+        l.add(new UnitAction(UnitAction.TYPE_NONE, noneDuration));
                         
         return l;
     }
+    
+    
+    public boolean canExecuteAction(UnitAction ua, GameState gs, int noneDuration)
+    {
+        List<UnitAction> l = getUnitActions(gs, noneDuration);
+        return l.contains(ua);
+    }
+    
     
     public String toString() {
         return type.name + "(" + ID + ")" + 
                "(" + player + ", (" + x + "," + y + "), " + hitpoints + ", " + resources + ")";
     }
     
+    
     public Unit clone() {
         return new Unit(this);
     }
-    
-    /*
-    public boolean equals(Object o) {
-        return ID == ((Unit)o).ID;
-    }
-    */
+      
     
     public int hashCode() {
         return (int)ID;
