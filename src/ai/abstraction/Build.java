@@ -59,8 +59,9 @@ public class Build extends AbstractAction  {
     
     public UnitAction execute(GameState gs, ResourceUsage ru) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
-//        System.out.println("findPathToAdjacentPosition from Build: (" + x + "," + y + ")");
+//        System.out.println("findPathToAdjacentPosition to " + unit.getX() + "," + unit.getY() + " from Build: (" + x + "," + y + ")");
         UnitAction move = pf.findPathToAdjacentPosition(unit, x+y*pgs.getWidth(), gs, ru);
+//        System.out.println("Move: " + move);
         if (move!=null) {
             if (gs.isUnitActionAllowed(unit, move)) return move;
             return null;

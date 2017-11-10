@@ -52,15 +52,15 @@ public class AStarPathFinding extends PathFinding {
         int w = pgs.getWidth();
         int h = pgs.getHeight();
         if (free==null || free.length<w*h) {
-            free = new Boolean[pgs.getWidth()][pgs.getHeight()];        
-            closed = new int[pgs.getWidth()*pgs.getHeight()];
-            open = new int[pgs.getWidth()*pgs.getHeight()];
-            heuristic = new int[pgs.getWidth()*pgs.getHeight()];
-            parents = new int[pgs.getWidth()*pgs.getHeight()];
-            inOpenOrClosed = new int[pgs.getWidth()*pgs.getHeight()];
-            cost = new int[pgs.getWidth()*pgs.getHeight()];
+            free = new Boolean[w][h];        
+            closed = new int[w*h];
+            open = new int[w*h];
+            heuristic = new int[w*h];
+            parents = new int[w*h];
+            inOpenOrClosed = new int[w*h];
+            cost = new int[w*h];
         }
-        for(int y = 0, i = 0;y<pgs.getHeight();y++) {
+        for(int y = 0, i = 0;y<h;y++) {
             for(int x = 0;x<w;x++,i++) {
                 free[x][y] = null;
                 closed[i] = -1;           
