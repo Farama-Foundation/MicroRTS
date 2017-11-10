@@ -36,6 +36,11 @@ public class Trace {
         return entries.get(entries.size()-1).getTime();
     }
     
+    public int winner() {
+        if (entries.isEmpty()) return -1;
+        return entries.get(entries.size()-1).pgs.winner();
+    }    
+    
     public void addEntry(TraceEntry te) {
         entries.add(te);
     }

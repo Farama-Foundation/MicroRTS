@@ -36,5 +36,7 @@ public class TraceVisualizationTest {
 	  
 	  JFrame tv = TraceVisualizer.newWindow("Demo", 800, 600, t, 1);
 	  tv.show();
+          
+          System.out.println("Trace winner: " + t.winner());
   }    
 }
