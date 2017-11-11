@@ -35,6 +35,10 @@ public abstract class AbstractionLayerAI extends AIWithComputationBudget {
     //      - attack(target)
     protected HashMap<Unit, AbstractAction> actions = new LinkedHashMap<>();
     protected PathFinding pf = null;
+    // In case the GameState is cloned, and the Unit pointers in the "actions" map change, this variable
+    // saves a pointer to the previous GameState, if it's different than the current one, then we need to find a mapping
+    // between the old units and the new ones
+    protected GameState lastGameState = null;
 
     public AbstractionLayerAI(PathFinding a_pf) {
         super(-1, -1);
@@ -49,12 +53,15 @@ public abstract class AbstractionLayerAI extends AIWithComputationBudget {
     public void reset() {
         actions.clear();
     }
+       
 
-    public PlayerAction translateActions(int player, GameState gs) {
+    public PlayerAction translateActions(int player, GameState gs) {        
         PhysicalGameState pgs = gs.getPhysicalGameState();
         PlayerAction pa = new PlayerAction();
         List<Pair<Unit, UnitAction>> desires = new ArrayList<>();
 
+        lastGameState = gs;
+        
         // Execute abstract actions:
         List<Unit> toDelete = new ArrayList<>();
         ResourceUsage ru = new ResourceUsage();

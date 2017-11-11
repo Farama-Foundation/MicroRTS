@@ -23,6 +23,8 @@ import util.XMLWriter;
  * @author santi
  */
 public class GameState implements Serializable{
+    public static final boolean REPORT_ILLEGAL_ACTIONS = false;
+    
     static Random r = new Random();         // only used if the action conflict resolution strategy is set to random
     protected int unitCancelationCounter = 0;  // only used if the action conflict resolution strategy is set to alternating
     
@@ -235,7 +237,9 @@ public class GameState implements Serializable{
             }
             
             if (!p.m_a.canExecuteAction(p.m_b, this)) {
-                System.err.println("Issuing a non legal action to unit " + p.m_a + "!! Ignoring it...");
+                if (REPORT_ILLEGAL_ACTIONS) {
+                    System.err.println("Issuing a non legal action to unit " + p.m_a + "!! Ignoring it...");
+                }
                 // replace the action by a NONE action of the same duration:
                 int l = p.m_b.ETA(p.m_a);
                 p.m_b = new UnitAction(UnitAction.TYPE_NONE, l);
@@ -460,6 +464,7 @@ public class GameState implements Serializable{
         }
         return gs;
     }
+    
     
     // This method does a quick clone, that shares the same PGS, but different unit assignments:
     public GameState cloneIssue(PlayerAction pa) {
