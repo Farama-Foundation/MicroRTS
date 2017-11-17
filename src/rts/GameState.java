@@ -15,7 +15,7 @@ import util.Pair;
 import util.XMLWriter;
 
 /**
- * 
+ * A fully-observable game state
  * @author santi
  */
 public class GameState implements Serializable{
