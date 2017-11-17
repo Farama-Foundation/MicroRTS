@@ -62,7 +62,7 @@ public class GameState implements Serializable{
     }
     
     /**
-     * Returns a {@link Player} instance given its ID
+     * @see PhysicalGameState#getPlayer(int)
      * @param ID
      * @return
      */
@@ -71,7 +71,7 @@ public class GameState implements Serializable{
     }
     
     /**
-     * Returns a {@link Unit} instance, given its ID
+     * @see PhysicalGameState#getUnit(long)
      * @param ID
      * @return
      */
@@ -80,7 +80,7 @@ public class GameState implements Serializable{
     }    
     
     /**
-     * Returns the list of units in this state
+     * @see PhysicalGameState#getUnits()
      * @return
      */
     public List<Unit> getUnits() {
@@ -131,7 +131,7 @@ public class GameState implements Serializable{
     }
     
     /**
-     * Returns the winning player's ID 
+     * @see PhysicalGameState#winner()
      * @return
      */
     public int winner() {
@@ -139,7 +139,7 @@ public class GameState implements Serializable{
     }
     
     /**
-     * Returns whether the game is over
+     * @see PhysicalGameState#gameover()
      * @return
      */
     public boolean gameover() {
