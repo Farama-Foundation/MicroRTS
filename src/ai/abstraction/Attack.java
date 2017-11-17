@@ -26,6 +26,7 @@ public class Attack extends AbstractAction  {
         pf = a_pf;
     }
     
+    
     public boolean completed(GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         if (!pgs.getUnits().contains(target)) return true;
