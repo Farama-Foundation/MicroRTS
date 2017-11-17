@@ -9,11 +9,13 @@ import java.io.Serializable;
 import rts.units.Unit;
 
 /**
- *
+ * Stores the action assigned to a unit in a given time
  * @author santi
  */
 public class UnitActionAssignment implements Serializable {
-    public Unit unit;
+
+	private static final long serialVersionUID = -8829973531253654472L;
+	public Unit unit;
     public UnitAction action;
     public int time;
     
