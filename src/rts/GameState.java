@@ -730,7 +730,7 @@ public class GameState implements Serializable{
 
     
     /**
-     * Returns a XML representation of this state
+     * Writes a XML representation of this state
      * @param w
      */
     public void toxml(XMLWriter w) {
@@ -749,7 +749,7 @@ public class GameState implements Serializable{
     
 
     /**
-     * Returns a JSON representation of this state
+     * Writes a JSON representation of this state
      * @param w
      * @throws Exception
      */

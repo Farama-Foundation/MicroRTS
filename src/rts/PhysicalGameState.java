@@ -417,7 +417,7 @@ public class PhysicalGameState implements Serializable {
      
     
     /**
-     * Returns a XML representation of the map
+     * Writes a XML representation of the map
      * @param w
      */
 	public void toxml(XMLWriter w) {
@@ -440,7 +440,7 @@ public class PhysicalGameState implements Serializable {
     
     
     /**
-     * Returns a JSON representation of this map
+     * Writes a JSON representation of this map
      * @param w
      * @throws Exception
      */
