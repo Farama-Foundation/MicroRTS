@@ -124,8 +124,8 @@ public class SocketAI extends AIWithComputationBudget {
         if (communication_language == LANGUAGE_XML) {
             XMLWriter w = new XMLWriter(out_pipe, " ");
             gs.toxml(w);
-            w.flush();
             w.getWriter().append("\n");
+            w.flush();
 //            out_pipe.append("\n");
 //            out_pipe.flush();
 
