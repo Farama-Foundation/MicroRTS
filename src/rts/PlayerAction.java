@@ -332,7 +332,7 @@ public class PlayerAction {
      */
     public static PlayerAction fromXML(Element e, GameState gs, UnitTypeTable utt) {
         PlayerAction pa = new PlayerAction();
-        List l = e.getChildren("action");
+        List<?> l = e.getChildren("action");
         for(Object o:l) {
             Element action_e = (Element)o;
             int id = Integer.parseInt(action_e.getAttributeValue("unitID"));
