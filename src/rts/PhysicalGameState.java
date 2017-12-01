@@ -143,7 +143,7 @@ public class PhysicalGameState implements Serializable {
         return closeUnits;
     }
     
-    int winner() {
+    public int winner() {
         int unitcounts[] = new int[players.size()];
         for(Unit u:units) {
             if (u.getPlayer()>=0) unitcounts[u.getPlayer()]++;
