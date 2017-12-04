@@ -5,18 +5,16 @@
 package rts;
 
 import com.eclipsesource.json.JsonObject;
-import java.io.Serializable;
 import java.io.Writer;
 
 import org.jdom.Element;
-import rts.units.Unit;
 import util.XMLWriter;
 
 /**
  *
  * @author santi
  */
-public class Player  implements Serializable {
+public class Player {
     int ID = 0;
     int resources = 0;
     

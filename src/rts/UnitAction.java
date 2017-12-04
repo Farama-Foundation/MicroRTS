@@ -5,7 +5,6 @@
 package rts;
 
 import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import java.io.Serializable;
 import java.io.Writer;
@@ -20,7 +19,7 @@ import util.XMLWriter;
  *
  * @author santi
  */
-public class UnitAction implements Serializable {
+public class UnitAction {
     public static Random r = new Random();  // only used for non-deterministic events    
     
     public static final int TYPE_NONE = 0;

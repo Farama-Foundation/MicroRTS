@@ -8,7 +8,6 @@ import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 import java.io.IOException;
-import java.io.Serializable;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,7 +26,7 @@ import rts.units.UnitTypeTable;
  *
  * @author santi
  */
-public class PhysicalGameState implements Serializable {
+public class PhysicalGameState {
     public static final int TERRAIN_NONE = 0;
     public static final int TERRAIN_WALL = 1;
     

@@ -8,7 +8,6 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
-import java.io.Serializable;
 import java.io.Writer;
 import java.util.*;
 import org.jdom.Element;
@@ -22,7 +21,7 @@ import util.XMLWriter;
  *
  * @author santi
  */
-public class GameState implements Serializable{
+public class GameState {
     public static final boolean REPORT_ILLEGAL_ACTIONS = false;
     
     static Random r = new Random();         // only used if the action conflict resolution strategy is set to random
@@ -30,7 +29,7 @@ public class GameState implements Serializable{
     
     protected int time = 0;
     protected PhysicalGameState pgs = null;
-    protected HashMap<Unit,UnitActionAssignment> unitActions = new LinkedHashMap<Unit,UnitActionAssignment>();
+    protected HashMap<Unit,UnitActionAssignment> unitActions = new LinkedHashMap<>();
     protected UnitTypeTable utt = null;
 
     public GameState(PhysicalGameState a_pgs, UnitTypeTable a_utt) {
