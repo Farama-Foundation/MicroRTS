@@ -38,6 +38,10 @@ public class AbstractTraceEntry {
         if (!a.equals(trace.getCurrentAbstractAction(u))) {
             addAbstractAction(u, a);
             trace.setCurrentAbstractAction(u, a);
+        } else if (a instanceof Train) {
+            // train actions do get repeated and need to be duplicated:
+            addAbstractAction(u, a);
+            trace.setCurrentAbstractAction(u, a);
         }
     }
         
