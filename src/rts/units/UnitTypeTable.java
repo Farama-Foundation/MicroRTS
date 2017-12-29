@@ -1,14 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package rts.units;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
-import java.io.Serializable;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,35 +11,85 @@ import org.jdom.Element;
 import util.XMLWriter;
 
 /**
- *
+ * The unit type table stores the unit types the game can have.
+ * It also determines the attributes of each unit type.
+ * The unit type table determines the balance of the game.
  * @author santi
  */
-public class UnitTypeTable implements Serializable {
+public class UnitTypeTable  {
+    /**
+     * Empty type table should not be used!
+     */
     public static final int EMPTY_TYPE_TABLE = -1;
+    
+    /**
+     * Version one 
+     */
     public static final int VERSION_ORIGINAL = 1;
+    
+    /**
+     * Version two (a fine tune of the original)
+     */
     public static final int VERSION_ORIGINAL_FINETUNED = 2;
+    
+    /**
+     * A non-deterministic version (damages are random)
+     */
     public static final int VERSION_NON_DETERMINISTIC = 3;
     
+    /**
+     * A conflict resolution policy where move conflicts cancel both moves
+     */
     public static final int MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH = 1;   // (default)
+    
+    /**
+     * A conflict resolution policy where move conflicts are solved randomly 
+     */
     public static final int MOVE_CONFLICT_RESOLUTION_CANCEL_RANDOM = 2;   // (makes game non-deterministic)
+    
+    /**
+     * A conflict resolution policy where move conflicts are solved by alternating the units trying to move
+     */
     public static final int MOVE_CONFLICT_RESOLUTION_CANCEL_ALTERNATING = 3;   
     
+    /**
+     * The list of unit types allowed in the game
+     */
     List<UnitType> unitTypes = new ArrayList<UnitType>();
+    
+    /**
+     * Which move conflict resolution is being adopted
+     */
     int moveConflictResolutionStrategy = MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH;
         
+    /**
+     * Creates a UnitTypeTable with version {@link #VERSION_ORIGINAL} and
+     * move conflict resolution as {@link #MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH} 
+     */
     public UnitTypeTable() {
         setUnitTypeTable(VERSION_ORIGINAL, MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH);
     }
     
+    /**
+     * @param version
+     */
     public UnitTypeTable(int version) {
         setUnitTypeTable(version, MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH);
     }
         
+    /**
+     * @param version
+     * @param crs
+     */
     public UnitTypeTable(int version, int crs) {
         setUnitTypeTable(version, crs);
     }
     
     
+    /**
+     * @param version
+     * @param crs
+     */
     public void setUnitTypeTable(int version, int crs) {       
         moveConflictResolutionStrategy = crs;
         
@@ -232,15 +277,26 @@ public class UnitTypeTable implements Serializable {
         worker.produces(barracks);
     }
     
+    /**
+     * @param ut
+     */
     public void addUnitType(UnitType ut) {
         ut.ID = unitTypes.size();
         unitTypes.add(ut);
     }
     
+    /**
+     * @param ID
+     * @return
+     */
     public UnitType getUnitType(int ID) {
         return unitTypes.get(ID);
     }
     
+    /**
+     * @param name
+     * @return
+     */
     public UnitType getUnitType(String name) {
         for(UnitType ut:unitTypes) {
             if (ut.name.equals(name)) return ut;
@@ -248,21 +304,34 @@ public class UnitTypeTable implements Serializable {
         return null;
     }
 
+    /**
+     * @return
+     */
     public List<UnitType> getUnitTypes() {
         return unitTypes;
     }
     
+    /**
+     * @return
+     */
     public int getMoveConflictResolutionStrategy() {
         return moveConflictResolutionStrategy;
     }
     
     
+    /**
+     * @param w
+     */
     public void toxml(XMLWriter w) {
         w.tagWithAttributes(this.getClass().getName(),"moveConflictResolutionStrategy=\""+moveConflictResolutionStrategy+"\"");
         for(UnitType ut:unitTypes) ut.toxml(w);
         w.tag("/" + this.getClass().getName());
     }    
     
+    /**
+     * @param w
+     * @throws Exception
+     */
     public void toJSON(Writer w) throws Exception {
         boolean first = true;
         w.write("{\"moveConflictResolutionStrategy\":" + moveConflictResolutionStrategy + ",");
@@ -276,6 +345,10 @@ public class UnitTypeTable implements Serializable {
     }    
     
    
+    /**
+     * @param e
+     * @return
+     */
     public static UnitTypeTable fromXML(Element e) {
         UnitTypeTable utt = new UnitTypeTable(EMPTY_TYPE_TABLE);
         utt.moveConflictResolutionStrategy = Integer.parseInt(e.getAttributeValue("moveConflictResolutionStrategy"));
@@ -291,6 +364,10 @@ public class UnitTypeTable implements Serializable {
     }
     
     
+    /**
+     * @param JSON
+     * @return
+     */
     public static UnitTypeTable fromJSON(String JSON) {
         JsonObject o = Json.parse(JSON).asObject();
         UnitTypeTable utt = new UnitTypeTable(EMPTY_TYPE_TABLE);
