@@ -4,7 +4,6 @@ import com.eclipsesource.json.JsonObject;
 import java.io.Writer;
 
 import org.jdom.Element;
-import rts.units.Unit;
 import util.XMLWriter;
 
 /**

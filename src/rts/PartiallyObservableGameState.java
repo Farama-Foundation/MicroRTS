@@ -13,7 +13,6 @@ public class PartiallyObservableGameState extends GameState {
     /**
 	 * 
 	 */
-	private static final long serialVersionUID = -2260988555239960930L;
 	protected int player;   // the observer player
 
     /** 

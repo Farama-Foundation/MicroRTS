@@ -1,9 +1,7 @@
 package rts;
 
 import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
-import java.io.Serializable;
 import java.io.Writer;
 import java.util.Objects;
 import java.util.Random;
