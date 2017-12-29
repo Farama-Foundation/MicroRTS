@@ -4,7 +4,6 @@ import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 import java.io.IOException;
-import java.io.Serializable;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,12 +22,7 @@ import rts.units.UnitTypeTable;
  * The physical game state (the actual 'map') of a microRTS game
  * @author santi
  */
-public class PhysicalGameState implements Serializable {
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = -4561827960954391384L;
-	
+public class PhysicalGameState {
 	/**
 	 * Indicates a free tile
 	 */
@@ -253,7 +247,7 @@ public class PhysicalGameState implements Serializable {
      * TODO: verify where unit counts are being compared!
      * @return
      */
-    int winner() {
+    public int winner() {
 		int unitcounts[] = new int[players.size()];
 		for (Unit u : units) {
 			if (u.getPlayer() >= 0)
@@ -328,7 +322,7 @@ public class PhysicalGameState implements Serializable {
      * @return
      */
     public PhysicalGameState cloneKeepingUnits() {
-        PhysicalGameState pgs = new PhysicalGameState(width, height, terrain);  
+        PhysicalGameState pgs = new PhysicalGameState(width, height, terrain);  // The terrain is shared amongst all instances, since it never changes
         for(Player p:players) {
             pgs.players.add(p);
         }
