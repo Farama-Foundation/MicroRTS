@@ -1,6 +1,5 @@
 package rts;
 
-import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -8,14 +7,9 @@ import java.util.List;
  *
  * @author santi
  */
-public class ResourceUsage implements Serializable {
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 7299494700847958058L;
-	
-	List<Integer> positionsUsed = new LinkedList<Integer>();
-    int []resourcesUsed = new int[2];   //FIXME 2 players is hardcoded here! FIX!!!
+public class ResourceUsage {
+    List<Integer> positionsUsed = new LinkedList<>();
+    int []resourcesUsed = new int[2];   // 2 players is hardcoded here! FIX!!!
 
     
     /**

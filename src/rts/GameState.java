@@ -18,20 +18,15 @@ import util.XMLWriter;
  * A fully-observable game state
  * @author santi
  */
-public class GameState implements Serializable{
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1457073491781659434L;
-
-	public static final boolean REPORT_ILLEGAL_ACTIONS = false;
+public class GameState {
+    public static final boolean REPORT_ILLEGAL_ACTIONS = false;
     
     static Random r = new Random();         // only used if the action conflict resolution strategy is set to random
     protected int unitCancelationCounter = 0;  // only used if the action conflict resolution strategy is set to alternating
     
     protected int time = 0;
     protected PhysicalGameState pgs = null;
-    protected HashMap<Unit,UnitActionAssignment> unitActions = new LinkedHashMap<Unit,UnitActionAssignment>();
+    protected HashMap<Unit,UnitActionAssignment> unitActions = new LinkedHashMap<>();
     protected UnitTypeTable utt = null;
 
     /**

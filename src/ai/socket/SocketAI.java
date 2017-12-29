@@ -124,12 +124,16 @@ public class SocketAI extends AIWithComputationBudget {
         if (communication_language == LANGUAGE_XML) {
             XMLWriter w = new XMLWriter(out_pipe, " ");
             gs.toxml(w);
+            w.getWriter().append("\n");
             w.flush();
-            out_pipe.append("\n");
-            out_pipe.flush();
+//            out_pipe.append("\n");
+//            out_pipe.flush();
 
             // wait to get an action:
-            //while(!in_pipe.ready());
+//            while(!in_pipe.ready()) {
+//                Thread.sleep(0);
+//                if (DEBUG>=1) System.out.println("waiting");
+//            }
                 
             // parse the action:
             String actionString = in_pipe.readLine();
@@ -141,7 +145,7 @@ public class SocketAI extends AIWithComputationBudget {
         } else if (communication_language == LANGUAGE_JSON) {
             gs.toJSON(out_pipe);
             out_pipe.append("\n");
-            out_pipe.flush();
+//            out_pipe.flush();
             
             // wait to get an action:
             //while(!in_pipe.ready());

@@ -96,8 +96,10 @@ public class PuppetSearchMCTS extends PuppetBase {
 	}
 	@Override
 	public String statisticsString() {
-		return "Average Number of Leaves: "+allLeaves/allSearches+
-				", Average Time: "+allTime/allSearches;
+		return "Average Number of Leaves: "+
+                        (allSearches>0 ? allLeaves/allSearches:"-")+
+                       ", Average Time: "+ 
+                        (allSearches>0 ? allTime/allSearches:"-");
 	}
 	void clearStats(){
 		allTime=allLeaves=0;

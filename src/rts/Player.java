@@ -1,22 +1,17 @@
 package rts;
 
 import com.eclipsesource.json.JsonObject;
-import java.io.Serializable;
 import java.io.Writer;
 
 import org.jdom.Element;
+import rts.units.Unit;
 import util.XMLWriter;
 
 /**
  * A microRTS player, an entity who owns units
  * @author santi
  */
-public class Player  implements Serializable {
-    /**
-	 * For serialization
-	 */
-	private static final long serialVersionUID = 559137800510426092L;
-	
+public class Player {
 	/**
 	 * An integer that identifies the player
 	 */
