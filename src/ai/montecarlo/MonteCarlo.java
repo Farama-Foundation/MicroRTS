@@ -204,7 +204,11 @@ public class MonteCarlo extends AIWithComputationBudget implements Interruptible
                 best = pate;
             }
         }
-        if (best==null) best = best;
+        if (best==null) {
+            MonteCarlo.PlayerActionTableEntry pate = new MonteCarlo.PlayerActionTableEntry();
+            pate.pa = moveGenerator.getRandom();
+            System.err.println("MonteCarlo.getBestActionSoFar: best action was null!!! action.size() = " + actions.size());
+        }
         
         if (DEBUG>=1) {
             System.out.println("Executed " + run + " runs");
