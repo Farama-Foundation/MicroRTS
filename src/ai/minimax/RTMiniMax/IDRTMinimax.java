@@ -63,8 +63,8 @@ public class IDRTMinimax extends AIWithComputationBudget implements Interruptibl
     }
 
     
-    public IDRTMinimax(int tpc, EvaluationFunction a_ef) {
-        super(tpc, -1);
+    public IDRTMinimax(int available_time, EvaluationFunction a_ef) {
+        super(available_time, -1);
         LOOKAHEAD = 1;
         ef = a_ef;
     }
@@ -109,6 +109,7 @@ public class IDRTMinimax extends AIWithComputationBudget implements Interruptibl
     }
 
     
+    @Override
     public void computeDuringOneGameFrame() throws Exception {
         int maxplayer = playerForThisComputation;
         int minplayer = 1 - playerForThisComputation;
@@ -138,7 +139,7 @@ public class IDRTMinimax extends AIWithComputationBudget implements Interruptibl
                lookAhead = last_lookAhead;                
             }
              
-            long runStartTime = System.currentTimeMillis();
+//            long runStartTime = System.currentTimeMillis();
             PlayerAction tmp = timeBoundedRealTimeMinimaxABOutsideStack(gs_to_start_from, maxplayer, minplayer, gs_to_start_from.getTime() + lookAhead, cutOffTime, false);
             if (tmp!=null) {
                 bestMove = tmp;
