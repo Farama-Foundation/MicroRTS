@@ -32,10 +32,12 @@ import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.text.DefaultCaret;
 import rts.units.UnitTypeTable;
 import tournaments.FixedOpponentsTournament;
 import tournaments.LoadTournamentAIs;
 import tournaments.RoundRobinTournament;
+
 
 /**
  *
@@ -481,11 +483,13 @@ public class FETournamentPane extends JPanel {
             }
         });
         
-        tournamentProgressTextArea = new JTextArea(5, 20);
-        JScrollPane scrollPane = new JScrollPane(tournamentProgressTextArea);
-        tournamentProgressTextArea.setEditable(false);
-        scrollPane.setPreferredSize(new Dimension(512, 192));
-        add(scrollPane);
+		tournamentProgressTextArea = new JTextArea(5, 20);
+		JScrollPane scrollPane = new JScrollPane(tournamentProgressTextArea);
+		tournamentProgressTextArea.setEditable(false);
+		scrollPane.setPreferredSize(new Dimension(512, 192));
+		add(scrollPane);
+		DefaultCaret caret = (DefaultCaret)tournamentProgressTextArea.getCaret(); //autoscroll the progress Text Area
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         
     }
 }
