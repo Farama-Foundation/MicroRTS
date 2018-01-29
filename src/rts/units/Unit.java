@@ -329,7 +329,7 @@ public class Unit implements Serializable {
         String resourcesStr = e.getAttributeValue("resources");
         String hitpointsStr = e.getAttributeValue("hitpoints");
         
-        long ID = Integer.parseInt(IDStr);
+        long ID = Long.parseLong(IDStr);
         if (ID>=next_ID) next_ID = ID+1;
         UnitType type = utt.getUnitType(typeName);
         int player = Integer.parseInt(playerStr);
