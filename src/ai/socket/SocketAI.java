@@ -73,6 +73,7 @@ public class SocketAI extends AIWithComputationBudget {
         out_pipe = new PrintWriter(socket.getOutputStream(), true);
 
         // Consume the initial welcoming messages from the server
+        while(!in_pipe.ready());
         while(in_pipe.ready()) in_pipe.readLine();
 
         reset();
