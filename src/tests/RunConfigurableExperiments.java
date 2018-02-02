@@ -161,7 +161,7 @@ public class RunConfigurableExperiments {
                 return new DownsamplingUCT(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_ACTIONS, MAX_DEPTH,
                         new RandomBiasedAI(), getEvaluationFunction());
             case "UCTUnitActions":
-                return new UCTUnitActions(TIME, PLAYOUT_TIME, MAX_DEPTH * 10, new RandomBiasedAI(),
+                return new UCTUnitActions(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH * 10, new RandomBiasedAI(),
                         getEvaluationFunction());
             case "NaiveMCTS3"://NaiveMCTS
                 return new NaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, 0.33f, 0.0f, 0.75f,

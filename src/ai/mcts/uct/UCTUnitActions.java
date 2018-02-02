@@ -46,14 +46,14 @@ public class UCTUnitActions extends AIWithComputationBudget implements Interrupt
     
     
     public UCTUnitActions(UnitTypeTable utt) {
-        this(100,-1,100,
+        this(100,-1,100,10,
              new RandomBiasedAI(),
              new SimpleSqrtEvaluationFunction3());
     }       
     
     
-    public UCTUnitActions(int available_time, int lookahead, int max_depth, AI policy, EvaluationFunction a_ef) {
-        super(available_time, -1);
+    public UCTUnitActions(int available_time, int available_playouts, int lookahead, int max_depth, AI policy, EvaluationFunction a_ef) {
+        super(available_time, available_playouts);
         MAXSIMULATIONTIME = lookahead;
         randomAI = policy;
         MAX_TREE_DEPTH = max_depth;
@@ -76,7 +76,7 @@ public class UCTUnitActions extends AIWithComputationBudget implements Interrupt
     
     
     public AI clone() {
-        return new UCTUnitActions(TIME_BUDGET, MAXSIMULATIONTIME, MAX_TREE_DEPTH, randomAI, ef);
+        return new UCTUnitActions(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME, MAX_TREE_DEPTH, randomAI, ef);
     }  
     
     
@@ -111,8 +111,11 @@ public class UCTUnitActions extends AIWithComputationBudget implements Interrupt
     public void computeDuringOneGameFrame() throws Exception {
         if (DEBUG>=2) System.out.println("Search...");
         long start = System.currentTimeMillis();
+//        long cutOffTime = (TIME_BUDGET>0 ? start + TIME_BUDGET:0);
+        long end = start;
+        long count = 0;
         
-        while((System.currentTimeMillis() - start)<TIME_BUDGET) {
+        while(true) {
             UCTUnitActionsNode leaf = tree.UCTSelectLeaf(playerForThisComputation, 1-playerForThisComputation, MAX_TREE_DEPTH);
             
             if (leaf!=null) {
@@ -135,6 +138,10 @@ public class UCTUnitActions extends AIWithComputationBudget implements Interrupt
                 System.err.println(this.getClass().getSimpleName() + ": claims there are no more leafs to explore...");
                 break;
             }
+            count++;
+            end = System.currentTimeMillis();
+            if (TIME_BUDGET>=0 && (end - start)>=TIME_BUDGET) break; 
+            if (ITERATIONS_BUDGET>=0 && count>=ITERATIONS_BUDGET) break;                        
         }
         
         total_cycles_executed++;

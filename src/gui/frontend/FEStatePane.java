@@ -101,6 +101,7 @@ import util.XMLWriter;
 import ai.core.InterruptibleAI;
 import ai.evaluation.SimpleOptEvaluationFunction;
 import ai.mcts.believestatemcts.BS3_NaiveMCTS;
+import ai.mcts.uct.DownsamplingUCT;
 
 /**
  *
@@ -144,6 +145,7 @@ public class FEStatePane extends JPanel {
                    UCT.class,
                    UCTUnitActions.class,
                    UCTFirstPlayUrgency.class,
+                   DownsamplingUCT.class, 
                    NaiveMCTS.class,
                    BS3_NaiveMCTS.class,
                    MLPSMCTS.class,
