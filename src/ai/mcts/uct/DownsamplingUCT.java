@@ -159,6 +159,11 @@ public class DownsamplingUCT extends AIWithComputationBudget implements Interrup
             }
         }
         
+        if (mostVisitedIdx == -1) {
+            System.err.println("DownsamplingUCT.getBestActionSoFar: mostVisitedIdx == -1!!! tree.children.size() = " + tree.children.size());
+            return tree.moveGenerator.getRandom();
+        }
+        
         if (DEBUG>=2) tree.showNode(0,1);        
         if (DEBUG>=1) System.out.println(this.getClass().getSimpleName() + " selected children " + tree.actions.get(mostVisitedIdx) + " explored " + mostVisited.visit_count + " Avg evaluation: " + (mostVisited.accum_evaluation/((double)mostVisited.visit_count)));
         

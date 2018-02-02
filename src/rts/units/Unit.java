@@ -1,6 +1,7 @@
 package rts.units;
 
 import com.eclipsesource.json.JsonObject;
+import java.io.Serializable;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +16,7 @@ import util.XMLWriter;
  * Represents an instance of any unit in the game.
  * @author santi
  */
-public class Unit {
-	
+public class Unit implements Serializable {
 	/**
 	 * The type of this unit (worker, ranged, barracks, etc.)
 	 */
@@ -313,6 +313,7 @@ public class Unit {
      * @return
      */
     public List<UnitAction> getUnitActions(GameState s) {
+        // Unless specified, generate "NONE" actions with duration 10 cycles
         return getUnitActions(s, 10);
     }
 
@@ -512,8 +513,8 @@ public class Unit {
         String resourcesStr = e.getAttributeValue("resources");
         String hitpointsStr = e.getAttributeValue("hitpoints");
         
-        long ID = Integer.parseInt(IDStr);
-        if (ID >= next_ID) next_ID = ID+1;
+        long ID = Long.parseLong(IDStr);
+        if (ID>=next_ID) next_ID = ID+1;
         UnitType type = utt.getUnitType(typeName);
         int player = Integer.parseInt(playerStr);
         int x = Integer.parseInt(xStr);
