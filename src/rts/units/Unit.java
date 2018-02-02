@@ -466,13 +466,16 @@ public class Unit {
      * @param w
      */
     public void toxml(XMLWriter w) {
-       w.tagWithAttributes(this.getClass().getName(), "type=\"" + type.name + "\" " + 
-                                                      "ID=\"" + ID + "\" " + 
-                                                      "player=\"" + player + "\" " + 
-                                                      "x=\"" + x + "\" " + 
-                                                      "y=\"" + y + "\" " + 
-                                                      "resources=\"" + resources + "\" " + 
-                                                      "hitpoints=\"" + hitpoints + "\" ");
+       w.tagWithAttributes(
+		   this.getClass().getName(), "type=\"" + type.name + "\" " + 
+           "ID=\"" + ID + "\" " + 
+           "player=\"" + player + "\" " + 
+           "x=\"" + x + "\" " + 
+           "y=\"" + y + "\" " + 
+           "resources=\"" + resources + "\" " + 
+           "hitpoints=\"" + hitpoints + "\" "
+       );
+       
        w.tag("/" + this.getClass().getName());
     }
     
@@ -482,14 +485,16 @@ public class Unit {
      * @throws Exception
      */
     public void toJSON(Writer w) throws Exception {
-        w.write("{\"type\":\""+type.name+"\", " +
-                 "\"ID\":"+ID+", " +
-                 "\"player\":"+player+", " +
-                 "\"x\":"+x+", " +
-                 "\"y\":"+y+", " +
-                 "\"resources\":"+resources+", " +
-                 "\"hitpoints\":"+hitpoints+
-                "}");
+        w.write(
+			"{\"type\":\""+type.name+"\", " +
+	         "\"ID\":"+ID+", " +
+	         "\"player\":"+player+", " +
+	         "\"x\":"+x+", " +
+	         "\"y\":"+y+", " +
+	         "\"resources\":"+resources+", " +
+	         "\"hitpoints\":"+hitpoints+
+	        "}"
+	     );
     }
 
     /**
@@ -508,7 +513,7 @@ public class Unit {
         String hitpointsStr = e.getAttributeValue("hitpoints");
         
         long ID = Integer.parseInt(IDStr);
-        if (ID>=next_ID) next_ID = ID+1;
+        if (ID >= next_ID) next_ID = ID+1;
         UnitType type = utt.getUnitType(typeName);
         int player = Integer.parseInt(playerStr);
         int x = Integer.parseInt(xStr);
@@ -529,12 +534,15 @@ public class Unit {
      */
     public static  Unit fromJSON(JsonObject o, UnitTypeTable utt) {
  
-        Unit u = new Unit(o.getLong("ID",-1), 
-                          o.getInt("player",-1), 
-                          utt.getUnitType(o.getString("type", null)), 
-                          o.getInt("x",0), 
-                          o.getInt("y",0), 
-                          o.getInt("resources",0));
+        Unit u = new Unit(
+        	o.getLong("ID",-1), 
+	        o.getInt("player",-1), 
+	        utt.getUnitType(o.getString("type", null)), 
+	        o.getInt("x",0), 
+	        o.getInt("y",0), 
+	        o.getInt("resources",0)
+	    );
+        
         u.hitpoints = o.getInt("hitpoints",1);
         return u;
     }     

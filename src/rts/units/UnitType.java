@@ -253,38 +253,41 @@ public class UnitType {
      * @param w
      */
     public void toxml(XMLWriter w) {
-        w.tagWithAttributes(this.getClass().getName(),
-                            "ID=\""+ID+"\" "+
-                            "name=\""+name+"\" "+
-                            "cost=\""+cost+"\" "+
-                            "hp=\""+hp+"\" "+
-                            "minDamage=\""+minDamage+"\" "+
-                            "maxDamage=\""+maxDamage+"\" "+
-                            "attackRange=\""+attackRange+"\" "+
+        w.tagWithAttributes(
+    		this.getClass().getName(),
+            "ID=\""+ID+"\" "+
+            "name=\""+name+"\" "+
+            "cost=\""+cost+"\" "+
+            "hp=\""+hp+"\" "+
+            "minDamage=\""+minDamage+"\" "+
+            "maxDamage=\""+maxDamage+"\" "+
+            "attackRange=\""+attackRange+"\" "+
 
-                            "produceTime=\""+produceTime+"\" "+
-                            "moveTime=\""+moveTime+"\" "+
-                            "attackTime=\""+attackTime+"\" "+
-                            "harvestTime=\""+harvestTime+"\" "+
-                            "returnTime=\""+returnTime+"\" "+
-                                    
-                            "harvestAmount=\""+harvestAmount+"\" "+
-                            "sightRadius=\""+sightRadius+"\" "+
+            "produceTime=\""+produceTime+"\" "+
+            "moveTime=\""+moveTime+"\" "+
+            "attackTime=\""+attackTime+"\" "+
+            "harvestTime=\""+harvestTime+"\" "+
+            "returnTime=\""+returnTime+"\" "+
+                    
+            "harvestAmount=\""+harvestAmount+"\" "+
+            "sightRadius=\""+sightRadius+"\" "+
 
-                            "isResource=\""+isResource+"\" "+
-                            "isStockpile=\""+isStockpile+"\" "+
-                            "canHarvest=\""+canHarvest+"\" "+
-                            "canMove=\""+canMove+"\" "+
-                            "canAttack=\""+canAttack+"\"");
-        for(UnitType ut:produces) {
-            w.tagWithAttributes("produces", "type=\""+ut.name+"\"");
-            w.tag("/produces");
-        }
-        for(UnitType ut:producedBy) {
-            w.tagWithAttributes("producedBy", "type=\""+ut.name+"\"");
-            w.tag("/producedBy");
-        }
-        w.tag("/" + this.getClass().getName());
+            "isResource=\""+isResource+"\" "+
+            "isStockpile=\""+isStockpile+"\" "+
+            "canHarvest=\""+canHarvest+"\" "+
+            "canMove=\""+canMove+"\" "+
+            "canAttack=\""+canAttack+"\""
+        );
+        
+		for (UnitType ut : produces) {
+			w.tagWithAttributes("produces", "type=\"" + ut.name + "\"");
+			w.tag("/produces");
+		}
+		for (UnitType ut : producedBy) {
+			w.tagWithAttributes("producedBy", "type=\"" + ut.name + "\"");
+			w.tag("/producedBy");
+		}
+		w.tag("/" + this.getClass().getName());
     }     
 
 
@@ -294,45 +297,49 @@ public class UnitType {
      * @throws Exception
      */
     public void toJSON(Writer w) throws Exception {
-        w.write("{" +
-                "\"ID\":"+ID+", "+
-                "\"name\":\""+name+"\", "+
-                "\"cost\":"+cost+", "+
-                "\"hp\":"+hp+", "+
-                "\"minDamage\":"+minDamage+", "+
-                "\"maxDamage\":"+maxDamage+", "+
-                "\"attackRange\":"+attackRange+", "+
+        w.write(
+    		"{" +
+            "\"ID\":"+ID+", "+
+            "\"name\":\""+name+"\", "+
+            "\"cost\":"+cost+", "+
+            "\"hp\":"+hp+", "+
+            "\"minDamage\":"+minDamage+", "+
+            "\"maxDamage\":"+maxDamage+", "+
+            "\"attackRange\":"+attackRange+", "+
 
-                "\"produceTime\":"+produceTime+", "+
-                "\"moveTime\":"+moveTime+", "+
-                "\"attackTime\":"+attackTime+", "+
-                "\"harvestTime\":"+harvestTime+", "+
-                "\"returnTime\":"+returnTime+", "+
+            "\"produceTime\":"+produceTime+", "+
+            "\"moveTime\":"+moveTime+", "+
+            "\"attackTime\":"+attackTime+", "+
+            "\"harvestTime\":"+harvestTime+", "+
+            "\"returnTime\":"+returnTime+", "+
 
-                "\"harvestAmount\":"+harvestAmount+", "+
-                "\"sightRadius\":"+sightRadius+", "+
+            "\"harvestAmount\":"+harvestAmount+", "+
+            "\"sightRadius\":"+sightRadius+", "+
 
-                "\"isResource\":"+isResource+", "+
-                "\"isStockpile\":"+isStockpile+", "+
-                "\"canHarvest\":"+canHarvest+", "+
-                "\"canMove\":"+canMove+", "+
-                "\"canAttack\":"+canAttack+", ");
+            "\"isResource\":"+isResource+", "+
+            "\"isStockpile\":"+isStockpile+", "+
+            "\"canHarvest\":"+canHarvest+", "+
+            "\"canMove\":"+canMove+", "+
+            "\"canAttack\":"+canAttack+", "
+        );
 
-        boolean first = true;
-        w.write("\"produces\":[");
-        for(UnitType ut:produces) {
-            if (!first) w.write(", ");
-            w.write("\""+ut.name+"\"");
-            first = false;
-        }
-        first = true;
-        w.write("], \"producedBy\":[");
-        for(UnitType ut:producedBy) {
-            if (!first) w.write(", ");
-            w.write("\""+ut.name+"\"");
-            first = false;
-        }
-        w.write("]}");
+		boolean first = true;
+		w.write("\"produces\":[");
+		for (UnitType ut : produces) {
+			if (!first)
+				w.write(", ");
+			w.write("\"" + ut.name + "\"");
+			first = false;
+		}
+		first = true;
+		w.write("], \"producedBy\":[");
+		for (UnitType ut : producedBy) {
+			if (!first)
+				w.write(", ");
+			w.write("\"" + ut.name + "\"");
+			first = false;
+		}
+		w.write("]}");
     }     
     
     /**
