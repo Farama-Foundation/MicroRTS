@@ -1,13 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package rts;
 
 import rts.units.Unit;
 
 /**
- *
+ * Stores the action assigned to a unit in a given time
  * @author santi
  */
 public class UnitActionAssignment {

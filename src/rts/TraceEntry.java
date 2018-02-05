@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package rts;
 
 import java.util.LinkedList;
@@ -13,7 +9,8 @@ import util.Pair;
 import util.XMLWriter;
 
 /**
- *
+ * Stores the actions executed in a game state, useful to re-trace / re-play 
+ * the match
  * @author santi
  */
 public class TraceEntry {
@@ -21,32 +18,63 @@ public class TraceEntry {
     PhysicalGameState pgs = null;
     List<Pair<Unit,UnitAction>> actions = new LinkedList<Pair<Unit,UnitAction>>();
     
+    /**
+     * Creates from a PhysicalGameState and time 
+     * @param a_pgs
+     * @param a_time
+     */
     public TraceEntry(PhysicalGameState a_pgs, int a_time) {
         pgs = a_pgs;
         time = a_time;
     }
 
+    /**
+     * Adds a UnitAction to a Unit
+     * @param u
+     * @param a
+     */
     public void addUnitAction(Unit u, UnitAction a) {
         actions.add(new Pair<Unit,UnitAction>(u,a));
         
     }
     
+    /**
+     * Adds all actions of a player
+     * @param a
+     */
     public void addPlayerAction(PlayerAction a) {
-        for(Pair<Unit,UnitAction> ua:a.actions) actions.add(ua);
+		for (Pair<Unit, UnitAction> ua : a.actions)
+			actions.add(ua);
     }    
     
+    /**
+     * Returns the physical game state this object stores
+     * @return
+     */
     public PhysicalGameState getPhysicalGameState() {
         return pgs;
     }
     
+    /**
+     * Returns the list of actions this instance refers to
+     * @return
+     */
     public List<Pair<Unit,UnitAction>> getActions() {
         return actions;
     }
     
+    /**
+     * Returns the time this TraceEntry refers to
+     * @return
+     */
     public int getTime() {
         return time;
     }
     
+    /**
+     * Constructs a XML representation for this object
+     * @param w
+     */
     public void toxml(XMLWriter w) {
        w.tagWithAttributes(this.getClass().getName(), "time = \"" + time + "\"");
        pgs.toxml(w);
@@ -60,6 +88,11 @@ public class TraceEntry {
        w.tag("/" + this.getClass().getName());
     }    
     
+    /**
+     * Constructs the TraceEntry from a XML element and a UnitTypeTable
+     * @param e
+     * @param utt
+     */
     public TraceEntry(Element e, UnitTypeTable utt) {
         Element actions_e = e.getChild("actions");
         time = Integer.parseInt(e.getAttributeValue("time"));
@@ -67,12 +100,12 @@ public class TraceEntry {
         Element pgs_e = e.getChild(PhysicalGameState.class.getName());
         pgs = PhysicalGameState.fromXML(pgs_e, utt);
         
-        for(Object o:actions_e.getChildren()) {
-            Element action_e = (Element)o;
-            long ID = Long.parseLong(action_e.getAttributeValue("unitID"));
-            UnitAction a = new UnitAction(action_e.getChild("UnitAction"), utt);
-            Unit u = pgs.getUnit(ID);
-            actions.add(new Pair<Unit,UnitAction>(u,a));
-        }
+		for (Object o : actions_e.getChildren()) {
+			Element action_e = (Element) o;
+			long ID = Long.parseLong(action_e.getAttributeValue("unitID"));
+			UnitAction a = new UnitAction(action_e.getChild("UnitAction"), utt);
+			Unit u = pgs.getUnit(ID);
+			actions.add(new Pair<Unit, UnitAction>(u, a));
+		}
     }        
 }

@@ -1,14 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package rts.units;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
-import java.io.Serializable;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,35 +11,93 @@ import org.jdom.Element;
 import util.XMLWriter;
 
 /**
- *
+ * The unit type table stores the unit types the game can have.
+ * It also determines the attributes of each unit type.
+ * The unit type table determines the balance of the game.
  * @author santi
  */
-public class UnitTypeTable implements Serializable {
+public class UnitTypeTable  {
+    /**
+     * Empty type table should not be used!
+     */
     public static final int EMPTY_TYPE_TABLE = -1;
+    
+    /**
+     * Version one 
+     */
     public static final int VERSION_ORIGINAL = 1;
+    
+    /**
+     * Version two (a fine tune of the original)
+     */
     public static final int VERSION_ORIGINAL_FINETUNED = 2;
+    
+    /**
+     * A non-deterministic version (damages are random)
+     */
     public static final int VERSION_NON_DETERMINISTIC = 3;
     
+    /**
+     * A conflict resolution policy where move conflicts cancel both moves
+     */
     public static final int MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH = 1;   // (default)
+    
+    /**
+     * A conflict resolution policy where move conflicts are solved randomly 
+     */
     public static final int MOVE_CONFLICT_RESOLUTION_CANCEL_RANDOM = 2;   // (makes game non-deterministic)
+    
+    /**
+     * A conflict resolution policy where move conflicts are solved by 
+     * alternating the units trying to move
+     */
     public static final int MOVE_CONFLICT_RESOLUTION_CANCEL_ALTERNATING = 3;   
     
+    /**
+     * The list of unit types allowed in the game
+     */
     List<UnitType> unitTypes = new ArrayList<UnitType>();
+    
+    /**
+     * Which move conflict resolution is being adopted
+     */
     int moveConflictResolutionStrategy = MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH;
         
+    /**
+     * Creates a UnitTypeTable with version {@link #VERSION_ORIGINAL} and
+     * move conflict resolution as {@link #MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH} 
+     */
     public UnitTypeTable() {
         setUnitTypeTable(VERSION_ORIGINAL, MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH);
     }
     
+    /**
+     * Creates a unit type table with specified version and move conflict resolution
+     * as {@link #MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH}
+     * @param version
+     */
     public UnitTypeTable(int version) {
         setUnitTypeTable(version, MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH);
     }
         
+    /**
+     * Creates a unit type table specifying both the version and the move conflict 
+     * resolution strategy
+     * @param version
+     * @param crs the move conflict resolution strategy
+     */
     public UnitTypeTable(int version, int crs) {
         setUnitTypeTable(version, crs);
     }
     
     
+    /**
+     * Sets the version and move conflict resolution strategy to use 
+     * and configures the attributes of each unit type depending on the
+     * version 
+     * @param version
+     * @param crs the move conflict resolution strategy
+     */
     public void setUnitTypeTable(int version, int crs) {       
         moveConflictResolutionStrategy = crs;
         
@@ -232,15 +285,29 @@ public class UnitTypeTable implements Serializable {
         worker.produces(barracks);
     }
     
+    /**
+     * Adds a new unit type to the game
+     * @param ut
+     */
     public void addUnitType(UnitType ut) {
         ut.ID = unitTypes.size();
         unitTypes.add(ut);
     }
     
+    /**
+     * Retrieves a unit type by its numeric ID
+     * @param ID
+     * @return
+     */
     public UnitType getUnitType(int ID) {
         return unitTypes.get(ID);
     }
     
+    /**
+     * Retrieves a unit type by its name. Returns null if name is not found.
+     * @param name
+     * @return
+     */
     public UnitType getUnitType(String name) {
         for(UnitType ut:unitTypes) {
             if (ut.name.equals(name)) return ut;
@@ -248,63 +315,105 @@ public class UnitTypeTable implements Serializable {
         return null;
     }
 
+    /**
+     * Returns the list of all unit types
+     * @return
+     */
     public List<UnitType> getUnitTypes() {
         return unitTypes;
     }
     
+    /**
+     * Returns the integer corresponding to the move conflict resolution strategy in use
+     * @return
+     */
     public int getMoveConflictResolutionStrategy() {
         return moveConflictResolutionStrategy;
     }
     
     
-    public void toxml(XMLWriter w) {
-        w.tagWithAttributes(this.getClass().getName(),"moveConflictResolutionStrategy=\""+moveConflictResolutionStrategy+"\"");
-        for(UnitType ut:unitTypes) ut.toxml(w);
-        w.tag("/" + this.getClass().getName());
-    }    
+    /**
+     * Writes a XML representation of this UnitTypeTable
+     * @param w
+     */
+	public void toxml(XMLWriter w) {
+		w.tagWithAttributes(
+			this.getClass().getName(),
+			"moveConflictResolutionStrategy=\"" + moveConflictResolutionStrategy + "\""
+		);
+		
+		for (UnitType ut : unitTypes)
+			ut.toxml(w);
+		
+		w.tag("/" + this.getClass().getName());
+	}   
     
-    public void toJSON(Writer w) throws Exception {
-        boolean first = true;
-        w.write("{\"moveConflictResolutionStrategy\":" + moveConflictResolutionStrategy + ",");
-        w.write("\"unitTypes\":[");
-        for(UnitType ut:unitTypes) {
-            if (!first) w.write(", ");
-            ut.toJSON(w);
-            first = false;
-        }
-        w.write("]}");
-    }    
+    /**
+     * Writes a JSON representation of this UnitTypeTable
+     * @param w
+     * @throws Exception
+     */
+	public void toJSON(Writer w) throws Exception {
+		boolean first = true;
+		w.write("{\"moveConflictResolutionStrategy\":" + moveConflictResolutionStrategy + ",");
+		w.write("\"unitTypes\":[");
+		for (UnitType ut : unitTypes) {
+			if (!first)
+				w.write(", ");
+			ut.toJSON(w);
+			first = false;
+		}
+		w.write("]}");
+	}
     
    
+    /**
+     * Reads from XML and creates a UnitTypeTable
+     * @param e
+     * @return
+     */
     public static UnitTypeTable fromXML(Element e) {
-        UnitTypeTable utt = new UnitTypeTable(EMPTY_TYPE_TABLE);
-        utt.moveConflictResolutionStrategy = Integer.parseInt(e.getAttributeValue("moveConflictResolutionStrategy"));
-        for(Object o:e.getChildren()) {
-            Element unittype_e = (Element)o;
-            utt.unitTypes.add(UnitType.createStub(unittype_e));
-        }
-        for(Object o:e.getChildren()) {
-            Element unittype_e = (Element)o;
-            utt.getUnitType(unittype_e.getAttributeValue("name")).updateFromXML(unittype_e, utt);
-        }       
-        return utt;
+		UnitTypeTable utt = new UnitTypeTable(EMPTY_TYPE_TABLE);
+		utt.moveConflictResolutionStrategy = Integer.parseInt(
+			e.getAttributeValue("moveConflictResolutionStrategy")
+		);
+		
+		for (Object o : e.getChildren()) {
+			Element unittype_e = (Element) o;
+			utt.unitTypes.add(UnitType.createStub(unittype_e));
+		}
+		for (Object o : e.getChildren()) {
+			Element unittype_e = (Element) o;
+			utt.getUnitType(unittype_e.getAttributeValue("name")).updateFromXML(unittype_e, utt);
+		}
+		return utt;
     }
     
     
+    /**
+     * Reads from a JSON string and creates a UnitTypeTable
+     * @param JSON
+     * @return
+     */
     public static UnitTypeTable fromJSON(String JSON) {
-        JsonObject o = Json.parse(JSON).asObject();
-        UnitTypeTable utt = new UnitTypeTable(EMPTY_TYPE_TABLE);
-        utt.moveConflictResolutionStrategy = o.getInt("moveConflictResolutionStrategy", MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH);
-        JsonArray a = o.get("unitTypes").asArray();
-        for(JsonValue v:a.values()) {
-            JsonObject uto = v.asObject();
-            utt.unitTypes.add(UnitType.createStub(uto));
-        }
-        for(JsonValue v:a.values()) {
-            JsonObject uto = v.asObject();
-            utt.getUnitType(uto.getString("name",null)).updateFromJSON(uto, utt);
-        }       
-        return utt;
+		JsonObject o = Json.parse(JSON).asObject();
+		UnitTypeTable utt = new UnitTypeTable(EMPTY_TYPE_TABLE);
+		utt.moveConflictResolutionStrategy = o.getInt(
+			"moveConflictResolutionStrategy",
+			MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH
+		);
+		
+		JsonArray a = o.get("unitTypes").asArray();
+		
+		for (JsonValue v : a.values()) {
+			JsonObject uto = v.asObject();
+			utt.unitTypes.add(UnitType.createStub(uto));
+		}
+		for (JsonValue v : a.values()) {
+			JsonObject uto = v.asObject();
+			utt.getUnitType(uto.getString("name", null)).updateFromJSON(uto, utt);
+		}
+		return utt;
     }
     
 }

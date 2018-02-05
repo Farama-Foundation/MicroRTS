@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package rts;
 
 import com.eclipsesource.json.Json;
@@ -18,7 +14,7 @@ import util.Pair;
 import util.XMLWriter;
 
 /**
- *
+ * A fully-observable game state
  * @author santi
  */
 public class GameState {
@@ -32,49 +28,94 @@ public class GameState {
     protected HashMap<Unit,UnitActionAssignment> unitActions = new LinkedHashMap<>();
     protected UnitTypeTable utt = null;
 
+    /**
+     * Initializes the GameState with a PhysicalGameState and a UnitTypeTable
+     * @param a_pgs
+     * @param a_utt
+     */
     public GameState(PhysicalGameState a_pgs, UnitTypeTable a_utt) {
         pgs = a_pgs;
         utt = a_utt;
     }
         
+    /**
+     * Current game timestep (frames since beginning)
+     * @return
+     */
     public int getTime() {
         return time;
     }
     
+    /**
+     * Removes a unit from the game
+     * @param u
+     */
     public void removeUnit(Unit u) {
         pgs.removeUnit(u);
         unitActions.remove(u);
     }
     
+    /**
+     * @see PhysicalGameState#getPlayer(int)
+     * @param ID
+     * @return
+     */
     public Player getPlayer(int ID) {
         return pgs.getPlayer(ID);
     }
     
+    /**
+     * @see PhysicalGameState#getUnit(long)
+     * @param ID
+     * @return
+     */
     public Unit getUnit(long ID) {
         return pgs.getUnit(ID);
     }    
     
+    /**
+     * @see PhysicalGameState#getUnits()
+     * @return
+     */
     public List<Unit> getUnits() {
         return pgs.getUnits();
     }
     
+    /**
+     * Returns a map with the units and the actions assigned to them
+     * @return
+     */
     public HashMap<Unit,UnitActionAssignment> getUnitActions() {
         return unitActions;
     }
     
+    /**
+     * Returns the action of a unit
+     * @param u
+     * @return
+     */
     public UnitAction getUnitAction(Unit u) {
         UnitActionAssignment uaa = unitActions.get(u);
         if (uaa==null) return null;
         return uaa.action;
     }    
     
+    /**
+     * Returns the action assigned to a unit
+     * @param u
+     * @return
+     */
     public UnitActionAssignment getActionAssignment(Unit u) {
         return unitActions.get(u);
     }
     
+    /**
+     * Indicates whether all units owned by the players have a valid action or not
+     * @return
+     */
     public boolean isComplete() {
-        for(Unit u:pgs.units) {
-            if (u.getPlayer()!=-1) {
+        for(Unit u : pgs.units) {
+            if (u.getPlayer() != -1) {
                 UnitActionAssignment uaa = unitActions.get(u);
                 if (uaa == null) return false;
                 if (uaa.action == null) return false;
@@ -83,25 +124,48 @@ public class GameState {
         return true;
     }
     
+    /**
+     * @see PhysicalGameState#winner()
+     * @return
+     */
     public int winner() {
         return pgs.winner();
     }
     
+    /**
+     * @see PhysicalGameState#gameover()
+     * @return
+     */
     public boolean gameover() {
         return pgs.gameover();
     }
     
+    /**
+     * Returns the {@link PhysicalGameState} associated with this state
+     * @return
+     */
     public PhysicalGameState getPhysicalGameState() {
         return pgs;
     }
 
+    /**
+     * Returns the {@link UnitTypeTable} associated with this state
+     * @return
+     */
     public UnitTypeTable getUnitTypeTable() {
         return utt;
     }
     
     
-    // Returns true if there is no unit in the specified position and no unit is executing an action that will use that position
-    public boolean free(int x,int y) {
+    
+    /**
+     * Returns true if there is no unit in the specified position and no unit is executing 
+     * an action that will use that position
+     * @param x coordinate of the position
+     * @param y coordinate of the position
+     * @return
+     */
+    public boolean free(int x, int y) {
         if (pgs.getTerrain(x, y)!=PhysicalGameState.TERRAIN_NONE) return false;
         for(Unit u:pgs.units) {
             if (u.getX()==x && u.getY()==y) return false;
@@ -119,7 +183,12 @@ public class GameState {
         return true;
     }
     
-    // Returns an array with true if there is no unit in the specified position and no unit is executing an action that will use that position
+   
+    /**
+     * Returns a boolean array with true if there is no unit in 
+     * the specified position and no unit is executing an action that will use that position
+     * @return
+     */
     public boolean[][] getAllFree() {
     	
     	boolean free[][]=pgs.getAllFree();
@@ -137,13 +206,23 @@ public class GameState {
     }
     
 
-    // for fully observable game states, all the cells are observable:
+    /**
+     * Returns whether the cell is observable.
+     * For fully observable game states, all the cells are observable.
+     * @param x
+     * @param y
+     * @return
+     */
     public boolean observable(int x, int y) {
         return true;
     }
     
     
-    // returns "true" is any action different from NONE was issued
+    /**
+     * Issues a player action
+     * @param pa
+     * @return "true" is any action different from NONE was issued
+     */
     public boolean issue(PlayerAction pa) {
         boolean returnValue = false;
         
@@ -225,7 +304,11 @@ public class GameState {
     }
     
     
-    // Returns "true" is any action different from NONE was issued
+    /**
+     * Issues a player action, with additional checks for validity
+     * @param pa
+     * @return "true" is any action different from NONE was issued
+     */
     public boolean issueSafe(PlayerAction pa) {
         if (!pa.integrityCheck()) throw new Error("PlayerAction inconsistent before 'issueSafe'");
         if (!integrityCheck()) throw new Error("GameState inconsistent before 'issueSafe'");
@@ -288,20 +371,29 @@ public class GameState {
     }    
     
         
+    /**
+     * Indicates whether a player can issue an action in this state
+     * @param pID the player ID
+     * @return true if the player can execute any action
+     */
     public boolean canExecuteAnyAction(int pID) {
-        for(Unit u:pgs.getUnits()) {
-            if (u.getPlayer()==pID) {
-                if (unitActions.get(u)==null) return true;
+        for(Unit u : pgs.getUnits()) {
+            if (u.getPlayer() == pID) {
+                if (unitActions.get(u) == null) return true;
             }
         }
         return false;
     }
     
     
-    /*
-    This function assumes that the UnitAction ua is one of the actions that the unit can 
-    potentially execute, and only checks whether it has any conflicts with some other action.
-    */
+    /**
+     *  This function checks whether the intended unit action  has any conflicts with some 
+     *  other action. It assumes that the UnitAction ua is valid (i.e. one of the 
+     *  actions that the unit can potentially execute)
+     * @param u
+     * @param ua
+     * @return
+     */
     public boolean isUnitActionAllowed(Unit u, UnitAction ua) {
         PlayerAction empty = new PlayerAction();
 
@@ -330,6 +422,12 @@ public class GameState {
     }
         
     
+    /**
+     * 
+     * @param pID
+     * @param unit
+     * @return
+     */
     public List<PlayerAction> getPlayerActionsSingleUnit(int pID, Unit unit) {
         List<PlayerAction> l = new LinkedList<PlayerAction>();
         
@@ -360,7 +458,12 @@ public class GameState {
     }
     
     
-    public List<PlayerAction> getPlayerActions(int pID) {
+    /**
+     * Returns the list of {@link PlayerAction} for a given player
+     * @param playerID the player ID
+     * @return
+     */
+    public List<PlayerAction> getPlayerActions(int playerID) {
         List<PlayerAction> l = new LinkedList<PlayerAction>();
         
         PlayerAction empty = new PlayerAction();
@@ -378,7 +481,7 @@ public class GameState {
         }
         
         for(Unit u:pgs.getUnits()) {
-            if (u.getPlayer()==pID) {
+            if (u.getPlayer()==playerID) {
                 if (unitActions.get(u)==null) {
                     List<PlayerAction> l2 = new LinkedList<PlayerAction>();
 
@@ -394,8 +497,13 @@ public class GameState {
     }
         
        
+    /**
+     * Returns the time the next unit action will complete, or current time 
+     * if a player can act 
+     * @return
+     */
     public int getNextChangeTime() {
-        int nct = -1;
+        int nextChangeTime = -1;
         
         for(Player player:pgs.players) {
             if (canExecuteAnyAction(player.ID)) return time;
@@ -403,14 +511,18 @@ public class GameState {
         
         for(UnitActionAssignment uaa:unitActions.values()) {
             int t = uaa.time + uaa.action.ETA(uaa.unit);
-            if (nct==-1 || t<nct) nct = t;
+            if (nextChangeTime == -1 || t < nextChangeTime) nextChangeTime = t;
         }
         
-        if (nct==-1) return time;
-        return nct;
+        if (nextChangeTime == -1) return time;
+        return nextChangeTime;
     }
         
     
+    /**
+     * Runs a game cycle, execution all assigned actions
+     * @return whether the game was over
+     */
     public boolean cycle() {
         time++;
         
@@ -432,6 +544,9 @@ public class GameState {
     }
     
     
+    /**
+     * Forces the execution of all assigned actions
+     */
     public void forceExecuteAllActions() {
         List<UnitActionAssignment> readyToExecute = new LinkedList<UnitActionAssignment>();
         for(UnitActionAssignment uaa:unitActions.values()) readyToExecute.add(uaa);
@@ -443,6 +558,9 @@ public class GameState {
         }
     }
     
+    /* 
+     * @see java.lang.Object#clone()
+     */
     public GameState clone() {
         GameState gs = new GameState(pgs.clone(), utt);
         gs.time = time;
@@ -465,7 +583,11 @@ public class GameState {
     }
     
     
-    // This method does a quick clone, that shares the same PGS, but different unit assignments:
+    /**
+     * This method does a quick clone, that shares the same PGS, but different unit assignments
+     * @param pa
+     * @return
+     */
     public GameState cloneIssue(PlayerAction pa) {
         GameState gs = new GameState(pgs, utt);
         gs.time = time;
@@ -476,6 +598,11 @@ public class GameState {
     }
     
     
+    /**
+     * Clone this game state, replacing the active {@link UnitTypeTable}
+     * @param new_utt
+     * @return the new GameState
+     */
     public GameState cloneChangingUTT(UnitTypeTable new_utt)
     {
         GameState gs = clone();
@@ -490,10 +617,15 @@ public class GameState {
     }
     
     
+    /**
+     * Returns the resources being used for all actions issued
+     * in current cycle
+     * @return
+     */
     public ResourceUsage getResourceUsage() {
         ResourceUsage base_ru = new ResourceUsage();
         
-        for(Unit u:pgs.getUnits()) {
+        for(Unit u : pgs.getUnits()) {
             UnitActionAssignment uaa = unitActions.get(u);
             if (uaa!=null) {
                 ResourceUsage ru = uaa.action.resourceUsage(u, pgs);
@@ -505,6 +637,9 @@ public class GameState {
     }
     
     
+    /* 
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     public boolean equals(Object o) {
         if (!(o instanceof GameState)) return false;
         GameState s2 = (GameState)o;
@@ -528,6 +663,11 @@ public class GameState {
     }
     
     
+    /**
+     * Verifies integrity: if an action was assigned to non-existing unit
+     * or two actions were assigned to the same unit, integrity is violated
+     * @return
+     */
     public boolean integrityCheck() {
         List<Unit> alreadyUsed = new LinkedList<Unit>();
         for(UnitActionAssignment uaa:unitActions.values()) {
@@ -547,6 +687,9 @@ public class GameState {
     }
             
     
+    /**
+     * Shows {@link UnitActionAssignment}s on the terminal
+     */
     public void dumpActionAssignments() {
         for(Unit u:pgs.getUnits()) {
             if (u.getPlayer()>=0) {
@@ -561,6 +704,9 @@ public class GameState {
         }
     }
     
+    /*
+     * @see java.lang.Object#toString()
+     */
     public String toString() {
         String tmp = "ObservableGameState: " + time + "\n";
         for(Player p:pgs.getPlayers()) tmp += "player " + p.ID + ": " + p.getResources() + "\n";
@@ -577,6 +723,10 @@ public class GameState {
     }
 
     
+    /**
+     * Writes a XML representation of this state
+     * @param w
+     */
     public void toxml(XMLWriter w) {
         w.tagWithAttributes(this.getClass().getName(),"time=\"" + time + "\"");
         pgs.toxml(w);
@@ -592,6 +742,11 @@ public class GameState {
     }
     
 
+    /**
+     * Writes a JSON representation of this state
+     * @param w
+     * @throws Exception
+     */
     public void toJSON(Writer w) throws Exception {
         w.write("{");
         w.write("\"time\":" + time + ",\"pgs\":");
@@ -610,7 +765,12 @@ public class GameState {
         w.write("}");
     }
     
-    
+    /**
+     * Constructs a GameState from XML
+     * @param e
+     * @param utt
+     * @return
+     */
     public static GameState fromXML(Element e, UnitTypeTable utt) {        
         PhysicalGameState pgs = PhysicalGameState.fromXML(e.getChild(PhysicalGameState.class.getName()), utt);
         GameState gs = new GameState(pgs, utt);
@@ -630,7 +790,12 @@ public class GameState {
         return gs;
     }
     
-    
+    /**
+     * Constructs a GameState from JSON
+     * @param JSON
+     * @param utt
+     * @return
+     */
     public static GameState fromJSON(String JSON, UnitTypeTable utt) {        
         JsonObject o = Json.parse(JSON).asObject();
         PhysicalGameState pgs = PhysicalGameState.fromJSON(o.get("pgs").asObject(), utt);
