@@ -73,7 +73,7 @@ public class JSONSocketWrapperAI {
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
                 // Send a welcome message to the client.
-                out.println("EmptyAI server: you are client #" + clientNumber);
+                out.println("JSONSocketWrapperAI: you are client #" + clientNumber);
 
                 // Get messages from the client, line by line
                 while (true) {

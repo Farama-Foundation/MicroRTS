@@ -65,7 +65,6 @@ public class XMLSocketWrapperAI {
 
         public void run() {
             try {
-
                 // Decorate the streams so we can send characters
                 // and not just bytes.  Ensure output is flushed
                 // after every newline.
@@ -73,6 +72,9 @@ public class XMLSocketWrapperAI {
                         new InputStreamReader(socket.getInputStream()));
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
+                // Send a welcome message to the client.
+                out.println("XMLSocketWrapperAI: you are client #" + clientNumber);
+                
                 // Get messages from the client, line by line
                 while (true) {
                     String input = in.readLine();

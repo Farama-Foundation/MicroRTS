@@ -76,6 +76,8 @@ public class SocketAI extends AIWithComputationBudget {
         while(!in_pipe.ready());
         while(in_pipe.ready()) in_pipe.readLine();
 
+        if (DEBUG>=1) System.out.println("SocketAI: welcome message received");
+            
         reset();
     }
     
@@ -86,12 +88,16 @@ public class SocketAI extends AIWithComputationBudget {
             // set the game parameters:
             out_pipe.append("budget " + TIME_BUDGET + " " + ITERATIONS_BUDGET + "\n");
             out_pipe.flush();
+
+            if (DEBUG>=1) System.out.println("SocketAI: budgetd sent, waiting for ack");
             
             // wait for ack:
             in_pipe.readLine();
+            while(in_pipe.ready()) in_pipe.readLine();
+
+            if (DEBUG>=1) System.out.println("SocketAI: ack received");
 
             // send the utt:
-            while(in_pipe.ready()) in_pipe.readLine();
             out_pipe.append("utt\n");
             if (communication_language == LANGUAGE_XML) {
                 XMLWriter w = new XMLWriter(out_pipe, " ");
@@ -106,12 +112,15 @@ public class SocketAI extends AIWithComputationBudget {
             } else {
                 throw new Exception("Communication language " + communication_language + " not supported!");
             }
+            if (DEBUG>=1) System.out.println("SocketAI: UTT sent, waiting for ack");
             
             // wait for ack:
             in_pipe.readLine();
             
             // read any extra left-over lines
             while(in_pipe.ready()) in_pipe.readLine();
+            if (DEBUG>=1) System.out.println("SocketAI: ack received");
+
         }catch(Exception e) {
             e.printStackTrace();
         }
@@ -127,8 +136,6 @@ public class SocketAI extends AIWithComputationBudget {
             gs.toxml(w);
             w.getWriter().append("\n");
             w.flush();
-//            out_pipe.append("\n");
-//            out_pipe.flush();
 
             // wait to get an action:
 //            while(!in_pipe.ready()) {
@@ -146,7 +153,7 @@ public class SocketAI extends AIWithComputationBudget {
         } else if (communication_language == LANGUAGE_JSON) {
             gs.toJSON(out_pipe);
             out_pipe.append("\n");
-//            out_pipe.flush();
+            out_pipe.flush();
             
             // wait to get an action:
             //while(!in_pipe.ready());

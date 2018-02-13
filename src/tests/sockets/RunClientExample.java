@@ -40,7 +40,9 @@ public class RunClientExample {
         int PERIOD = 20;
         boolean gameover = false;
         
-        AI ai1 = new SocketAI(100,0, serverIP, serverPort, SocketAI.LANGUAGE_XML, utt);
+//        SocketAI.DEBUG = 1;
+//        AI ai1 = new SocketAI(100,0, serverIP, serverPort, SocketAI.LANGUAGE_XML, utt);
+        AI ai1 = new SocketAI(100,0, serverIP, serverPort, SocketAI.LANGUAGE_JSON, utt);
 //        AI ai2 = new SocketAI(100,0, serverIP, serverPort, SocketAI.LANGUAGE_XML, utt);
         AI ai2 = new RandomBiasedAI();
         
