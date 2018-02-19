@@ -64,6 +64,38 @@ public class SocketAI extends AIWithComputationBudget {
             e.printStackTrace();
         }
     }
+
+    private SocketAI(int mt, int mi, UnitTypeTable a_utt, int a_language, Socket socket) {
+        super(mt, mi);
+        communication_language = a_language;
+        utt = a_utt;
+        try {
+            this.socket = socket;
+            in_pipe = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out_pipe = new PrintWriter(socket.getOutputStream(), true);
+
+            // Consume the initial welcoming messages from the server
+            while(!in_pipe.ready());
+            while(in_pipe.ready()) in_pipe.readLine();
+
+            if (DEBUG>=1) System.out.println("SocketAI: welcome message received");
+            reset();
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Creates a SocketAI from an existing socket.
+     * @param mt The time budget in milliseconds.
+     * @param mi The iterations budget in milliseconds
+     * @param a_utt The unit type table.
+     * @param a_language The communication layer to use.
+     * @param socket The socket the ai will communicate over.
+     */
+    public static SocketAI createFromExistingSocket(int mt, int mi, UnitTypeTable a_utt, int a_language, Socket socket) {
+        return new SocketAI(mt, mi, a_utt, a_language, socket);
+    }
     
     
     public void connectToServer() throws Exception {
