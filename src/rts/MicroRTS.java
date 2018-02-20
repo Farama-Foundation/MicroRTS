@@ -1,5 +1,7 @@
 package rts;
 
+import gui.frontend.FrontEnd;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -9,12 +11,18 @@ public class MicroRTS {
         GameSettings gameSettings = GameSettings.loadFromConfig(GameSettings.fetchDefaultConfig());
         System.out.println(gameSettings);
 
-        if( gameSettings.isServer() ) {
-            startServer(gameSettings);
-        } else {
-            startClient(gameSettings);
+        switch (gameSettings.getLaunchMode()) {
+            case SERVER:
+                startServer(gameSettings);
+                break;
+            case CLIENT:
+                startClient(gameSettings);
+                break;
+            case STANDALONE:
+                throw new NotImplementedException();
+            case TOURNAMENT:
+                FrontEnd.main(args);
         }
-
     }
 
     /**

@@ -6,10 +6,17 @@ import java.util.Properties;
 
 public class GameSettings {
 
+    enum LaunchMode {
+        SERVER,
+        CLIENT,
+        STANDALONE,
+        TOURNAMENT
+    }
+
     // Networking
     private String serverAddress = "";
     private int serverPort = 9898;
-    private boolean isServer = true;
+    private LaunchMode launchMode;
 
     private int serializationType = 1; // Default is JSON
 
@@ -20,10 +27,10 @@ public class GameSettings {
     private int maxCycles = 5000;
     private boolean partiallyObservable = false;
     private int rulesVersion = 1;
-    private int confictPolicy = 1;
+    private int conflictPolicy = 1;
 
-    private GameSettings( boolean isServer, String serverAddress, int serverPort, int serializationType, String mapLocation, int maxCycles, boolean partiallyObservable, int rulesVersion, int confictPolicy) {
-        this.isServer = isServer;
+    private GameSettings( LaunchMode launchMode, String serverAddress, int serverPort, int serializationType, String mapLocation, int maxCycles, boolean partiallyObservable, int rulesVersion, int confictPolicy) {
+        this.launchMode = launchMode;
         this.serverAddress = serverAddress;
         this.serverPort = serverPort;
         this.serializationType = serializationType;
@@ -31,7 +38,7 @@ public class GameSettings {
         this.maxCycles = maxCycles;
         this.partiallyObservable = partiallyObservable;
         this.rulesVersion = rulesVersion;
-        this.confictPolicy = confictPolicy;
+        this.conflictPolicy = confictPolicy;
     }
 
     public String getServerAddress() {
@@ -62,12 +69,12 @@ public class GameSettings {
         return rulesVersion;
     }
 
-    public int getConfictPolicy() {
-        return confictPolicy;
+    public int getConflictPolicy() {
+        return conflictPolicy;
     }
 
-    public boolean isServer() {
-        return isServer;
+    public LaunchMode getLaunchMode() {
+        return launchMode;
     }
 
     /**
@@ -95,16 +102,16 @@ public class GameSettings {
         boolean partiallyObservable = Boolean.parseBoolean(prop.getProperty("partially_observable"));
         int rulesVersion = Integer.parseInt(prop.getProperty("rules_version"));
         int conflictPolicy = Integer.parseInt(prop.getProperty("conflict_policy"));
-        boolean isServer = Boolean.parseBoolean(prop.getProperty("server"));
+        LaunchMode launchMode = LaunchMode.valueOf(prop.getProperty("launch_mode"));
 
-        return new GameSettings(isServer,serverAddress,serverPort,serializationType,mapLocation,maxCycles,partiallyObservable,rulesVersion,conflictPolicy);
+        return new GameSettings(launchMode,serverAddress,serverPort,serializationType,mapLocation,maxCycles,partiallyObservable,rulesVersion,conflictPolicy);
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("----------Game Settings----------\n");
-        sb.append("Running as Server: ").append( isServer() ).append("\n");
+        sb.append("Running as Server: ").append( getLaunchMode().toString() ).append("\n");
         sb.append("Server Address: ").append( getServerAddress() ).append("\n");
         sb.append("Server Port: ").append( getServerPort() ).append("\n");
         sb.append("Serialization Type: ").append( getSerializationType()).append("\n");
@@ -112,7 +119,7 @@ public class GameSettings {
         sb.append("Max Cycles: ").append( getMaxCycles() ).append("\n");
         sb.append("Partially Observable: ").append( isPartiallyObservable() ).append("\n");
         sb.append("Rules Version: ").append( getRulesVersion() ).append("\n");
-        sb.append("Conflict Policy: ").append( getConfictPolicy() ).append("\n");
+        sb.append("Conflict Policy: ").append( getConflictPolicy() ).append("\n");
         sb.append("------------------------------------------------");
         return sb.toString();
     }
