@@ -5,6 +5,9 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/***
+ * The main class for running a MicroRTS game. To modify existing settings change the file "config.properties".
+ */
 public class MicroRTS {
 
     public static void main(String args[]) throws Exception {
