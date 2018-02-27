@@ -1,5 +1,6 @@
 package rts;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -7,10 +8,10 @@ import java.util.Properties;
 public class GameSettings {
 
     enum LaunchMode {
-        SERVER,
-        CLIENT,
         STANDALONE,
-        TOURNAMENT
+        GUI,
+        SERVER,
+        CLIENT
     }
 
     // Networking
@@ -26,10 +27,18 @@ public class GameSettings {
     // Game settings
     private int maxCycles = 5000;
     private boolean partiallyObservable = false;
-    private int rulesVersion = 1;
+    private int uttVersion = 1;
     private int conflictPolicy = 1;
+    
+    // Opponents:
+    private String AI1 = "";
+    private String AI2 = "";
+    
 
-    private GameSettings( LaunchMode launchMode, String serverAddress, int serverPort, int serializationType, String mapLocation, int maxCycles, boolean partiallyObservable, int rulesVersion, int confictPolicy) {
+    private GameSettings( LaunchMode launchMode, String serverAddress, int serverPort, 
+                          int serializationType, String mapLocation, int maxCycles, 
+                          boolean partiallyObservable, int uttVersion, int confictPolicy, 
+                          String AI1, String AI2) {
         this.launchMode = launchMode;
         this.serverAddress = serverAddress;
         this.serverPort = serverPort;
@@ -37,8 +46,10 @@ public class GameSettings {
         this.mapLocation = mapLocation;
         this.maxCycles = maxCycles;
         this.partiallyObservable = partiallyObservable;
-        this.rulesVersion = rulesVersion;
+        this.uttVersion = uttVersion;
         this.conflictPolicy = confictPolicy;
+        this.AI1 = AI1;
+        this.AI2 = AI2;
     }
 
     public String getServerAddress() {
@@ -65,8 +76,8 @@ public class GameSettings {
         return partiallyObservable;
     }
 
-    public int getRulesVersion() {
-        return rulesVersion;
+    public int getUTTVersion() {
+        return uttVersion;
     }
 
     public int getConflictPolicy() {
@@ -77,12 +88,21 @@ public class GameSettings {
         return launchMode;
     }
 
+    public String getAI1() {
+        return AI1;
+    }
+
+    public String getAI2() {
+        return AI2;
+    }
+
     /**
      * Fetches the default configuration file which will be located in the root direction called "config.properties".
      */
     public static Properties fetchDefaultConfig() throws IOException {
         Properties prop = new Properties();
         InputStream is = GameSettings.class.getResourceAsStream("/config.properties");
+        if (is == null) is = new FileInputStream("resources/config.properties");
         prop.load(is);
         return prop;
     }
@@ -95,17 +115,31 @@ public class GameSettings {
         assert !prop.isEmpty();
 
         String serverAddress = prop.getProperty("server_address");
-        int serverPort = Integer.parseInt(prop.getProperty("server_port"));
-        int serializationType = Integer.parseInt(prop.getProperty("serialization_type"));
+        int serverPort = readIntegerProperty(prop, "server_port", 9898);
+        int serializationType = readIntegerProperty(prop, "serialization_type", 2);
         String mapLocation = prop.getProperty("map_location");
-        int maxCycles = Integer.parseInt(prop.getProperty("max_cycles"));
+        int maxCycles = readIntegerProperty(prop, "max_cycles", 5000);
         boolean partiallyObservable = Boolean.parseBoolean(prop.getProperty("partially_observable"));
-        int rulesVersion = Integer.parseInt(prop.getProperty("rules_version"));
-        int conflictPolicy = Integer.parseInt(prop.getProperty("conflict_policy"));
+        int uttVersion = readIntegerProperty(prop, "UTT_version", 2);
+        int conflictPolicy = readIntegerProperty(prop, "conflict_policy", 1);
         LaunchMode launchMode = LaunchMode.valueOf(prop.getProperty("launch_mode"));
+        String AI1 = prop.getProperty("AI1");
+        String AI2 = prop.getProperty("AI2");
 
-        return new GameSettings(launchMode,serverAddress,serverPort,serializationType,mapLocation,maxCycles,partiallyObservable,rulesVersion,conflictPolicy);
+        return new GameSettings(launchMode, serverAddress, serverPort,
+                                serializationType, mapLocation, maxCycles,
+                                partiallyObservable, uttVersion, conflictPolicy, 
+                                AI1, AI2);
     }
+    
+    
+    public static int readIntegerProperty(Properties prop, String name, int defaultValue)
+    {
+        String stringValue = prop.getProperty("serialization_type");
+        if (stringValue == null) return defaultValue;
+        return Integer.parseInt(stringValue);
+    }
+    
 
     @Override
     public String toString() {
@@ -118,8 +152,10 @@ public class GameSettings {
         sb.append("Map Location: ").append( getMapLocation() ).append("\n");
         sb.append("Max Cycles: ").append( getMaxCycles() ).append("\n");
         sb.append("Partially Observable: ").append( isPartiallyObservable() ).append("\n");
-        sb.append("Rules Version: ").append( getRulesVersion() ).append("\n");
+        sb.append("Rules Version: ").append(getUTTVersion() ).append("\n");
         sb.append("Conflict Policy: ").append( getConflictPolicy() ).append("\n");
+        sb.append("AI1: ").append( getAI1() ).append("\n");
+        sb.append("AI2: ").append( getAI2() ).append("\n");
         sb.append("------------------------------------------------");
         return sb.toString();
     }

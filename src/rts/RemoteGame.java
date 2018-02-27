@@ -26,7 +26,7 @@ class RemoteGame extends Thread {
         this.socket = socket;
         this.gameSettings = gameSettings;
 
-        this.unitTypeTable = new UnitTypeTable(gameSettings.getRulesVersion(),gameSettings.getConflictPolicy());
+        this.unitTypeTable = new UnitTypeTable(gameSettings.getUTTVersion(),gameSettings.getConflictPolicy());
 
         try {
             this.pgs = PhysicalGameState.load(gameSettings.getMapLocation(), unitTypeTable);
