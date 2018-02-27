@@ -245,7 +245,7 @@ public class FixedOpponentsTournament {
                             gameover = gs.cycle();
                         } while (!gameover && 
                                  (gs.getTime() < maxGameLength));
-
+                       
                         if (traceOutputfolder != null) {
                             File folder = new File(traceOutputfolder);
                             if (!folder.exists()) folder.mkdirs();
@@ -279,6 +279,9 @@ public class FixedOpponentsTournament {
                         } else {
                             winner = gs.winner();
                         }
+                        ai1.gameOver(winner);
+                        ai2.gameOver(winner);
+
                         out.write(iteration + "\t" + map_idx + "\t" + ai1_idx + "\t" + ai2_idx + "\t" + 
                                   gs.getTime() + "\t" + winner + "\t"  + crashed + "\t" + timedout + "\n");
                         out.flush();

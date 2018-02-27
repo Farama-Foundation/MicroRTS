@@ -62,4 +62,10 @@ public abstract class AI {
     public void preGameAnalysis(GameState gs, long milliseconds) throws Exception
     {
     }
+    
+    
+    // Notifies the AI that the game is over, and reports who was the winner
+    public void gameOver(int winner) throws Exception
+    {
+    }
 } 

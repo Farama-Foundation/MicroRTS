@@ -71,5 +71,7 @@ public class RunClientExample {
                 }
             }
         }while(!gameover && gs.getTime()<MAXCYCLES);        
+        ai1.gameOver(gs.winner());
+        ai2.gameOver(gs.winner());
     }    
 }

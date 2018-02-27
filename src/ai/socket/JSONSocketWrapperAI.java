@@ -134,6 +134,13 @@ public class JSONSocketWrapperAI {
                         
                         out.append("ack\n");
                         out.flush();
+                    } else if (input.startsWith("gameOver")) {
+                        String []tokens = input.split(" ");
+                        int winner = Integer.parseInt(tokens[1]);
+                        if (DEBUG>=1) System.out.println("gameOver " + winner);
+                        ai.gameOver(winner);
+                        out.append("ack\n");
+                        out.flush();
                     }
                 }
             } catch (Exception e) {

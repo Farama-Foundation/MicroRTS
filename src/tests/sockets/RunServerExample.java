@@ -26,6 +26,7 @@ public class RunServerExample {
         
 //        XMLSocketWrapperAI.DEBUG = 1;
 //        XMLSocketWrapperAI.runServer(ai, port);
+        JSONSocketWrapperAI.DEBUG = 1;
         JSONSocketWrapperAI.runServer(ai, port);
     }
 }

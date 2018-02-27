@@ -316,6 +316,9 @@ public class RoundRobinTournament {
                         } else {
                             winner = gs.winner();
                         }
+                        ai1.gameOver(winner);
+                        ai2.gameOver(winner);
+                        
                         out.write(iteration + "\t" + map_idx + "\t" + ai1_idx + "\t" + ai2_idx + "\t"
                                 + gs.getTime() + "\t" + winner + "\t" + crashed + "\t" + timedout + "\n");
                         out.flush();

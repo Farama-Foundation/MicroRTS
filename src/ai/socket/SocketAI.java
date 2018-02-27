@@ -230,6 +230,18 @@ public class SocketAI extends AIWithComputationBudget {
 
     
     @Override
+    public void gameOver(int winner) throws Exception
+    {
+        // send the game state:
+        out_pipe.append("gameOver " + winner + "\n");
+        out_pipe.flush();
+                
+        // wait for ack:
+        in_pipe.readLine();        
+    }
+    
+    
+    @Override
     public AI clone() {
         return new SocketAI(TIME_BUDGET, ITERATIONS_BUDGET, serverAddress, serverPort, communication_language, utt);
     }
