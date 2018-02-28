@@ -3,7 +3,9 @@ package rts;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,9 +52,14 @@ public class PhysicalGameState {
      */
     public static PhysicalGameState load(String fileName, UnitTypeTable utt) throws JDOMException, IOException {
         try{
-        	return PhysicalGameState.fromXML(new SAXBuilder().build(fileName).getRootElement(), utt);        
-        }catch(IllegalArgumentException ex){
-        	throw new IllegalArgumentException("Error loading map: "+fileName,ex);
+        	return PhysicalGameState.fromXML(new SAXBuilder().build(fileName).getRootElement(), utt);
+        }catch(IllegalArgumentException | FileNotFoundException e) {
+            // Attempt to load the resource as a resource stream.
+            try( InputStream is = PhysicalGameState.class.getClassLoader().getResourceAsStream(fileName) ) {
+                return fromXML((new SAXBuilder()).build(is).getRootElement(), utt);
+            } catch (IllegalArgumentException var3) {
+                throw new IllegalArgumentException("Error loading map: " + fileName, var3);
+            }
         }
     }
     
