@@ -135,7 +135,7 @@ public class GameSettings {
     
     public static int readIntegerProperty(Properties prop, String name, int defaultValue)
     {
-        String stringValue = prop.getProperty("serialization_type");
+        String stringValue = prop.getProperty(name);
         if (stringValue == null) return defaultValue;
         return Integer.parseInt(stringValue);
     }
