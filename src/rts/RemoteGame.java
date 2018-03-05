@@ -80,6 +80,8 @@ class RemoteGame extends Thread {
                     }
                 }
             } while (!gameOver && gameState.getTime() < gameSettings.getMaxCycles());
+            player_one.gameOver(gameState.winner());
+            player_two.gameOver(gameState.winner());
         } catch ( Exception e ) {
             e.printStackTrace();
         }
