@@ -27,7 +27,7 @@ public abstract class AI {
     
     
     @Override
-    public abstract AI clone();   // this function is not supposed to do an exact clone with all the internal state, etc.
+    public abstract AI clone();   // this function is NOT supposed to do an exact clone with all the internal state, etc.
                                   // just a copy of the AI with the same configuration.
         
     public abstract List<ParameterSpecification> getParameters();
@@ -61,6 +61,15 @@ public abstract class AI {
     //   might be fully observable.
     public void preGameAnalysis(GameState gs, long milliseconds) throws Exception
     {
+    }
+
+    
+    // If bots want to write anything to disc after the pre-game analysis, this function has an additional argument
+    // Specifying a folder, where AIs can write the result of the analysis. Then this can be loaded before starting 
+    // subsequent games.
+    public void preGameAnalysis(GameState gs, long milliseconds, String readWriteFolder) throws Exception
+    {
+        preGameAnalysis(gs, milliseconds);
     }
     
     

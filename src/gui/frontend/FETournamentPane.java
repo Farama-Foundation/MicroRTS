@@ -74,7 +74,6 @@ public class FETournamentPane extends JPanel {
     JCheckBox timeoutCheckBox = null;
     JCheckBox gcCheckBox = null;
     JCheckBox tracesCheckBox = null;
-    JCheckBox preGameAnalysisCheckBox = null;
     
     JTextArea tournamentProgressTextArea = null;
     
@@ -324,7 +323,7 @@ public class FETournamentPane extends JPanel {
                 timeBudgetField = FEStatePane.addTextField(p2left,"Time Budget:", "100", 5);
                 iterationsBudgetField = FEStatePane.addTextField(p2left,"Iterations Budget:", "-1", 8);
                 preAnalysisTimeField = FEStatePane.addTextField(p2left,"pre-Analisys time budget:", "1000", 8);
-                
+                p2left.setMaximumSize(new Dimension(1000,1000));    // something sufficiently big for all these options
                 p2.add(p2left);            
             }            
             p2.add(new JSeparator(SwingConstants.VERTICAL));
@@ -342,6 +341,7 @@ public class FETournamentPane extends JPanel {
                     unitTypeTableBox.setAlignmentY(Component.CENTER_ALIGNMENT);
                     unitTypeTableBox.setMaximumSize(new Dimension(160,20));
                     ptmp.add(unitTypeTableBox);
+                    p2right.setMaximumSize(new Dimension(1000,1000));    // something sufficiently big for all these options
                     p2right.add(ptmp);
                 }                
                 
@@ -360,9 +360,9 @@ public class FETournamentPane extends JPanel {
                 tracesCheckBox = new JCheckBox("Save game traces");
                 tracesCheckBox.setSelected(false);                
                 p2right.add(tracesCheckBox);
-                preGameAnalysisCheckBox = new JCheckBox("Give time to the AIs before game starts to analyze initial game state");
-                preGameAnalysisCheckBox.setSelected(false);                
-                p2right.add(preGameAnalysisCheckBox);
+//                preGameAnalysisCheckBox = new JCheckBox("Give time to the AIs before game starts to analyze initial game state");
+//                preGameAnalysisCheckBox.setSelected(false);                
+//                p2right.add(preGameAnalysisCheckBox);
                 p2.add(p2right);
             }            
             add(p2);
@@ -405,18 +405,20 @@ public class FETournamentPane extends JPanel {
                     boolean selfMatches = selfMatchesCheckBox.isSelected();
                     boolean timeOutCheck = timeoutCheckBox.isSelected();
                     boolean gcCheck = gcCheckBox.isSelected();
-                    boolean preGameAnalysis = preGameAnalysisCheckBox.isSelected();
+                    boolean preGameAnalysis = preAnalysisBudget > 0;
 
                     String prefix = "tournament_";
                     int idx = 0;
-                    String sufix = ".tsv";
+//                    String sufix = ".tsv";
                     File file;
                     do {
                         idx++;
-                        file = new File(prefix + idx + sufix);
+                        file = new File(prefix + idx);
                     }while(file.exists());
-                    final File fileToUse = file;
-                    final String tracesFolder = (tracesCheckBox.isSelected() ? prefix + idx:null);
+                    file.mkdir();
+                    String tournamentfolder = file.getName();
+                    final File fileToUse = new File(tournamentfolder + "/tournament.csv");
+                    final String tracesFolder = (tracesCheckBox.isSelected() ? tournamentfolder + "/traces":null);
                                                             
                     if (tournamentType.equals(TOURNAMENT_ROUNDROBIN)) {
                         if (selectedAIs.size()<2) {
@@ -431,10 +433,12 @@ public class FETournamentPane extends JPanel {
                                             Writer writer = new FileWriter(fileToUse);
                                             Writer writerProgress = new JTextAreaWriter(tournamentProgressTextArea);
                                             RoundRobinTournament.runTournament(selectedAIs, -1, maps, 
-                                                                               iterations, maxGameLength, timeBudget, iterationsBudget, preAnalysisBudget, 
+                                                                               iterations, maxGameLength, timeBudget, iterationsBudget, 
+                                                                               preAnalysisBudget, 1000, // 1000 is just to give 1 second to the AIs to load their read/write folder saved content
                                                                                fullObservability, selfMatches, timeOutCheck, gcCheck, preGameAnalysis, 
                                                                                utt, tracesFolder,
-                                                                               writer, writerProgress);
+                                                                               writer, writerProgress,
+                                                                               tournamentfolder);
                                             writer.close();
                                         } catch(Exception e2) {
                                             e2.printStackTrace();
@@ -461,10 +465,12 @@ public class FETournamentPane extends JPanel {
                                             Writer writer = new FileWriter(fileToUse);
                                             Writer writerProgress = new JTextAreaWriter(tournamentProgressTextArea);
                                             FixedOpponentsTournament.runTournament(selectedAIs, opponentAIs, maps, 
-                                                                               iterations, maxGameLength, timeBudget, iterationsBudget, preAnalysisBudget, 
+                                                                               iterations, maxGameLength, timeBudget, iterationsBudget, 
+                                                                               preAnalysisBudget, 1000, // 1000 is just to give 1 second to the AIs to load their read/write folder saved content
                                                                                fullObservability, timeOutCheck, gcCheck, preGameAnalysis, 
                                                                                utt, tracesFolder,
-                                                                               writer, writerProgress);
+                                                                               writer, writerProgress,
+                                                                               tournamentfolder);
                                             writer.close();
                                         } catch(Exception e2) {
                                             e2.printStackTrace();
@@ -483,13 +489,12 @@ public class FETournamentPane extends JPanel {
             }
         });
         
-		tournamentProgressTextArea = new JTextArea(5, 20);
-		JScrollPane scrollPane = new JScrollPane(tournamentProgressTextArea);
-		tournamentProgressTextArea.setEditable(false);
-		scrollPane.setPreferredSize(new Dimension(512, 192));
-		add(scrollPane);
-		DefaultCaret caret = (DefaultCaret)tournamentProgressTextArea.getCaret(); //autoscroll the progress Text Area
-		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-        
+        tournamentProgressTextArea = new JTextArea(5, 20);
+        JScrollPane scrollPane = new JScrollPane(tournamentProgressTextArea);
+        tournamentProgressTextArea.setEditable(false);
+        scrollPane.setPreferredSize(new Dimension(512, 192));
+        add(scrollPane);
+        DefaultCaret caret = (DefaultCaret)tournamentProgressTextArea.getCaret(); //autoscroll the progress Text Area
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);        
     }
 }

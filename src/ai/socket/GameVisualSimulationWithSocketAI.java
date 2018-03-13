@@ -39,8 +39,8 @@ public class GameVisualSimulationWithSocketAI {
         JFrame w = PhysicalGameStatePanel.newVisualizer(gs,640,640,false,PhysicalGameStatePanel.COLORSCHEME_BLACK);
 //        JFrame w = PhysicalGameStatePanel.newVisualizer(gs,640,640,false,PhysicalGameStatePanel.COLORSCHEME_WHITE);
 
-        ai1.preGameAnalysis(gs, 1000);
-        ai2.preGameAnalysis(gs, 1000);
+        ai1.preGameAnalysis(gs, 1000, ".");
+        ai2.preGameAnalysis(gs, 1000, ".");
 
         long nextTimeToUpdate = System.currentTimeMillis() + PERIOD;
         do{

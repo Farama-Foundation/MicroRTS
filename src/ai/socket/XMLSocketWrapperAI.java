@@ -124,6 +124,11 @@ public class XMLSocketWrapperAI {
                     } else if (input.startsWith("preGameAnalysis")) {
                         String []tokens = input.split(" ");
                         int milliseconds = Integer.parseInt(tokens[1]);
+                        String readWriteFolder = null;
+                        if (tokens.length>=2) {
+                            readWriteFolder = tokens[2];
+                            if (readWriteFolder.startsWith("\"")) readWriteFolder = readWriteFolder.substring(1, readWriteFolder.length()-1);
+                        }
                         if (DEBUG>=1) System.out.println("preGameAnalysis");
                         
                         input = in.readLine();
@@ -132,7 +137,11 @@ public class XMLSocketWrapperAI {
                         GameState gs = GameState.fromXML(new SAXBuilder().build(new StringReader(input)).getRootElement(), utt);
                         if (DEBUG>=1) System.out.println(gs);
 
-                        ai.preGameAnalysis(gs, milliseconds);
+                        if (readWriteFolder != null) {
+                            ai.preGameAnalysis(gs, milliseconds, readWriteFolder);                            
+                        } else {
+                            ai.preGameAnalysis(gs, milliseconds);
+                        }
                         
                         out.append("ack\n");
                         out.flush();
