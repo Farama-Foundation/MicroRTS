@@ -8,6 +8,8 @@ microRTS was developed by [Santiago Ontañón](https://sites.google.com/site/san
 
 For a video of how microRTS looks like when a human plays see a [youtube video](https://www.youtube.com/watch?v=ZsKKAoiD7B0)
 
+An AI competition was organized aroung microRTS in the IEEE-CIG 2017 conference, and again in 2018. For more information on the competition see the [competition website](https://sites.google.com/site/micrortsaicompetition/home)
+
 To cite microRTS, please cite this paper:
 
 Santiago Ontañón (2013) The Combinatorial Multi-Armed Bandit Problem and its Application to Real-Time Strategy Games, In AIIDE 2013. pp. 58 - 64.
