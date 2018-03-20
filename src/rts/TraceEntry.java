@@ -93,7 +93,7 @@ public class TraceEntry {
      * @param e
      * @param utt
      */
-    public TraceEntry(Element e, UnitTypeTable utt) {
+    public TraceEntry(Element e, UnitTypeTable utt) throws Exception {
         Element actions_e = e.getChild("actions");
         time = Integer.parseInt(e.getAttributeValue("time"));
   
