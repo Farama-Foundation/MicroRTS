@@ -83,7 +83,7 @@ public class Trace {
      * Constructs the Trace from a XML element
      * @param e
      */
-    public Trace(Element e) {
+    public Trace(Element e) throws Exception {
         utt = UnitTypeTable.fromXML(e.getChild(UnitTypeTable.class.getName()));
         Element entries_e = e.getChild("entries");
         
@@ -100,7 +100,7 @@ public class Trace {
      * @param e
      * @param a_utt
      */
-    public Trace(Element e, UnitTypeTable a_utt) {
+    public Trace(Element e, UnitTypeTable a_utt) throws Exception {
         utt = a_utt;
         Element entries_e = e.getChild("entries");
         

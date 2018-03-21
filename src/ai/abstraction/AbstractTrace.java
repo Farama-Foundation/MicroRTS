@@ -64,7 +64,7 @@ public class AbstractTrace {
     }
         
     
-    public AbstractTrace(Element e) {
+    public AbstractTrace(Element e) throws Exception {
         utt = UnitTypeTable.fromXML(e.getChild(UnitTypeTable.class.getName()));
         Element entries_e = e.getChild("entries");
         
@@ -76,7 +76,7 @@ public class AbstractTrace {
     
 
     // this loads a trace ignoring the UTT specified in the trace:
-    public AbstractTrace(Element e, UnitTypeTable a_utt) {
+    public AbstractTrace(Element e, UnitTypeTable a_utt) throws Exception {
         utt = a_utt;
         Element entries_e = e.getChild("entries");
         
