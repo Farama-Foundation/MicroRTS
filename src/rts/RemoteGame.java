@@ -30,7 +30,7 @@ class RemoteGame extends Thread {
 
         try {
             this.pgs = PhysicalGameState.load(gameSettings.getMapLocation(), unitTypeTable);
-        } catch (JDOMException | IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         this.gameState = new GameState(pgs, unitTypeTable);
