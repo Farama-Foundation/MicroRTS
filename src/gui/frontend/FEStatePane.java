@@ -634,8 +634,8 @@ public class FEStatePane extends JPanel {
 //                                                System.out.println("- (for trace) ---------------------------------------");
 //                                                System.out.println(gs);
                                                 TraceEntry te = new TraceEntry(gs.getPhysicalGameState().clone(),gs.getTime());
-                                                te.addPlayerAction(pa1);
-                                                te.addPlayerAction(pa2);
+                                                te.addPlayerAction(pa1.clone());
+                                                te.addPlayerAction(pa2.clone());
                                                 trace.addEntry(te);
                                             }
                                             synchronized(gs) {

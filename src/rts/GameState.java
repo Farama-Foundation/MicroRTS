@@ -329,7 +329,7 @@ public class GameState {
                 p.m_b = new UnitAction(UnitAction.TYPE_NONE, l);
             }
             
-            // get the unit that corresponds to that action (since the state might have been closed):
+            // get the unit that corresponds to that action (since the state might have been cloned):
             if (pgs.units.indexOf(p.m_a)==-1) {
                 boolean found = false;
                 for(Unit u:pgs.units) {
