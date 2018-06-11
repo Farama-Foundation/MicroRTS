@@ -4,11 +4,21 @@
  */
 package tests;
 
+import EINT_Agent1.AgentSmith;
 import ai.core.AI;
 import ai.*;
-import ai.abstraction.WorkerRush;
+import ai.abstraction.*;
 import ai.abstraction.pathfinding.BFSPathFinding;
+import ai.evaluation.SimpleEvaluationFunction;
+import ai.evaluation.SimpleOptEvaluationFunction;
+import ai.evaluation.SimpleSqrtEvaluationFunction;
+import ai.evaluation.SimpleSqrtEvaluationFunction2;
 import ai.mcts.naivemcts.NaiveMCTS;
+import ai.minimax.ABCD.ABCD;
+import ai.minimax.RTMiniMax.IDRTMinimax;
+import ai.minimax.RTMiniMax.RTMinimax;
+import ai.montecarlo.MonteCarlo;
+import ai.portfolio.PortfolioAI;
 import gui.PhysicalGameStatePanel;
 import java.io.OutputStreamWriter;
 import javax.swing.JFrame;
@@ -30,11 +40,12 @@ public class GameVisualSimulationTest {
 
         GameState gs = new GameState(pgs, utt);
         int MAXCYCLES = 5000;
-        int PERIOD = 20;
+        int PERIOD = 80;
         boolean gameover = false;
         
-        AI ai1 = new WorkerRush(utt, new BFSPathFinding());        
-        AI ai2 = new RandomBiasedAI();
+        AI ai1 = new AgentSmith(utt);
+        //AI ai2 = new IDRTMinimax(100, new SimpleSqrtEvaluationFunction2());
+        AI ai2 = new NaiveMCTS(utt);
 
         JFrame w = PhysicalGameStatePanel.newVisualizer(gs,640,640,false,PhysicalGameStatePanel.COLORSCHEME_BLACK);
 //        JFrame w = PhysicalGameStatePanel.newVisualizer(gs,640,640,false,PhysicalGameStatePanel.COLORSCHEME_WHITE);
@@ -50,7 +61,7 @@ public class GameVisualSimulationTest {
                 // simulate:
                 gameover = gs.cycle();
                 w.repaint();
-                nextTimeToUpdate+=PERIOD;
+                nextTimeToUpdate+=PERIOD; 
             } else {
                 try {
                     Thread.sleep(1);
