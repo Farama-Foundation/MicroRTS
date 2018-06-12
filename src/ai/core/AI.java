@@ -95,16 +95,29 @@ public abstract class AI {
     }
 
     
-    // If bots want to write anything to disc after the pre-game analysis, this function has an additional argument
-    // Specifying a folder, where AIs can write the result of the analysis. Then this can be loaded before starting 
-    // subsequent games.
+    /**
+     * This function is also for implementing pre-game reasoning with the possibility of 
+     * reading from and writing to disc, in the specified directory.
+     * 
+     * @param gs the initial state of the game about to be played. Even if the game is 
+     * partially observable, the game state received by this 
+     * function might be fully observable
+     * @param milliseconds milliseconds time limit to perform the analysis. If zero, you can take as 
+     * long as you need
+     * @param readWriteFolder path to the directory where you can read/write stuff
+     * @throws Exception
+     */
     public void preGameAnalysis(GameState gs, long milliseconds, String readWriteFolder) throws Exception
     {
         preGameAnalysis(gs, milliseconds);
     }
     
     
-    // Notifies the AI that the game is over, and reports who was the winner
+    /**
+     * Notifies the AI that the game is over, and reports who was the winner
+     * @param winner
+     * @throws Exception
+     */
     public void gameOver(int winner) throws Exception
     {
     }
