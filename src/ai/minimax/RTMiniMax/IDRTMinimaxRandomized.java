@@ -104,9 +104,9 @@ public class IDRTMinimaxRandomized extends IDRTMinimax {
                         currentRR.scores = new float[m_repeats];
                         currentRR.iterations_run = 0;
                         long l = currentRR.actions.getSize();
-                        if (l > max_potential_branching_so_far) {
-                            max_potential_branching_so_far = l;
-                        }
+                     //   if (l > max_potential_branching_so_far) {
+                    //        max_potential_branching_so_far = l;
+                     //   }
                         //                            while(current.actions.size()>MAX_BRANCHING_FACTOR) current.actions.remove(r.nextInt(current.actions.size()));
                         currentRR.best = null;
                         PlayerAction next = currentRR.actions.getNextAction(cutOffTime);
@@ -182,9 +182,9 @@ public class IDRTMinimaxRandomized extends IDRTMinimax {
                     if (current.actions == null) {
                         current.actions = new PlayerActionGenerator(current.gs, maxplayer);
                         long l = current.actions.getSize();
-                        if (l > max_potential_branching_so_far) {
-                            max_potential_branching_so_far = l;
-                        }
+                    //    if (l > max_potential_branching_so_far) {
+                     //       max_potential_branching_so_far = l;
+                    //    }
 //                            while(current.actions.size()>MAX_BRANCHING_FACTOR) current.actions.remove(r.nextInt(current.actions.size()));
                         current.best = null;
                         PlayerAction next = current.actions.getNextAction(cutOffTime);
@@ -218,9 +218,9 @@ public class IDRTMinimaxRandomized extends IDRTMinimax {
                     if (current.actions == null) {
                         current.actions = new PlayerActionGenerator(current.gs, minplayer);
                         long l = current.actions.getSize();
-                        if (l > max_potential_branching_so_far) {
-                            max_potential_branching_so_far = l;
-                        }
+                       // if (l > max_potential_branching_so_far) {
+                        //    max_potential_branching_so_far = l;
+                      //  }
 //                            while(current.actions.size()>MAX_BRANCHING_FACTOR) current.actions.remove(r.nextInt(current.actions.size()));
                         current.best = null;
                         PlayerAction next = current.actions.getNextAction(cutOffTime);

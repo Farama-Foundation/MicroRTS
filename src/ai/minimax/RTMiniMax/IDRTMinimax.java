@@ -43,7 +43,7 @@ public class IDRTMinimax extends AIWithComputationBudget implements Interruptibl
     EvaluationFunction ef = null;    
         
     int max_depth_so_far = 0;
-    long max_potential_branching_so_far = 0;
+    //long max_potential_branching_so_far = 0;
     
     int max_consecutive_frames_searching_so_far = 0;
     
@@ -121,9 +121,11 @@ public class IDRTMinimax extends AIWithComputationBudget implements Interruptibl
             // The first time, we just want to do a quick evaluation of all actions, to have a first idea of what is best:
             bestMove = greedyActionScan(gs_to_start_from, playerForThisComputation, cutOffTime);
 //            System.out.println("greedyActionScan suggested action: " + bestMove);
+        }        
+        if (System.currentTimeMillis() >= cutOffTime){
+            System.out.println("Greedy hat zu lange gedauert");
+            return;
         }
-        
-        if (System.currentTimeMillis() >= cutOffTime) return;
         
         consecutive_frames_searching++;
         
@@ -214,8 +216,8 @@ public class IDRTMinimax extends AIWithComputationBudget implements Interruptibl
                 case 0: // max node:
                         if (current.actions==null) {
                             current.actions = new PlayerActionGenerator(current.gs,maxplayer);
-                            long l = current.actions.getSize();
-                            if (l>max_potential_branching_so_far) max_potential_branching_so_far = l;
+                            //long l = current.actions.getSize();
+                            //if (l>max_potential_branching_so_far) max_potential_branching_so_far = l;
 //                            while(current.actions.size()>MAX_BRANCHING_FACTOR) current.actions.remove(r.nextInt(current.actions.size()));
                             current.best = null;
                             PlayerAction next = current.actions.getNextAction(cutOffTime);                            
@@ -226,7 +228,7 @@ public class IDRTMinimax extends AIWithComputationBudget implements Interruptibl
                                 // This can only happen if the getNextAction call times out...
                                 break;
                             }
-                        } else {                            
+                        } else {
                             current.alpha = Math.max(current.alpha,lastResult.m_b);
                             if (current.best==null || lastResult.m_b>current.best.m_b) {
                                 current.best = lastResult;
@@ -246,8 +248,8 @@ public class IDRTMinimax extends AIWithComputationBudget implements Interruptibl
                 case 1: // min node:
                         if (current.actions==null) {
                             current.actions = new PlayerActionGenerator(current.gs,minplayer);
-                            long l = current.actions.getSize();
-                            if (l>max_potential_branching_so_far) max_potential_branching_so_far = l;
+                            //long l = current.actions.getSize();
+                            //if (l>max_potential_branching_so_far) max_potential_branching_so_far = l;
 //                            while(current.actions.size()>MAX_BRANCHING_FACTOR) current.actions.remove(r.nextInt(current.actions.size()));
                             current.best = null;
                             PlayerAction next = current.actions.getNextAction(cutOffTime);                            
@@ -321,7 +323,7 @@ public class IDRTMinimax extends AIWithComputationBudget implements Interruptibl
     
     public String statisticsString() {
         return "max depth: " + max_depth_so_far + 
-               " , max branching factor (potential): " + max_branching_so_far + "(" + max_potential_branching_so_far + ")" +  
+               " , max branching factor (potential): " + max_branching_so_far + "(" + ")" +  
                " , max leaves: " + max_leaves_so_far + 
                " , max consecutive frames: " + max_consecutive_frames_searching_so_far;
     }    

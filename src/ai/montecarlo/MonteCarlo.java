@@ -132,30 +132,37 @@ public class MonteCarlo extends AIWithComputationBudget implements Interruptible
     }
     
 
-    public void computeDuringOneGameFrame() throws Exception {
+    public void computeDuringOneGameFrame() throws Exception 
+    {
         if (DEBUG>=2) System.out.println("Search...");
         long start = System.currentTimeMillis();
         int nruns = 0;
         long cutOffTime = (TIME_BUDGET>0 ? System.currentTimeMillis() + TIME_BUDGET:0);
-        if (TIME_BUDGET<=0) cutOffTime = 0;
+        //if (TIME_BUDGET<=0) cutOffTime = 0;
         
-        if (actions==null) {
+        if (actions==null) 
+        {
             actions = new ArrayList<>();
-            if (MAXACTIONS>0 && moveGenerator.getSize()>2*MAXACTIONS) {
-                for(int i = 0;i<MAXACTIONS;i++) {
-                    MonteCarlo.PlayerActionTableEntry pate = new MonteCarlo.PlayerActionTableEntry();
+            if (MAXACTIONS>0 && moveGenerator.getSize()>2*MAXACTIONS) 
+            {
+                for(int i = 0;i<MAXACTIONS;i++) 
+                {
+                    PlayerActionTableEntry pate = new PlayerActionTableEntry();
                     pate.pa = moveGenerator.getRandom();
                     actions.add(pate);
                 }
                 max_actions_so_far = Math.max(moveGenerator.getSize(),max_actions_so_far);
                 if (DEBUG>=1) System.out.println("MontCarloAI (random action sampling) for player " + playerForThisComputation + " chooses between " + moveGenerator.getSize() + " actions [maximum so far " + max_actions_so_far + "] (cycle " + gs_to_start_from.getTime() + ")");
-            } else {      
+            } else 
+            {      
                 PlayerAction pa;
                 long count = 0;
-                do{
+                do
+                {
                     pa = moveGenerator.getNextAction(cutOffTime);
-                    if (pa!=null) {
-                        MonteCarlo.PlayerActionTableEntry pate = new MonteCarlo.PlayerActionTableEntry();
+                    if (pa!=null) 
+                    {
+                        PlayerActionTableEntry pate = new PlayerActionTableEntry();
                         pate.pa = pa;
                         actions.add(pate);
                         count++;
@@ -168,7 +175,8 @@ public class MonteCarlo extends AIWithComputationBudget implements Interruptible
             }      
         }
         
-        while(true) {
+        while(true) 
+        {
             if (TIME_BUDGET>0 && (System.currentTimeMillis() - start)>=TIME_BUDGET) break;
             if (ITERATIONS_BUDGET>0 && nruns>=ITERATIONS_BUDGET) break;
             monteCarloRun(playerForThisComputation, gs_to_start_from);
@@ -181,7 +189,7 @@ public class MonteCarlo extends AIWithComputationBudget implements Interruptible
 
     public void monteCarloRun(int player, GameState gs) throws Exception {
         int idx = run%actions.size();
-//        System.out.println(idx);
+        //System.out.println(idx);
         PlayerActionTableEntry pate = actions.get(idx);
 
         GameState gs2 = gs.cloneIssue(pate.pa);
@@ -191,6 +199,7 @@ public class MonteCarlo extends AIWithComputationBudget implements Interruptible
 
         pate.accum_evaluation += ef.evaluate(player, 1-player, gs3)*Math.pow(0.99,time/10.0);    
         pate.visit_count++;
+        
         run++;
         total_runs++;
     }
