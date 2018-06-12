@@ -56,10 +56,12 @@ public abstract class AbstractAction {
     {
         PathFinding pf = null;
         String pfString = e.getAttributeValue("pathfinding");
-        if (pfString.equals("AStarPathFinding")) pf = new AStarPathFinding();
-        if (pfString.equals("BFSPathFinding")) pf = new BFSPathFinding();
-        if (pfString.equals("FloodFillPathFinding")) pf = new FloodFillPathFinding();
-        if (pfString.equals("GreedyPathFinding")) pf = new GreedyPathFinding();
+        if (pfString != null) {
+            if (pfString.equals("AStarPathFinding")) pf = new AStarPathFinding();
+            if (pfString.equals("BFSPathFinding")) pf = new BFSPathFinding();
+            if (pfString.equals("FloodFillPathFinding")) pf = new FloodFillPathFinding();
+            if (pfString.equals("GreedyPathFinding")) pf = new GreedyPathFinding();
+        }
         switch (e.getName()) {
             case "Attack":
                 return new Attack(gs.getUnit(Long.parseLong(e.getAttributeValue("unitID"))),

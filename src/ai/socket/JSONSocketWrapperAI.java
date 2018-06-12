@@ -73,7 +73,7 @@ public class JSONSocketWrapperAI {
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
                 // Send a welcome message to the client.
-                out.println("EmptyAI server: you are client #" + clientNumber);
+                out.println("JSONSocketWrapperAI: you are client #" + clientNumber);
 
                 // Get messages from the client, line by line
                 while (true) {
@@ -122,6 +122,11 @@ public class JSONSocketWrapperAI {
                     } else if (input.startsWith("preGameAnalysis")) {
                         String []tokens = input.split(" ");
                         int milliseconds = Integer.parseInt(tokens[1]);
+                        String readWriteFolder = null;
+                        if (tokens.length>=2) {
+                            readWriteFolder = tokens[2];
+                            if (readWriteFolder.startsWith("\"")) readWriteFolder = readWriteFolder.substring(1, readWriteFolder.length()-1);
+                        }
                         if (DEBUG>=1) System.out.println("preGameAnalysis");
                         
                         input = in.readLine();
@@ -130,8 +135,19 @@ public class JSONSocketWrapperAI {
                         GameState gs = GameState.fromJSON(input, utt);
                         if (DEBUG>=1) System.out.println(gs);
 
-                        ai.preGameAnalysis(gs, milliseconds);
+                        if (readWriteFolder != null) {
+                            ai.preGameAnalysis(gs, milliseconds, readWriteFolder);                            
+                        } else {
+                            ai.preGameAnalysis(gs, milliseconds);
+                        }
                         
+                        out.append("ack\n");
+                        out.flush();
+                    } else if (input.startsWith("gameOver")) {
+                        String []tokens = input.split(" ");
+                        int winner = Integer.parseInt(tokens[1]);
+                        if (DEBUG>=1) System.out.println("gameOver " + winner);
+                        ai.gameOver(winner);
                         out.append("ack\n");
                         out.flush();
                     }

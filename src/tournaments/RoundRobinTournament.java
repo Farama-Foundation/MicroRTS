@@ -44,7 +44,8 @@ public class RoundRobinTournament {
             int maxGameLength,
             int timeBudget,
             int iterationsBudget,
-            int preAnalysisBudget, 
+            long preAnalysisBudgetFirstTimeInAMap,
+            long preAnalysisBudgetRestOfTimes, 
             boolean fullObservability,
             boolean selfMatches,
             boolean timeoutCheck,
@@ -53,7 +54,8 @@ public class RoundRobinTournament {
             UnitTypeTable utt,
             String traceOutputfolder,
             Writer out,
-            Writer progress) throws Exception {
+            Writer progress,
+            String folderForReadWriteFolders) throws Exception {
         if (progress != null) {
             progress.write("RoundRobinTournament: Starting tournament\n");
         }
@@ -82,6 +84,19 @@ public class RoundRobinTournament {
         out.write("runGC\t" + runGC + "\n");
         out.write("iteration\tmap\tai1\tai2\ttime\twinner\tcrashed\ttimedout\n");
         out.flush();
+        
+        // create all the read/write folders:
+        String readWriteFolders[] = new String[AIs.size()];
+        boolean firstPreAnalysis[][] = new boolean[AIs.size()][maps.size()];
+        for(int i = 0;i<AIs.size();i++) {
+            readWriteFolders[i] = folderForReadWriteFolders + "/AI" + i + "readWriteFolder";
+            File f = new File(readWriteFolders[i]);
+            f.mkdir();
+            for(int j = 0;j<maps.size();j++) {
+                firstPreAnalysis[i][j] = true;
+            }
+        }
+        
         for (int iteration = 0; iteration < iterations; iteration++) {
             for (int map_idx = 0; map_idx < maps.size(); map_idx++) {
                 PhysicalGameState pgs = PhysicalGameState.load(maps.get(map_idx), utt);
@@ -135,21 +150,32 @@ public class RoundRobinTournament {
                         }
                         
                         if (preAnalysis) {
+                            long preTime1 = preAnalysisBudgetRestOfTimes;
+                            if (firstPreAnalysis[ai1_idx][map_idx]) {
+                                preTime1 = preAnalysisBudgetFirstTimeInAMap;
+                                firstPreAnalysis[ai1_idx][map_idx] = false;
+                            }
                             long pre_start1 = System.currentTimeMillis();
-                            ai1.preGameAnalysis(gs, preAnalysisBudget);
+                            ai1.preGameAnalysis(gs, preAnalysisBudgetRestOfTimes, readWriteFolders[ai1_idx]);
                             long pre_end1 = System.currentTimeMillis();
                             if (progress != null) {
                                 progress.write("preGameAnalysis player 1 took " + (pre_end1 - pre_start1) + "\n");
-                                if (preAnalysisBudget>0 && (pre_end1 - pre_start1)>preAnalysisBudget) progress.write("TIMEOUT PLAYER 1!");
+                                if ((pre_end1 - pre_start1)>preTime1) progress.write("TIMEOUT PLAYER 1!\n");
+                            }
+                            long preTime2 = preAnalysisBudgetRestOfTimes;
+                            if (firstPreAnalysis[ai2_idx][map_idx]) {
+                                preTime2 = preAnalysisBudgetFirstTimeInAMap;
+                                firstPreAnalysis[ai2_idx][map_idx] = false;
                             }
                             long pre_start2 = System.currentTimeMillis();
-                            ai2.preGameAnalysis(gs, preAnalysisBudget);
+                            ai2.preGameAnalysis(gs, preTime2, readWriteFolders[ai2_idx]);
                             long pre_end2 = System.currentTimeMillis();
                             if (progress != null) {
                                 progress.write("preGameAnalysis player 2 took " + (pre_end2 - pre_start2) + "\n");
-                                if (preAnalysisBudget>0 && (pre_end2 - pre_start2)>preAnalysisBudget) progress.write("TIMEOUT PLAYER 2!");
+                                if ((pre_end2 - pre_start2)>preTime2) progress.write("TIMEOUT PLAYER 2!\n");
                             }
                         }                        
+                        
 
                         boolean gameover = false;
                         int crashed = -1;
@@ -316,6 +342,9 @@ public class RoundRobinTournament {
                         } else {
                             winner = gs.winner();
                         }
+                        ai1.gameOver(winner);
+                        ai2.gameOver(winner);
+                        
                         out.write(iteration + "\t" + map_idx + "\t" + ai1_idx + "\t" + ai2_idx + "\t"
                                 + gs.getTime() + "\t" + winner + "\t" + crashed + "\t" + timedout + "\n");
                         out.flush();

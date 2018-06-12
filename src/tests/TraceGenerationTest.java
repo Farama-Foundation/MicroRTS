@@ -51,6 +51,8 @@ public class TraceGenerationTest {
             // simulate:
             gameover = gs.cycle();
         }while(!gameover && gs.getTime()<MAXCYCLES);
+        ai1.gameOver(gs.winner());
+        ai2.gameOver(gs.winner());
         
         te = new TraceEntry(gs.getPhysicalGameState().clone(), gs.getTime());
         trace.addEntry(te);

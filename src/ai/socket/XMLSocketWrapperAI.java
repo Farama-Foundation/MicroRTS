@@ -65,7 +65,6 @@ public class XMLSocketWrapperAI {
 
         public void run() {
             try {
-
                 // Decorate the streams so we can send characters
                 // and not just bytes.  Ensure output is flushed
                 // after every newline.
@@ -73,6 +72,9 @@ public class XMLSocketWrapperAI {
                         new InputStreamReader(socket.getInputStream()));
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
+                // Send a welcome message to the client.
+                out.println("XMLSocketWrapperAI: you are client #" + clientNumber);
+                
                 // Get messages from the client, line by line
                 while (true) {
                     String input = in.readLine();
@@ -122,6 +124,11 @@ public class XMLSocketWrapperAI {
                     } else if (input.startsWith("preGameAnalysis")) {
                         String []tokens = input.split(" ");
                         int milliseconds = Integer.parseInt(tokens[1]);
+                        String readWriteFolder = null;
+                        if (tokens.length>=2) {
+                            readWriteFolder = tokens[2];
+                            if (readWriteFolder.startsWith("\"")) readWriteFolder = readWriteFolder.substring(1, readWriteFolder.length()-1);
+                        }
                         if (DEBUG>=1) System.out.println("preGameAnalysis");
                         
                         input = in.readLine();
@@ -130,8 +137,19 @@ public class XMLSocketWrapperAI {
                         GameState gs = GameState.fromXML(new SAXBuilder().build(new StringReader(input)).getRootElement(), utt);
                         if (DEBUG>=1) System.out.println(gs);
 
-                        ai.preGameAnalysis(gs, milliseconds);
+                        if (readWriteFolder != null) {
+                            ai.preGameAnalysis(gs, milliseconds, readWriteFolder);                            
+                        } else {
+                            ai.preGameAnalysis(gs, milliseconds);
+                        }
                         
+                        out.append("ack\n");
+                        out.flush();
+                    } else if (input.startsWith("gameOver")) {
+                        String []tokens = input.split(" ");
+                        int winner = Integer.parseInt(tokens[1]);
+                        if (DEBUG>=1) System.out.println("gameOver " + winner);
+                        ai.gameOver(winner);
                         out.append("ack\n");
                         out.flush();
                     }

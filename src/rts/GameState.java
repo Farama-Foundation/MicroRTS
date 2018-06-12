@@ -305,7 +305,9 @@ public class GameState {
     
     
     /**
-     * Issues a player action, with additional checks for validity
+     * Issues a player action, with additional checks for validity. This function is slower
+     * than "issue", and should not be used internally by any AI. It is used externally in the main loop
+     * to verify that the actions proposed by an AI are valid, before sending them to the game.
      * @param pa
      * @return "true" is any action different from NONE was issued
      */
@@ -327,7 +329,7 @@ public class GameState {
                 p.m_b = new UnitAction(UnitAction.TYPE_NONE, l);
             }
             
-            // get the unit that corresponds to that action (since the state might have been closed):
+            // get the unit that corresponds to that action (since the state might have been cloned):
             if (pgs.units.indexOf(p.m_a)==-1) {
                 boolean found = false;
                 for(Unit u:pgs.units) {
@@ -771,7 +773,7 @@ public class GameState {
      * @param utt
      * @return
      */
-    public static GameState fromXML(Element e, UnitTypeTable utt) {        
+    public static GameState fromXML(Element e, UnitTypeTable utt) throws Exception {        
         PhysicalGameState pgs = PhysicalGameState.fromXML(e.getChild(PhysicalGameState.class.getName()), utt);
         GameState gs = new GameState(pgs, utt);
         gs.time = Integer.parseInt(e.getAttributeValue("time"));

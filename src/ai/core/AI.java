@@ -3,8 +3,6 @@ package ai.core;
 import java.util.List;
 import rts.GameState;
 import rts.PlayerAction;
-import rts.UnitAction;
-import rts.units.Unit;
 import rts.units.UnitTypeTable;
 
 /**
@@ -88,11 +86,26 @@ public abstract class AI {
      * @param gs the initial state of the game about to be played. Even if the game is 
      * partially observable, the game state received by this 
      * function might be fully observable
-     * @param timeLimit time limit to perform the analysis. If zero, you can take as 
+     * @param milliseconds time limit to perform the analysis. If zero, you can take as 
      * long as you need
      * @throws Exception
      */
-    public void preGameAnalysis(GameState gs, long timeLimit) throws Exception
+    public void preGameAnalysis(GameState gs, long milliseconds) throws Exception
+    {
+    }
+
+    
+    // If bots want to write anything to disc after the pre-game analysis, this function has an additional argument
+    // Specifying a folder, where AIs can write the result of the analysis. Then this can be loaded before starting 
+    // subsequent games.
+    public void preGameAnalysis(GameState gs, long milliseconds, String readWriteFolder) throws Exception
+    {
+        preGameAnalysis(gs, milliseconds);
+    }
+    
+    
+    // Notifies the AI that the game is over, and reports who was the winner
+    public void gameOver(int winner) throws Exception
     {
     }
 } 

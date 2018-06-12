@@ -70,7 +70,7 @@ public class AbstractTraceEntry {
        w.tag("/" + this.getClass().getName());
     }    
     
-    public AbstractTraceEntry(Element e, UnitTypeTable utt) {
+    public AbstractTraceEntry(Element e, UnitTypeTable utt) throws Exception {
         Element actions_e = e.getChild("abstractactions");
         time = Integer.parseInt(e.getAttributeValue("time"));
   

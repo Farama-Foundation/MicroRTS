@@ -64,6 +64,38 @@ public class SocketAI extends AIWithComputationBudget {
             e.printStackTrace();
         }
     }
+
+    private SocketAI(int mt, int mi, UnitTypeTable a_utt, int a_language, Socket socket) {
+        super(mt, mi);
+        communication_language = a_language;
+        utt = a_utt;
+        try {
+            this.socket = socket;
+            in_pipe = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out_pipe = new PrintWriter(socket.getOutputStream(), true);
+
+            // Consume the initial welcoming messages from the server
+            while(!in_pipe.ready());
+            while(in_pipe.ready()) in_pipe.readLine();
+
+            if (DEBUG>=1) System.out.println("SocketAI: welcome message received");
+            reset();
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Creates a SocketAI from an existing socket.
+     * @param mt The time budget in milliseconds.
+     * @param mi The iterations budget in milliseconds
+     * @param a_utt The unit type table.
+     * @param a_language The communication layer to use.
+     * @param socket The socket the ai will communicate over.
+     */
+    public static SocketAI createFromExistingSocket(int mt, int mi, UnitTypeTable a_utt, int a_language, Socket socket) {
+        return new SocketAI(mt, mi, a_utt, a_language, socket);
+    }
     
     
     public void connectToServer() throws Exception {
@@ -76,6 +108,8 @@ public class SocketAI extends AIWithComputationBudget {
         while(!in_pipe.ready());
         while(in_pipe.ready()) in_pipe.readLine();
 
+        if (DEBUG>=1) System.out.println("SocketAI: welcome message received");
+            
         reset();
     }
     
@@ -86,12 +120,16 @@ public class SocketAI extends AIWithComputationBudget {
             // set the game parameters:
             out_pipe.append("budget " + TIME_BUDGET + " " + ITERATIONS_BUDGET + "\n");
             out_pipe.flush();
+
+            if (DEBUG>=1) System.out.println("SocketAI: budgetd sent, waiting for ack");
             
             // wait for ack:
             in_pipe.readLine();
+            while(in_pipe.ready()) in_pipe.readLine();
+
+            if (DEBUG>=1) System.out.println("SocketAI: ack received");
 
             // send the utt:
-            while(in_pipe.ready()) in_pipe.readLine();
             out_pipe.append("utt\n");
             if (communication_language == LANGUAGE_XML) {
                 XMLWriter w = new XMLWriter(out_pipe, " ");
@@ -106,12 +144,15 @@ public class SocketAI extends AIWithComputationBudget {
             } else {
                 throw new Exception("Communication language " + communication_language + " not supported!");
             }
+            if (DEBUG>=1) System.out.println("SocketAI: UTT sent, waiting for ack");
             
             // wait for ack:
             in_pipe.readLine();
             
             // read any extra left-over lines
             while(in_pipe.ready()) in_pipe.readLine();
+            if (DEBUG>=1) System.out.println("SocketAI: ack received");
+
         }catch(Exception e) {
             e.printStackTrace();
         }
@@ -127,8 +168,6 @@ public class SocketAI extends AIWithComputationBudget {
             gs.toxml(w);
             w.getWriter().append("\n");
             w.flush();
-//            out_pipe.append("\n");
-//            out_pipe.flush();
 
             // wait to get an action:
 //            while(!in_pipe.ready()) {
@@ -146,7 +185,7 @@ public class SocketAI extends AIWithComputationBudget {
         } else if (communication_language == LANGUAGE_JSON) {
             gs.toJSON(out_pipe);
             out_pipe.append("\n");
-//            out_pipe.flush();
+            out_pipe.flush();
             
             // wait to get an action:
             //while(!in_pipe.ready());
@@ -168,27 +207,72 @@ public class SocketAI extends AIWithComputationBudget {
     {
         // send the game state:
         out_pipe.append("preGameAnalysis " + milliseconds + "\n");
-        if (communication_language == LANGUAGE_XML) {
-            XMLWriter w = new XMLWriter(out_pipe, " ");
-            gs.toxml(w);
-            w.flush();
-            out_pipe.append("\n");
-            out_pipe.flush();
+        switch (communication_language) {
+            case LANGUAGE_XML:
+                XMLWriter w = new XMLWriter(out_pipe, " ");
+                gs.toxml(w);
+                w.flush();
+                out_pipe.append("\n");
+                out_pipe.flush();
+                // wait for ack:
+                in_pipe.readLine();
+                break;
                 
-            // wait for ack:
-            in_pipe.readLine();
-        } else if (communication_language == LANGUAGE_JSON) {
-            gs.toJSON(out_pipe);
-            out_pipe.append("\n");
-            out_pipe.flush();
-            
-            // wait for ack:
-            in_pipe.readLine();
-        } else {
-            throw new Exception("Communication language " + communication_language + " not supported!");
-        }        
+            case LANGUAGE_JSON:
+                gs.toJSON(out_pipe);
+                out_pipe.append("\n");
+                out_pipe.flush();
+                // wait for ack:
+                in_pipe.readLine();
+                break;
+                
+            default:
+                throw new Exception("Communication language " + communication_language + " not supported!");        
+        }
     }
 
+    
+    @Override
+    public void preGameAnalysis(GameState gs, long milliseconds, String readWriteFolder) throws Exception 
+    {
+        // send the game state:
+        out_pipe.append("preGameAnalysis " + milliseconds + "  \""+readWriteFolder+"\"\n");
+        switch (communication_language) {
+            case LANGUAGE_XML:
+                XMLWriter w = new XMLWriter(out_pipe, " ");
+                gs.toxml(w);
+                w.flush();
+                out_pipe.append("\n");
+                out_pipe.flush();
+                // wait for ack:
+                in_pipe.readLine();
+                break;
+                
+            case LANGUAGE_JSON:
+                gs.toJSON(out_pipe);
+                out_pipe.append("\n");
+                out_pipe.flush();
+                // wait for ack:
+                in_pipe.readLine();
+                break;
+                
+            default:
+                throw new Exception("Communication language " + communication_language + " not supported!");        
+        }
+    }
+    
+    
+    @Override
+    public void gameOver(int winner) throws Exception
+    {
+        // send the game state:
+        out_pipe.append("gameOver " + winner + "\n");
+        out_pipe.flush();
+                
+        // wait for ack:
+        in_pipe.readLine();        
+    }
+    
     
     @Override
     public AI clone() {

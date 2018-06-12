@@ -7,6 +7,7 @@ package tests.sockets;
 
 import ai.abstraction.WorkerRush;
 import ai.core.AIWithComputationBudget;
+import ai.socket.JSONSocketWrapperAI;
 import ai.socket.XMLSocketWrapperAI;
 import rts.units.UnitTypeTable;
 
@@ -23,6 +24,9 @@ public class RunServerExample {
         AIWithComputationBudget ai = new WorkerRush(new UnitTypeTable());
         int port = 9898;
         
-        XMLSocketWrapperAI.runServer(ai, port);
+//        XMLSocketWrapperAI.DEBUG = 1;
+//        XMLSocketWrapperAI.runServer(ai, port);
+        JSONSocketWrapperAI.DEBUG = 1;
+        JSONSocketWrapperAI.runServer(ai, port);
     }
 }

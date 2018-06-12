@@ -59,6 +59,8 @@ public class GameVisualSimulationTest {
                 }
             }
         }while(!gameover && gs.getTime()<MAXCYCLES);
+        ai1.gameOver(gs.winner());
+        ai2.gameOver(gs.winner());
         
         System.out.println("Game Over");
     }    

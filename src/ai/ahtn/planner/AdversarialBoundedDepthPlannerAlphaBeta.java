@@ -254,11 +254,11 @@ public class AdversarialBoundedDepthPlannerAlphaBeta {
                         (cp.choicePointPlayerMax==null && 
                          cp.choicePointPlayerMin!=null && 
                          cp.choicePointPlayerMin.getType() == MethodDecomposition.METHOD_METHOD)) {
-                        System.out.println("Popping without finding any decomposition:");
-                        System.out.println(cp);
-                        System.out.println(bindings);
-                        System.out.println(cp.gs);
-                        System.exit(2);
+                        System.err.println("Popping without finding any decomposition:");
+                        System.err.println(cp);
+                        System.err.println(bindings);
+                        System.err.println(cp.gs);
+                        throw new Error("Popping without finding any decomposition");
                     }
                 }
 //                System.out.println("Popping:");
