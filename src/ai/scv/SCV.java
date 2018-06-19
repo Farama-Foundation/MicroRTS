@@ -1,4 +1,4 @@
-package scv;
+package ai.scv;
 
 
 import ai.abstraction.EconomyMilitaryRush;
@@ -22,13 +22,8 @@ import ai.core.AIWithComputationBudget;
 import ai.core.ParameterSpecification;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -49,16 +44,13 @@ import util.Pair;
 //weka itens
 import weka.core.Instance;
 import weka.core.Instances;
-import weka.core.Attribute;
 import weka.classifiers.functions.SimpleLogistic;
 import weka.core.DenseInstance;
 import weka.core.SerializationHelper;
 import weka.core.converters.ConverterUtils;
 
 
-/* Bot que utiliza um modelo IBK para a tentativa de classificação do inimigo
-* e com base na sugestão do inimigo seleciona a estratégia com melhor LTD3 para 
-* o inimigo que está sendo sugerido pela classificação
+/* 
 */
 
 public class SCV extends AIWithComputationBudget {
@@ -79,6 +71,7 @@ public class SCV extends AIWithComputationBudget {
     long tempoInicial = 0;
     
     HashMap<String, HashMap<Integer, List<infBattles> > > indice = null;
+    int heightMap;
     
     // This is the default constructor that microRTS will call
     public SCV(UnitTypeTable utt) {
@@ -94,8 +87,8 @@ public class SCV extends AIWithComputationBudget {
         strategies = s;
         localUtt = utt;
         indice =  new HashMap();
-        loadModel();
-        loadLtd3Battles();
+        //loadModel();
+        //loadLtd3Battles();
     }
 
     @Override
@@ -105,6 +98,11 @@ public class SCV extends AIWithComputationBudget {
     @Override
     public PlayerAction getAction(int player, GameState gs) throws Exception {
         tempoInicial = System.currentTimeMillis();
+        if(rf == null){
+        	this.heightMap = gs.getPhysicalGameState().getHeight();
+        	loadModel();
+        	loadLtd3Battles();
+        }
         tryClassify(player, gs);
         if (gs.canExecuteAnyAction(player)) {
             startNewComputation(player, gs);
@@ -122,7 +120,35 @@ public class SCV extends AIWithComputationBudget {
         ArrayList<infBattles> infTemp = new ArrayList<infBattles>();
         String linha;
         try {
-            BufferedReader learArq = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("models/ltdsFinaisSCV.csv")));
+        	BufferedReader learArq;
+        	
+        	switch (this.heightMap) {
+			case 8:
+				learArq = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("models/ltdsFinais8.csv")));
+				break;
+			case 9:
+				learArq = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("models/ltdsFinais9.csv")));
+				break;
+			case 16:
+				learArq = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("models/ltdsFinais16.csv")));
+				break;
+			case 24:
+				learArq = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("models/ltdsFinais24.csv")));
+				break;
+			case 32:
+				learArq = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("models/ltdsFinais32.csv")));
+				break;
+			case 64:
+				learArq = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("models/ltdsFinais64.csv")));
+				break;
+				
+			default:
+				//map 128
+				learArq = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("models/ltdsFinaisSCV.csv")));
+				break;
+			}
+        	
+        	
             
             linha = learArq.readLine();
 
@@ -281,7 +307,31 @@ public class SCV extends AIWithComputationBudget {
     protected void loadModel() {
         dataSet = null;
         try {
-            rf = (SimpleLogistic) SerializationHelper.read(getClass().getResourceAsStream("models/SimpleLogisticSCV.model"));
+        	switch (heightMap) {
+			case 8:
+				rf = (SimpleLogistic) SerializationHelper.read(getClass().getResourceAsStream("models/SimpleLogisticSCV8.model"));
+				break;
+			case 9:
+				rf = (SimpleLogistic) SerializationHelper.read(getClass().getResourceAsStream("models/SimpleLogisticSCV9.model"));
+				break;
+			case 16:
+				rf = (SimpleLogistic) SerializationHelper.read(getClass().getResourceAsStream("models/SimpleLogisticSCV16.model"));
+				break;
+			case 24:
+				rf = (SimpleLogistic) SerializationHelper.read(getClass().getResourceAsStream("models/SimpleLogisticSCV24.model"));
+				break;
+			case 32:
+				rf = (SimpleLogistic) SerializationHelper.read(getClass().getResourceAsStream("models/SimpleLogisticSCV32.model"));
+				break;
+			case 64:
+				rf = (SimpleLogistic) SerializationHelper.read(getClass().getResourceAsStream("models/SimpleLogisticSCV64.model"));
+				break;
+			default:
+				//map 128
+				rf = (SimpleLogistic) SerializationHelper.read(getClass().getResourceAsStream("models/SimpleLogisticSCV.model"));
+				break;
+			}
+            
             ConverterUtils.DataSource source = new ConverterUtils.DataSource(getClass().getResourceAsStream("models/dadosEnemyDistModelTemplateSCV.arff"));
             dataSet = source.getDataSet();
             dataSet.setClassIndex(dataSet.numAttributes() - 1);
