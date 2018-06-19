@@ -25,7 +25,7 @@ import rts.units.UnitTypeTable;
 
 /**
  *
- * @author santi
+ * @author Cleyton
  */
 
 public class WorkerRushPlusPlus extends AbstractionLayerAI {

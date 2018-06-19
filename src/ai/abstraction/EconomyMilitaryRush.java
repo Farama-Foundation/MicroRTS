@@ -42,7 +42,7 @@ public class EconomyMilitaryRush extends AbstractionLayerAI {
     int nWorkerBase = 4 * 2;
 
     // If we have any unit for attack: send it to attack to the nearest enemy unit
-    // If we have a base: train worker until we have 6 workers per base. The 6ª unit send to build a new base.
+    // If we have a base: train worker until we have 8 workers per base. The 8ª unit send to build a new base.
     // If we have a barracks: train light, Ranged and Heavy in order
     // If we have a worker: go to resources closest, build barracks, build new base closest harvest resources
     public EconomyMilitaryRush(UnitTypeTable a_utt) {
@@ -73,7 +73,6 @@ public class EconomyMilitaryRush extends AbstractionLayerAI {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         Player p = gs.getPlayer(player);
         PlayerAction pa = new PlayerAction();
-//        System.out.println("LightRushAI for player " + player + " (cycle " + gs.getTime() + ")");
 
         // behavior of bases:
         for (Unit u : pgs.getUnits()) {
@@ -138,7 +137,6 @@ public class EconomyMilitaryRush extends AbstractionLayerAI {
                 nworkers++;
             }
         }
-        //calculo numero de bases e barracks
         int nBases = 0;
         int nBarracks = 0;
         for (Unit u2 : pgs.getUnits()) {
@@ -180,22 +178,16 @@ public class EconomyMilitaryRush extends AbstractionLayerAI {
                 nHeavy++;
             }
         }
-        //System.out.println("PVAI.EconomyRush.barracksBehavior() "+nLight + " "+nRanged+ " "+nHeavy);
 
-        //conferir se eu já tenho algum light, se não tiver, crie.
         if (nLight == 0 && p.getResources() >= lightType.cost) {
             train(u, lightType);
         } else if (nRanged == 0 && p.getResources() >= rangedType.cost) {
-            //conferir se eu já tenho algum Ranged, se não tiver, crie.
             train(u, rangedType);
 
         } else if (nHeavy == 0 && p.getResources() >= heavyType.cost) {
-            //conferir se eu já tenho algum Heavy, se não tiver, crie.
             train(u, heavyType);
         }
 
-        //Caso tenha acumulado recursos para uma nova base e
-        //caso já possua uma unidade de cada, selecione randomicamente qualquer uma à gerar
         if (nLight != 0 && nRanged != 0 && nHeavy != 0) {
             int number = r.nextInt(3);
             switch (number) {
@@ -232,7 +224,6 @@ public class EconomyMilitaryRush extends AbstractionLayerAI {
             }
         }
         if (closestEnemy != null) {
-//            System.out.println("EconomyRush.meleeUnitBehavior: " + u + " attacks " + closestEnemy);
             attack(u, closestEnemy);
         }
     }
@@ -249,7 +240,7 @@ public class EconomyMilitaryRush extends AbstractionLayerAI {
         if (workers.isEmpty()) {
             return;
         }
-        //conta o número de bases e barracas existentes
+
         for (Unit u2 : pgs.getUnits()) {
             if (u2.getType() == baseType
                     && u2.getPlayer() == p.getID()) {
@@ -311,7 +302,6 @@ public class EconomyMilitaryRush extends AbstractionLayerAI {
 
     protected List<Unit> otherResourcePoint(Player p, PhysicalGameState pgs) {
 
-        //definimos o recurso mais próximo das nossas bases
         List<Unit> bases = getMyBases(p, pgs);
         Set<Unit> myResources = new HashSet<>();
         Set<Unit> otherResources = new HashSet<>();

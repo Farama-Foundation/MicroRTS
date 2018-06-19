@@ -39,7 +39,7 @@ public class EMRDeterministico extends AbstractionLayerAI {
     UnitType rangedType;
     UnitType lightType;
     UnitType heavyType;
-    int nWorkerBase = 4 * 2;
+    int nWorkerBase = 3 * 2;
 
     // If we have any unit for attack: send it to attack to the nearest enemy unit
     // If we have a base: train worker until we have 6 workers per base. The 6ª unit send to build a new base.
@@ -180,7 +180,7 @@ public class EMRDeterministico extends AbstractionLayerAI {
                 nHeavy++;
             }
         }
-        //System.out.println(nLight + " "+nRanged+ " "+nHeavy);
+        
         int sum = nLight + nHeavy + nRanged;
 
         if (sum%3 == 0 && p.getResources() >= lightType.cost) {
@@ -207,7 +207,6 @@ public class EMRDeterministico extends AbstractionLayerAI {
             }
         }
         if (closestEnemy != null) {
-//            System.out.println("EconomyRush.meleeUnitBehavior: " + u + " attacks " + closestEnemy);
             attack(u, closestEnemy);
         }
     }
@@ -224,7 +223,7 @@ public class EMRDeterministico extends AbstractionLayerAI {
         if (workers.isEmpty()) {
             return;
         }
-        //conta o número de bases e barracas existentes
+
         for (Unit u2 : pgs.getUnits()) {
             if (u2.getType() == baseType
                     && u2.getPlayer() == p.getID()) {
@@ -270,7 +269,6 @@ public class EMRDeterministico extends AbstractionLayerAI {
             List<Unit> otherResources = new ArrayList<>(otherResourcePoint(p, pgs));
             if (!otherResources.isEmpty()) {
                 if (!freeWorkers.isEmpty()) {
-                    //envio para construção
                     if (p.getResources() >= baseType.cost + resourcesUsed) {
                         Unit u = freeWorkers.remove(0);
                         buildIfNotAlreadyBuilding(u, baseType, otherResources.get(0).getX()+1, otherResources.get(0).getY()+1, reservedPositions, p, pgs);
@@ -286,7 +284,6 @@ public class EMRDeterministico extends AbstractionLayerAI {
 
     protected List<Unit> otherResourcePoint(Player p, PhysicalGameState pgs) {
 
-        //definimos o recurso mais próximo das nossas bases
         List<Unit> bases = getMyBases(p, pgs);
         Set<Unit> myResources = new HashSet<>();
         Set<Unit> otherResources = new HashSet<>();

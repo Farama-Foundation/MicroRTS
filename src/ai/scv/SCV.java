@@ -50,7 +50,8 @@ import weka.core.SerializationHelper;
 import weka.core.converters.ConverterUtils;
 
 
-/* 
+/* Strategy Generation for Multi-Unit Real-Time Games via Voting.
+*  ToG 2018.
 */
 
 public class SCV extends AIWithComputationBudget {
@@ -87,8 +88,6 @@ public class SCV extends AIWithComputationBudget {
         strategies = s;
         localUtt = utt;
         indice =  new HashMap();
-        //loadModel();
-        //loadLtd3Battles();
     }
 
     @Override
@@ -115,8 +114,7 @@ public class SCV extends AIWithComputationBudget {
     }
     
     
-        protected void loadLtd3Battles() {
-        //getClass().getResourceAsStream("models/ltdsFinais.csv");
+    protected void loadLtd3Battles() {
         ArrayList<infBattles> infTemp = new ArrayList<infBattles>();
         String linha;
         try {
@@ -182,19 +180,19 @@ public class SCV extends AIWithComputationBudget {
         for (infBattles bat : infTemp) {
             cont++;
             if(indice.containsKey(bat.strategy)){
-                //caso contenha a estratégia verifico se existe o mapa
+                //if it contains a verifiable strategy if the map
                 batTemp = indice.get(bat.strategy);
                 if(!batTemp.containsKey(bat.tMapa)){
-                    //caso não contenha eu adiciono o mapa
+                    //if it does not contain I'll add the map
                     ArrayList<infBattles> infT = new ArrayList<infBattles>();
                     infT.add(bat);
                     batTemp.put(bat.tMapa, infT);
                 }else{
-                    //adiciono a batalha à lista
+                    //I add the battle to the list
                     batTemp.get(bat.tMapa).add(bat);
                 }
             }else{
-                //caso não contenha a estratégia
+                //if it does not contain the
                 batTemp = new HashMap<Integer, List<infBattles>>();
                 ArrayList<infBattles> infT = new ArrayList<infBattles>();
                 infT.add(bat);
@@ -450,10 +448,6 @@ public class SCV extends AIWithComputationBudget {
         }
 
         try {
-            //double enemy = rf.classifyInstance(avai);
-            //Attribute a = dataSet.attribute(dataSet.numAttributes() - 1);
-            //String nameEnemy = a.value((int) enemy);
-            //System.out.println("Enemy name = " + nameEnemy);
             setNewStrategy(getStrategyByDistribution(rf.distributionForInstance(avai), pgs.getHeight()));
 
         } catch (Exception ex) {
@@ -505,13 +499,6 @@ public class SCV extends AIWithComputationBudget {
     }
 
     protected String getStrategyByDistribution(double[] distrib, int alturaMapa) {
-        /*// informações da distribuição
-        for (int i = 0; i < distrib.length; i++) {
-            Attribute a = dataSet.attribute(dataSet.numAttributes() - 1);
-            String nameEnemy = a.value(i);
-            System.err.println("nameEnemy = "+nameEnemy+" com probalibilidade de "+ String.format("%.2f",distrib[i] ));
-        }
-        */
         String bestStrategy = "POWorkerRush";
         double bestPondValue = -1;
         
@@ -547,7 +534,6 @@ public class SCV extends AIWithComputationBudget {
                 bestStrategy = s;
             }
         }
-        //System.out.println("SCV Best Strategy="+ bestStrategy);
         return bestStrategy;
     }
 
@@ -595,7 +581,6 @@ public class SCV extends AIWithComputationBudget {
         for (int i = 0; i < newStrat.size(); i++) {
             this.strategies[i] = newStrat.get(i);
         }
-        //System.out.println("SCV Estratégias : " + newStrat);
     }
     
 }

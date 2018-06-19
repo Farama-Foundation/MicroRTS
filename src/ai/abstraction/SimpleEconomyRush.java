@@ -39,7 +39,7 @@ public class SimpleEconomyRush extends AbstractionLayerAI {
     UnitType heavyType;
 
     // If we have any unit for attack: send it to attack to the nearest enemy unit
-    // If we have a base: train worker until we have 3 workers. 
+    // If we have a base: train worker until we have 3 workers per base. 
     // If we have a barracks: train light, Ranged and Heavy in order and before choose randomly a new unit for build
     // If we have a worker: go to resources closest, build barracks, build new base closest harvest resources
     public SimpleEconomyRush(UnitTypeTable a_utt) {
@@ -70,7 +70,6 @@ public class SimpleEconomyRush extends AbstractionLayerAI {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         Player p = gs.getPlayer(player);
         PlayerAction pa = new PlayerAction();
-//        System.out.println("LightRushAI for player " + player + " (cycle " + gs.getTime() + ")");
         
         // behavior of bases:
         for (Unit u : pgs.getUnits()) {
@@ -168,21 +167,20 @@ public class SimpleEconomyRush extends AbstractionLayerAI {
                 nHeavy++;
             }
         }
-        //System.out.println("PVAI.EconomyRush.barracksBehavior() "+nLight + " "+nRanged+ " "+nHeavy);
         
-        //conferir se eu já tenho algum light, se não tiver, crie.
+        //check if I already have some light, if not, create.
         if (nLight == 0 && p.getResources() >= lightType.cost) {
             train(u, lightType);
         }else if (nRanged == 0 && p.getResources() >= rangedType.cost) {
-                   //conferir se eu já tenho algum Ranged, se não tiver, crie.
+                   // check if I already have some Ranged, if not, create
             train(u, rangedType);
             
         }else if (nHeavy == 0 && p.getResources() >= heavyType.cost) {
-            //conferir se eu já tenho algum Heavy, se não tiver, crie.
+            //check if I already have some Heavy, if not, create.
             train(u, heavyType);
         }
 
-        //caso já possua uma unidade de cada, selecione randomicamente qualquer uma à gerar
+        //if you already have a unit of each, randomly select any one to generate
         if (nLight != 0 && nRanged != 0 && nHeavy != 0) {
             int number = r.nextInt(3);
             switch (number) {
@@ -219,7 +217,6 @@ public class SimpleEconomyRush extends AbstractionLayerAI {
             }
         }
         if (closestEnemy != null) {
-//            System.out.println("EconomyRush.meleeUnitBehavior: " + u + " attacks " + closestEnemy);
             attack(u, closestEnemy);
         }
     }

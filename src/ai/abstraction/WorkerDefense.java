@@ -25,7 +25,7 @@ import rts.units.UnitTypeTable;
 
 /**
  *
- * @author santi
+ * @author Cleyton
  */
 
 public class WorkerDefense extends AbstractionLayerAI {
@@ -35,11 +35,13 @@ public class WorkerDefense extends AbstractionLayerAI {
     UnitType baseType;
     UnitType barracks;
 
-    // Strategy implemented by this class:
-    // If we have more than 1 "Worker": send the extra workers to attack to the nearest enemy unit
-    //attack base and barracks first
-    // If we have a base: train workers non-stop
-    // If we have a worker: do this if needed: build base, harvest resources
+    //This strategy assigns the first worker to collect
+    //resources  while  the  base  trains  more  workers.  The  workers
+    //stand at a distance from their base equal to the height of the
+    //map divided by two, forming a defense line. If an enemy unit
+    //e gets within a distance of also the height of the map divided
+    //by two from the workers, all units are sent to attack e
+    
     public WorkerDefense(UnitTypeTable a_utt) {
         this(a_utt, new AStarPathFinding());
     }

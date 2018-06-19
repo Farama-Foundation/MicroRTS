@@ -20,7 +20,7 @@ import rts.units.*;
 
 /**
  *
- * @author santi
+ * @author Cleyton
  */
 public class HeavyDefense extends AbstractionLayerAI {
 
@@ -31,11 +31,9 @@ public class HeavyDefense extends AbstractionLayerAI {
     UnitType barracksType;
     UnitType heavyType;
 
-    // Strategy implemented by this class:
-    // If we have any "light": send it to attack to the nearest enemy unit
-    // If we have a base: train worker until we have 1 workers
-    // If we have a barracks: train light
-    // If we have a worker: do this if needed: build base, build barracks, harvest resources
+    // These strategies behave similarly to WD,
+    //with  the  difference  being  that  the  defense  line  is  formed  by
+    //heavy units for HD, respectively. 
 
     public HeavyDefense(UnitTypeTable a_utt) {
         this(a_utt, new AStarPathFinding());

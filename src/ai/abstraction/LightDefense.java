@@ -20,7 +20,7 @@ import rts.units.*;
 
 /**
  *
- * @author santi
+ * @author Cleyton
  */
 public class LightDefense extends AbstractionLayerAI {
 
@@ -31,11 +31,12 @@ public class LightDefense extends AbstractionLayerAI {
     UnitType barracksType;
     UnitType lightType;
 
-    // Strategy implemented by this class:
-    // If we have any "light": send it to attack to the nearest enemy unit
-    // If we have a base: train worker until we have 1 workers
-    // If we have a barracks: train light
-    // If we have a worker: do this if needed: build base, build barracks, harvest resources
+    // These strategies behave similarly to WD,
+    //with  the  difference  being  that  the  defense  line  is  formed  by
+    //ranged and lights units for RD and LD, respectively. Since RD
+    //and LD train ranged and lights units, they build a barracks with
+    //their worker as soon as there is enough resources; the worker
+    //returns to collecting resources once the barracks is built.
 
     public LightDefense(UnitTypeTable a_utt) {
         this(a_utt, new AStarPathFinding());

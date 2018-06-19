@@ -45,7 +45,7 @@ public class EconomyRush extends AbstractionLayerAI {
     int resourcesUsed;
 
     // If we have any unit for attack: send it to attack to the nearest enemy unit
-    // If we have a base: train worker until we have 6 workers per base. The 6ª unit send to build a new base.
+    // If we have a base: train worker until we have 4 workers per base. The 4ª unit send to build a new base.
     // If we have a barracks: train light, Ranged and Heavy in order
     // If we have a worker: go to resources closest, build barracks, build new base closest harvest resources
     public EconomyRush(UnitTypeTable a_utt) {
@@ -77,7 +77,6 @@ public class EconomyRush extends AbstractionLayerAI {
         Player p = gs.getPlayer(player);
         PlayerAction pa = new PlayerAction();
         resourcesUsed=gs.getResourceUsage().getResourcesUsed(player); 
-//        System.out.println("LightRushAI for player " + player + " (cycle " + gs.getTime() + ")");
 
         // behavior of bases:
         for (Unit u : pgs.getUnits()) {
@@ -142,7 +141,6 @@ public class EconomyRush extends AbstractionLayerAI {
                 nworkers++;
             }
         }
-        //calculo numero de bases
         int nBases = 0;
         for (Unit u2 : pgs.getUnits()) {
             if (u2.getType() == baseType
@@ -176,25 +174,18 @@ public class EconomyRush extends AbstractionLayerAI {
                 nHeavy++;
             }
         }
-        //System.out.println("PVAI.EconomyRush.barracksBehavior() "+nLight + " "+nRanged+ " "+nHeavy);
         
-
-        //conferir se eu já tenho algum light, se não tiver, crie.
         if (nLight == 0 && p.getResources() >= (lightType.cost + resourcesUsed)) {
             train(u, lightType);
             resourcesUsed += lightType.cost;
         } else if (nRanged == 0 && p.getResources() >= (rangedType.cost + resourcesUsed)) {
-            //conferir se eu já tenho algum Ranged, se não tiver, crie.
             train(u, rangedType);
             resourcesUsed += rangedType.cost;
         } else if (nHeavy == 0 && p.getResources() >= (heavyType.cost + resourcesUsed)) {
-            //conferir se eu já tenho algum Heavy, se não tiver, crie.
             train(u, heavyType);
             resourcesUsed += heavyType.cost;
         }
 
-        //Caso tenha acumulado recursos para uma nova base e
-        //caso já possua uma unidade de cada, selecione randomicamente qualquer uma à gerar
         if (p.getResources() >= baseType.cost && nLight != 0 && nRanged != 0 && nHeavy != 0) {
             int number = r.nextInt(3);
             switch (number) {
@@ -234,7 +225,6 @@ public class EconomyRush extends AbstractionLayerAI {
             }
         }
         if (closestEnemy != null) {
-//            System.out.println("EconomyRush.meleeUnitBehavior: " + u + " attacks " + closestEnemy);
             attack(u, closestEnemy);
         }
     }
@@ -249,7 +239,6 @@ public class EconomyRush extends AbstractionLayerAI {
         if (workers.isEmpty()) {
             return;
         }
-        //conta o número de bases e barracas existentes
         for (Unit u2 : pgs.getUnits()) {
             if (u2.getType() == baseType
                     && u2.getPlayer() == p.getID()) {
@@ -283,7 +272,6 @@ public class EconomyRush extends AbstractionLayerAI {
             List<Unit> otherResources = new ArrayList<>(otherResourcePoint(p, pgs));
             if (!otherResources.isEmpty()) {
                 if (!freeWorkers.isEmpty()) {
-                    //envio para construção
                     if (p.getResources() >= baseType.cost + resourcesUsed) {
                         Unit u = freeWorkers.remove(0);
                         buildIfNotAlreadyBuilding(u, baseType, otherResources.get(0).getX()-1, otherResources.get(0).getY()-1, reservedPositions, p, pgs);
@@ -299,7 +287,6 @@ public class EconomyRush extends AbstractionLayerAI {
 
     protected List<Unit> otherResourcePoint(Player p, PhysicalGameState pgs) {
 
-        //definimos o recurso mais próximo das nossas bases
         List<Unit> bases = getMyBases(p, pgs);
         Set<Unit> myResources = new HashSet<>();
         Set<Unit> otherResources = new HashSet<>();
