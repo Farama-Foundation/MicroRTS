@@ -263,13 +263,8 @@ public class PhysicalGameState {
      * @return
      */
     public Collection<Unit> getUnitsAround(int x, int y, int squareRange) {
-        List<Unit> closeUnits = new LinkedList<Unit>();
-        for (Unit u : units) {
-            if ((Math.abs(u.getX() - x) <= squareRange && Math.abs(u.getY() - y) <= squareRange)) {
-                closeUnits.add(u);
-            }
-        }
-        return closeUnits;
+        // returns the units around a rectangle with same width and height
+    	return getUnitsAround(x, y, squareRange, squareRange);
     }
     
     /**
