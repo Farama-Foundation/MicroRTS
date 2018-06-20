@@ -273,12 +273,11 @@ public class PhysicalGameState {
     }
     
     /**
-     * Returns units within a rectangular area starting in the provided x and y
-     * coordinates, with the specified width and height
-     * @param x 
-     * @param y 
-     * @param width 
-     * @param height  
+     * Returns units within a rectangular area 
+     * @param x top left coordinate of the rectangle
+     * @param y top left coordinate of the square 
+     * @param width rectangle width
+     * @param height rectangle height
      * @return
      */
     public Collection<Unit> getUnitsAround(int x, int y, int width, int height) {
