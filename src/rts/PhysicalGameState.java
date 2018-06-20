@@ -257,20 +257,35 @@ public class PhysicalGameState {
     /**
      * Returns the units within a squared area
      *
-     * @param x bottom left coordinate of the square
-     * @param y bottom left coordinate of the square
+     * @param x top left coordinate of the square
+     * @param y top left coordinate of the square
      * @param squareRange square size
      * @return
      */
     public Collection<Unit> getUnitsAround(int x, int y, int squareRange) {
+        // returns the units around a rectangle with same width and height
+    	return getUnitsAround(x, y, squareRange, squareRange);
+    }
+    
+    /**
+     * Returns units within a rectangular area 
+     * @param x top left coordinate of the rectangle
+     * @param y top left coordinate of the square 
+     * @param width rectangle width
+     * @param height rectangle height
+     * @return
+     */
+    public Collection<Unit> getUnitsAround(int x, int y, int width, int height) {
         List<Unit> closeUnits = new LinkedList<Unit>();
         for (Unit u : units) {
-            if ((Math.abs(u.getX() - x) <= squareRange && Math.abs(u.getY() - y) <= squareRange)) {
+            if ((Math.abs(u.getX() - x) <= width && Math.abs(u.getY() - y) <= height)) {
                 closeUnits.add(u);
             }
         }
         return closeUnits;
     }
+    
+    
 
     /**
      * Returns the winner of the game, given the unit counts or -1 if the game
