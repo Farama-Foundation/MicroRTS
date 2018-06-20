@@ -11,15 +11,18 @@ import ai.core.AI;
 import ai.core.AIWithComputationBudget;
 import ai.core.ContinuingAI;
 import ai.core.PseudoContinuingAI;
-import ai.BranchingFactorCalculatorDouble;
-import ai.BranchingFactorCalculatorLong;
 import ai.PassiveAI;
 import ai.RandomAI;
 import ai.RandomBiasedAI;
+import ai.abstraction.HeavyDefense;
 import ai.abstraction.HeavyRush;
+import ai.abstraction.LightDefense;
 import ai.abstraction.LightRush;
+import ai.abstraction.RangedDefense;
 import ai.abstraction.RangedRush;
+import ai.abstraction.WorkerDefense;
 import ai.abstraction.WorkerRush;
+import ai.abstraction.WorkerRushPlusPlus;
 import ai.abstraction.cRush.CRush_V1;
 import ai.abstraction.cRush.CRush_V2;
 import ai.abstraction.partialobservability.POHeavyRush;
@@ -130,12 +133,17 @@ public class FEStatePane extends JPanel {
                    LightRush.class,
                    HeavyRush.class,
                    RangedRush.class,
-                   CRush_V1.class,
-                   CRush_V2.class,
+                   WorkerDefense.class,
+                   LightDefense.class,
+                   HeavyDefense.class,
+                   RangedDefense.class,
                    POWorkerRush.class,
                    POLightRush.class,
                    POHeavyRush.class,
                    PORangedRush.class,
+                   WorkerRushPlusPlus.class,
+                   CRush_V1.class,
+                   CRush_V2.class,
                    PortfolioAI.class,
                    PGSAI.class,
                    IDRTMinimax.class,
