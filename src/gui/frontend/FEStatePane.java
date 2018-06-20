@@ -102,6 +102,7 @@ import ai.core.InterruptibleAI;
 import ai.evaluation.SimpleOptEvaluationFunction;
 import ai.mcts.believestatemcts.BS3_NaiveMCTS;
 import ai.mcts.uct.DownsamplingUCT;
+import ai.scv.SCV;
 
 /**
  *
@@ -151,7 +152,8 @@ public class FEStatePane extends JPanel {
                    MLPSMCTS.class,
                    AHTNAI.class,
                    InformedNaiveMCTS.class,
-                   PuppetSearchMCTS.class
+                   PuppetSearchMCTS.class,
+                   SCV.class
                   };
 
     
