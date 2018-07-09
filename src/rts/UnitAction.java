@@ -516,6 +516,13 @@ public class UnitAction {
         if (unitTypeStr!=null) unitType = utt.getUnitType(unitTypeStr);
     }
     
+
+    public void clearResourceUSageCache()
+    {
+        r_cache = null;
+    }
+    
+    
     /**
      * Creates a UnitAction from a XML element (calls the corresponding constructor)
      * @param e
@@ -554,5 +561,5 @@ public class UnitAction {
         
         return ua;
     }
-    
+        
 }
