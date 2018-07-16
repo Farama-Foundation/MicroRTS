@@ -79,6 +79,7 @@ public class RoundRobinTournament {
         out.write("maxGameLength\t" + maxGameLength + "\n");
         out.write("timeBudget\t" + timeBudget + "\n");
         out.write("iterationsBudget\t" + iterationsBudget + "\n");
+        out.write("pregameAnalysisBudget\t" + preAnalysisBudgetFirstTimeInAMap + "\t" + preAnalysisBudgetRestOfTimes + "\n");
         out.write("fullObservability\t" + fullObservability + "\n");
         out.write("timeoutCheck\t" + timeoutCheck + "\n");
         out.write("runGC\t" + runGC + "\n");
