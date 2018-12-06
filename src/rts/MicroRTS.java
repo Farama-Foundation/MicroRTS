@@ -15,7 +15,13 @@ import rts.units.UnitTypeTable;
 public class MicroRTS {
 
     public static void main(String args[]) throws Exception {
-        GameSettings gameSettings = GameSettings.loadFromConfig(GameSettings.fetchDefaultConfig());
+        
+        String configFile = "resources/config.properties";
+                
+        for(int i = args.length; i > 0; i--)
+        if(args[i - 1].equals("-f")) configFile = args[i];
+        
+        GameSettings gameSettings = GameSettings.loadFromConfig(GameSettings.fetchConfig(configFile));
         System.out.println(gameSettings);
 
         switch (gameSettings.getLaunchMode()) {
