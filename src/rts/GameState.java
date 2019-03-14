@@ -89,6 +89,12 @@ public class GameState {
         return unitActions;
     }
     
+    
+    public UnitTypeTable getUnitTypeTable() {
+        return utt;
+    }
+        
+    
     /**
      * Returns the action of a unit
      * @param u
@@ -147,15 +153,6 @@ public class GameState {
     public PhysicalGameState getPhysicalGameState() {
         return pgs;
     }
-
-    /**
-     * Returns the {@link UnitTypeTable} associated with this state
-     * @return
-     */
-    public UnitTypeTable getUnitTypeTable() {
-        return utt;
-    }
-    
     
     
     /**

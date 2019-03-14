@@ -1,0 +1,47 @@
+<rts.PhysicalGameState width="32" height="32">
+  <terrain>0000000110000000011000000000000000000001100000000110000000000000000000011000000001100000000000000000000110000000011000000000000000000000000000000110011111111111000000000000000001100111111111111111111110000000000000000000000011111111100000000000000000000000000000011000000000000001100000000000000110000000000000011000000000000001100000000000000110000000000000011000000000000001100000000000000000000000000000011111111100000000000000000000000111111111000000011000000000000001100000000000000110000001100000011000000000000001100000011000000110000000000000011000000000000001100000001111111110000000000000000000000011111111100000000000000000000000000000011000000000000001100000000000000110000000000000011000000000000001100000000000000110000000000000011000000000000001100000000000000000000000000000011111111100000000000000000000000111111111111111111110011000000000000000001111111111100110000000000000000000000000000001100000000110000000000000000000011000000001100000000000000000000110000000011000000000000000000001100000000110000000</terrain>
+  <players>
+    <rts.Player ID="0" resources="5">
+    </rts.Player>
+    <rts.Player ID="1" resources="5">
+    </rts.Player>
+  </players>
+  <units>
+    <rts.units.Unit type="Base" ID="5892010" player="0" x="2" y="2" resources="0" hitpoints="10" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Worker" ID="5892011" player="0" x="1" y="1" resources="0" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="5892012" player="-1" x="0" y="0" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="5892013" player="-1" x="0" y="12" resources="20" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="5892014" player="-1" x="0" y="23" resources="20" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="5892015" player="-1" x="0" y="31" resources="20" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="5892016" player="-1" x="31" y="31" resources="10" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Worker" ID="5892017" player="1" x="30" y="30" resources="0" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Base" ID="5892018" player="1" x="29" y="29" resources="0" hitpoints="10" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="5892019" player="-1" x="31" y="0" resources="20" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="5892020" player="-1" x="31" y="8" resources="20" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="5892021" player="-1" x="31" y="18" resources="20" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="5892022" player="-1" x="30" y="0" resources="20" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="5892023" player="-1" x="1" y="31" resources="20" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="5892024" player="-1" x="0" y="22" resources="20" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="5892026" player="-1" x="31" y="19" resources="20" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="5892027" player="-1" x="31" y="9" resources="20" hitpoints="1" >
+    </rts.units.Unit>
+    <rts.units.Unit type="Resource" ID="5892028" player="-1" x="0" y="13" resources="20" hitpoints="1" >
+    </rts.units.Unit>
+  </units>
+</rts.PhysicalGameState>
