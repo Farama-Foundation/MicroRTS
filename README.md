@@ -21,3 +21,11 @@ The LSI AI was contributed by Alexander Shleyfman, Antonin Komenda and Carmel Do
 ## Instructions:
 
 ![instructions image](https://raw.githubusercontent.com/santiontanon/microrts/master/help.png)
+
+## How to build programmatically
+
+```bash
+javac -d ./build -cp E:/Go/src/github.com/santiontanon/microrts/lib/*  ./tests/PlayGameWithMouseTest.java -sourcepath .
+
+jar cvf YourJar.jar *
+```
