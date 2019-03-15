@@ -1,0 +1,26 @@
+kind: pipeline
+name: production
+steps:
+steps:
+- name: zip
+  image: kramos/alpine-zip
+  volumes:
+  - name: cache
+    path: /tmp/cache
+  commands:
+  - zip -r microrts.zip lib/ microrts.jar
+- name: upload
+  image: plugins/s3
+  volumes:
+  - name: cache
+    path: /tmp/cache
+  settings:
+    bucket: my-bucket-name
+    source: /tmp/cache/microrts.zip
+    target: /target/location
+    path_style: true
+    endpoint: http://dev.costa.sh:9000
+
+volumes:
+- name: cache
+  temp: {}

@@ -1,4 +1,6 @@
-## microrts
+# microrts
+
+[![Build Status](https://dev.costa.sh/api/badges/vwxyzjn/microrts/status.svg)](https://dev.costa.sh/vwxyzjn/microrts)
 
 microRTS is a small implementation of an RTS game, designed to perform AI research. The advantage of using microRTS with respect to using a full-fledged game like Wargus or Starcraft (using BWAPI) is that microRTS is much simpler, and can be used to quickly test theoretical ideas, before moving on to full-fledged RTS games.
 
@@ -29,5 +31,7 @@ javac -d ./build -cp ./lib/*  ./src/tests/*.java -sourcepath ./src
 cd build
 jar cvf microrts.jar *
 mv microrts.jar ../microrts.jar
+cd ..
+zip -r microrts.zip lib/ microrts.jar
 java -classpath "microrts.jar;./lib/*" tests.PlayGameWithMouseTest
 ```
