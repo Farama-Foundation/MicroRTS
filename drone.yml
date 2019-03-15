@@ -2,7 +2,7 @@ kind: pipeline
 name: production
 steps:
 - name: java
-  image: openjdk-8-alpine
+  image: java:openjdk-8-alpine
   commands:
   - javac -d ./build -cp ./lib/*  ./src/tests/*.java -sourcepath ./src
   - cd build
