@@ -29,5 +29,5 @@ javac -d ./build -cp ./lib/*  ./src/tests/*.java -sourcepath ./src
 cd build
 jar cvf microrts.jar *
 mv microrts.jar ../microrts.jar
-java -classpath "YourJar.jar;./lib/*" tests.PlayGameWithMouseTest
+java -classpath "microrts.jar;./lib/*" tests.PlayGameWithMouseTest
 ```
