@@ -13,7 +13,7 @@ steps:
   - jar cvf microrts.jar *
   - mv microrts.jar ../microrts.jar
   - cd ..
-  - apk update && akp add zip
+  - apk update && apk add zip
   - zip -r microrts.zip lib/ microrts.jar
   - mv microrts.zip /tmp/cache/$(date +"%Y%m%d%H%M").microrts.zip
 - name: upload
