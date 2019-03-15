@@ -25,7 +25,9 @@ The LSI AI was contributed by Alexander Shleyfman, Antonin Komenda and Carmel Do
 ## How to build programmatically
 
 ```bash
-javac -d ./build -cp E:/Go/src/github.com/santiontanon/microrts/lib/*  ./tests/PlayGameWithMouseTest.java -sourcepath .
-
-jar cvf YourJar.jar *
+javac -d ./build -cp ./lib/*  ./src/tests/*.java -sourcepath ./src
+cd build
+jar cvf microrts.jar *
+mv microrts.jar ../microrts.jar
+java -classpath "YourJar.jar;./lib/*" tests.PlayGameWithMouseTest
 ```
