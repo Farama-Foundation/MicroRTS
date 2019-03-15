@@ -14,7 +14,7 @@ steps:
   - mv microrts.jar ../microrts.jar
   - cd ..
   - apk update && apk add zip
-  - zip -r microrts.zip lib/ microrts.jar
+  - zip -r microrts.zip lib/ maps/ microrts.jar
   - mv microrts.zip /tmp/cache/$(date +"%Y%m%d%H%M").microrts.zip
 - name: upload
   image: plugins/s3
