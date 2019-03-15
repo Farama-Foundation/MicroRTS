@@ -3,26 +3,35 @@ name: production
 steps:
 - name: java
   image: java:openjdk-8-alpine
+  volumes:
+  - name: cache
+    path: /tmp/cache
   commands:
-  - javac -d ./build -cp ./lib/*  ./src/tests/*.java -sourcepath ./src
+  - mkdir build
+  - javac -d "./build" -cp "./lib/*" -sourcepath "./src" ./src/tests/*.java
   - cd build
   - jar cvf microrts.jar *
   - mv microrts.jar ../microrts.jar
   - cd ..
-  - akp add zip
+  - apk update && akp add zip
   - zip -r microrts.zip lib/ microrts.jar
-# - name: upload
-#   image: plugins/s3
-#   volumes:
-#   - name: cache
-#     path: /tmp/cache
-#   settings:
-#     bucket: my-bucket-name
-#     source: /tmp/cache/microrts.zip
-#     target: /target/location
-#     path_style: true
-#     endpoint: http://dev.costa.sh:9000
+  - mv microrts.zip /tmp/cache/$(date +"%Y%m%d%H%M").microrts.zip
+- name: upload
+  image: plugins/s3
+  volumes:
+  - name: cache
+    path: /tmp/cache
+  settings:
+    bucket: my-bucket-name
+    access_key:
+      from_secret: minio_access_key_id
+    secret_key:
+      from_secret: minio_secret_access_key
+    source: /tmp/cache/*
+    target: /microrts/releases
+    path_style: true
+    endpoint: http://dev.costa.sh:9000
 
-# volumes:
-# - name: cache
-#   temp: {}
+volumes:
+- name: cache
+  temp: {}
