@@ -22,7 +22,7 @@ steps:
   - name: cache
     path: /tmp/cache
   settings:
-    bucket: my-bucket-name
+    bucket: microrts
     access_key:
       from_secret: minio_access_key_id
     secret_key:
