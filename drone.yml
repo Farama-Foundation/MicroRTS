@@ -1,26 +1,28 @@
 kind: pipeline
 name: production
 steps:
-steps:
-- name: zip
-  image: kramos/alpine-zip
-  volumes:
-  - name: cache
-    path: /tmp/cache
+- name: java
+  image: openjdk-8-alpine
   commands:
+  - javac -d ./build -cp ./lib/*  ./src/tests/*.java -sourcepath ./src
+  - cd build
+  - jar cvf microrts.jar *
+  - mv microrts.jar ../microrts.jar
+  - cd ..
+  - akp add zip
   - zip -r microrts.zip lib/ microrts.jar
-- name: upload
-  image: plugins/s3
-  volumes:
-  - name: cache
-    path: /tmp/cache
-  settings:
-    bucket: my-bucket-name
-    source: /tmp/cache/microrts.zip
-    target: /target/location
-    path_style: true
-    endpoint: http://dev.costa.sh:9000
+# - name: upload
+#   image: plugins/s3
+#   volumes:
+#   - name: cache
+#     path: /tmp/cache
+#   settings:
+#     bucket: my-bucket-name
+#     source: /tmp/cache/microrts.zip
+#     target: /target/location
+#     path_style: true
+#     endpoint: http://dev.costa.sh:9000
 
-volumes:
-- name: cache
-  temp: {}
+# volumes:
+# - name: cache
+#   temp: {}
