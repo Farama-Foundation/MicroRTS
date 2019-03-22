@@ -1,0 +1,187 @@
+  {
+    "moveConflictResolutionStrategy": 1,
+    "unitTypes": [
+      {
+        "ID": 0,
+        "name": "Resource",
+        "cost": 1,
+        "hp": 1,
+        "minDamage": 1,
+        "maxDamage": 1,
+        "attackRange": 1,
+        "produceTime": 10,
+        "moveTime": 10,
+        "attackTime": 10,
+        "harvestTime": 10,
+        "returnTime": 10,
+        "harvestAmount": 1,
+        "sightRadius": 0,
+        "isResource": true,
+        "isStockpile": false,
+        "canHarvest": false,
+        "canMove": false,
+        "canAttack": false,
+        "produces": [],
+        "producedBy": []
+      },
+      {
+        "ID": 1,
+        "name": "Base",
+        "cost": 10,
+        "hp": 50,
+        "minDamage": 1,
+        "maxDamage": 1,
+        "attackRange": 1,
+        "produceTime": 200,
+        "moveTime": 10,
+        "attackTime": 10,
+        "harvestTime": 10,
+        "returnTime": 10,
+        "harvestAmount": 1,
+        "sightRadius": 5,
+        "isResource": false,
+        "isStockpile": true,
+        "canHarvest": false,
+        "canMove": false,
+        "canAttack": false,
+        "produces": [
+          "Worker"
+        ],
+        "producedBy": [
+          "Worker"
+        ]
+      },
+      {
+        "ID": 2,
+        "name": "Barracks",
+        "cost": 5,
+        "hp": 25,
+        "minDamage": 1,
+        "maxDamage": 1,
+        "attackRange": 1,
+        "produceTime": 65,
+        "moveTime": 10,
+        "attackTime": 10,
+        "harvestTime": 10,
+        "returnTime": 10,
+        "harvestAmount": 1,
+        "sightRadius": 3,
+        "isResource": false,
+        "isStockpile": false,
+        "canHarvest": false,
+        "canMove": false,
+        "canAttack": false,
+        "produces": [
+          "Light",
+          "Heavy",
+          "Ranged"
+        ],
+        "producedBy": [
+          "Worker"
+        ]
+      },
+      {
+        "ID": 3,
+        "name": "Worker",
+        "cost": 1,
+        "hp": 1,
+        "minDamage": 1,
+        "maxDamage": 1,
+        "attackRange": 1,
+        "produceTime": 50,
+        "moveTime": 10,
+        "attackTime": 5,
+        "harvestTime": 20,
+        "returnTime": 10,
+        "harvestAmount": 1,
+        "sightRadius": 3,
+        "isResource": false,
+        "isStockpile": false,
+        "canHarvest": true,
+        "canMove": true,
+        "canAttack": true,
+        "produces": [
+          "Base",
+          "Barracks"
+        ],
+        "producedBy": [
+          "Base"
+        ]
+      },
+      {
+        "ID": 4,
+        "name": "Light",
+        "cost": 2,
+        "hp": 4,
+        "minDamage": 2,
+        "maxDamage": 2,
+        "attackRange": 1,
+        "produceTime": 65,
+        "moveTime": 8,
+        "attackTime": 5,
+        "harvestTime": 10,
+        "returnTime": 10,
+        "harvestAmount": 1,
+        "sightRadius": 2,
+        "isResource": false,
+        "isStockpile": false,
+        "canHarvest": false,
+        "canMove": true,
+        "canAttack": true,
+        "produces": [],
+        "producedBy": [
+          "Barracks"
+        ]
+      },
+      {
+        "ID": 5,
+        "name": "Heavy",
+        "cost": 3,
+        "hp": 8,
+        "minDamage": 4,
+        "maxDamage": 4,
+        "attackRange": 1,
+        "produceTime": 120,
+        "moveTime": 10,
+        "attackTime": 5,
+        "harvestTime": 10,
+        "returnTime": 10,
+        "harvestAmount": 1,
+        "sightRadius": 2,
+        "isResource": false,
+        "isStockpile": false,
+        "canHarvest": false,
+        "canMove": true,
+        "canAttack": true,
+        "produces": [],
+        "producedBy": [
+          "Barracks"
+        ]
+      },
+      {
+        "ID": 6,
+        "name": "Ranged",
+        "cost": 2,
+        "hp": 1,
+        "minDamage": 1,
+        "maxDamage": 1,
+        "attackRange": 3,
+        "produceTime": 100,
+        "moveTime": 10,
+        "attackTime": 5,
+        "harvestTime": 10,
+        "returnTime": 10,
+        "harvestAmount": 1,
+        "sightRadius": 3,
+        "isResource": false,
+        "isStockpile": false,
+        "canHarvest": false,
+        "canMove": true,
+        "canAttack": true,
+        "produces": [],
+        "producedBy": [
+          "Barracks"
+        ]
+      }
+    ]
+  }
