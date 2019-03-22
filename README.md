@@ -24,6 +24,10 @@ The LSI AI was contributed by Alexander Shleyfman, Antonin Komenda and Carmel Do
 
 ![instructions image](https://raw.githubusercontent.com/santiontanon/microrts/master/help.png)
 
+## Build Artifacts
+
+http://microrts.s3-website-us-east-1.amazonaws.com/microrts/releases/
+
 ## How to build programmatically
 
 ```bash
