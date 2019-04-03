@@ -26,7 +26,7 @@ The LSI AI was contributed by Alexander Shleyfman, Antonin Komenda and Carmel Do
 
 ## Build Artifacts
 
-http://microrts.s3-website-us-east-1.amazonaws.com/microrts/releases/
+http://microrts.s3-website-us-east-1.amazonaws.com/microrts/artifacts/
 
 ## How to build programmatically
 
