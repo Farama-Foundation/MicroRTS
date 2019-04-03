@@ -28,7 +28,7 @@ steps:
     secret_key:
       from_secret: aws_secret_access_key
     source: /tmp/cache/*
-    target: /microrts/releases
+    target: /microrts/artifacts
     strip_prefix: /tmp/cache/
 
 volumes:
