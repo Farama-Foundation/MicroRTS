@@ -7,7 +7,7 @@ steps:
   - name: cache
     path: /tmp/cache
   commands:
-  - bash ./build.sh
+  - sh ./build.sh
   - apk update && apk add zip
   - zip -r microrts.zip lib/ maps/ microrts.jar
   - mv microrts.zip /tmp/cache/$(date +"%Y%m%d%H%M").microrts.zip
