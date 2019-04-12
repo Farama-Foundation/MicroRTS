@@ -753,6 +753,7 @@ public class GameState {
         w.write("{");
         w.write("\"time\":" + time + ",\"pgs\":");
         pgs.toJSON(w);
+        pgs.toMatrixJSON();
         w.write(",\"actions\":[");
         boolean first = true;
         for(Unit u:unitActions.keySet()) {

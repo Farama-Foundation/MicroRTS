@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import rts.units.Unit;
@@ -17,6 +18,7 @@ import util.XMLWriter;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import org.json.JSONArray;
 import rts.units.UnitTypeTable;
 
 /**
@@ -41,6 +43,11 @@ public class PhysicalGameState {
     int terrain[] = null;
     List<Player> players = new ArrayList<Player>();
     List<Unit> units = new LinkedList<Unit>();
+
+    /**
+     * Matrix shapes
+     */
+    int[] hitpointsShape;
 
     /**
      * Constructs the game state map from a XML
@@ -75,6 +82,7 @@ public class PhysicalGameState {
         width = a_width;
         height = a_height;
         terrain = new int[width * height];
+        hitpointsShape = new int[]{width, height, 2};
     }
 
     /**
@@ -89,6 +97,7 @@ public class PhysicalGameState {
         width = a_width;
         height = a_height;
         terrain = t;
+        hitpointsShape = new int[]{width, height, 2};
     }
 
     /**
@@ -539,6 +548,31 @@ public class PhysicalGameState {
         }
         w.write("]");
         w.write("}");
+    }
+
+    /**
+     * Writes a JSON representation of this map
+     *
+     * @throws Exception
+     */
+    public void toMatrixJSON() throws Exception {
+        int[][] hitpointsMatrix = new int[height][width];
+        int[][] resourcesMatrix = new int[height][width];
+        int[][] playersMatrix = new int[height][width];
+        long[][] IDMatrix = new long[height][width];
+
+        for (int i = 0; i < units.size(); i++) {
+            if (i < units.size() - 1) {
+                Unit u = units.get(i);
+                hitpointsMatrix[u.getX()][u.getY()] = u.getHitPoints();
+                resourcesMatrix[u.getX()][u.getY()] = u.getResources();
+                playersMatrix[u.getX()][u.getY()] = u.getPlayer();
+                IDMatrix[u.getX()][u.getY()] = u.getID();
+            }
+        }
+        JSONArray mJSONArray = new JSONArray(Arrays.asList(hitpointsMatrix));
+        System.out.println(mJSONArray);
+        
     }
 
     /**
