@@ -570,9 +570,10 @@ public class PhysicalGameState {
                 IDMatrix[u.getX()][u.getY()] = u.getID();
             }
         }
-        JSONArray mJSONArray = new JSONArray(Arrays.asList(hitpointsMatrix));
-        System.out.println(mJSONArray);
-        
+        System.out.println(new JSONArray(Arrays.asList(hitpointsMatrix)));
+        System.out.println(new JSONArray(Arrays.asList(resourcesMatrix)));
+        System.out.println(new JSONArray(Arrays.asList(playersMatrix)));
+        System.out.println(new JSONArray(Arrays.asList(IDMatrix)));
     }
 
     /**
