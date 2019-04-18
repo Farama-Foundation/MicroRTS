@@ -1,0 +1,28 @@
+# create a worker
+t = {
+    "unitID": 20,
+    "unitAction": {
+        'type': 4,
+        'parameter': 3,
+        'unitType': 'Worker'
+    }
+}
+k = json.dumps(t)
+conn.send(('%s\n' % k).encode('utf-8'))
+print(conn.recv(4096).decode('utf-8'))
+
+# move a worker
+t = {
+    "unitID": 25,
+    "unitAction": {
+        'type': 1,
+        'parameter': 2
+    }
+}
+k = json.dumps(t)
+conn.send(('%s\n' % k).encode('utf-8'))
+print(conn.recv(4096).decode('utf-8'))
+
+def step():
+    conn.send(('%s\n' % "[]").encode('utf-8'))
+    print(conn.recv(4096).decode('utf-8'))
