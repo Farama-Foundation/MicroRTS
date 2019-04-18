@@ -555,11 +555,10 @@ public class PhysicalGameState {
      *
      * @throws Exception
      */
-    public void toMatrixJSON() throws Exception {
+    public void toMatrixJSON(Writer w) throws Exception {
         int[][] hitpointsMatrix = new int[height][width];
         int[][] resourcesMatrix = new int[height][width];
         int[][] playersMatrix = new int[height][width];
-        long[][] IDMatrix = new long[height][width];
 
         for (int i = 0; i < units.size(); i++) {
             if (i < units.size() - 1) {
@@ -567,13 +566,15 @@ public class PhysicalGameState {
                 hitpointsMatrix[u.getX()][u.getY()] = u.getHitPoints();
                 resourcesMatrix[u.getX()][u.getY()] = u.getResources();
                 playersMatrix[u.getX()][u.getY()] = u.getPlayer();
-                IDMatrix[u.getX()][u.getY()] = u.getID();
             }
         }
-        System.out.println(new JSONArray(Arrays.asList(hitpointsMatrix)));
-        System.out.println(new JSONArray(Arrays.asList(resourcesMatrix)));
-        System.out.println(new JSONArray(Arrays.asList(playersMatrix)));
-        System.out.println(new JSONArray(Arrays.asList(IDMatrix)));
+
+        int [][][] resultMatrix = {
+            hitpointsMatrix,
+            resourcesMatrix,
+            playersMatrix
+        };
+        w.write((new JSONArray(Arrays.asList(resultMatrix))).toString());
     }
 
     /**

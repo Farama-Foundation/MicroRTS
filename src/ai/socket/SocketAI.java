@@ -40,6 +40,7 @@ public class SocketAI extends AIWithComputationBudget {
     Socket socket = null;
     BufferedReader in_pipe = null;
     PrintWriter out_pipe = null;
+    boolean layerJSON = false;
     
     public SocketAI(UnitTypeTable a_utt) {
         super(100,-1);
@@ -58,6 +59,20 @@ public class SocketAI extends AIWithComputationBudget {
         serverPort = a_port;
         communication_language = a_language;
         utt = a_utt;
+        try {
+            connectToServer();
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public SocketAI(int mt, int mi, String a_sa, int a_port, int a_language, UnitTypeTable a_utt, boolean a_JSON) {
+        super(mt, mi);
+        serverAddress = a_sa;
+        serverPort = a_port;
+        communication_language = a_language;
+        utt = a_utt;
+        layerJSON = a_JSON;
         try {
             connectToServer();
         }catch(Exception e) {
@@ -183,7 +198,11 @@ public class SocketAI extends AIWithComputationBudget {
             pa.fillWithNones(gs, player, 10);
             return pa;
         } else if (communication_language == LANGUAGE_JSON) {
-            gs.toJSON(out_pipe);
+            if (layerJSON) {
+                gs.toJSONLayers(out_pipe);
+            } else {
+                gs.toJSON(out_pipe);
+            }
             out_pipe.append("\n");
             out_pipe.flush();
             

@@ -753,7 +753,7 @@ public class GameState {
         w.write("{");
         w.write("\"time\":" + time + ",\"pgs\":");
         pgs.toJSON(w);
-        pgs.toMatrixJSON();
+        pgs.toMatrixJSON(w);
         w.write(",\"actions\":[");
         boolean first = true;
         for(Unit u:unitActions.keySet()) {
@@ -766,6 +766,15 @@ public class GameState {
         }
         w.write("]");
         w.write("}");
+    }
+
+    /**
+     * Writes a JSON layers representation of this state
+     * @param w
+     * @throws Exception
+     */
+    public void toJSONLayers(Writer w) throws Exception {
+        pgs.toMatrixJSON(w);
     }
     
     /**
