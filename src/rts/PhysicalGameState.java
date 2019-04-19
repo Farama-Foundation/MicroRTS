@@ -3,6 +3,8 @@ package rts;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
+import com.google.gson.Gson;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,15 +12,20 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 
 import rts.units.Unit;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+
 import util.XMLWriter;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.json.JSONArray;
+import org.json.JSONObject;
+
 import rts.units.UnitTypeTable;
 
 /**
@@ -555,29 +562,26 @@ public class PhysicalGameState {
      *
      * @throws Exception
      */
-    public void toMatrixJSON(Writer w) throws Exception {
+    public int[][][] getMatrixObservation() throws Exception {
         int[][] hitpointsMatrix = new int[height][width];
         int[][] resourcesMatrix = new int[height][width];
         int[][] playersMatrix = new int[height][width];
         int[][] unitTypesMatrix = new int[height][width];
 
         for (int i = 0; i < units.size(); i++) {
-            if (i < units.size() - 1) {
-                Unit u = units.get(i);
-                hitpointsMatrix[u.getX()][u.getY()] = u.getHitPoints();
-                resourcesMatrix[u.getX()][u.getY()] = u.getResources();
-                playersMatrix[u.getX()][u.getY()] = u.getPlayer();
-                unitTypesMatrix[u.getX()][u.getY()] = u.getType().ID;
-            }
+            Unit u = units.get(i);
+            hitpointsMatrix[u.getX()][u.getY()] = u.getHitPoints();
+            resourcesMatrix[u.getX()][u.getY()] = u.getResources();
+            playersMatrix[u.getX()][u.getY()] = u.getPlayer();
+            unitTypesMatrix[u.getX()][u.getY()] = u.getType().ID;
         }
 
-        int [][][] resultMatrix = {
+        return new int [][][]{
             hitpointsMatrix,
             resourcesMatrix,
             playersMatrix,
             unitTypesMatrix,
         };
-        w.write((new JSONArray(Arrays.asList(resultMatrix))).toString());
     }
 
     /**

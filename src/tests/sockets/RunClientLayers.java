@@ -43,7 +43,7 @@ public class RunClientLayers {
         
 //        SocketAI.DEBUG = 1;
 //        AI ai1 = new SocketAI(100,0, serverIP, serverPort, SocketAI.LANGUAGE_XML, utt);
-        AI ai1 = new SocketAI(100,0, serverIP, serverPort, SocketAI.LANGUAGE_JSON, utt, layerJSON);
+        SocketAI ai1 = new SocketAI(100,0, serverIP, serverPort, SocketAI.LANGUAGE_JSON, utt, layerJSON);
 //        AI ai2 = new SocketAI(100,0, serverIP, serverPort, SocketAI.LANGUAGE_XML, utt);
         AI ai2 = new RandomBiasedAI();
         
@@ -59,6 +59,7 @@ public class RunClientLayers {
                 PlayerAction pa2 = ai2.getAction(1, gs);
                 gs.issueSafe(pa1);
                 gs.issueSafe(pa2);
+                ai1.computeReward(0, gs);
 
                 // simulate:
                 gameover = gs.cycle();

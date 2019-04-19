@@ -773,8 +773,8 @@ public class GameState {
      * @param w
      * @throws Exception
      */
-    public void toJSONLayers(Writer w) throws Exception {
-        pgs.toMatrixJSON(w);
+    public int [][][] getMatrixObservation() throws Exception {
+        return pgs.getMatrixObservation();
     }
     
     /**

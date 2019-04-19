@@ -14,7 +14,12 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.google.gson.Gson;
+
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import rts.GameState;
@@ -41,6 +46,7 @@ public class SocketAI extends AIWithComputationBudget {
     BufferedReader in_pipe = null;
     PrintWriter out_pipe = null;
     boolean layerJSON = false;
+    double reward = 0.0;
     
     public SocketAI(UnitTypeTable a_utt) {
         super(100,-1);
@@ -199,7 +205,14 @@ public class SocketAI extends AIWithComputationBudget {
             return pa;
         } else if (communication_language == LANGUAGE_JSON) {
             if (layerJSON) {
-                gs.toJSONLayers(out_pipe);
+                int [][][] observation = gs.getMatrixObservation();
+                Map<String, Object> data = new HashMap<String, Object>();
+                    data.put("observation", observation);
+                    data.put("reward", reward);
+                    data.put("done", false);
+                    data.put("info", "");
+                Gson gson = new Gson();
+                out_pipe.write(gson.toJson(data));
             } else {
                 gs.toJSON(out_pipe);
             }
@@ -220,6 +233,10 @@ public class SocketAI extends AIWithComputationBudget {
         }        
     }
     
+    public void computeReward(int player, GameState gs) throws Exception {
+        // do something
+        reward = 1;
+    }
 
     @Override
     public void preGameAnalysis(GameState gs, long milliseconds) throws Exception 
