@@ -559,6 +559,7 @@ public class PhysicalGameState {
         int[][] hitpointsMatrix = new int[height][width];
         int[][] resourcesMatrix = new int[height][width];
         int[][] playersMatrix = new int[height][width];
+        int[][] unitTypesMatrix = new int[height][width];
 
         for (int i = 0; i < units.size(); i++) {
             if (i < units.size() - 1) {
@@ -566,13 +567,15 @@ public class PhysicalGameState {
                 hitpointsMatrix[u.getX()][u.getY()] = u.getHitPoints();
                 resourcesMatrix[u.getX()][u.getY()] = u.getResources();
                 playersMatrix[u.getX()][u.getY()] = u.getPlayer();
+                unitTypesMatrix[u.getX()][u.getY()] = u.getType().ID;
             }
         }
 
         int [][][] resultMatrix = {
             hitpointsMatrix,
             resourcesMatrix,
-            playersMatrix
+            playersMatrix,
+            unitTypesMatrix,
         };
         w.write((new JSONArray(Arrays.asList(resultMatrix))).toString());
     }
