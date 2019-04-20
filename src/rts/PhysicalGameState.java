@@ -567,6 +567,9 @@ public class PhysicalGameState {
         int[][] resourcesMatrix = new int[height][width];
         int[][] playersMatrix = new int[height][width];
         int[][] unitTypesMatrix = new int[height][width];
+        for (int i=0; i<hitpointsMatrix.length; i++) {
+            Arrays.fill(unitTypesMatrix[i], -1);
+        }
 
         for (int i = 0; i < units.size(); i++) {
             Unit u = units.get(i);
