@@ -6,7 +6,7 @@ package tests.sockets;
 
 import ai.core.AI;
 import ai.*;
-import ai.socket.SocketAI;
+import ai.socket.SocketRewardAI;
 import gui.PhysicalGameStatePanel;
 import javax.swing.JFrame;
 import rts.GameState;
@@ -43,7 +43,7 @@ public class RunClientLayers {
         
 //        SocketAI.DEBUG = 1;
 //        AI ai1 = new SocketAI(100,0, serverIP, serverPort, SocketAI.LANGUAGE_XML, utt);
-        SocketAI ai1 = new SocketAI(100,0, serverIP, serverPort, SocketAI.LANGUAGE_JSON, utt, layerJSON);
+        SocketRewardAI ai1 = new SocketRewardAI(100,0, serverIP, serverPort, SocketRewardAI.LANGUAGE_JSON, utt, layerJSON);
 //        AI ai2 = new SocketAI(100,0, serverIP, serverPort, SocketAI.LANGUAGE_XML, utt);
         AI ai2 = new RandomBiasedAI();
         
@@ -59,7 +59,7 @@ public class RunClientLayers {
                 PlayerAction pa2 = ai2.getAction(1, gs);
                 gs.issueSafe(pa1);
                 gs.issueSafe(pa2);
-                ai1.computeReward(0, gs);
+                ai1.computeReward(0, 1, gs);
 
                 // simulate:
                 gameover = gs.cycle();

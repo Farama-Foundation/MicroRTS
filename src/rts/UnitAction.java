@@ -1,8 +1,12 @@
 package rts;
 
 import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import java.io.Writer;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 
@@ -98,6 +102,32 @@ public class UnitAction {
      * Direction names. Indexes correspond to the constants used in this class
      */
     public static final String DIRECTION_NAMES[] = {"up", "right", "down", "left"};
+
+    /**
+     * Direction names. Indexes correspond to the constants used in this class
+     */
+    public static final String PARAMETER_DIRECTION = "direction";
+    public static final Map<Integer, Object> UnitActionSpec;
+    static {
+        Map<Integer, Object> aMap = new HashMap<Integer, Object>();
+        aMap.put(TYPE_NONE, new VariableSpec[] {
+        });
+        aMap.put(TYPE_MOVE, new VariableSpec[] {
+            new VariableSpec(PARAMETER_DIRECTION, VariableSpec.TYPE_CATEGORICAL, DIRECTION_NAMES.length)
+        });
+        aMap.put(TYPE_HARVEST, new VariableSpec[] {
+            new VariableSpec(PARAMETER_DIRECTION, VariableSpec.TYPE_CATEGORICAL, DIRECTION_NAMES.length)
+        });
+        aMap.put(TYPE_RETURN, new VariableSpec[] {
+            new VariableSpec(PARAMETER_DIRECTION, VariableSpec.TYPE_CATEGORICAL, DIRECTION_NAMES.length)
+        });
+        // aMap.put(TYPE_PRODUCE, new VariableSpec[] {
+            
+        // });
+        // aMap.put(TYPE_ATTACK_LOCATION, new VariableSpec[] { 
+        // });
+        UnitActionSpec = Collections.unmodifiableMap(aMap);
+    }
 
     /**
      * Type of this UnitAction
@@ -654,6 +684,47 @@ public class UnitAction {
             ua.unitType = utt.getUnitType(ut);
         }
 
+        return ua;
+    }
+
+    /**
+     * Creates a UnitAction from an action array
+     *
+     * @param o
+     * @param utt
+     * @return
+     */
+    public static UnitAction fromActionArray(JsonArray a, UnitTypeTable utt) {
+        UnitAction ua = new UnitAction(a.get(2).asInt());
+        switch (a.get(2).asInt()) {
+            case TYPE_NONE: {
+                break;
+            }
+            case TYPE_MOVE: {
+                ua.parameter = a.get(3).asInt();
+                break;
+            }
+            case TYPE_HARVEST: {
+                ua.parameter = a.get(3).asInt();
+                break;
+            }
+            case TYPE_RETURN: {
+                ua.parameter = a.get(3).asInt();
+                break;
+            }
+            // case TYPE_PRODUCE: {
+            //     ua.parameter = a.get(3).asInt();
+            //     // String ut = a.getString("unitType", null);
+            //     // if (ut != null) {
+            //     //     ua.unitType = utt.getUnitType(ut);
+            //     // }
+            // }
+            case TYPE_ATTACK_LOCATION: {
+                ua.x = a.get(4).asInt();
+                ua.y = a.get(4).asInt();
+                break;
+            }
+        }
         return ua;
     }
 

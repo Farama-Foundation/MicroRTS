@@ -363,5 +363,28 @@ public class PlayerAction {
         }
         return pa;
     }
+
+    /**
+     * Creates a PlayerAction from a action array object
+     * @param JSON
+     * @param gs
+     * @param utt
+     * @return
+     */
+    public static PlayerAction fromActionArrays(String JSON, GameState gs, UnitTypeTable utt) {
+        PlayerAction pa = new PlayerAction();
+        JsonArray a = Json.parse(JSON).asArray();
+        for(JsonValue v:a.values()) {
+            JsonArray aa = v.asArray();
+            System.out.println(aa);
+            int id = (int)gs.pgs.unitIdMatrix[aa.get(0).asInt()][aa.get(1).asInt()];
+            System.out.println("ID is");
+            System.out.println(id);
+            Unit u = gs.getUnit(id);
+            UnitAction ua = UnitAction.fromActionArray(aa, utt);
+            pa.addUnitAction(u, ua);
+        }
+        return pa;
+    }
     
 }

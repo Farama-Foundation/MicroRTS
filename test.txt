@@ -23,6 +23,17 @@ k = json.dumps(t)
 conn.send(('%s\n' % k).encode('utf-8'))
 print(conn.recv(4096).decode('utf-8'))
 
-def step():
+# skip idle frames
+for i in range(9):
+    conn.send(('%s\n' % "[]").encode('utf-8'))
+    print(conn.recv(4096).decode('utf-8'))
+
+# desired action input 
+t = [[1, 1, 1, 2]]
+k = json.dumps(t)
+conn.send(('%s\n' % k).encode('utf-8'))
+print(conn.recv(4096).decode('utf-8'))
+# skip idle frames
+for i in range(9):
     conn.send(('%s\n' % "[]").encode('utf-8'))
     print(conn.recv(4096).decode('utf-8'))

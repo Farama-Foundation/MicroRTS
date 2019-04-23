@@ -14,12 +14,7 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import com.google.gson.Gson;
-
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import rts.GameState;
@@ -46,7 +41,6 @@ public class SocketAI extends AIWithComputationBudget {
     BufferedReader in_pipe = null;
     PrintWriter out_pipe = null;
     boolean layerJSON = false;
-    double reward = 0.0;
     
     public SocketAI(UnitTypeTable a_utt) {
         super(100,-1);
@@ -65,20 +59,6 @@ public class SocketAI extends AIWithComputationBudget {
         serverPort = a_port;
         communication_language = a_language;
         utt = a_utt;
-        try {
-            connectToServer();
-        }catch(Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public SocketAI(int mt, int mi, String a_sa, int a_port, int a_language, UnitTypeTable a_utt, boolean a_JSON) {
-        super(mt, mi);
-        serverAddress = a_sa;
-        serverPort = a_port;
-        communication_language = a_language;
-        utt = a_utt;
-        layerJSON = a_JSON;
         try {
             connectToServer();
         }catch(Exception e) {
@@ -204,18 +184,7 @@ public class SocketAI extends AIWithComputationBudget {
             pa.fillWithNones(gs, player, 10);
             return pa;
         } else if (communication_language == LANGUAGE_JSON) {
-            if (layerJSON) {
-                int [][][] observation = gs.getMatrixObservation();
-                Map<String, Object> data = new HashMap<String, Object>();
-                    data.put("observation", observation);
-                    data.put("reward", reward);
-                    data.put("done", false);
-                    data.put("info", "");
-                Gson gson = new Gson();
-                out_pipe.write(gson.toJson(data));
-            } else {
-                gs.toJSON(out_pipe);
-            }
+            gs.toJSON(out_pipe);
             out_pipe.append("\n");
             out_pipe.flush();
             
@@ -233,10 +202,6 @@ public class SocketAI extends AIWithComputationBudget {
         }        
     }
     
-    public void computeReward(int player, GameState gs) throws Exception {
-        // do something
-        reward = 1;
-    }
 
     @Override
     public void preGameAnalysis(GameState gs, long milliseconds) throws Exception 
