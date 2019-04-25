@@ -77,7 +77,7 @@ public class RunClientLayers {
                     }
                 }
             }
-            srai.gameOver(gs.winner());
+            srai.gameOver(gs.winner(), gs);
             rbai.gameOver(gs.winner());
             if (srai.finished) {
                 break;
