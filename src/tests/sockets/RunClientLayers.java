@@ -30,50 +30,58 @@ public class RunClientLayers {
     public static void main(String args[]) throws Exception {
         String serverIP = "127.0.0.1";
         int serverPort = 9898;
-        
-        
-        UnitTypeTable utt = new UnitTypeTable();
-        PhysicalGameState pgs = PhysicalGameState.load("maps/16x16/basesWorkers16x16.xml", utt);
 
-        GameState gs = new GameState(pgs, utt);
-        int MAXCYCLES = 5000;
+        UnitTypeTable utt = new UnitTypeTable();
+
         int PERIOD = 20;
         boolean gameover = false;
         boolean layerJSON = true;
         
-//        SocketAI.DEBUG = 1;
-//        AI ai1 = new SocketAI(100,0, serverIP, serverPort, SocketAI.LANGUAGE_XML, utt);
-        SocketRewardAI ai1 = new SocketRewardAI(100,0, serverIP, serverPort, SocketRewardAI.LANGUAGE_JSON, utt, layerJSON);
-//        AI ai2 = new SocketAI(100,0, serverIP, serverPort, SocketAI.LANGUAGE_XML, utt);
-        AI ai2 = new RandomBiasedAI();
-        
-        ai1.reset();
-        ai2.reset();
 
-        JFrame w = PhysicalGameStatePanel.newVisualizer(gs,640,640,false,PhysicalGameStatePanel.COLORSCHEME_BLACK);
+        SocketRewardAI srai = new SocketRewardAI(100,0, serverIP, serverPort, SocketRewardAI.LANGUAGE_JSON, utt, layerJSON);
+        AI rbai = new RandomBiasedAI();
 
-        long nextTimeToUpdate = System.currentTimeMillis() + PERIOD;
-        do{
-            if (System.currentTimeMillis()>=nextTimeToUpdate) {
-                PlayerAction pa1 = ai1.getAction(0, gs);
-                PlayerAction pa2 = ai2.getAction(1, gs);
-                gs.issueSafe(pa1);
-                gs.issueSafe(pa2);
-                ai1.computeReward(0, 1, gs);
+        System.out.println("Socket client started");
+        while (true) {
+            srai.reset();
+            rbai.reset();
+            // maybe there is a way to not have to restart the panel.
+            PhysicalGameState pgs = PhysicalGameState.load("maps/16x16/basesWorkers16x16.xml", utt);
+            GameState gs = new GameState(pgs, utt);
+            JFrame w = PhysicalGameStatePanel.newVisualizer(gs,640,640,false,PhysicalGameStatePanel.COLORSCHEME_BLACK);
 
-                // simulate:
-                gameover = gs.cycle();
-                w.repaint();
-                nextTimeToUpdate+=PERIOD;
-            } else {
-                try {
-                    Thread.sleep(1);
-                } catch (Exception e) {
-                    e.printStackTrace();
+            long nextTimeToUpdate = System.currentTimeMillis() + PERIOD;
+            while (true) {
+                if (System.currentTimeMillis()>=nextTimeToUpdate) {
+                    PlayerAction pa1 = srai.getAction(0, gs);
+                    if (srai.done) {
+                        break;
+                    }
+                    PlayerAction pa2 = rbai.getAction(1, gs);
+                    gs.issueSafe(pa1);
+                    gs.issueSafe(pa2);
+                    srai.computeReward(0, 1, gs);
+
+                    // simulate:
+                    gameover = gs.cycle();
+                    if (gameover) {
+                        break;
+                    }
+                    w.repaint();
+                    nextTimeToUpdate+=PERIOD;
+                } else {
+                    try {
+                        Thread.sleep(1);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
-        }while(!gameover && gs.getTime()<MAXCYCLES);        
-        ai1.gameOver(gs.winner());
-        ai2.gameOver(gs.winner());
+            srai.gameOver(gs.winner());
+            rbai.gameOver(gs.winner());
+            if (srai.finished) {
+                break;
+            }
+        }
     }    
 }

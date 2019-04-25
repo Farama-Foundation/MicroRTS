@@ -376,13 +376,13 @@ public class PlayerAction {
         JsonArray a = Json.parse(JSON).asArray();
         for(JsonValue v:a.values()) {
             JsonArray aa = v.asArray();
-            System.out.println(aa);
             int id = (int)gs.pgs.unitIdMatrix[aa.get(0).asInt()][aa.get(1).asInt()];
-            System.out.println("ID is");
-            System.out.println(id);
-            Unit u = gs.getUnit(id);
-            UnitAction ua = UnitAction.fromActionArray(aa, utt);
-            pa.addUnitAction(u, ua);
+            // ignore the action if there is no valid unit selected.
+            if (id != PhysicalGameState.NO_UNIT_ID) {
+                Unit u = gs.getUnit(id);
+                UnitAction ua = UnitAction.fromActionArray(aa, utt);
+                pa.addUnitAction(u, ua);
+            }
         }
         return pa;
     }

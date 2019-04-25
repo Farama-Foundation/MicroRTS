@@ -37,3 +37,7 @@ print(conn.recv(4096).decode('utf-8'))
 for i in range(9):
     conn.send(('%s\n' % "[]").encode('utf-8'))
     print(conn.recv(4096).decode('utf-8'))
+
+# finish the current epoch
+conn.send(('%s\n' % "done").encode('utf-8'))
+print(conn.recv(4096).decode('utf-8'))

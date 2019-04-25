@@ -27,6 +27,8 @@ public class SocketRewardAI extends SocketAI {
     boolean layerJSON = false;
     double reward = 0.0;
     boolean firstRewardCalculation = true;
+    public boolean done = false;
+    public boolean finished = false;
     SimpleEvaluationFunction ef = new SimpleEvaluationFunction();
     
     public SocketRewardAI(int mt, int mi, String a_sa, int a_port, int a_language, UnitTypeTable a_utt, boolean a_JSON) {
@@ -92,6 +94,15 @@ public class SocketRewardAI extends SocketAI {
                 
             // parse the action:
             String actionString = in_pipe.readLine();
+            if (actionString.equals("done")) {
+                done = true;
+                return PlayerAction.fromJSON("[]", gs, utt);
+            }
+            if (actionString.equals("finished")) {
+                done = true;
+                finished = true;
+                return PlayerAction.fromJSON("[]", gs, utt);
+            }
             // System.out.println("action received from server: " + actionString);
             PlayerAction pa = PlayerAction.fromActionArrays(actionString, gs, utt);
             pa.fillWithNones(gs, player, 10);
@@ -99,5 +110,12 @@ public class SocketRewardAI extends SocketAI {
         } else {
             throw new Exception("Communication language " + communication_language + " not supported!");
         }        
+    }
+
+    @Override
+    public void reset() {
+        super.reset();
+        done = false;
+        finished = false;
     }
 }
