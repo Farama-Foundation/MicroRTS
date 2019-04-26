@@ -1,13 +1,12 @@
-/*
-* To change this template, choose Tools | Templates
-* and open the template in the editor.
-*/
+ /*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package tests.sockets;
 
 import ai.core.AI;
 import ai.*;
 import ai.socket.SocketRewardAI;
-import gui.PhysicalGameStateJFrame;
 import gui.PhysicalGameStatePanel;
 import javax.swing.JFrame;
 import rts.GameState;
@@ -27,7 +26,7 @@ import rts.units.UnitTypeTable;
  * example, uncomment line 44 below and comment 45, to see two AIs using the same server.
  * 
  */
-public class RunClientLayers {
+public class RunClientLayersNoRender {
     public static void main(String args[]) throws Exception {
         String serverIP = "127.0.0.1";
         int serverPort = 9898;
@@ -37,28 +36,22 @@ public class RunClientLayers {
         int PERIOD = 20;
         boolean gameover = false;
         boolean layerJSON = true;
+        
 
         SocketRewardAI srai = new SocketRewardAI(100,0, serverIP, serverPort, SocketRewardAI.LANGUAGE_JSON, utt, layerJSON);
         AI rbai = new RandomBiasedAI();
 
         System.out.println("Socket client started");
-
-        PhysicalGameState pgs = PhysicalGameState.load("maps/16x16/basesWorkers16x16.xml", utt);
-        GameState gs = new GameState(pgs, utt);
-        PhysicalGameStateJFrame w = PhysicalGameStatePanel.newVisualizer(gs,640,640,false,PhysicalGameStatePanel.COLORSCHEME_BLACK);
         while (true) {
             srai.reset();
             rbai.reset();
             // maybe there is a way to not have to restart the panel.
-            pgs = PhysicalGameState.load("maps/16x16/basesWorkers16x16.xml", utt);
-            gs = new GameState(pgs, utt);
-            // w.setStateDirect(gs);
+            PhysicalGameState pgs = PhysicalGameState.load("maps/16x16/basesWorkers16x16.xml", utt);
+            GameState gs = new GameState(pgs, utt);
 
             long nextTimeToUpdate = System.currentTimeMillis() + PERIOD;
             while (true) {
                 if (System.currentTimeMillis()>=nextTimeToUpdate) {
-                    w.setStateCloning(gs);
-                    w.repaint();
                     PlayerAction pa1 = srai.getAction(0, gs);
                     if (srai.done) {
                         break;
