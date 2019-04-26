@@ -96,6 +96,17 @@ public class FixedOpponentsTournament {
                 firstPreAnalysis[i][j] = true;
             }
         }
+
+        String opponentReadWriteFolders[] = new String[opponentAIs.size()];
+        boolean opponentFirstPreAnalysis[][] = new boolean[opponentAIs.size()][maps.size()];
+        for(int i = 0;i<opponentAIs.size();i++) {
+            opponentReadWriteFolders[i] = folderForReadWriteFolders + "/opponentAI" + i + "readWriteFolder";
+            File f = new File(opponentReadWriteFolders[i]);
+            f.mkdir();
+            for(int j = 0;j<maps.size();j++) {
+                opponentFirstPreAnalysis[i][j] = true;
+            }
+        }
         
         for(int iteration = 0;iteration<iterations;iteration++) {
             for(int map_idx = 0;map_idx<maps.size();map_idx++) {
@@ -154,12 +165,12 @@ public class FixedOpponentsTournament {
                                 if ((pre_end1 - pre_start1)>preTime1) progress.write("TIMEOUT PLAYER 1!\n");
                             }
                             long preTime2 = preAnalysisBudgetRestOfTimes;
-                            if (firstPreAnalysis[ai2_idx][map_idx]) {
+                            if (opponentFirstPreAnalysis[ai2_idx][map_idx]) {
                                 preTime2 = preAnalysisBudgetFirstTimeInAMap;
-                                firstPreAnalysis[ai2_idx][map_idx] = false;
+                                opponentFirstPreAnalysis[ai2_idx][map_idx] = false;
                             }
                             long pre_start2 = System.currentTimeMillis();
-                            ai2.preGameAnalysis(gs, preTime2, readWriteFolders[ai2_idx]);
+                            ai2.preGameAnalysis(gs, preTime2, opponentReadWriteFolders[ai2_idx]);
                             long pre_end2 = System.currentTimeMillis();
                             if (progress != null) {
                                 progress.write("preGameAnalysis player 2 took " + (pre_end2 - pre_start2) + "\n");
