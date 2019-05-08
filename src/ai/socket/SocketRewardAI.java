@@ -89,7 +89,7 @@ public class SocketRewardAI extends SocketAI {
             }
             // System.out.println("action received from server: " + actionString);
             PlayerAction pa = PlayerAction.fromActionArrays(actionString, gs, utt, player);
-            pa.fillWithNones(gs, player, 10);
+            pa.fillWithNones(gs, player, 1);
             return pa;
         } else {
             throw new Exception("Communication language " + communication_language + " not supported!");

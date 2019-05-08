@@ -377,11 +377,9 @@ public class PlayerAction {
         for(JsonValue v:a.values()) {
             JsonArray aa = v.asArray();
             Unit u = gs.pgs.getUnitAt(aa.get(0).asInt(), aa.get(1).asInt());
-            // ignore the action if there is no valid unit selected.
-            // System.out.println(u.getPlayer());
-            // System.out.println(u.getPlayer());
-            if (u != null && u.getPlayer() == currentPlayer) {
-                
+            // ignore the action if there is no valid unit selected, or if the selected unit dies not belong to `player`
+            UnitActionAssignment uaa = gs.unitActions.get(u);
+            if (u != null && u.getPlayer() == currentPlayer && uaa == null) {
                 int id = (int) u.getID();
                 UnitAction ua = UnitAction.fromActionArray(aa, utt);
                 pa.addUnitAction(u, ua);
