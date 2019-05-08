@@ -88,7 +88,7 @@ public class SocketRewardAI extends SocketAI {
                 return PlayerAction.fromJSON("[]", gs, utt);
             }
             // System.out.println("action received from server: " + actionString);
-            PlayerAction pa = PlayerAction.fromActionArrays(actionString, gs, utt);
+            PlayerAction pa = PlayerAction.fromActionArrays(actionString, gs, utt, player);
             pa.fillWithNones(gs, player, 10);
             return pa;
         } else {

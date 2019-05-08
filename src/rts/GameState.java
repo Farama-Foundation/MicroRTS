@@ -773,7 +773,7 @@ public class GameState {
      * @param w
      * @throws Exception
      */
-    public int [][][] getMatrixObservation() throws Exception {
+    public int [][][] getMatrixObservation(){
         return pgs.getMatrixObservation();
     }
     

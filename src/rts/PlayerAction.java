@@ -371,15 +371,18 @@ public class PlayerAction {
      * @param utt
      * @return
      */
-    public static PlayerAction fromActionArrays(String JSON, GameState gs, UnitTypeTable utt) {
+    public static PlayerAction fromActionArrays(String JSON, GameState gs, UnitTypeTable utt, int currentPlayer) {
         PlayerAction pa = new PlayerAction();
         JsonArray a = Json.parse(JSON).asArray();
         for(JsonValue v:a.values()) {
             JsonArray aa = v.asArray();
-            int id = (int)gs.pgs.unitIdMatrix[aa.get(0).asInt()][aa.get(1).asInt()];
+            Unit u = gs.pgs.getUnitAt(aa.get(0).asInt(), aa.get(1).asInt());
             // ignore the action if there is no valid unit selected.
-            if (id != PhysicalGameState.NO_UNIT_ID) {
-                Unit u = gs.getUnit(id);
+            // System.out.println(u.getPlayer());
+            // System.out.println(u.getPlayer());
+            if (u != null && u.getPlayer() == currentPlayer) {
+                
+                int id = (int) u.getID();
                 UnitAction ua = UnitAction.fromActionArray(aa, utt);
                 pa.addUnitAction(u, ua);
             }

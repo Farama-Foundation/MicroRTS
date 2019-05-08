@@ -50,11 +50,6 @@ public class PhysicalGameState {
     int terrain[] = null;
     List<Player> players = new ArrayList<Player>();
     List<Unit> units = new LinkedList<Unit>();
-    int[][] hitpointsMatrix = new int[height][width];
-    int[][] resourcesMatrix = new int[height][width];
-    int[][] playersMatrix = new int[height][width];
-    int[][] unitTypesMatrix = new int[height][width];
-    long[][] unitIdMatrix = new long[height][width];
 
     /**
      * Indicates a no unit is available at the unitIdMatrix
@@ -100,11 +95,6 @@ public class PhysicalGameState {
         height = a_height;
         terrain = new int[width * height];
         hitpointsShape = new int[]{width, height, 2};
-        hitpointsMatrix = new int[height][width];
-        resourcesMatrix = new int[height][width];
-        playersMatrix = new int[height][width];
-        unitTypesMatrix = new int[height][width];
-        unitIdMatrix = new long[height][width];
     }
 
     /**
@@ -120,11 +110,6 @@ public class PhysicalGameState {
         height = a_height;
         terrain = t;
         hitpointsShape = new int[]{width, height, 2};
-        hitpointsMatrix = new int[height][width];
-        resourcesMatrix = new int[height][width];
-        playersMatrix = new int[height][width];
-        unitTypesMatrix = new int[height][width];
-        unitIdMatrix = new long[height][width];
     }
 
     /**
@@ -580,14 +565,13 @@ public class PhysicalGameState {
     /**
      * Writes a JSON representation of this map. Could be optimized.
      *
-     * @throws Exception
      */
-    public int[][][] getMatrixObservation() throws Exception {
-        hitpointsMatrix = new int[height][width];
-        resourcesMatrix = new int[height][width];
-        playersMatrix = new int[height][width];
-        unitTypesMatrix = new int[height][width];
-        unitIdMatrix = new long[height][width];
+    public int[][][] getMatrixObservation(){
+        int[][] hitpointsMatrix = new int[height][width];
+        int[][] resourcesMatrix = new int[height][width];
+        int[][] playersMatrix = new int[height][width];
+        int[][] unitTypesMatrix = new int[height][width];
+        long[][] unitIdMatrix = new long[height][width];
         for (int i=0; i<unitTypesMatrix.length; i++) {
             Arrays.fill(unitTypesMatrix[i], -1);
             Arrays.fill(unitIdMatrix[i], NO_UNIT_ID);
