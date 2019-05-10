@@ -23,6 +23,15 @@ public class Sampler {
         return generator.nextInt(distribution.length);
     }
 
+    
+    /*
+     * Returns a random element in the distribution
+     */
+    public static int random(List<Double> distribution) {
+        return generator.nextInt(distribution.size());
+    }
+
+    
     /*
      * Returns the element with maximum probability (ties are resolved randomly)
      */
@@ -50,6 +59,35 @@ public class Sampler {
         throw new Exception("Input distribution empty in Sampler.max!");
     }
 
+    
+    /*
+     * Returns the element with maximum probability (ties are resolved randomly)
+     */
+    public static int max(List<Double> distribution) throws Exception {
+        List<Integer> best = new LinkedList<Integer>();
+        double max = distribution.get(0);
+
+        for (int i = 0; i < distribution.size(); i++) {
+            double f = distribution.get(i);
+            if (f == max) {
+                best.add(new Integer(i));
+            } else {
+                if (f > max) {
+                    best.clear();
+                    best.add(new Integer(i));
+                    max = f;
+                }
+            }
+        }
+
+        if (best.size() > 0) {
+            return best.get(generator.nextInt(best.size()));
+        }
+
+        throw new Exception("Input distribution empty in Sampler.max!");
+    }
+    
+    
     /*
      * Returns the score with maximum probability (ties are resolved randomly)
      */
@@ -147,6 +185,17 @@ public class Sampler {
         }
 
         return weighted(exponentiated);
+    }
+    
+    
+    public static int eGreedy(List<Double> distribution, double e) throws Exception {
+        if (generator.nextDouble()<e) {
+            // explore:
+            return random(distribution);
+        } else {
+           // exploit:
+            return max(distribution);
+        }
     }
 
 /*

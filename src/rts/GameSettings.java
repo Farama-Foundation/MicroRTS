@@ -106,7 +106,18 @@ public class GameSettings {
         prop.load(is);
         return prop;
     }
-
+   
+     /**
+     * Fetches the configuration file which will be located in the path on propertiesFile.
+     */
+    public static Properties fetchConfig(String propertiesFile) throws IOException {
+        Properties prop = new Properties();
+        InputStream is = GameSettings.class.getResourceAsStream(propertiesFile);
+        if (is == null) is = new FileInputStream(propertiesFile);
+        prop.load(is);
+        return prop;
+    }
+    
     /**
      * Generates game settings based on the provided configuration file.
      */

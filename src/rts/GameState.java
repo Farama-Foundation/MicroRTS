@@ -89,6 +89,12 @@ public class GameState {
         return unitActions;
     }
     
+    
+    public UnitTypeTable getUnitTypeTable() {
+        return utt;
+    }
+        
+    
     /**
      * Returns the action of a unit
      * @param u
@@ -147,15 +153,6 @@ public class GameState {
     public PhysicalGameState getPhysicalGameState() {
         return pgs;
     }
-
-    /**
-     * Returns the {@link UnitTypeTable} associated with this state
-     * @return
-     */
-    public UnitTypeTable getUnitTypeTable() {
-        return utt;
-    }
-    
     
     
     /**
@@ -358,7 +355,10 @@ public class GameState {
                     if (pgs.getTerrain(x, y) != PhysicalGameState.TERRAIN_NONE ||
                         pgs.getUnitAt(x, y) != null) {
                         UnitAction new_ua = new UnitAction(UnitAction.TYPE_NONE, p.m_b.ETA(p.m_a));
-                        System.err.println("Player " + p.m_a.getPlayer() + " issued an illegal move action, cancelling and replacing by " + new_ua);
+                        System.err.println("Player " + p.m_a.getPlayer() + " issued an illegal move action (to "+x+","+y+") to unit "+p.m_a.getID()+" at time "+getTime()+", cancelling and replacing by " + new_ua);
+                        System.err.println("    Action: " + p.m_b);
+                        System.err.println("    Resources used by the action: " + r);
+                        System.err.println("    Unit at that coordinate " + pgs.getUnitAt(x, y));
                         p.m_b = new_ua;
                     }
                 }

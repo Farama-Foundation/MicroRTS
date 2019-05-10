@@ -155,7 +155,11 @@ public abstract class BayesianModel extends UnitActionProbabilityDistribution {
         for(int d:directions) l.add(new UnitAction(UnitAction.TYPE_HARVEST, d));
         for(int d:directions) l.add(new UnitAction(UnitAction.TYPE_RETURN, d));
         for(int d:directions) {
-            for(UnitType ut:utt.getUnitTypes()) l.add(new UnitAction(UnitAction.TYPE_PRODUCE, d, ut));
+            for(UnitType ut:utt.getUnitTypes()) {
+                if (!ut.producedBy.isEmpty()) {
+                    l.add(new UnitAction(UnitAction.TYPE_PRODUCE, d, ut));
+                }
+            }
         }
         for(int ox = -maxAttackRange;ox<=maxAttackRange;ox++) {
             for(int oy = -maxAttackRange;oy<=maxAttackRange;oy++) {

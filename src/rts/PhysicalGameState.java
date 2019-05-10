@@ -614,4 +614,13 @@ public class PhysicalGameState {
         return pgs;
     }
 
+    /**
+     * Reset all units HP to their base value
+     */
+    public void resetAllUnitsHP() {
+        for (Unit u : units) {
+            u.setHitPoints(u.getType().hp);
+        }
+    }
+
 }

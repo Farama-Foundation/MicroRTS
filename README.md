@@ -8,7 +8,7 @@ microRTS was developed by [Santiago Ontañón](https://sites.google.com/site/san
 
 For a video of how microRTS looks like when a human plays see a [youtube video](https://www.youtube.com/watch?v=ZsKKAoiD7B0)
 
-An AI competition was organized aroung microRTS in the IEEE-CIG 2017 conference, and again in 2018. For more information on the competition see the [competition website](https://sites.google.com/site/micrortsaicompetition/home)
+If you are interested in testing your algorithms against other people's, **there is an annual microRTS competition**. For more information on the competition see the [competition website](https://sites.google.com/site/micrortsaicompetition/home). The previous competitions have been organized at IEEE-CIG2017 and IEEE-CIG2018, and this year it's organized at IEEE-COG2019 (notice the change of name of the conference).
 
 To cite microRTS, please cite this paper:
 
