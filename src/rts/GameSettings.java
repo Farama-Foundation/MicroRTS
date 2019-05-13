@@ -7,7 +7,7 @@ import java.util.Properties;
 
 public class GameSettings {
 
-    enum LaunchMode {
+    public enum LaunchMode {
         STANDALONE,
         GUI,
         SERVER,
@@ -35,7 +35,7 @@ public class GameSettings {
     private String AI2 = "";
     
 
-    private GameSettings( LaunchMode launchMode, String serverAddress, int serverPort, 
+    public GameSettings( LaunchMode launchMode, String serverAddress, int serverPort, 
                           int serializationType, String mapLocation, int maxCycles, 
                           boolean partiallyObservable, int uttVersion, int confictPolicy, 
                           String AI1, String AI2) {
