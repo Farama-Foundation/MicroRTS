@@ -64,7 +64,7 @@ public class SocketRewardAI extends SocketAI {
                     data.put("observation", observation);
                     data.put("reward", reward);
                     data.put("done", false);
-                    data.put("info", "");
+                    data.put("info", new HashMap<String, Object>());
                 Gson gson = new Gson();
                 out_pipe.write(gson.toJson(data));
             } else {
@@ -105,7 +105,7 @@ public class SocketRewardAI extends SocketAI {
                 data.put("observation", observation);
                 data.put("reward", reward);
                 data.put("done", true);
-                data.put("info", "");
+                data.put("info", new HashMap<String, Object>());
             Gson gson = new Gson();
             out_pipe.write(gson.toJson(data));
         } else {
