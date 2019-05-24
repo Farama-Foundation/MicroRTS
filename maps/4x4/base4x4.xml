@@ -11,9 +11,9 @@
     </rts.units.Unit>
     <rts.units.Unit type="Base" ID="5" player="0" x="1" y="1" resources="0" hitpoints="10" >
     </rts.units.Unit>
-    <rts.units.Unit type="Base" ID="6" player="1" x="2" y="2" resources="0" hitpoints="10" >
+    <rts.units.Unit type="Base" ID="6" player="1" x="3" y="3" resources="0" hitpoints="10" >
     </rts.units.Unit>
-    <rts.units.Unit type="Resource" ID="7" player="-1" x="3" y="3" resources="10" hitpoints="1" >
+    <rts.units.Unit type="Worker" ID="7" player="0" x="1" y="0" resources="0" hitpoints="1" >
     </rts.units.Unit>
   </units>
 </rts.PhysicalGameState>
