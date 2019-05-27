@@ -54,8 +54,6 @@ public class SocketRewardAI extends SocketAI {
             reward = newReward - oldReward;
             oldReward = newReward;
         }
-        System.out.println("the reward is");
-        System.out.println(reward);
     }
 
     @Override
