@@ -28,15 +28,16 @@ The LSI AI was contributed by Alexander Shleyfman, Antonin Komenda and Carmel Do
 
 http://microrts.s3-website-us-east-1.amazonaws.com/microrts/artifacts/
 
-## How to build programmatically
+## How to run programmatically
 
-```bash
-mkdir build
-javac -d "./build" -cp "./lib/*" -sourcepath "./src" ./src/tests/*.java
-cd build
-jar cvf microrts.jar *
-mv microrts.jar ../microrts.jar
-cd ..
-zip -r microrts.zip lib/ microrts.jar
+To play the game with mouse to test it out, please check
+
+```
 java -classpath "microrts.jar;./lib/*" tests.PlayGameWithMouseTest
+```
+
+To run experiments, please try the following
+
+```
+java -classpath "microrts.jar" tests.sockets.RunClientLayersSmall
 ```
