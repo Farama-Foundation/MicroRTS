@@ -26,6 +26,7 @@ import util.XMLWriter;
 public class SocketRewardAI extends SocketAI {
     boolean layerJSON = false;
     double reward = 0.0;
+    double oldReward = 0.0;
     boolean firstRewardCalculation = true;
     public boolean done = false;
     public boolean finished = false;
@@ -45,10 +46,16 @@ public class SocketRewardAI extends SocketAI {
     public void computeReward(int maxplayer, int minplayer, GameState gs) throws Exception {
         // do something
         if (firstRewardCalculation) {
-            reward = ef.evaluate(maxplayer, minplayer, gs);
+            oldReward = ef.evaluate(maxplayer, minplayer, gs);
+            reward = 0;
+            firstRewardCalculation = false;
         } else {
-            reward -= ef.evaluate(maxplayer, minplayer, gs);
+            double newReward = ef.evaluate(maxplayer, minplayer, gs);
+            reward = newReward - oldReward;
+            oldReward = newReward;
         }
+        System.out.println("the reward is");
+        System.out.println(reward);
     }
 
     @Override
