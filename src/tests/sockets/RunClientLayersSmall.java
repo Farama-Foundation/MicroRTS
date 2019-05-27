@@ -56,6 +56,7 @@ public class RunClientLayersSmall {
             while (true) {
                 w.setStateCloning(gs);
                 w.repaint();
+                srai.computeReward(0, 1, gs);
                 PlayerAction pa1 = srai.getAction(0, gs);
                 if (srai.done) {
                     break;
@@ -63,7 +64,6 @@ public class RunClientLayersSmall {
                 PlayerAction pa2 = rbai.getAction(1, gs);
                 gs.issueSafe(pa1);
                 gs.issueSafe(pa2);
-                srai.computeReward(0, 1, gs);
 
                 // simulate:
                 gameover = gs.cycle();
