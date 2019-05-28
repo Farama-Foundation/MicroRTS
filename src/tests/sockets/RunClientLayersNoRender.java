@@ -1,12 +1,13 @@
- /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+/*
+* To change this template, choose Tools | Templates
+* and open the template in the editor.
+*/
 package tests.sockets;
 
 import ai.core.AI;
 import ai.*;
 import ai.socket.SocketRewardAI;
+import gui.PhysicalGameStateJFrame;
 import gui.PhysicalGameStatePanel;
 import javax.swing.JFrame;
 import rts.GameState;
@@ -33,46 +34,42 @@ public class RunClientLayersNoRender {
 
         UnitTypeTable utt = new UnitTypeTable();
 
-        int PERIOD = 20;
         boolean gameover = false;
         boolean layerJSON = true;
-        
 
         SocketRewardAI srai = new SocketRewardAI(100,0, serverIP, serverPort, SocketRewardAI.LANGUAGE_JSON, utt, layerJSON);
-        AI rbai = new RandomBiasedAI();
+        AI rbai = new PassiveAI();
 
         System.out.println("Socket client started");
+
+        PhysicalGameState pgs = PhysicalGameState.load("maps/4x4/base4x4.xml", utt);
+        GameState gs = new GameState(pgs, utt);
         while (true) {
             srai.reset();
             rbai.reset();
             // maybe there is a way to not have to restart the panel.
-            PhysicalGameState pgs = PhysicalGameState.load("maps/16x16/basesWorkers16x16.xml", utt);
-            GameState gs = new GameState(pgs, utt);
+            pgs = PhysicalGameState.load("maps/4x4/base4x4.xml", utt);
+            gs = new GameState(pgs, utt);
 
-            long nextTimeToUpdate = System.currentTimeMillis() + PERIOD;
             while (true) {
-                if (System.currentTimeMillis()>=nextTimeToUpdate) {
-                    PlayerAction pa1 = srai.getAction(0, gs);
-                    if (srai.done) {
-                        break;
-                    }
-                    PlayerAction pa2 = rbai.getAction(1, gs);
-                    gs.issueSafe(pa1);
-                    gs.issueSafe(pa2);
-                    srai.computeReward(0, 1, gs);
+                srai.computeReward(0, 1, gs);
+                PlayerAction pa1 = srai.getAction(0, gs);
+                if (srai.done) {
+                    break;
+                }
+                PlayerAction pa2 = rbai.getAction(1, gs);
+                gs.issueSafe(pa1);
+                gs.issueSafe(pa2);
 
-                    // simulate:
-                    gameover = gs.cycle();
-                    if (gameover) {
-                        break;
-                    }
-                    nextTimeToUpdate+=PERIOD;
-                } else {
-                    try {
-                        Thread.sleep(1);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                // simulate:
+                gameover = gs.cycle();
+                if (gameover) {
+                    break;
+                }
+                try {
+                    Thread.yield();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
             srai.gameOver(gs.winner(), gs);
