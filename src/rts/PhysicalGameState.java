@@ -563,38 +563,6 @@ public class PhysicalGameState {
     }
 
     /**
-     * Writes a JSON representation of this map. Could be optimized.
-     *
-     */
-    public int[][][] getMatrixObservation(){
-        int[][] hitpointsMatrix = new int[height][width];
-        int[][] resourcesMatrix = new int[height][width];
-        int[][] playersMatrix = new int[height][width];
-        int[][] unitTypesMatrix = new int[height][width];
-        long[][] unitIdMatrix = new long[height][width];
-        for (int i=0; i<unitTypesMatrix.length; i++) {
-            Arrays.fill(unitTypesMatrix[i], -1);
-            Arrays.fill(unitIdMatrix[i], NO_UNIT_ID);
-        }
-
-        for (int i = 0; i < units.size(); i++) {
-            Unit u = units.get(i);
-            hitpointsMatrix[u.getX()][u.getY()] = u.getHitPoints();
-            resourcesMatrix[u.getX()][u.getY()] = u.getResources();
-            playersMatrix[u.getX()][u.getY()] = u.getPlayer();
-            unitTypesMatrix[u.getX()][u.getY()] = u.getType().ID;
-            unitIdMatrix[u.getX()][u.getY()] = u.getID();
-        }
-
-        return new int [][][]{
-            hitpointsMatrix,
-            resourcesMatrix,
-            playersMatrix,
-            unitTypesMatrix,
-        };
-    }
-
-    /**
      * Constructs a map from XML
      *
      * @param e

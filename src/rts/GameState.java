@@ -774,7 +774,37 @@ public class GameState {
      * @throws Exception
      */
     public int [][][] getMatrixObservation(){
-        return pgs.getMatrixObservation();
+        int[][] hitpointsMatrix = new int[pgs.height][pgs.width];
+        int[][] resourcesMatrix = new int[pgs.height][pgs.width];
+        int[][] playersMatrix = new int[pgs.height][pgs.width];
+        int[][] unitTypesMatrix = new int[pgs.height][pgs.width];
+        int[][] unitActionMatrix = new int[pgs.height][pgs.width];
+        for (int i=0; i<unitTypesMatrix.length; i++) {
+            Arrays.fill(unitTypesMatrix[i], -1);
+        }
+
+        for (int i = 0; i < pgs.units.size(); i++) {
+            Unit u = pgs.units.get(i);
+            UnitActionAssignment uaa = unitActions.get(u);
+            hitpointsMatrix[u.getX()][u.getY()] = u.getHitPoints();
+            resourcesMatrix[u.getX()][u.getY()] = u.getResources();
+            playersMatrix[u.getX()][u.getY()] = u.getPlayer();
+            unitTypesMatrix[u.getX()][u.getY()] = u.getType().ID;
+            if (uaa != null) {
+                unitActionMatrix[u.getX()][u.getY()] = uaa.action.type;
+            } else {
+                unitActionMatrix[u.getX()][u.getY()] = UnitAction.TYPE_NONE;
+            }
+            
+        }
+
+        return new int [][][]{
+            hitpointsMatrix,
+            resourcesMatrix,
+            playersMatrix,
+            unitTypesMatrix,
+            unitActionMatrix
+        };
     }
     
     /**
