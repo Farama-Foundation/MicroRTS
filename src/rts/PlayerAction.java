@@ -390,5 +390,34 @@ public class PlayerAction {
         }
         return pa;
     }
-    
+
+    public static Pair<PlayerAction, InvalidPlayerActionStats> fromActionArraysWithPenalty(String JSON, GameState gs, UnitTypeTable utt, int currentPlayer) {
+        PlayerAction pa = new PlayerAction();
+        JsonArray a = Json.parse(JSON).asArray();
+        InvalidPlayerActionStats ipas = new InvalidPlayerActionStats();
+        for(JsonValue v:a.values()) {
+            JsonArray aa = v.asArray();
+            Unit u = gs.pgs.getUnitAt(aa.get(0).asInt(), aa.get(1).asInt());
+            UnitAction ua = UnitAction.fromActionArray(aa, utt);
+            // execute the action if the following happens
+            // 1. The selected unit is *not* null.
+            // 2. The unit selected is owned by the current player
+            // 3. The unit is not currently busy (its unit action is null)
+            if (u == null) {
+                ipas.numInvalidActionNull += 1;
+                return new Pair<>(pa, ipas);
+            }
+            UnitActionAssignment uaa = gs.unitActions.get(u);
+            if (u.getPlayer() != currentPlayer) {
+                ipas.numInvalidActionOwnership += 1;
+            }
+            if (uaa != null && ua.type != UnitAction.TYPE_NONE) {
+                ipas.numInvalidActionBusyUnit += 1;
+            }
+            if (u != null && u.getPlayer() == currentPlayer && uaa == null) {
+                pa.addUnitAction(u, ua);
+            }
+        }
+        return new Pair<>(pa, ipas);
+    }
 }
