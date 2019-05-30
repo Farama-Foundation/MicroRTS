@@ -33,7 +33,8 @@ public class SocketRewardAI extends SocketAI {
     boolean shouldSendUTTAndBudget = true;
     SimpleEvaluationFunction ef = new SimpleEvaluationFunction();
     
-    public SocketRewardAI(int mt, int mi, String a_sa, int a_port, int a_language, UnitTypeTable a_utt, boolean a_JSON) {
+    public SocketRewardAI(int mt, int mi, String a_sa, int a_port, int a_language, UnitTypeTable a_utt, boolean a_JSON)
+            throws Exception {
         super(mt, mi, a_sa, a_port, a_language, a_utt);
         layerJSON = a_JSON;
     }
