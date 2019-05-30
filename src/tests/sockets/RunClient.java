@@ -8,6 +8,9 @@ import ai.core.AI;
 import ai.*;
 import ai.socket.SocketAI;
 import gui.PhysicalGameStatePanel;
+
+import java.nio.file.Paths;
+
 import javax.swing.JFrame;
 import rts.GameState;
 import rts.PhysicalGameState;
@@ -49,6 +52,9 @@ public class RunClient {
     @Parameter(names = "--render", description = "Whether to render the game")
     boolean render = false;
 
+    @Parameter(names = "--microrts-path", description = "The path of microrts unzipped folder")
+    String micrortsPath = "";
+
     PhysicalGameStateJFrame w;
     AI ai;
 
@@ -79,6 +85,10 @@ public class RunClient {
         }
 
         System.out.println("Socket client started");
+
+        if (micrortsPath.length() != 0) {
+            map = Paths.get(micrortsPath, map).toString();
+        }
 
         PhysicalGameState pgs = PhysicalGameState.load(map, utt);
         GameState gs = new GameState(pgs, utt);

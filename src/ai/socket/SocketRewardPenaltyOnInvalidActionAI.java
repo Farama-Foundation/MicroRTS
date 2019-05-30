@@ -36,7 +36,7 @@ public class SocketRewardPenaltyOnInvalidActionAI extends SocketAI {
     boolean shouldSendUTTAndBudget = true;
     SimpleEvaluationFunction ef = new SimpleEvaluationFunction();
     
-    public SocketRewardPenaltyOnInvalidActionAI(int mt, int mi, String a_sa, int a_port, int a_language, UnitTypeTable a_utt, boolean a_JSON) {
+    public SocketRewardPenaltyOnInvalidActionAI(int mt, int mi, String a_sa, int a_port, int a_language, UnitTypeTable a_utt, boolean a_JSON) throws Exception {
         super(mt, mi, a_sa, a_port, a_language, a_utt);
         layerJSON = a_JSON;
     }
