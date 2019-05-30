@@ -40,4 +40,8 @@ To run experiments, please try the following
 
 ```
 java -classpath "microrts.jar" tests.sockets.RunClientLayersSmall
+
+nohup java -cp microrts.jar tests.sockets.RunClient --server-port 9899 > my.log 2>&1 &
+
+nohup python stable_A2C.py > my.log 2>&1 &
 ```
