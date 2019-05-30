@@ -17,6 +17,7 @@ import rts.PhysicalGameState;
 import rts.PlayerAction;
 import rts.units.UnitTypeTable;
 import ai.socket.SocketRewardAI;
+import ai.socket.SocketRewardPenaltyOnInvalidActionAI;
 import gui.PhysicalGameStateJFrame;
 
 import com.beust.jcommander.JCommander;
@@ -46,8 +47,11 @@ public class RunClient {
     @Parameter(names = "--map", description = "Which map in the `maps` folder are you using?")
     String map = "maps/4x4/base4x4.xml";
 
-    @Parameter(names = "--ai-type", description = "The microRTS server IP")
-    String aiType = "passive";
+    @Parameter(names = "--ai1-type", description = "The microRTS server IP")
+    String ai1Type = "penalty";
+
+    @Parameter(names = "--ai2-type", description = "The microRTS server IP")
+    String ai2Type = "passive";
 
     @Parameter(names = "--render", description = "Whether to render the game")
     boolean render = false;
@@ -56,7 +60,8 @@ public class RunClient {
     String micrortsPath = "";
 
     PhysicalGameStateJFrame w;
-    AI ai;
+    SocketRewardAI ai1;
+    AI ai2;
 
     public static void main(String args[]) throws Exception {
         RunClient rc = new RunClient();
@@ -71,17 +76,28 @@ public class RunClient {
         boolean gameover = false;
         boolean layerJSON = true;
 
-        SocketRewardAI srai = new SocketRewardAI(100, 0, serverIP, serverPort, SocketRewardAI.LANGUAGE_JSON, utt,
+        
+        switch (ai1Type) {
+            case "penalty":
+                ai1 = new SocketRewardPenaltyOnInvalidActionAI(100, 0, serverIP, serverPort, SocketRewardAI.LANGUAGE_JSON, utt,
                 layerJSON);
-        switch (aiType) {
-            case "passive":
-                ai = new PassiveAI();
                 break;
-            case "random-biased":
-                ai = new RandomBiasedAI();
+            case "no-penalty":
+                ai1 = new SocketRewardAI(100, 0, serverIP, serverPort, SocketRewardAI.LANGUAGE_JSON, utt,
+                layerJSON);
                 break;
             default:
-                throw new Exception("no AI was chosen");
+                throw new Exception("no ai1 was chosen");
+        }
+        switch (ai2Type) {
+            case "passive":
+                ai2 = new PassiveAI();
+                break;
+            case "random-biased":
+                ai2 = new RandomBiasedAI();
+                break;
+            default:
+                throw new Exception("no ai2 was chosen");
         }
 
         System.out.println("Socket client started");
@@ -96,8 +112,8 @@ public class RunClient {
             w = PhysicalGameStatePanel.newVisualizer(gs, 640, 640, false, PhysicalGameStatePanel.COLORSCHEME_BLACK);
         }
         while (true) {
-            srai.reset();
-            ai.reset();
+            ai1.reset();
+            ai2.reset();
             pgs = PhysicalGameState.load(map, utt);
             gs = new GameState(pgs, utt);
             while (true) {
@@ -105,12 +121,12 @@ public class RunClient {
                     w.setStateCloning(gs);
                     w.repaint();
                 }
-                srai.computeReward(0, 1, gs);
-                PlayerAction pa1 = srai.getAction(0, gs);
-                if (srai.done) {
+                ai1.computeReward(0, 1, gs);
+                PlayerAction pa1 = ai1.getAction(0, gs);
+                if (ai1.done) {
                     break;
                 }
-                PlayerAction pa2 = ai.getAction(1, gs);
+                PlayerAction pa2 = ai2.getAction(1, gs);
                 gs.issueSafe(pa1);
                 gs.issueSafe(pa2);
 
@@ -125,9 +141,9 @@ public class RunClient {
                     e.printStackTrace();
                 }
             }
-            srai.gameOver(gs.winner(), gs);
-            ai.gameOver(gs.winner());
-            if (srai.finished) {
+            ai1.gameOver(gs.winner(), gs);
+            ai2.gameOver(gs.winner());
+            if (ai1.finished) {
                 System.out.println("Socket client finished");
                 break;
             }

@@ -25,7 +25,7 @@ import util.XMLWriter;
  *
  * @author santi & costa
  */
-public class SocketRewardPenaltyOnInvalidActionAI extends SocketAI {
+public class SocketRewardPenaltyOnInvalidActionAI extends SocketRewardAI {
     boolean layerJSON = false;
     double reward = 0.0;
     double oldReward = 0.0;
@@ -37,14 +37,10 @@ public class SocketRewardPenaltyOnInvalidActionAI extends SocketAI {
     SimpleEvaluationFunction ef = new SimpleEvaluationFunction();
     
     public SocketRewardPenaltyOnInvalidActionAI(int mt, int mi, String a_sa, int a_port, int a_language, UnitTypeTable a_utt, boolean a_JSON) throws Exception {
-        super(mt, mi, a_sa, a_port, a_language, a_utt);
-        layerJSON = a_JSON;
+        super(mt, mi, a_sa, a_port, a_language, a_utt, a_JSON);
     }
 
-    public void computeReward(int player, GameState gs) throws Exception {
-        reward = 1;
-    }
-
+    @Override
     public void computeReward(int maxplayer, int minplayer, GameState gs) throws Exception {
         if (firstRewardCalculation) {
             oldReward = ef.evaluate(maxplayer, minplayer, gs);
@@ -112,92 +108,5 @@ public class SocketRewardPenaltyOnInvalidActionAI extends SocketAI {
         } else {
             throw new Exception("Communication language " + communication_language + " not supported!");
         }        
-    }
-
-    public void gameOver(int winner, GameState gs) throws Exception
-    {
-        // send the game state:
-        if (layerJSON) {
-            int [][][] observation = gs.getMatrixObservation();
-            Map<String, Object> data = new HashMap<String, Object>();
-                data.put("observation", observation);
-                data.put("reward", reward);
-                data.put("done", true);
-                data.put("info", new HashMap<String, Object>());
-            Gson gson = new Gson();
-            out_pipe.write(gson.toJson(data));
-        } else {
-            gs.toJSON(out_pipe);
-        }
-        out_pipe.append("\n");
-        out_pipe.flush();
-
-        // wait for ack:
-        in_pipe.readLine();        
-    }
-
-    @Override
-    public void reset() {
-        try {
-            if (shouldSendUTTAndBudget) {
-                // set the game parameters:
-                out_pipe.append("budget " + TIME_BUDGET + " " + ITERATIONS_BUDGET + "\n");
-                out_pipe.flush();
-
-                if (DEBUG>=1) System.out.println("SocketAI: budgetd sent, waiting for ack");
-
-                // wait for ack:
-                in_pipe.readLine();
-                while(in_pipe.ready()) in_pipe.readLine();
-
-                if (DEBUG>=1) System.out.println("SocketAI: ack received");
-
-                // send the utt:
-                out_pipe.append("utt\n");
-                if (communication_language == LANGUAGE_XML) {
-                    XMLWriter w = new XMLWriter(out_pipe, " ");
-                    utt.toxml(w);
-                    w.flush();
-                    out_pipe.append("\n");
-                    out_pipe.flush();                
-                } else if (communication_language == LANGUAGE_JSON) {
-                    utt.toJSON(out_pipe);
-                    out_pipe.append("\n");
-                    out_pipe.flush();
-                } else {
-                    throw new Exception("Communication language " + communication_language + " not supported!");
-                }
-                if (DEBUG>=1) System.out.println("SocketAI: UTT sent, waiting for ack");
-
-                // wait for ack:
-                in_pipe.readLine();
-
-                // read any extra left-over lines
-                while(in_pipe.ready()) in_pipe.readLine();
-                if (DEBUG>=1) System.out.println("SocketAI: ack received");
-
-                shouldSendUTTAndBudget = false;
-            }
-        }catch(Exception e) {
-            e.printStackTrace();
-        }
-        done = false;
-        finished = false;
-    }
-
-    @Override
-    public void setTimeBudget(int milisseconds) {
-        TIME_BUDGET = milisseconds;
-        shouldSendUTTAndBudget = true;
-    }
-
-    /**
-     * Note that if the UTT of an AI and the UTT in a GameState do not match, 
-     * the behavior of the game will be undefined
-     * @param utt
-     */
-    public void setUTT(UnitTypeTable utt) {
-        this.utt = utt;
-        shouldSendUTTAndBudget = true;
     }
 }
