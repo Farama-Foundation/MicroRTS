@@ -119,9 +119,6 @@ public class SocketRewardAI extends SocketAI {
         }
         out_pipe.append("\n");
         out_pipe.flush();
-
-        // wait for ack:
-        in_pipe.readLine();        
     }
 
     @Override

@@ -128,6 +128,7 @@ public class RunClient {
             srai.gameOver(gs.winner(), gs);
             ai.gameOver(gs.winner());
             if (srai.finished) {
+                System.out.println("Socket client finished");
                 break;
             }
         }
