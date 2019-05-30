@@ -26,21 +26,12 @@ import util.XMLWriter;
  * @author santi & costa
  */
 public class SocketRewardPenaltyOnInvalidActionAI extends SocketRewardAI {
-    boolean layerJSON = false;
-    double reward = 0.0;
-    double oldReward = 0.0;
     double penalty = 0.0;
-    boolean firstRewardCalculation = true;
-    public boolean done = false;
-    public boolean finished = false;
-    boolean shouldSendUTTAndBudget = true;
-    SimpleEvaluationFunction ef = new SimpleEvaluationFunction();
     
     public SocketRewardPenaltyOnInvalidActionAI(int mt, int mi, String a_sa, int a_port, int a_language, UnitTypeTable a_utt, boolean a_JSON) throws Exception {
         super(mt, mi, a_sa, a_port, a_language, a_utt, a_JSON);
     }
 
-    @Override
     public void computeReward(int maxplayer, int minplayer, GameState gs) throws Exception {
         if (firstRewardCalculation) {
             oldReward = ef.evaluate(maxplayer, minplayer, gs);
