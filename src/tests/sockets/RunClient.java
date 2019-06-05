@@ -75,7 +75,6 @@ public class RunClient {
 
         boolean gameover = false;
         boolean layerJSON = true;
-
         
         switch (ai1Type) {
             case "penalty":
@@ -147,6 +146,9 @@ public class RunClient {
                 System.out.println("Socket client finished");
                 break;
             }
+        }
+        if (render) {
+            w.dispose();
         }
     }
 }
