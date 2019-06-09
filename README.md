@@ -43,5 +43,7 @@ java -classpath "microrts.jar" tests.sockets.RunClientLayersSmall
 
 nohup java -cp microrts.jar tests.sockets.RunClient --server-port 9899 > my.log 2>&1 &
 
-nohup python stable_A2C.py > my.log 2>&1 &
+NUM_CORES=5
+export MKL_NUM_THREADS=$NUM_CORES OMP_NUM_THREADS=$NUM_CORES
+nohup python stable_A2C.py >/dev/null 2>&1 &
 ```
