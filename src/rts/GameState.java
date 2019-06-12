@@ -771,7 +771,6 @@ public class GameState {
     /**
      * Writes a JSON layers representation of this state
      * @param w
-     * @throws Exception
      */
     public int [][][] getMatrixObservation(){
         int[][] hitpointsMatrix = new int[pgs.height][pgs.width];
@@ -795,7 +794,54 @@ public class GameState {
             } else {
                 unitActionMatrix[u.getX()][u.getY()] = UnitAction.TYPE_NONE;
             }
-            
+        }
+
+        return new int [][][]{
+            hitpointsMatrix,
+            resourcesMatrix,
+            playersMatrix,
+            unitTypesMatrix,
+            unitActionMatrix
+        };
+    }
+
+    /**
+     * Writes a JSON layers representation of this state. If
+     * @param u
+     */
+    public int [][][] getUnitObservation(Unit u, int obsSize){
+        int[][] hitpointsMatrix = new int[obsSize*2+1][obsSize*2+1];
+        int[][] resourcesMatrix = new int[obsSize*2+1][obsSize*2+1];
+        int[][] playersMatrix = new int[obsSize*2+1][obsSize*2+1];
+        int[][] unitTypesMatrix = new int[obsSize*2+1][obsSize*2+1];
+        int[][] unitActionMatrix = new int[obsSize*2+1][obsSize*2+1];
+        for (int i=0; i<unitTypesMatrix.length; i++) {
+            Arrays.fill(unitTypesMatrix[i], -1);
+        }
+
+        int absoluteX = obsSize;
+        int absoluteY = obsSize;
+        for (int i=0; i<hitpointsMatrix.length; i++) {
+            for (int j=0; j<hitpointsMatrix.length; j++) {
+                int relativeX = i - absoluteX;
+                int relativeY = j - absoluteY;
+                if (u.getX() + relativeX < 0 || u.getX() + relativeX >= pgs.height
+                || u.getY() +relativeY < 0 || u.getY() +relativeY >= pgs.width) {
+                    Unit uprime = pgs.getUnitAt(u.getX() + relativeX, u.getY() +relativeY);
+                    if (uprime != null) {
+                        UnitActionAssignment uaa = unitActions.get(uprime);
+                        hitpointsMatrix[i][j] = uprime.getHitPoints();
+                        resourcesMatrix[i][j] = uprime.getResources();
+                        playersMatrix[i][j] = uprime.getPlayer();
+                        unitTypesMatrix[i][j] = uprime.getType().ID;
+                        if (uaa != null) {
+                            unitActionMatrix[i][j] = uaa.action.type;
+                        } else {
+                            unitActionMatrix[i][j] = UnitAction.TYPE_NONE;
+                        }
+                    }
+                }
+            }
         }
 
         return new int [][][]{

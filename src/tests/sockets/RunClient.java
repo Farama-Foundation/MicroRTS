@@ -6,6 +6,7 @@ package tests.sockets;
 
 import ai.core.AI;
 import ai.*;
+import ai.socket.IndividualSocketRewardAI;
 import ai.socket.SocketAI;
 import gui.PhysicalGameStatePanel;
 
@@ -78,12 +79,13 @@ public class RunClient {
         
         switch (ai1Type) {
             case "penalty":
-                ai1 = new SocketRewardPenaltyOnInvalidActionAI(100, 0, serverIP, serverPort, SocketRewardAI.LANGUAGE_JSON, utt,
-                layerJSON);
+                ai1 = new SocketRewardPenaltyOnInvalidActionAI(100, 0, serverIP, serverPort, SocketRewardAI.LANGUAGE_JSON, utt, layerJSON);
                 break;
             case "no-penalty":
-                ai1 = new SocketRewardAI(100, 0, serverIP, serverPort, SocketRewardAI.LANGUAGE_JSON, utt,
-                layerJSON);
+                ai1 = new SocketRewardAI(100, 0, serverIP, serverPort, SocketRewardAI.LANGUAGE_JSON, utt, layerJSON);
+                break;
+            case "no-penalty-individual":
+                ai1 = new IndividualSocketRewardAI(100, 0, serverIP, serverPort, SocketRewardAI.LANGUAGE_JSON, utt, layerJSON);
                 break;
             default:
                 throw new Exception("no ai1 was chosen");
