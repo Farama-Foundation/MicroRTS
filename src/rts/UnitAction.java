@@ -727,5 +727,46 @@ public class UnitAction {
         }
         return ua;
     }
-
+    
+    
+    /**
+     * Creates a UnitAction from an action array
+     *
+     * @param o
+     * @param utt
+     * @return
+     */
+    public static UnitAction fromActionArrayForUnit(JsonArray a, UnitTypeTable utt) {
+        UnitAction ua = new UnitAction(a.get(0).asInt());
+        switch (a.get(0).asInt()) {
+            case TYPE_NONE: {
+                break;
+            }
+            case TYPE_MOVE: {
+                ua.parameter = a.get(1).asInt();
+                break;
+            }
+            case TYPE_HARVEST: {
+                ua.parameter = a.get(1).asInt();
+                break;
+            }
+            case TYPE_RETURN: {
+                ua.parameter = a.get(1).asInt();
+                break;
+            }
+            // case TYPE_PRODUCE: {
+            //     ua.parameter = a.get(3).asInt();
+            //     // String ut = a.getString("unitType", null);
+            //     // if (ut != null) {
+            //     //     ua.unitType = utt.getUnitType(ut);
+            //     // }
+            // }
+            // case TYPE_ATTACK_LOCATION: {
+            //     ua.x = a.get(4).asInt();
+            //     ua.y = a.get(4).asInt();
+            //     break;
+            // }
+        }
+        return ua;
+    }
 }

@@ -46,16 +46,16 @@ public class RunClient {
     int serverPort = 9898;
 
     @Parameter(names = "--map", description = "Which map in the `maps` folder are you using?")
-    String map = "maps/4x4/base4x4.xml";
+    String map = "maps/4x4/baseTwoWorkers4x4.xml";
 
     @Parameter(names = "--ai1-type", description = "The microRTS server IP")
-    String ai1Type = "penalty";
+    String ai1Type = "no-penalty-individual";
 
     @Parameter(names = "--ai2-type", description = "The microRTS server IP")
     String ai2Type = "passive";
 
     @Parameter(names = "--render", description = "Whether to render the game")
-    boolean render = false;
+    boolean render = true;
 
     @Parameter(names = "--microrts-path", description = "The path of microrts unzipped folder")
     String micrortsPath = "";

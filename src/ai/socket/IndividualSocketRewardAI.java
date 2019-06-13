@@ -17,6 +17,7 @@ import org.jdom.input.SAXBuilder;
 import rts.GameState;
 import rts.InvalidPlayerActionStats;
 import rts.PlayerAction;
+import rts.units.Unit;
 import rts.units.UnitTypeTable;
 import util.Pair;
 import util.XMLWriter;
@@ -40,7 +41,17 @@ public class IndividualSocketRewardAI extends SocketRewardAI {
             // not implemented
             return null;
         } else if (communication_language == LANGUAGE_JSON) {
+            Unit u = gs.getPhysicalGameState().getUnits().get(currentUnit);
             if (layerJSON) {
+                // find the next worker
+                while (u.getType().ID != 3) {
+                    currentUnit++;
+                    u = gs.getPhysicalGameState().getUnits().get(currentUnit);
+                }
+                currentUnit++;
+                if (currentUnit>=gs.getPhysicalGameState().getUnits().size()) {
+                    currentUnit=0;
+                }
                 int [][][] observation = gs.getUnitObservation(gs.getPhysicalGameState().getUnits().get(currentUnit), 1);
                 Map<String, Object> data = new HashMap<String, Object>();
                     data.put("observation", observation);
@@ -49,10 +60,6 @@ public class IndividualSocketRewardAI extends SocketRewardAI {
                     data.put("info", new HashMap<String, Object>());
                 Gson gson = new Gson();
                 out_pipe.write(gson.toJson(data));
-                currentUnit++;
-                if (currentUnit>=gs.getPhysicalGameState().getUnits().size()) {
-                    currentUnit=0;
-                }
             } else {
                 gs.toJSON(out_pipe);
             }
@@ -74,7 +81,7 @@ public class IndividualSocketRewardAI extends SocketRewardAI {
                 return PlayerAction.fromJSON("[]", gs, utt);
             }
             // System.out.println("action received from server: " + actionString);
-            PlayerAction pa = PlayerAction.fromActionArrays(actionString, gs, utt, player);
+            PlayerAction pa = PlayerAction.fromActionArrayForUnit(actionString, gs, utt, player, u);
             pa.fillWithNones(gs, player, 1);
             return pa;
         } else {

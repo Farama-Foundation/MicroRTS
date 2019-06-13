@@ -806,7 +806,8 @@ public class GameState {
     }
 
     /**
-     * Writes a JSON layers representation of this state. If
+     * Writes a JSON layers representation of this state.
+     * Cell value of 0 means the block is not reachable
      * @param u
      */
     public int [][][] getUnitObservation(Unit u, int obsSize){
@@ -816,7 +817,11 @@ public class GameState {
         int[][] unitTypesMatrix = new int[obsSize*2+1][obsSize*2+1];
         int[][] unitActionMatrix = new int[obsSize*2+1][obsSize*2+1];
         for (int i=0; i<unitTypesMatrix.length; i++) {
-            Arrays.fill(unitTypesMatrix[i], -1);
+            Arrays.fill(hitpointsMatrix[i], 1);
+            Arrays.fill(resourcesMatrix[i], 1);
+            Arrays.fill(playersMatrix[i], 1);
+            Arrays.fill(unitTypesMatrix[i], 1);
+            Arrays.fill(unitActionMatrix[i], 1);
         }
 
         int absoluteX = obsSize;
@@ -825,21 +830,28 @@ public class GameState {
             for (int j=0; j<hitpointsMatrix.length; j++) {
                 int relativeX = i - absoluteX;
                 int relativeY = j - absoluteY;
-                if (u.getX() + relativeX < 0 || u.getX() + relativeX >= pgs.height
-                || u.getY() +relativeY < 0 || u.getY() +relativeY >= pgs.width) {
+                if (u.getX() + relativeX >= 0 && u.getX() + relativeX < pgs.height
+                && u.getY() +relativeY >= 0 && u.getY() +relativeY < pgs.width) {
                     Unit uprime = pgs.getUnitAt(u.getX() + relativeX, u.getY() +relativeY);
                     if (uprime != null) {
                         UnitActionAssignment uaa = unitActions.get(uprime);
-                        hitpointsMatrix[i][j] = uprime.getHitPoints();
-                        resourcesMatrix[i][j] = uprime.getResources();
-                        playersMatrix[i][j] = uprime.getPlayer();
-                        unitTypesMatrix[i][j] = uprime.getType().ID;
+                        hitpointsMatrix[i][j] = uprime.getHitPoints() + 1;
+                        resourcesMatrix[i][j] = uprime.getResources() + 1;
+                        playersMatrix[i][j] = uprime.getPlayer() + 2;
+                        unitTypesMatrix[i][j] = uprime.getType().ID + 2;
                         if (uaa != null) {
-                            unitActionMatrix[i][j] = uaa.action.type;
+                            unitActionMatrix[i][j] = uaa.action.type + 1;
                         } else {
-                            unitActionMatrix[i][j] = UnitAction.TYPE_NONE;
+                            unitActionMatrix[i][j] = UnitAction.TYPE_NONE + 1;
                         }
                     }
+                }
+                else {
+                    hitpointsMatrix[i][j] = 0;
+                    resourcesMatrix[i][j] = 0;
+                    playersMatrix[i][j] = 0;
+                    unitTypesMatrix[i][j] = 0;
+                    unitActionMatrix[i][j] = 0;
                 }
             }
         }
