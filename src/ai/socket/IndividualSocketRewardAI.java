@@ -46,6 +46,9 @@ public class IndividualSocketRewardAI extends SocketRewardAI {
                 // find the next worker
                 while (u.getType().ID != 3) {
                     currentUnit++;
+                    if (currentUnit>=gs.getPhysicalGameState().getUnits().size()) {
+                        currentUnit=0;
+                    }
                     u = gs.getPhysicalGameState().getUnits().get(currentUnit);
                 }
                 currentUnit++;
