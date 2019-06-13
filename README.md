@@ -14,10 +14,6 @@ To cite microRTS, please cite this paper:
 
 Santiago Ontañón (2013) The Combinatorial Multi-Armed Bandit Problem and its Application to Real-Time Strategy Games, In AIIDE 2013. pp. 58 - 64.
 
-## Contributions:
-
-The LSI AI was contributed by Alexander Shleyfman, Antonin Komenda and Carmel Domshlak (the theory behind the AI is described in this [paper](https://www.researchgate.net/publication/282075129_On_Combinatorial_Actions_and_CMABs_with_Linear_Side_Information).
-
 ## Instructions:
 
 ![instructions image](https://raw.githubusercontent.com/santiontanon/microrts/master/help.png)
