@@ -41,20 +41,20 @@ public class IndividualSocketRewardAI extends SocketRewardAI {
             // not implemented
             return null;
         } else if (communication_language == LANGUAGE_JSON) {
+            currentUnit++;
+            if (currentUnit>=gs.getPhysicalGameState().getUnits().size()) {
+                currentUnit=0;
+            }
             Unit u = gs.getPhysicalGameState().getUnits().get(currentUnit);
-            if (layerJSON) {
-                // find the next worker
-                while (u.getType().ID != 3) {
-                    currentUnit++;
-                    if (currentUnit>=gs.getPhysicalGameState().getUnits().size()) {
-                        currentUnit=0;
-                    }
-                    u = gs.getPhysicalGameState().getUnits().get(currentUnit);
-                }
+            while (!u.getType().equals(utt.getUnitType("Worker"))) {
                 currentUnit++;
                 if (currentUnit>=gs.getPhysicalGameState().getUnits().size()) {
                     currentUnit=0;
                 }
+                u = gs.getPhysicalGameState().getUnits().get(currentUnit);
+            }
+            if (layerJSON) {
+                // find the next worker
                 int [][][] observation = gs.getUnitObservation(gs.getPhysicalGameState().getUnits().get(currentUnit), 1);
                 Map<String, Object> data = new HashMap<String, Object>();
                     data.put("observation", observation);
