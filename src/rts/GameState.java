@@ -810,12 +810,12 @@ public class GameState {
      * Cell value of 0 means the block is not reachable
      * @param u
      */
-    public int [][][] getUnitObservation(Unit u, int obsSize){
-        int[][] hitpointsMatrix = new int[obsSize*2+1][obsSize*2+1];
-        int[][] resourcesMatrix = new int[obsSize*2+1][obsSize*2+1];
-        int[][] playersMatrix = new int[obsSize*2+1][obsSize*2+1];
-        int[][] unitTypesMatrix = new int[obsSize*2+1][obsSize*2+1];
-        int[][] unitActionMatrix = new int[obsSize*2+1][obsSize*2+1];
+    public int [][][] getUnitObservation(Unit u, int windowSize){
+        int[][] hitpointsMatrix = new int[windowSize*2+1][windowSize*2+1];
+        int[][] resourcesMatrix = new int[windowSize*2+1][windowSize*2+1];
+        int[][] playersMatrix = new int[windowSize*2+1][windowSize*2+1];
+        int[][] unitTypesMatrix = new int[windowSize*2+1][windowSize*2+1];
+        int[][] unitActionMatrix = new int[windowSize*2+1][windowSize*2+1];
         for (int i=0; i<unitTypesMatrix.length; i++) {
             Arrays.fill(hitpointsMatrix[i], 1);
             Arrays.fill(resourcesMatrix[i], 1);
@@ -824,8 +824,8 @@ public class GameState {
             Arrays.fill(unitActionMatrix[i], 1);
         }
 
-        int absoluteX = obsSize;
-        int absoluteY = obsSize;
+        int absoluteX = windowSize;
+        int absoluteY = windowSize;
         for (int i=0; i<hitpointsMatrix.length; i++) {
             for (int j=0; j<hitpointsMatrix.length; j++) {
                 int relativeX = i - absoluteX;
