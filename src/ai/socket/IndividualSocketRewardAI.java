@@ -30,7 +30,7 @@ public class IndividualSocketRewardAI extends SocketRewardAI {
     double penalty = 0.0;
     int currentUnit = 0;
     
-    public IndividualSocketRewardAI(int mt, int mi, String a_sa, int a_port, int a_language, UnitTypeTable a_utt, boolean a_JSON) throws Exception {
+    public IndividualSocketRewardAI(int mt, int mi, String a_sa, int a_port, int a_language, UnitTypeTable a_utt, boolean a_JSON, int windowSize) throws Exception {
         super(mt, mi, a_sa, a_port, a_language, a_utt, a_JSON);
     }
 

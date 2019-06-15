@@ -48,11 +48,14 @@ public class RunClient {
     @Parameter(names = "--map", description = "Which map in the `maps` folder are you using?")
     String map = "maps/4x4/base4x4.xml";
 
-    @Parameter(names = "--ai1-type", description = "The microRTS server IP")
+    @Parameter(names = "--ai1-type", description = "The type of AI1")
     String ai1Type = "penalty";
 
-    @Parameter(names = "--ai2-type", description = "The microRTS server IP")
+    @Parameter(names = "--ai2-type", description = "The type of AI2")
     String ai2Type = "passive";
+
+    @Parameter(names = "--window-size", description = "The microRTS server IP")
+    int windowSize = 1;
 
     @Parameter(names = "--render", description = "Whether to render the game")
     boolean render = false;
@@ -85,7 +88,7 @@ public class RunClient {
                 ai1 = new SocketRewardAI(100, 0, serverIP, serverPort, SocketRewardAI.LANGUAGE_JSON, utt, layerJSON);
                 break;
             case "no-penalty-individual":
-                ai1 = new IndividualSocketRewardAI(100, 0, serverIP, serverPort, SocketRewardAI.LANGUAGE_JSON, utt, layerJSON);
+                ai1 = new IndividualSocketRewardAI(100, 0, serverIP, serverPort, SocketRewardAI.LANGUAGE_JSON, utt, layerJSON, windowSize);
                 break;
             default:
                 throw new Exception("no ai1 was chosen");
