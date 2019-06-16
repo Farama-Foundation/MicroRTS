@@ -13,6 +13,7 @@ import gui.PhysicalGameStatePanel;
 import java.io.FileWriter;
 import java.io.Writer;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -126,8 +127,10 @@ public class RunClient {
         }
 
         // game evaluation
-        int firstMineTimestep = 2000;
+        ArrayList <Integer> firstMineTimesteps = new ArrayList<Integer>();
+        ArrayList <Integer> resourcesGathereds = new ArrayList<Integer>();
         while (true) {
+            int firstMineTimestep = 2000;
             ai1.reset();
             ai2.reset();
             pgs = PhysicalGameState.load(map, utt);
@@ -160,6 +163,8 @@ public class RunClient {
                     e.printStackTrace();
                 }
             }
+            firstMineTimesteps.add(firstMineTimestep);
+            resourcesGathereds.add(gs.getPlayer(0).getResources()-5);
             ai1.gameOver(gs.winner(), gs);
             ai2.gameOver(gs.winner());
             if (ai1.finished) {
@@ -173,11 +178,22 @@ public class RunClient {
         if (evaluationFileName.length() != 0) {
             try (Writer writer = new FileWriter(evaluationFileName)) {
                 Map<String, Object> eval = new HashMap<String, Object>();
-                eval.put("first_mine_timestep", firstMineTimestep);
-                eval.put("total_resources_gathered", gs.getPlayer(0).getResources()-5);
+                eval.put("average_first_mine_timestep", calculateAverage(firstMineTimesteps));
+                eval.put("average_total_resources_gathered", calculateAverage(resourcesGathereds));
                 Gson gson = new GsonBuilder().create();
                 gson.toJson(eval, writer);
             }
         }
+    }
+
+    private double calculateAverage(ArrayList<Integer> array) {
+      Integer sum = 0;
+      if(!array.isEmpty()) {
+        for (Integer item : array) {
+            sum += item;
+        }
+        return sum.doubleValue() / array.size();
+      }
+      return sum;
     }
 }
