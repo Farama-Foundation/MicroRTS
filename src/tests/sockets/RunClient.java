@@ -10,7 +10,10 @@ import ai.socket.IndividualSocketRewardAI;
 import ai.socket.SocketAI;
 import gui.PhysicalGameStatePanel;
 
+import java.io.FileWriter;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JFrame;
 import rts.GameState;
@@ -23,6 +26,7 @@ import gui.PhysicalGameStateJFrame;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+import com.google.gson.Gson;
 
 /**
  *
@@ -59,6 +63,9 @@ public class RunClient {
 
     @Parameter(names = "--render", description = "Whether to render the game")
     boolean render = false;
+
+    @Parameter(names = "--evaluation-filename", description = "Whether to save the evaluation results in a the supplied filename")
+    String evaluationFileName = "";
 
     @Parameter(names = "--microrts-path", description = "The path of microrts unzipped folder")
     String micrortsPath = "";
@@ -115,6 +122,9 @@ public class RunClient {
         if (render) {
             w = PhysicalGameStatePanel.newVisualizer(gs, 640, 640, false, PhysicalGameStatePanel.COLORSCHEME_BLACK);
         }
+
+        // game evaluation
+        int firstMineTimestep = 2000;
         while (true) {
             ai1.reset();
             ai2.reset();
@@ -126,6 +136,9 @@ public class RunClient {
                     w.repaint();
                 }
                 ai1.computeReward(0, 1, gs);
+                if (gs.getPlayer(0).getResources() == 6) {
+                    firstMineTimestep = gs.getTime();
+                }
                 PlayerAction pa1 = ai1.getAction(0, gs);
                 if (ai1.done) {
                     break;
@@ -154,6 +167,13 @@ public class RunClient {
         }
         if (render) {
             w.dispose();
+        }
+        if (evaluationFileName.length() != 0) {
+            Map<String, Object> eval = new HashMap<String, Object>();
+                eval.put("first_mine_timestep", firstMineTimestep);
+                eval.put("total_resources_gathered", gs.getPlayer(0).getResources()-5);
+            Gson gson = new Gson();
+            gson.toJson(eval, new FileWriter(evaluationFileName));
         }
     }
 }
