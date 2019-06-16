@@ -11,6 +11,7 @@ import ai.socket.SocketAI;
 import gui.PhysicalGameStatePanel;
 
 import java.io.FileWriter;
+import java.io.Writer;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +28,7 @@ import gui.PhysicalGameStateJFrame;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  *
@@ -169,11 +171,13 @@ public class RunClient {
             w.dispose();
         }
         if (evaluationFileName.length() != 0) {
-            Map<String, Object> eval = new HashMap<String, Object>();
+            try (Writer writer = new FileWriter(evaluationFileName)) {
+                Map<String, Object> eval = new HashMap<String, Object>();
                 eval.put("first_mine_timestep", firstMineTimestep);
                 eval.put("total_resources_gathered", gs.getPlayer(0).getResources()-5);
-            Gson gson = new Gson();
-            gson.toJson(eval, new FileWriter(evaluationFileName));
+                Gson gson = new GsonBuilder().create();
+                gson.toJson(eval, writer);
+            }
         }
     }
 }
