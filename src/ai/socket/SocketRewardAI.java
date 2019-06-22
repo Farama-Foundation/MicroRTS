@@ -23,7 +23,7 @@ import util.XMLWriter;
  *
  * @author santi & costa
  */
-public class SocketRewardAI extends SocketAI {
+public class SocketRewardAI extends SocketAI implements SocketAIInterface{
     boolean layerJSON = false;
     double reward = 0.0;
     double oldReward = 0.0;
@@ -186,5 +186,12 @@ public class SocketRewardAI extends SocketAI {
     public void setUTT(UnitTypeTable utt) {
         this.utt = utt;
         shouldSendUTTAndBudget = true;
+    }
+
+    public boolean getDone() {
+        return done;
+    }
+	public boolean getFinished() {
+        return finished;
     }
 }

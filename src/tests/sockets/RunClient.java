@@ -8,6 +8,7 @@ import ai.core.AI;
 import ai.*;
 import ai.socket.IndividualSocketRewardAI;
 import ai.socket.SocketAI;
+import ai.socket.SocketAIInterface;
 import gui.PhysicalGameStatePanel;
 
 import java.io.FileWriter;
@@ -53,28 +54,31 @@ public class RunClient {
     int serverPort = 9898;
 
     @Parameter(names = "--map", description = "Which map in the `maps` folder are you using?")
-    String map = "maps/4x4/base4x4.xml";
+    String map = "maps/4x4/baseTwoWorkersMaxResources4x4.xml";
 
     @Parameter(names = "--ai1-type", description = "The type of AI1")
-    String ai1Type = "penalty";
+    String ai1Type = "random-no-attack";
 
     @Parameter(names = "--ai2-type", description = "The type of AI2")
     String ai2Type = "passive";
 
     @Parameter(names = "--window-size", description = "The microRTS server IP")
-    int windowSize = 1;
+    int windowSize = 2;
 
     @Parameter(names = "--render", description = "Whether to render the game")
-    boolean render = false;
+    boolean render = true;
+
+    @Parameter(names = "--seed", description = "The random seed")
+    int seed = 3;
 
     @Parameter(names = "--evaluation-filename", description = "Whether to save the evaluation results in a the supplied filename")
-    String evaluationFileName = "";
+    String evaluationFileName = "./test.json";
 
     @Parameter(names = "--microrts-path", description = "The path of microrts unzipped folder")
     String micrortsPath = "";
 
     PhysicalGameStateJFrame w;
-    SocketRewardAI ai1;
+    SocketAIInterface ai1;
     AI ai2;
 
     public static void main(String args[]) throws Exception {
@@ -99,6 +103,9 @@ public class RunClient {
                 break;
             case "no-penalty-individual":
                 ai1 = new IndividualSocketRewardAI(100, 0, serverIP, serverPort, SocketRewardAI.LANGUAGE_JSON, utt, layerJSON, windowSize);
+                break;
+            case "random-no-attack":
+                ai1 = new RandomNoAttackAI(seed);
                 break;
             default:
                 throw new Exception("no ai1 was chosen");
@@ -145,7 +152,7 @@ public class RunClient {
                     firstMineTimestep = gs.getTime();
                 }
                 PlayerAction pa1 = ai1.getAction(0, gs);
-                if (ai1.done) {
+                if (ai1.getDone()) {
                     break;
                 }
                 PlayerAction pa2 = ai2.getAction(1, gs);
@@ -167,7 +174,7 @@ public class RunClient {
             resourcesGathereds.add(gs.getPlayer(0).getResources()-5);
             ai1.gameOver(gs.winner(), gs);
             ai2.gameOver(gs.winner());
-            if (ai1.finished) {
+            if (ai1.getFinished()) {
                 System.out.println("Socket client finished");
                 break;
             }
