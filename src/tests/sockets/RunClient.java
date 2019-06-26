@@ -57,7 +57,7 @@ public class RunClient {
     String map = "maps/8x8/baseTwoWorkersMaxResources8x8.xml";
 
     @Parameter(names = "--ai1-type", description = "The type of AI1")
-    String ai1Type = "no-penalty-individual";
+    String ai1Type = "random-no-attack";
 
     @Parameter(names = "--ai2-type", description = "The type of AI2")
     String ai2Type = "passive";
@@ -174,12 +174,11 @@ public class RunClient {
                     break;
                 }
                 try {
-                    Thread.sleep(5);
+                    Thread.yield();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-            System.out.print(gs.getTime());
             firstReturnedResourcesTimesteps.add(firstReturnedResourcesTimestep);
             firstHarvestedResourcesTimesteps.add(firstHarvestedResourcesTimestep);
             resourcesGathereds.add(gs.getPlayer(0).getResources()-5);
