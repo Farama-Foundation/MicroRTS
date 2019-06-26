@@ -187,6 +187,7 @@ public class RunClient {
                 Map<String, Object> eval = new HashMap<String, Object>();
                 eval.put("average_first_mine_timestep", calculateAverage(firstMineTimesteps));
                 eval.put("average_total_resources_gathered", calculateAverage(resourcesGathereds));
+                eval.put("episodes_run", firstMineTimesteps.size());
                 Gson gson = new GsonBuilder().create();
                 gson.toJson(eval, writer);
             }

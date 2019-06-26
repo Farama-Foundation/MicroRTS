@@ -42,7 +42,9 @@ public class RandomNoAttackAI extends AI implements SocketAIInterface{
     
     
     @Override
-    public void reset() {   
+    public void reset() {
+        done = false;
+        finished = false;
     }    
     
     
