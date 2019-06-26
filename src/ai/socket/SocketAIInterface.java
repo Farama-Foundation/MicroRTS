@@ -12,4 +12,5 @@ public interface SocketAIInterface {
 	public void gameOver(int winner, GameState gs) throws Exception;
 	public boolean getDone();
 	public boolean getFinished();
+	public double getReward();
 }

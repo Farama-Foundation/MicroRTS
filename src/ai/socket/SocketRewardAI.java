@@ -194,4 +194,7 @@ public class SocketRewardAI extends SocketAI implements SocketAIInterface{
 	public boolean getFinished() {
         return finished;
     }
+    public double getReward() {
+        return reward;
+    }
 }

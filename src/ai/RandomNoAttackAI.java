@@ -6,6 +6,7 @@ package ai;
 
 import ai.core.AI;
 import ai.core.ParameterSpecification;
+import ai.evaluation.SimpleEvaluationFunction;
 import ai.socket.SocketAIInterface;
 
 import java.util.ArrayList;
@@ -33,7 +34,11 @@ public class RandomNoAttackAI extends AI implements SocketAIInterface{
     boolean done = false;
     boolean finished = false;
     int seed;
+    double reward = 0.0;
+    double oldReward = 0.0;
+    boolean firstRewardCalculation = true;
     Random r;
+    SimpleEvaluationFunction ef = new SimpleEvaluationFunction();
 
     public RandomNoAttackAI(int seed) {
         this.seed = seed;
@@ -56,19 +61,37 @@ public class RandomNoAttackAI extends AI implements SocketAIInterface{
     // Dummy methods
     public void connectToServer() throws Exception {
     }
-    public void computeReward(int i, int j, GameState gs) throws Exception {
-    }
     public void gameOver(int winner, GameState gs) throws Exception{
     }
     
+    public void computeReward(int maxplayer, int minplayer, GameState gs) throws Exception {
+        // do something
+        if (firstRewardCalculation) {
+            oldReward = ef.evaluate(maxplayer, minplayer, gs);
+            reward = 0;
+            firstRewardCalculation = false;
+        } else {
+            double newReward = ef.evaluate(maxplayer, minplayer, gs);
+            reward = newReward - oldReward;
+            oldReward = newReward;
+        }
+    }
     
     @Override
     public PlayerAction getAction(int player, GameState gs) {
         // attack, harvest and return have 5 times the probability of other actions
         PhysicalGameState pgs = gs.getPhysicalGameState();
         PlayerAction pa = new PlayerAction();
+        currentStep++;
+        if (currentStep % episodeLenght == 0) {
+            done = true;
+        }
+        if (currentStep == totalTimestep) {
+            done = true;
+            finished = true;
+        }
         
-        if (!gs.canExecuteAnyAction(player)) return pa;
+        if (!gs.canExecuteAnyAction(player))  return pa;
 
         // Generate the reserved resources:
         for(Unit u:pgs.getUnits()) {
@@ -116,15 +139,6 @@ public class RandomNoAttackAI extends AI implements SocketAIInterface{
                 }
             }
         }
-        currentStep++;
-        if (currentStep % episodeLenght == 0) {
-            done = true;
-        }
-        if (currentStep == totalTimestep) {
-            done = true;
-            finished = true;
-        }
-        
         return pa;
     }
     
@@ -140,5 +154,8 @@ public class RandomNoAttackAI extends AI implements SocketAIInterface{
     }
 	public boolean getFinished() {
         return finished;
+    }
+    public double getReward() {
+        return reward;
     }
 }

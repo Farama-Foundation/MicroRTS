@@ -54,16 +54,16 @@ public class RunClient {
     int serverPort = 9898;
 
     @Parameter(names = "--map", description = "Which map in the `maps` folder are you using?")
-    String map = "maps/4x4/baseTwoWorkersMaxResources4x4.xml";
+    String map = "maps/8x8/baseTwoWorkersMaxResources8x8.xml";
 
     @Parameter(names = "--ai1-type", description = "The type of AI1")
-    String ai1Type = "random-no-attack";
+    String ai1Type = "no-penalty-individual";
 
     @Parameter(names = "--ai2-type", description = "The type of AI2")
     String ai2Type = "passive";
 
     @Parameter(names = "--window-size", description = "The microRTS server IP")
-    int windowSize = 2;
+    int windowSize = 1;
 
     @Parameter(names = "--render", description = "Whether to render the game")
     boolean render = true;
@@ -134,10 +134,14 @@ public class RunClient {
         }
 
         // game evaluation
-        ArrayList <Integer> firstMineTimesteps = new ArrayList<Integer>();
+        ArrayList <Integer> firstHarvestedResourcesTimesteps = new ArrayList<Integer>();
+        ArrayList <Integer> firstReturnedResourcesTimesteps = new ArrayList<Integer>();
         ArrayList <Integer> resourcesGathereds = new ArrayList<Integer>();
         while (true) {
-            int firstMineTimestep = 2000;
+            boolean firstReturnedResources = true;
+            boolean firstHarvestedResources = true;
+            int firstReturnedResourcesTimestep = 2000;
+            int firstHarvestedResourcesTimestep = 2000;
             ai1.reset();
             ai2.reset();
             pgs = PhysicalGameState.load(map, utt);
@@ -148,8 +152,13 @@ public class RunClient {
                     w.repaint();
                 }
                 ai1.computeReward(0, 1, gs);
-                if (gs.getPlayer(0).getResources() == 6) {
-                    firstMineTimestep = gs.getTime();
+                if (ai1.getReward() == 10.0 && firstHarvestedResources) {
+                    firstHarvestedResources = false;
+                    firstHarvestedResourcesTimestep = gs.getTime();
+                }
+                if (gs.getPlayer(0).getResources() == 6 && firstReturnedResources) {
+                    firstReturnedResources = false;
+                    firstReturnedResourcesTimestep = gs.getTime();
                 }
                 PlayerAction pa1 = ai1.getAction(0, gs);
                 if (ai1.getDone()) {
@@ -165,12 +174,14 @@ public class RunClient {
                     break;
                 }
                 try {
-                    Thread.yield();
+                    Thread.sleep(5);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-            firstMineTimesteps.add(firstMineTimestep);
+            System.out.print(gs.getTime());
+            firstReturnedResourcesTimesteps.add(firstReturnedResourcesTimestep);
+            firstHarvestedResourcesTimesteps.add(firstHarvestedResourcesTimestep);
             resourcesGathereds.add(gs.getPlayer(0).getResources()-5);
             ai1.gameOver(gs.winner(), gs);
             ai2.gameOver(gs.winner());
@@ -185,9 +196,13 @@ public class RunClient {
         if (evaluationFileName.length() != 0) {
             try (Writer writer = new FileWriter(evaluationFileName)) {
                 Map<String, Object> eval = new HashMap<String, Object>();
-                eval.put("average_first_mine_timestep", calculateAverage(firstMineTimesteps));
+                eval.put("average_first_returned_resources_timestep", calculateAverage(firstReturnedResourcesTimesteps));
+                eval.put("first_returned_resources_timestep", firstReturnedResourcesTimesteps);
                 eval.put("average_total_resources_gathered", calculateAverage(resourcesGathereds));
-                eval.put("episodes_run", firstMineTimesteps.size());
+                eval.put("total_resources_gathered", resourcesGathereds);
+                eval.put("average_first_harvested_resources_timestep", calculateAverage(firstHarvestedResourcesTimesteps));
+                eval.put("first_harvested_resources_timestep", firstHarvestedResourcesTimesteps);
+                eval.put("episodes_run", firstReturnedResourcesTimesteps.size());
                 Gson gson = new GsonBuilder().create();
                 gson.toJson(eval, writer);
             }
