@@ -1,6 +1,7 @@
 package rts;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -8,9 +9,12 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.jdom.Element;
+import org.jdom.input.SAXBuilder;
+
 import rts.units.Unit;
 import rts.units.UnitTypeTable;
 import util.Pair;
@@ -141,6 +145,12 @@ public class Trace {
 			e1.printStackTrace();
 		}
     	
+    }
+    
+    public static Trace fromZip(String path) throws Exception {
+    	 ZipInputStream zis = new ZipInputStream(new FileInputStream(path));
+		 zis.getNextEntry();
+		 return new Trace(new SAXBuilder().build(zis).getRootElement());
     }
 
     /**
