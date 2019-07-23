@@ -1,7 +1,15 @@
 package rts;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
 import org.jdom.Element;
 import rts.units.Unit;
 import rts.units.UnitTypeTable;
@@ -87,6 +95,52 @@ public class Trace {
         }
         w.tag("/entries");
         w.tag("/" + this.getClass().getName());
+    }
+    
+    /**
+     * Dumps this trace to the XML file specified on path
+     * It can be reconstructed later (e.g. with {@link #fromXML(String, UnitTypeTable)}
+     * @param path
+     */
+    public void toxml(String path) {
+    	try {
+			XMLWriter dumper = new XMLWriter(new FileWriter(path));
+			this.toxml(dumper);
+			dumper.close();
+		} catch (IOException e) {
+			System.err.println("Error while writing trace to: " + path);
+			e.printStackTrace();
+		}
+    }
+    
+    public void toZip(String path) {    	
+    	//ensures path will end with a .zip
+    	if(!path.endsWith(".zip")) {
+    		path += ".zip";
+    	}
+    	
+    	File f = new File(path);
+    	ZipOutputStream out;
+		try {
+			out = new ZipOutputStream(new FileOutputStream(f));
+			ZipEntry e = new ZipEntry("foo.txt");
+	    	out.putNextEntry(e);
+
+	    	XMLWriter dumper = new XMLWriter(new FileWriter(path));
+			this.toxml(dumper);
+	    	byte[] data = dumper.toString().getBytes();
+	    	out.write(data, 0, data.length);
+	    	out.closeEntry();
+
+	    	out.close();
+		} catch (FileNotFoundException e1) {
+			System.err.println("File not found: " + path);
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			System.err.println("Error while writing to " + path);
+			e1.printStackTrace();
+		}
+    	
     }
 
     /**
