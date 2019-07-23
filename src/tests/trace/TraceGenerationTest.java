@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package tests;
+package tests.trace;
 
 import ai.core.AI;
 import ai.abstraction.WorkerRush;
@@ -12,6 +12,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import rts.*;
 import rts.units.UnitTypeTable;
+import tests.MapGenerator;
 import util.XMLWriter;
 
 /**
