@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -117,26 +118,34 @@ public class Trace {
 		}
     }
     
-    public void toZip(String path) {    	
-    	//ensures path will end with a .zip
-    	if(!path.endsWith(".zip")) {
-    		path += ".zip";
+    public void toZip(String path) {
+    	String zipPath;
+    	//zipPath must end with .zip and path with .xml
+    	if(path.endsWith(".zip")) {
+    		zipPath = path;
+    		path.replaceFirst("[.][^.]+$", ".xml"); // replaces .zip by .xml
+    	}
+    	else {
+    		zipPath = path + ".zip";    		
     	}
     	
     	File f = new File(path);
     	ZipOutputStream out;
 		try {
 			out = new ZipOutputStream(new FileOutputStream(f));
-			ZipEntry e = new ZipEntry("foo.txt");
+			ZipEntry e = new ZipEntry(f.getName());
 	    	out.putNextEntry(e);
 
-	    	XMLWriter dumper = new XMLWriter(new FileWriter(path));
+	    	StringWriter xmlStringContainer = new StringWriter();
+	    	XMLWriter dumper = new XMLWriter(xmlStringContainer);
+	    	//XMLWriter dumper = new XMLWriter(new FileWriter(path));
 			this.toxml(dumper);
-	    	byte[] data = dumper.toString().getBytes();
+			
+	    	byte[] data = xmlStringContainer.toString().getBytes();
 	    	out.write(data, 0, data.length);
 	    	out.closeEntry();
-
 	    	out.close();
+	    	
 		} catch (FileNotFoundException e1) {
 			System.err.println("File not found: " + path);
 			e1.printStackTrace();
