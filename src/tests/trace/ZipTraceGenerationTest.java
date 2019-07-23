@@ -23,7 +23,7 @@ public class ZipTraceGenerationTest {
     public static void main(String args[]) throws IOException, Exception {
         UnitTypeTable utt = new UnitTypeTable();
         MapGenerator mg = new MapGenerator(utt);
-        PhysicalGameState pgs = mg.complexBasesWorkers12x12();// basesWorkers8x8Obstacle();
+        PhysicalGameState pgs = mg.basesWorkers8x8Obstacle();
         GameState gs = new GameState(pgs, utt);
         int MAXCYCLES = 5000;
         boolean gameover = false;
