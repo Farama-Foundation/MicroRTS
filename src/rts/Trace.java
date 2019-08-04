@@ -1,8 +1,21 @@
 package rts;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
+
 import org.jdom.Element;
+import org.jdom.input.SAXBuilder;
+
 import rts.units.Unit;
 import rts.units.UnitTypeTable;
 import util.Pair;
@@ -87,6 +100,66 @@ public class Trace {
         }
         w.tag("/entries");
         w.tag("/" + this.getClass().getName());
+    }
+    
+    /**
+     * Dumps this trace to the XML file specified on path
+     * It can be reconstructed later (e.g. with {@link #fromXML(String, UnitTypeTable)}
+     * @param path
+     */
+    public void toxml(String path) {
+    	try {
+			XMLWriter dumper = new XMLWriter(new FileWriter(path));
+			this.toxml(dumper);
+			dumper.close();
+		} catch (IOException e) {
+			System.err.println("Error while writing trace to: " + path);
+			e.printStackTrace();
+		}
+    }
+    
+    public void toZip(String path) {
+    	String zipPath;
+    	//zipPath must end with .zip and path with .xml
+    	if(path.endsWith(".zip")) {
+    		zipPath = path;
+    		path.replaceFirst("[.][^.]+$", ".xml"); // replaces .zip by .xml
+    	}
+    	else {
+    		zipPath = path + ".zip";    		
+    	}
+    	
+    	File f = new File(path);
+    	ZipOutputStream out;
+		try {
+			out = new ZipOutputStream(new FileOutputStream(f));
+			ZipEntry e = new ZipEntry(f.getName());
+	    	out.putNextEntry(e);
+
+	    	StringWriter xmlStringContainer = new StringWriter();
+	    	XMLWriter dumper = new XMLWriter(xmlStringContainer);
+	    	//XMLWriter dumper = new XMLWriter(new FileWriter(path));
+			this.toxml(dumper);
+			
+	    	byte[] data = xmlStringContainer.toString().getBytes();
+	    	out.write(data, 0, data.length);
+	    	out.closeEntry();
+	    	out.close();
+	    	
+		} catch (FileNotFoundException e1) {
+			System.err.println("File not found: " + path);
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			System.err.println("Error while writing to " + path);
+			e1.printStackTrace();
+		}
+    	
+    }
+    
+    public static Trace fromZip(String path) throws Exception {
+    	 ZipInputStream zis = new ZipInputStream(new FileInputStream(path));
+		 zis.getNextEntry();
+		 return new Trace(new SAXBuilder().build(zis).getRootElement());
     }
 
     /**
