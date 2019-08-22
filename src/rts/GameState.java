@@ -660,8 +660,6 @@ public class GameState {
         
         if (!pgs.equivalents(s2.pgs)) return false;
         
-        
-        
         // compare actions:
         int n = pgs.units.size();
         for(int i = 0;i<n;i++) {
