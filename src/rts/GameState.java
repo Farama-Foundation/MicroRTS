@@ -653,7 +653,11 @@ public class GameState {
      */
     public boolean equals(Object o) {
         if (!(o instanceof GameState)) return false;
+        
         GameState s2 = (GameState)o;
+        
+        if(this.getTime() != s2.getTime()) return false;
+        
         if (!pgs.equivalents(s2.pgs)) return false;
         
         // compare actions:
