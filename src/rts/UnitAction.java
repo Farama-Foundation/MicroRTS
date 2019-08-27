@@ -395,7 +395,7 @@ public class UnitAction {
                         maybeAResource = pgs.getUnitAt(u.getX() - 1, u.getY());
                         break;
                 }
-                if (maybeAResource != null && u.getType().canHarvest && u.getResources() == 0) {
+                if (maybeAResource != null && maybeAResource.getType().isResource && u.getType().canHarvest && u.getResources() == 0) {
                     //indeed it is a resource, harvest from it
                     maybeAResource.setResources(maybeAResource.getResources() - u.getHarvestAmount());
                     if (maybeAResource.getResources() <= 0) {
