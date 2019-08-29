@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Arrays;
 
 import rts.units.Unit;
 import java.util.LinkedList;
@@ -459,6 +460,19 @@ public class PhysicalGameState {
             }
         }
         return true;
+    }
+
+    /**
+     * This function tests if two PhysicalGameStates are identical, including their terrain
+     *      *
+     * @param pgs
+     * @return
+     */
+    public boolean equivalentsIncludingTerrain(PhysicalGameState pgs) {
+        if (this.equivalents(pgs)) {
+            return Arrays.toString(this.terrain).equals(Arrays.toString(pgs.terrain));
+        } else
+            return false;
     }
 
     /**
