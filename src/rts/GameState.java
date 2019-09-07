@@ -454,12 +454,7 @@ public class GameState {
         }
         
         if (unitActions.get(unit)==null) {
-            List<PlayerAction> l2 = new LinkedList<PlayerAction>();
-
-            for(PlayerAction pa:l) {
-                l2.addAll(pa.cartesianProduct(unit.getUnitActions(this), unit, this));
-            }
-            l = l2;
+            l = empty.cartesianProduct(unit.getUnitActions(this), unit, this);
         }
         
         return l;
