@@ -435,11 +435,10 @@ public class GameState {
     
     /**
      * 
-     * @param pID
      * @param unit
      * @return
      */
-    public List<PlayerAction> getPlayerActionsSingleUnit(int pID, Unit unit) {
+    public List<PlayerAction> getPlayerActionsSingleUnit(Unit unit) {
         List<PlayerAction> l = new LinkedList<PlayerAction>();
         
         PlayerAction empty = new PlayerAction();
@@ -447,22 +446,15 @@ public class GameState {
         
         // Generate the reserved resources:
         for(Unit u:pgs.getUnits()) {
-//            if (u.getPlayer()==pID) {
-                UnitActionAssignment uaa = unitActions.get(u);
-                if (uaa!=null) {
-                    ResourceUsage ru = uaa.action.resourceUsage(u, pgs);
-                    empty.r.merge(ru);
-                }
-//            }
+            UnitActionAssignment uaa = unitActions.get(u);
+            if (uaa!=null) {
+                ResourceUsage ru = uaa.action.resourceUsage(u, pgs);
+                empty.r.merge(ru);
+            }
         }
         
         if (unitActions.get(unit)==null) {
-            List<PlayerAction> l2 = new LinkedList<PlayerAction>();
-
-            for(PlayerAction pa:l) {
-                l2.addAll(pa.cartesianProduct(unit.getUnitActions(this), unit, this));
-            }
-            l = l2;
+            l = empty.cartesianProduct(unit.getUnitActions(this), unit, this);
         }
         
         return l;

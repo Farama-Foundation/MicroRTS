@@ -56,7 +56,7 @@ public class UCTUnitActionsNode {
 //                    }
                     if (a_gs.getActionAssignment(u)==null) {
 //                        System.out.println(u);;
-                        actions = a_gs.getPlayerActionsSingleUnit(maxplayer, u);
+                        actions = a_gs.getPlayerActionsSingleUnit(u);
                         break;
                     }
                 }
@@ -69,7 +69,7 @@ public class UCTUnitActionsNode {
             for(Unit u:pgs.getUnits()) {
                 if (u.getPlayer()==minplayer) {
                     if (a_gs.getActionAssignment(u)==null) {
-                        actions = a_gs.getPlayerActionsSingleUnit(minplayer, u);
+                        actions = a_gs.getPlayerActionsSingleUnit(u);
                         break;
                     }
                 }
