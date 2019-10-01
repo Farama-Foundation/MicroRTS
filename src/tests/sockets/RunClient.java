@@ -54,10 +54,10 @@ public class RunClient {
     int serverPort = 9898;
 
     @Parameter(names = "--map", description = "Which map in the `maps` folder are you using?")
-    String map = "maps/8x8/baseTwoWorkersMaxResources8x8.xml";
+    String map = "maps/4x4/baseTwoWorkersMaxResources4x4.xml";
 
     @Parameter(names = "--ai1-type", description = "The type of AI1")
-    String ai1Type = "random-no-attack";
+    String ai1Type = "no-penalty-individual";
 
     @Parameter(names = "--ai2-type", description = "The type of AI2")
     String ai2Type = "passive";
