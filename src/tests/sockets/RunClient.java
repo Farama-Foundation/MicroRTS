@@ -57,7 +57,7 @@ public class RunClient {
     String map = "maps/4x4/baseTwoWorkersMaxResources4x4.xml";
 
     @Parameter(names = "--ai1-type", description = "The type of AI1")
-    String ai1Type = "no-penalty-individual";
+    String ai1Type = "no-penalty";
 
     @Parameter(names = "--ai2-type", description = "The type of AI2")
     String ai2Type = "passive";
