@@ -780,6 +780,7 @@ public class GameState {
         int[][] unitActionMatrix = new int[pgs.height][pgs.width];
         for (int i=0; i<unitTypesMatrix.length; i++) {
             Arrays.fill(unitTypesMatrix[i], -1);
+            Arrays.fill(playersMatrix[i], -1);
         }
 
         for (int i = 0; i < pgs.units.size(); i++) {
