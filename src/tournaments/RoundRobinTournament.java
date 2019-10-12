@@ -88,14 +88,10 @@ public class RoundRobinTournament {
         
         // create all the read/write folders:
         String readWriteFolders[] = new String[AIs.size()];
-        boolean firstPreAnalysis[][] = new boolean[AIs.size()][maps.size()];
         for(int i = 0;i<AIs.size();i++) {
             readWriteFolders[i] = folderForReadWriteFolders + "/AI" + i + "readWriteFolder";
             File f = new File(readWriteFolders[i]);
             f.mkdir();
-            for(int j = 0;j<maps.size();j++) {
-                firstPreAnalysis[i][j] = true;
-            }
         }
         
         for (int iteration = 0; iteration < iterations; iteration++) {
@@ -148,14 +144,24 @@ public class RoundRobinTournament {
 
                         if (progress != null) {
                             progress.write("MATCH UP: " + ai1 + " vs " + ai2 + "\n");
+                            progress.flush();
                         }
                         
                         if (preAnalysis) {
-                            long preTime1 = preAnalysisBudgetRestOfTimes;
-                            if (firstPreAnalysis[ai1_idx][map_idx]) {
-                                preTime1 = preAnalysisBudgetFirstTimeInAMap;
-                                firstPreAnalysis[ai1_idx][map_idx] = false;
+                            long preTime2 = preAnalysisBudgetRestOfTimes;
+                            if (ai1_idx == 0) {
+                                // The first time we call ai2_idx MUST be when ai1_idx == 0, so, this is the time
+                                // to do the long pre game analysis
+                                preTime2 = preAnalysisBudgetFirstTimeInAMap;
                             }
+                            long pre_start2 = System.currentTimeMillis();
+                            ai2.preGameAnalysis(gs, preTime2, readWriteFolders[ai2_idx]);
+                            long pre_end2 = System.currentTimeMillis();
+
+                            // We do the analysis of AI2 first, since in case an AI is playing against itself,
+                            // and since only AI2 has a chance to do the longer pre-game analysis, in this way
+                            // we ensure that AI1 pre-analysis is always called after it has done the long pre-analysis.
+                            long preTime1 = preAnalysisBudgetRestOfTimes;
                             long pre_start1 = System.currentTimeMillis();
                             ai1.preGameAnalysis(gs, preAnalysisBudgetRestOfTimes, readWriteFolders[ai1_idx]);
                             long pre_end1 = System.currentTimeMillis();
@@ -163,14 +169,6 @@ public class RoundRobinTournament {
                                 progress.write("preGameAnalysis player 1 took " + (pre_end1 - pre_start1) + "\n");
                                 if ((pre_end1 - pre_start1)>preTime1) progress.write("TIMEOUT PLAYER 1!\n");
                             }
-                            long preTime2 = preAnalysisBudgetRestOfTimes;
-                            if (firstPreAnalysis[ai2_idx][map_idx]) {
-                                preTime2 = preAnalysisBudgetFirstTimeInAMap;
-                                firstPreAnalysis[ai2_idx][map_idx] = false;
-                            }
-                            long pre_start2 = System.currentTimeMillis();
-                            ai2.preGameAnalysis(gs, preTime2, readWriteFolders[ai2_idx]);
-                            long pre_end2 = System.currentTimeMillis();
                             if (progress != null) {
                                 progress.write("preGameAnalysis player 2 took " + (pre_end2 - pre_start2) + "\n");
                                 if ((pre_end2 - pre_start2)>preTime2) progress.write("TIMEOUT PLAYER 2!\n");
