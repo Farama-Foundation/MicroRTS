@@ -349,7 +349,7 @@ public class UnitAction {
                 return u.getAttackTime();
 
             case TYPE_HARVEST:
-                return 20;
+                return u.getHarvestTime();
 
             case TYPE_RETURN:
                 return u.getMoveTime();

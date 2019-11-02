@@ -273,6 +273,14 @@ public class Unit implements Serializable {
     public int getAttackTime() {
         return type.attackTime;
     }
+
+    /**
+     * The time it takes to harvest
+     * @return
+     */
+    public int getHarvestTime() {
+        return type.harvestTime;
+    }
     
     /**
      * Returns the attack range
