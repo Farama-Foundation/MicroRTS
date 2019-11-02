@@ -66,7 +66,7 @@ public class RunClient {
     int windowSize = 1;
 
     @Parameter(names = "--render", description = "Whether to render the game")
-    boolean render = true;
+    boolean render = false;
 
     @Parameter(names = "--seed", description = "The random seed")
     int seed = 3;
