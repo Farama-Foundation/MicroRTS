@@ -90,6 +90,7 @@ public class RunClient {
     public void run() throws Exception {
 
         UnitTypeTable utt = new UnitTypeTable();
+        System.out.println(utt.getUnitType("Worker").harvestTime); // TODO: NOT WORKING
 
         boolean gameover = false;
         boolean layerJSON = true;
