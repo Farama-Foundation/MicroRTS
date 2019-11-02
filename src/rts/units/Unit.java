@@ -307,6 +307,14 @@ public class Unit implements Serializable {
     }
 
     /**
+     * The time it takes to harvest
+     * @return
+     */
+    public int getHarvestTime() {
+        return type.harvestTime;
+    }
+    
+    /**
      * Returns a list of actions this unit can perform in a given game state.
      * An idle action for 10 cycles is always generated
      * @param s
