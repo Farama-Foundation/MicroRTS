@@ -1,19 +1,25 @@
 plugins {
-    id 'java'
+    id 'application'
 }
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+version = '0.9.0'
 
 repositories {
     flatDir {
         dirs 'lib'
     }
+    mavenCentral()
 }
 
-//dependencies {
-//    implementation 'jdom.jar'
-//    implementation 'minimal-json-0.9.4.jar'
-//    implementation 'weka.jar'
-//}
+dependencies {
+    implementation 'jdom:jdom:1.0'
+    implementation 'com.eclipsesource.minimal-json:minimal-json:0.9.4'
+    implementation name: 'weka'
+    implementation 'junit:junit:4.12'
+}
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
-version = '0.9.0'
+application {
+    mainClassName = 'rts.MicroRTS'
+}
