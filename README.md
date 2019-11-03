@@ -14,28 +14,9 @@ To cite microRTS, please cite this paper:
 
 Santiago Ontañón (2013) The Combinatorial Multi-Armed Bandit Problem and its Application to Real-Time Strategy Games, In AIIDE 2013. pp. 58 - 64.
 
-## Building
-Building using CLI
-
+## Building and running
 ```bash
-javac -cp "lib/*:src" -d bin src/rts/MicroRTS.java
-```
-
-or in Windows
-```bash
-javac -cp "lib/*;src" -d bin src/rts/MicroRTS.java
-```
-
-## Running
-Running in CLI
-
-```bash
-java -cp "lib/*:bin" rts.MicroRTS
-```
-
-or in Windows
-```bash
-java -cp "lib/*;bin" rts.MicroRTS
+./gradlew run
 ```
 
 ## Instructions:
