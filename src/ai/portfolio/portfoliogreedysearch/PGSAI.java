@@ -6,7 +6,6 @@
 
 package ai.portfolio.portfoliogreedysearch;
 
-import ai.RandomBiasedAI;
 import ai.abstraction.pathfinding.AStarPathFinding;
 import ai.core.AI;
 import ai.abstraction.pathfinding.PathFinding;
@@ -19,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import rts.GameState;
 import rts.PlayerAction;
+import rts.ResourceUsage;
 import rts.UnitAction;
 import rts.units.Unit;
 import rts.units.UnitType;
@@ -168,6 +168,7 @@ public class PGSAI extends AIWithComputationBudget {
 
         // generate the final Player Action:
         PlayerAction pa = new PlayerAction();
+        ResourceUsage ra = gs.getResourceUsage();
         for(int i = 0;i<n1;i++) {
             Unit u = playerUnits.get(i);
             if (gs.getUnitAction(u)==null) {
@@ -175,15 +176,19 @@ public class PGSAI extends AIWithComputationBudget {
                 if (s!=null) {
                     UnitAction ua = s.getAction(u, gs);
                     if (ua!=null) {
-                        pa.addUnitAction(u, ua);
-                    } else {
-                        pa.addUnitAction(u, new UnitAction(UnitAction.TYPE_NONE));
+                        ResourceUsage ra2 = ua.resourceUsage(u, gs.getPhysicalGameState());
+                        if (ra.consistentWith(ra2, gs)) {
+                            pa.addUnitAction(u, ua);
+                            ra.merge(ra2);
+                            // System.out.println("   u: " + u);
+                        }
                     }
-                } else {
-                    pa.addUnitAction(u, new UnitAction(UnitAction.TYPE_NONE));                
                 }
             }
         }
+        pa.fillWithNones(gs, player, 10);
+
+        //System.out.println("resources: " + ra.getResourcesUsed(player) + " / " + gs.getPlayer(player).getResources());
 
         return pa;
     }
@@ -218,9 +223,9 @@ public class PGSAI extends AIWithComputationBudget {
                 for(UnitScript us:candidates) {
                     UnitScript s = us.instantiate(unit, gs);
                     if (s!=null) {
-                        if (DEBUG>=2) System.out.println("  " + unit + " -> " + s.getClass().toString());
                         scriptsToImprove[u] = s;
                         double e = playout(player, scriptsToImprove, units, otherScripts, otherUnits, gs);
+                        if (DEBUG>=2) System.out.println("  " + unit + " -> " + s.getClass().toString() + " -> " + e);
                         if (bestScript==null || e>bestEvaluation) {
                             bestScript = us;
                             bestEvaluation = e;
