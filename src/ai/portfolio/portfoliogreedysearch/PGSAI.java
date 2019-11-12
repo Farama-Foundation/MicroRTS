@@ -172,8 +172,9 @@ public class PGSAI extends AIWithComputationBudget {
         for(int i = 0;i<n1;i++) {
             Unit u = playerUnits.get(i);
             if (gs.getUnitAction(u)==null) {
-                UnitScript s = playerScripts[i].instantiate(u, gs);
-                if (s!=null) {
+                UnitScript s = playerScripts[i];
+                if (s != null) s = s.instantiate(u, gs);
+                if (s != null) {
                     UnitAction ua = s.getAction(u, gs);
                     if (ua!=null) {
                         ResourceUsage ra2 = ua.resourceUsage(u, gs.getPhysicalGameState());
