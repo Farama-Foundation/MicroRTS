@@ -14,30 +14,24 @@ To cite microRTS, please cite this paper:
 
 Santiago Ontañón (2013) The Combinatorial Multi-Armed Bandit Problem and its Application to Real-Time Strategy Games, In AIIDE 2013. pp. 58 - 64.
 
-## Building
-Building using CLI
+## Instructions to build and run
 
-```bash
-javac -cp "lib/*:src" -d bin src/rts/MicroRTS.java
+To build and run microRTS using the Linux os Mac OS command line, run the following commands in the root folder of the project:
+
+```shell
+javac -cp "lib/*:src" -d bin src/rts/MicroRTS.java # to build
+java -cp "lib/*:bin" rts.MicroRTS # to run
 ```
 
-or in Windows
-```bash
-javac -cp "lib/*;src" -d bin src/rts/MicroRTS.java
+Or in Windows:
+
+```shell
+javac -cp "lib/*;src" -d bin src/rts/MicroRTS.java # to build
+java -cp "lib/*;bin" rts.MicroRTS # to run
 ```
 
-## Running
-Running in CLI
+If you want to run other classes that have a `main` method (such as `gui/frontend/FrontEnd.java`), change the build and run commands accordingly.
 
-```bash
-java -cp "lib/*:bin" rts.MicroRTS
-```
-
-or in Windows
-```bash
-java -cp "lib/*;bin" rts.MicroRTS
-```
-
-## Instructions:
+## Instructions
 
 ![instructions image](https://raw.githubusercontent.com/santiontanon/microrts/master/help.png)
