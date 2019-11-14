@@ -1,0 +1,17 @@
+language: java
+jdk:
+  - oraclejdk8
+  - oraclejdk9
+  - oraclejdk10
+  - oraclejdk11
+  - oraclejdk12
+  - openjdk8
+  - openjdk9
+  - openjdk10
+  - openjdk11
+  - openjdk12
+  - openjdk13
+
+script: javac -cp "lib/*:src" -d bin src/rts/MicroRTS.java
+
+# java -cp "lib/*:bin" rts.MicroRTS
