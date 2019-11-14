@@ -6,7 +6,7 @@ microRTS is deterministic and real-time (i.e. players can issue actions simultan
 
 microRTS was developed by [Santiago Ontañón](https://sites.google.com/site/santiagoontanonvillar/Home). 
 
-For a video of how microRTS looks like when a human plays, see a [youtube video](https://www.youtube.com/watch?v=ZsKKAoiD7B0)
+For a video of how microRTS looks like when a human plays, see a [YouTube video](https://www.youtube.com/watch?v=ZsKKAoiD7B0)
 
 If you are interested in testing your algorithms against other people's, **there is an annual microRTS competition**. For more information on the competition see the [competition website](https://sites.google.com/site/micrortsaicompetition/home). The previous competitions have been organized at IEEE-CIG2017 and IEEE-CIG2018, and this year it's organized at IEEE-COG2019 (notice the change of name of the conference).
 
@@ -14,9 +14,13 @@ To cite microRTS, please cite this paper:
 
 Santiago Ontañón (2013) The Combinatorial Multi-Armed Bandit Problem and its Application to Real-Time Strategy Games, In AIIDE 2013. pp. 58 - 64.
 
-## Instructions to build and run
+## Setting up microRTS
 
-To build and run microRTS using the Linux os Mac OS command line, run the following commands in the root folder of the project:
+Watch [this YouTube video](https://www.youtube.com/watch?v=_jVOMNqw3Qs) to learn how to acquire microRTS and setup a project using Netbeans.
+
+### Terminal commands
+
+If you want to build and run microRTS using the Linux or Mac OS command line, clone or download this repository and run the following commands in the root folder of the project:
 
 ```shell
 javac -cp "lib/*:src" -d bin src/rts/MicroRTS.java # to build
