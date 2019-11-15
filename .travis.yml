@@ -1,0 +1,12 @@
+language: java
+jdk:
+  - oraclejdk9
+  - oraclejdk11
+  - oraclejdk12
+  - openjdk9
+  - openjdk10
+  - openjdk11
+  - openjdk12
+  - openjdk13
+
+script: javac -cp "lib/*" -d bin $(find . -name "*.java")
