@@ -7,8 +7,6 @@ package tests.rts;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import org.junit.Test;
-import static org.junit.Assert.*;
 import rts.units.Unit;
 import rts.units.UnitTypeTable;
 import rts.PhysicalGameState;
@@ -23,7 +21,6 @@ public class PhysicalGameStateTest {
      * Test of ResetAllUnitsHP method, of class PhysicalGameState.
      * @throws java.lang.Exception
      */
-    @Test
     public void testResetAllUnitsHP() throws Exception {
         System.out.println("ResetAllUnitsHP");
         
@@ -35,7 +32,7 @@ public class PhysicalGameStateTest {
         pgs.resetAllUnitsHP();
         
         for(Unit u : pgs.getUnits()){
-            assertEquals(u.getHitPoints(), u.getType().hp);
+            if (u.getHitPoints() != u.getType().hp) throw new Exception("testResetAllUnitsHP test failed!");
         }
     }
     
