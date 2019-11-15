@@ -9,6 +9,4 @@ jdk:
   - openjdk12
   - openjdk13
 
-script: javac -cp "lib/*:src" -d bin src/rts/MicroRTS.java
-
-# java -cp "lib/*:bin" rts.MicroRTS
+script: javac -cp "lib/*" -d bin $(find . -name "*.java")
