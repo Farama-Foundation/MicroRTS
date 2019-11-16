@@ -33,9 +33,9 @@ public class GameState {
     protected int unitCancelationCounter = 0;  // only used if the action conflict resolution strategy is set to alternating
     
     protected int time = 0;
-    protected PhysicalGameState pgs = null;
+    protected PhysicalGameState pgs;
     protected HashMap<Unit,UnitActionAssignment> unitActions = new LinkedHashMap<>();
-    protected UnitTypeTable utt = null;
+    protected UnitTypeTable utt;
 
     /**
      * Initializes the GameState with a PhysicalGameState and a UnitTypeTable
