@@ -86,19 +86,19 @@ public class TestPretrainedBayesianModel {
                                          int nfolds, boolean DEBUG, boolean calibrate) throws Exception
     {
         Random r = new Random();
-        List<Integer> folds[] = new List[nfolds];
+        ArrayList<ArrayList<Integer>> folds = new ArrayList<>(nfolds);
         int nfeatures = X_l.get(0).length;
         int []Xsizes = new int[nfeatures];
         int Ysize = 0;
         UnitTypeTable  utt = instances.get(0).gs.getUnitTypeTable();
         
         for(int i = 0;i<nfolds;i++) {
-            folds[i] = new ArrayList<>();
+            folds.set(i,new ArrayList<>());
         }
         
         for(int i = 0;i<X_l.size();i++) {
             int fold = r.nextInt(nfolds);            
-            folds[fold].add(i);
+            folds.get(fold).add(i);
             
             for(int j = 0;j<nfeatures;j++) {
                 if (X_l.get(i)[j] >= Xsizes[j]) Xsizes[j] = X_l.get(i)[j]+1;
@@ -123,13 +123,13 @@ public class TestPretrainedBayesianModel {
             List<TrainingInstance> i_test = new ArrayList<>();
             for(int i = 0;i<nfolds;i++) {
                 if (i==fold) {
-                    for(int idx:folds[i]) {
+                    for(int idx:folds.get(i)) {
                         X_test.add(X_l.get(idx));
                         Y_test.add(Y_l.get(idx));
                         i_test.add(instances.get(idx));
                     }
                 } else {
-                    for(int idx:folds[i]) {
+                    for(int idx:folds.get(i)) {
                         X_training.add(X_l.get(idx));
                         Y_training.add(Y_l.get(idx));
                         i_training.add(instances.get(idx));
