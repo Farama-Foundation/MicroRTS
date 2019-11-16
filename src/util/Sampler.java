@@ -139,7 +139,7 @@ public class Sampler {
     /*
      * Returns an element in the distribution, using the weights as their relative probabilities
      */
-    public static Object weighted(List<Double> distribution, List<? extends Object> outputs) throws Exception {
+    public static Object weighted(List<Double> distribution, List<?> outputs) throws Exception {
         double total = 0, accum = 0, tmp;
 
         for (double f : distribution) {
