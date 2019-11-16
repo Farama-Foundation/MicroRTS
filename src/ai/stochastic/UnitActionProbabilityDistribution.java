@@ -12,16 +12,16 @@ import rts.units.Unit;
 import rts.units.UnitTypeTable;
 
 /**
- *
  * @author santi
  */
 public abstract class UnitActionProbabilityDistribution {
+
     protected UnitTypeTable utt = null;
-    
+
     public UnitActionProbabilityDistribution(UnitTypeTable a_utt) {
         utt = a_utt;
     }
-            
-    public abstract double[] predictDistribution(Unit u, GameState gs, List<UnitAction> actions) throws Exception;
-                
+
+    public abstract double[] predictDistribution(Unit u, GameState gs, List<UnitAction> actions)
+        throws Exception;
 }

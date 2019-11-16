@@ -24,7 +24,6 @@ import rts.units.UnitType;
 import rts.units.UnitTypeTable;
 
 /**
- *
  * @author Cristiano D'Angelo
  */
 public class CRush_V1 extends AbstractionLayerAI {
@@ -66,28 +65,25 @@ public class CRush_V1 extends AbstractionLayerAI {
 
     boolean buildingRacks = false;
     int resourcesUsed = 0;
-    
-    
+
     public PlayerAction getAction(int player, GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         Player p = gs.getPlayer(player);
         boolean isRush = false;
-        
-        
-        if ((pgs.getWidth() * pgs.getHeight()) <= 144){
+
+        if ((pgs.getWidth() * pgs.getHeight()) <= 144) {
             isRush = true;
         }
-        
-//        System.out.println("LightRushAI for player " + player + " (cycle " + gs.getTime() + ")");
+
+        //        System.out.println("LightRushAI for player " + player + " (cycle " + gs.getTime() + ")");
 
         List<Unit> workers = new LinkedList<Unit>();
         for (Unit u : pgs.getUnits()) {
-            if (u.getType().canHarvest
-                    && u.getPlayer() == player) {
+            if (u.getType().canHarvest && u.getPlayer() == player) {
                 workers.add(u);
             }
         }
-        if(isRush){
+        if (isRush) {
             rushWorkersBehavior(workers, p, pgs, gs);
         } else {
             workersBehavior(workers, p, pgs, gs);
@@ -95,13 +91,12 @@ public class CRush_V1 extends AbstractionLayerAI {
 
         // behavior of bases:
         for (Unit u : pgs.getUnits()) {
-            if (u.getType() == baseType
-                    && u.getPlayer() == player
-                    && gs.getActionAssignment(u) == null) {
-                
-                if(isRush){
+            if (u.getType() == baseType && u.getPlayer() == player
+                && gs.getActionAssignment(u) == null) {
+
+                if (isRush) {
                     rushBaseBehavior(u, p, pgs);
-                }else {
+                } else {
                     baseBehavior(u, p, pgs);
                 }
             }
@@ -109,18 +104,16 @@ public class CRush_V1 extends AbstractionLayerAI {
 
         // behavior of barracks:
         for (Unit u : pgs.getUnits()) {
-            if (u.getType() == barracksType
-                    && u.getPlayer() == player
-                    && gs.getActionAssignment(u) == null) {
+            if (u.getType() == barracksType && u.getPlayer() == player
+                && gs.getActionAssignment(u) == null) {
                 barracksBehavior(u, p, pgs);
             }
         }
 
         // behavior of melee units:
         for (Unit u : pgs.getUnits()) {
-            if (u.getType().canAttack && !u.getType().canHarvest
-                    && u.getPlayer() == player
-                    && gs.getActionAssignment(u) == null) {
+            if (u.getType().canAttack && !u.getType().canHarvest && u.getPlayer() == player
+                && gs.getActionAssignment(u) == null) {
                 if (u.getType() == rangedType) {
                     rangedUnitBehavior(u, p, gs);
                 } else {
@@ -140,16 +133,13 @@ public class CRush_V1 extends AbstractionLayerAI {
         int resources = p.getResources();
 
         for (Unit u2 : pgs.getUnits()) {
-            if (u2.getType() == workerType
-                    && u2.getPlayer() == p.getID()) {
+            if (u2.getType() == workerType && u2.getPlayer() == p.getID()) {
                 nworkers++;
             }
-            if (u2.getType() == barracksType
-                    && u2.getPlayer() == p.getID()) {
+            if (u2.getType() == barracksType && u2.getPlayer() == p.getID()) {
                 nbarracks++;
             }
-            if (u2.getType() == baseType
-                    && u2.getPlayer() == p.getID()) {
+            if (u2.getType() == baseType && u2.getPlayer() == p.getID()) {
                 nbases++;
             }
         }
@@ -169,7 +159,7 @@ public class CRush_V1 extends AbstractionLayerAI {
 
     public void barracksBehavior(Unit u, Player p, PhysicalGameState pgs) {
         if (p.getResources() >= rangedType.cost) {
-           train(u, rangedType);
+            train(u, rangedType);
         }
     }
 
@@ -187,7 +177,7 @@ public class CRush_V1 extends AbstractionLayerAI {
             }
         }
         if (closestEnemy != null) {
-//            System.out.println("LightRushAI.meleeUnitBehavior: " + u + " attacks " + closestEnemy);
+            //            System.out.println("LightRushAI.meleeUnitBehavior: " + u + " attacks " + closestEnemy);
             attack(u, closestEnemy);
         }
     }
@@ -214,9 +204,8 @@ public class CRush_V1 extends AbstractionLayerAI {
             }
         }
         if (closestEnemy != null) {
-//            System.out.println("LightRushAI.meleeUnitBehavior: " + u + " attacks " + closestEnemy);
+            //            System.out.println("LightRushAI.meleeUnitBehavior: " + u + " attacks " + closestEnemy);
             rangedAttack(u, closestEnemy, closestRacks);
-
         }
     }
 
@@ -225,21 +214,18 @@ public class CRush_V1 extends AbstractionLayerAI {
         int nbarracks = 0;
         int nworkers = 0;
         resourcesUsed = 0;
-        
+
         List<Unit> freeWorkers = new LinkedList<Unit>();
         List<Unit> battleWorkers = new LinkedList<Unit>();
 
         for (Unit u2 : pgs.getUnits()) {
-            if (u2.getType() == baseType
-                    && u2.getPlayer() == p.getID()) {
+            if (u2.getType() == baseType && u2.getPlayer() == p.getID()) {
                 nbases++;
             }
-            if (u2.getType() == barracksType
-                    && u2.getPlayer() == p.getID()) {
+            if (u2.getType() == barracksType && u2.getPlayer() == p.getID()) {
                 nbarracks++;
             }
-            if (u2.getType() == workerType
-                    && u2.getPlayer() == p.getID()) {
+            if (u2.getType() == workerType && u2.getPlayer() == p.getID()) {
                 nworkers++;
             }
         }
@@ -263,25 +249,27 @@ public class CRush_V1 extends AbstractionLayerAI {
             // build a base:
             if (p.getResources() >= baseType.cost) {
                 Unit u = freeWorkers.remove(0);
-                buildIfNotAlreadyBuilding(u, baseType, u.getX(), u.getY(), reservedPositions, p, pgs);
+                buildIfNotAlreadyBuilding(u, baseType, u.getX(), u.getY(), reservedPositions, p,
+                    pgs);
                 //resourcesUsed += baseType.cost;
             }
         }
         if ((nbarracks == 0) && (!freeWorkers.isEmpty()) && nworkers > 1
-                && p.getResources() >= barracksType.cost) {
-            
+            && p.getResources() >= barracksType.cost) {
+
             int resources = p.getResources();
-            Unit u = freeWorkers.remove(0);   
-            buildIfNotAlreadyBuilding(u,barracksType,u.getX(),u.getY(),reservedPositions,p,pgs);
+            Unit u = freeWorkers.remove(0);
+            buildIfNotAlreadyBuilding(u, barracksType, u.getX(), u.getY(), reservedPositions, p,
+                pgs);
             resourcesUsed += barracksType.cost;
             buildingRacks = true;
-                
-                //The problem with this right now is that we can only track when a build command is sent
-                //Not when it actually starts building the building.
+
+            //The problem with this right now is that we can only track when a build command is sent
+            //Not when it actually starts building the building.
         } else {
-            resourcesUsed =  barracksType.cost * nbarracks;
+            resourcesUsed = barracksType.cost * nbarracks;
         }
-        
+
         if (nbarracks > 1) {
             buildingRacks = true;
         }
@@ -327,34 +315,33 @@ public class CRush_V1 extends AbstractionLayerAI {
             }
         }
     }
-    
-    
-    public void rushBaseBehavior(Unit u,Player p, PhysicalGameState pgs) {
-        if (p.getResources()>=workerType.cost) train(u, workerType);
+
+    public void rushBaseBehavior(Unit u, Player p, PhysicalGameState pgs) {
+        if (p.getResources() >= workerType.cost) {
+            train(u, workerType);
+        }
     }
-    
-    public void rushWorkersBehavior(List<Unit> workers, Player p, PhysicalGameState pgs, GameState gs) {
+
+    public void rushWorkersBehavior(List<Unit> workers, Player p, PhysicalGameState pgs,
+        GameState gs) {
         int nbases = 0;
         int nworkers = 0;
         resourcesUsed = 0;
-        
+
         List<Unit> freeWorkers = new LinkedList<Unit>();
         List<Unit> battleWorkers = new LinkedList<Unit>();
 
         for (Unit u2 : pgs.getUnits()) {
-            if (u2.getType() == baseType
-                    && u2.getPlayer() == p.getID()) {
+            if (u2.getType() == baseType && u2.getPlayer() == p.getID()) {
                 nbases++;
             }
-            if (u2.getType() == workerType
-                    && u2.getPlayer() == p.getID()) {
+            if (u2.getType() == workerType && u2.getPlayer() == p.getID()) {
                 nworkers++;
             }
         }
-        if (p.getResources() == 0){
+        if (p.getResources() == 0) {
             battleWorkers.addAll(workers);
-        } 
-        else if (workers.size() > (nbases)) {
+        } else if (workers.size() > (nbases)) {
             for (int n = 0; n < (nbases); n++) {
                 freeWorkers.add(workers.get(0));
                 workers.remove(0);
@@ -373,11 +360,12 @@ public class CRush_V1 extends AbstractionLayerAI {
             // build a base:
             if (p.getResources() >= baseType.cost) {
                 Unit u = freeWorkers.remove(0);
-                buildIfNotAlreadyBuilding(u, baseType, u.getX(), u.getY(), reservedPositions, p, pgs);
+                buildIfNotAlreadyBuilding(u, baseType, u.getX(), u.getY(), reservedPositions, p,
+                    pgs);
                 //resourcesUsed += baseType.cost;
             }
         }
-        
+
         for (Unit u : battleWorkers) {
             meleeUnitBehavior(u, p, gs);
         }
@@ -419,19 +407,17 @@ public class CRush_V1 extends AbstractionLayerAI {
             }
         }
     }
-    
-    
+
     public void rangedAttack(Unit u, Unit target, Unit racks) {
         actions.put(u, new RangedAttack(u, target, racks, pf));
     }
-    
-    
 
     @Override
     public List<ParameterSpecification> getParameters() {
         List<ParameterSpecification> parameters = new ArrayList<>();
 
-        parameters.add(new ParameterSpecification("PathFinding", PathFinding.class, new AStarPathFinding()));
+        parameters.add(
+            new ParameterSpecification("PathFinding", PathFinding.class, new AStarPathFinding()));
 
         return parameters;
     }

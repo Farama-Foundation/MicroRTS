@@ -25,10 +25,10 @@ import rts.units.Unit;
 import util.Pair;
 
 /**
- *
  * @author santi
  */
 public class TraceVisualizer extends JPanel implements ListSelectionListener {
+
     int current_step = 0;
     Trace trace = null;
 
@@ -36,7 +36,8 @@ public class TraceVisualizer extends JPanel implements ListSelectionListener {
     JList Selector = null;
     List<GameState> states = new LinkedList<GameState>();
 
-    public static JFrame newWindow(String name,int dx,int dy,Trace t, int subjectID) throws Exception {
+    public static JFrame newWindow(String name, int dx, int dy, Trace t, int subjectID)
+        throws Exception {
         TraceVisualizer ad = new TraceVisualizer(t, dx, dy, subjectID);
         JFrame frame = new JFrame(name);
         frame.getContentPane().add(ad);
@@ -45,42 +46,44 @@ public class TraceVisualizer extends JPanel implements ListSelectionListener {
         return frame;
     }
 
-
     public TraceVisualizer(Trace t, int dx, int dy, int subject) throws Exception {
         current_step = 0;
         trace = t;
 
-        for(TraceEntry te:trace.getEntries()) {
+        for (TraceEntry te : trace.getEntries()) {
             states.add(trace.getGameStateAtCycle(te.getTime()));
         }
 
-        setPreferredSize(new Dimension(dx,dy));
-        setSize(dx,dy);
+        setPreferredSize(new Dimension(dx, dy));
+        setSize(dx, dy);
 
         try {
-          UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch(Exception e) {
-          System.out.println("Error setting native LAF: " + e);
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            System.out.println("Error setting native LAF: " + e);
         }
 
         setBackground(Color.WHITE);
 
         removeAll();
-        setLayout(new BoxLayout(this,BoxLayout.X_AXIS));
+        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
-        statePanel = new PhysicalGameStatePanel(new GameState(t.getEntries().get(0).getPhysicalGameState(), t.getUnitTypeTable())); //, 320, 320);
-        statePanel.setPreferredSize(new Dimension((int)(dx*0.6),dy));
+        statePanel = new PhysicalGameStatePanel(
+            new GameState(t.getEntries().get(0).getPhysicalGameState(),
+                t.getUnitTypeTable())); //, 320, 320);
+        statePanel.setPreferredSize(new Dimension((int) (dx * 0.6), dy));
         add(statePanel);
 
-        String []actionList = new String [t.getEntries().size()];
-        Selector = new JList ();
+        String[] actionList = new String[t.getEntries().size()];
+        Selector = new JList();
         JScrollPane ListScrollPane = new JScrollPane(Selector);
 
-        for(int i = 0;i<t.getEntries().size();i++) {
+        for (int i = 0; i < t.getEntries().size(); i++) {
             if (!t.getEntries().get(i).getActions().isEmpty()) {
                 StringBuilder tmp = new StringBuilder();
-                for(Pair<Unit,UnitAction> uap:t.getEntries().get(i).getActions()) {
-                    tmp.append("(").append(uap.m_a.getID()).append(", ").append(uap.m_b.getActionName()).append("), ");
+                for (Pair<Unit, UnitAction> uap : t.getEntries().get(i).getActions()) {
+                    tmp.append("(").append(uap.m_a.getID()).append(", ")
+                        .append(uap.m_b.getActionName()).append("), ");
                 }
                 actionList[i] = tmp.toString();
             } else {
@@ -89,20 +92,19 @@ public class TraceVisualizer extends JPanel implements ListSelectionListener {
         }
 
         Selector.setListData(actionList);
-        Selector.addListSelectionListener (this);
-        Selector.setSelectedIndex (0);
+        Selector.addListSelectionListener(this);
+        Selector.setSelectedIndex(0);
         Selector.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-//        Selector.setPreferredSize(new Dimension(100,dy*2));
-//        ListScrollPane.setPreferredSize(new Dimension(100,dy*2));
+        //        Selector.setPreferredSize(new Dimension(100,dy*2));
+        //        ListScrollPane.setPreferredSize(new Dimension(100,dy*2));
 
         add(ListScrollPane);
     }
 
-  public void valueChanged(ListSelectionEvent e) {
-    int selection = Selector.getSelectedIndex();
+    public void valueChanged(ListSelectionEvent e) {
+        int selection = Selector.getSelectedIndex();
 
-    ((PhysicalGameStatePanel)statePanel).setStateDirect(states.get(selection));
-    this.repaint();
-  }
-
+        ((PhysicalGameStatePanel) statePanel).setStateDirect(states.get(selection));
+        this.repaint();
+    }
 }

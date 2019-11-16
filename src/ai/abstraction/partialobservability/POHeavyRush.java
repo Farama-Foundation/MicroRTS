@@ -17,7 +17,6 @@ import rts.units.Unit;
 import rts.units.UnitTypeTable;
 
 /**
- *
  * @author santi
  */
 public class POHeavyRush extends HeavyRush {
@@ -25,14 +24,13 @@ public class POHeavyRush extends HeavyRush {
     public POHeavyRush(UnitTypeTable a_utt) {
         this(a_utt, new AStarPathFinding());
     }
-    
-    
+
     public POHeavyRush(UnitTypeTable a_utt, PathFinding a_pf) {
         super(a_utt, a_pf);
     }
 
     public void reset() {
-    	super.reset();
+        super.reset();
     }
 
     public AI clone() {
@@ -55,16 +53,16 @@ public class POHeavyRush extends HeavyRush {
         if (closestEnemy != null) {
             attack(u, closestEnemy);
         } else if (gs instanceof PartiallyObservableGameState) {
-            PartiallyObservableGameState pogs = (PartiallyObservableGameState)gs;
+            PartiallyObservableGameState pogs = (PartiallyObservableGameState) gs;
             // there are no enemies, so we need to explore (find the nearest non-observable place):
             int closest_x = 0;
             int closest_y = 0;
             closestDistance = -1;
-            for(int i = 0;i<pgs.getHeight();i++) {
-                for(int j = 0;j<pgs.getWidth();j++) {
+            for (int i = 0; i < pgs.getHeight(); i++) {
+                for (int j = 0; j < pgs.getWidth(); j++) {
                     if (!pogs.observable(j, i)) {
-                        int d = (u.getX() - j)*(u.getX() - j) + (u.getY() - i)*(u.getY() - i);
-                        if (closestDistance == -1 || d<closestDistance) {
+                        int d = (u.getX() - j) * (u.getX() - j) + (u.getY() - i) * (u.getY() - i);
+                        if (closestDistance == -1 || d < closestDistance) {
                             closest_x = j;
                             closest_y = i;
                             closestDistance = d;
@@ -72,10 +70,9 @@ public class POHeavyRush extends HeavyRush {
                     }
                 }
             }
-            if (closestDistance!=-1) {
+            if (closestDistance != -1) {
                 move(u, closest_x, closest_y);
             }
         }
     }
-
 }

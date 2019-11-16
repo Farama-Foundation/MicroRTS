@@ -6,7 +6,6 @@ import rts.PartiallyObservableGameState;
 import rts.units.Unit;
 
 /**
- *
  * @author albertouri
  */
 public interface AIWithBelieveState {
@@ -15,10 +14,12 @@ public interface AIWithBelieveState {
 
     List<Unit> getBelieveUnits();
 
-    static double getJaccardIndex(int player, GameState gs, PartiallyObservableGameState pogs, List<Unit> believeUnits) {
+    static double getJaccardIndex(int player, GameState gs, PartiallyObservableGameState pogs,
+        List<Unit> believeUnits) {
         // Jaccard Index = AB_intersection / (A + B - AB_intersection)
 
-        double maxDist = gs.getPhysicalGameState().getWidth() + gs.getPhysicalGameState().getHeight() + 1;
+        double maxDist =
+            gs.getPhysicalGameState().getWidth() + gs.getPhysicalGameState().getHeight() + 1;
         double AB_intersection = 0.0;
         double A = believeUnits.size(); // visible units in gs + believe units
         double B = 0.0; // all opponent units in gs
@@ -36,18 +37,22 @@ public interface AIWithBelieveState {
                     double minDist = maxDist;
                     int id = -1;
                     for (int i = 0; i < believeUnits.size(); i++) {
-                        if (unitSeen[i]) continue;
+                        if (unitSeen[i]) {
+                            continue;
+                        }
                         Unit bu = believeUnits.get(i);
-//                    }
-//                    for (Unit bu : believeUnits) {
+                        //                    }
+                        //                    for (Unit bu : believeUnits) {
                         // TODO skip vistied units
                         if (bu.getID() == u.getID()) {
                             id = i;
                             closestUnit = bu;
-                            minDist = Math.abs(bu.getX() - u.getX()) + Math.abs(bu.getY() - u.getY());
+                            minDist =
+                                Math.abs(bu.getX() - u.getX()) + Math.abs(bu.getY() - u.getY());
                             break;
                         } else if (bu.getType() == u.getType()) {
-                            double dist = Math.abs(bu.getX() - u.getX()) + Math.abs(bu.getY() - u.getY());
+                            double dist =
+                                Math.abs(bu.getX() - u.getX()) + Math.abs(bu.getY() - u.getY());
                             if (minDist > dist) {
                                 id = i;
                                 closestUnit = bu;
@@ -66,7 +71,9 @@ public interface AIWithBelieveState {
         double jaccardIndex = AB_intersection / (A + B - AB_intersection);
         if (jaccardIndex > 1.0) { // something went wrong
             System.out.println("### Jaccard Index bigger than 1.0 ###");
-            System.out.println(AB_intersection + " / " + A + " + " + B + " - " + AB_intersection + "=" + jaccardIndex);
+            System.out.println(
+                AB_intersection + " / " + A + " + " + B + " - " + AB_intersection + "="
+                    + jaccardIndex);
             System.out.println(gs.getPhysicalGameState());
             System.out.println(pogs.getPhysicalGameState());
             for (Unit u : gs.getUnits()) {

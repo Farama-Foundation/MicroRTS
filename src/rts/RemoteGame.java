@@ -19,12 +19,12 @@ class RemoteGame extends Thread {
 
     private static int PERIOD = 20;
 
-
     RemoteGame(Socket socket, GameSettings gameSettings) {
         this.socket = socket;
         this.gameSettings = gameSettings;
 
-        this.unitTypeTable = new UnitTypeTable(gameSettings.getUTTVersion(),gameSettings.getConflictPolicy());
+        this.unitTypeTable = new UnitTypeTable(gameSettings.getUTTVersion(),
+            gameSettings.getConflictPolicy());
 
         try {
             this.pgs = PhysicalGameState.load(gameSettings.getMapLocation(), unitTypeTable);
@@ -42,7 +42,8 @@ class RemoteGame extends Thread {
         try {
 
             // Generate players
-            AI player_one = SocketAI.createFromExistingSocket(100, 0, unitTypeTable, gameSettings.getSerializationType(), socket);
+            AI player_one = SocketAI.createFromExistingSocket(100, 0, unitTypeTable,
+                gameSettings.getSerializationType(), socket);
             AI player_two = new RandomBiasedAI();
 
             // Reset all players
@@ -50,14 +51,19 @@ class RemoteGame extends Thread {
             player_two.reset();
 
             // Setup UI
-            JFrame w = PhysicalGameStatePanel.newVisualizer(gameState,640, 640, false, PhysicalGameStatePanel.COLORSCHEME_BLACK);
+            JFrame w = PhysicalGameStatePanel.newVisualizer(gameState, 640, 640, false,
+                PhysicalGameStatePanel.COLORSCHEME_BLACK);
 
             long nextTimeToUpdate = System.currentTimeMillis() + PERIOD;
             do {
                 if (System.currentTimeMillis() >= nextTimeToUpdate) {
 
-                    GameState playerOneGameState = gameSettings.isPartiallyObservable() ? new PartiallyObservableGameState(gameState,0) : gameState;
-                    GameState playerTwoGameState = gameSettings.isPartiallyObservable() ? new PartiallyObservableGameState(gameState,1) : gameState;
+                    GameState playerOneGameState =
+                        gameSettings.isPartiallyObservable() ? new PartiallyObservableGameState(
+                            gameState, 0) : gameState;
+                    GameState playerTwoGameState =
+                        gameSettings.isPartiallyObservable() ? new PartiallyObservableGameState(
+                            gameState, 1) : gameState;
 
                     PlayerAction pa1 = player_one.getAction(0, playerOneGameState);
                     PlayerAction pa2 = player_two.getAction(1, playerTwoGameState);
@@ -80,7 +86,7 @@ class RemoteGame extends Thread {
             } while (!gameOver && gameState.getTime() < gameSettings.getMaxCycles());
             player_one.gameOver(gameState.winner());
             player_two.gameOver(gameState.winner());
-        } catch ( Exception e ) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

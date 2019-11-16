@@ -15,20 +15,19 @@ import rts.units.Unit;
 import rts.units.UnitType;
 
 /**
- *
  * @author santi
  */
 public class UnitScriptBuild extends UnitScript {
-    
+
     AbstractAction action = null;
     PathFinding pf = null;
     UnitType ut = null;
-    
+
     public UnitScriptBuild(PathFinding a_pf, UnitType a_ut) {
         pf = a_pf;
         ut = a_ut;
     }
-    
+
     public UnitAction getAction(Unit u, GameState gs) {
         if (action.completed(gs)) {
             return null;
@@ -36,20 +35,19 @@ public class UnitScriptBuild extends UnitScript {
             return action.execute(gs);
         }
     }
-    
+
     public UnitScript instantiate(Unit u, GameState gs) {
         int pos = findBuildingPosition(u, gs.getPhysicalGameState());
-        if (pos!=-1) {
+        if (pos != -1) {
             UnitScriptBuild script = new UnitScriptBuild(pf, ut);
-            script.action = new Build(u, ut, pos%gs.getPhysicalGameState().getWidth(), 
-                                             pos/gs.getPhysicalGameState().getWidth(), pf);
+            script.action = new Build(u, ut, pos % gs.getPhysicalGameState().getWidth(),
+                pos / gs.getPhysicalGameState().getWidth(), pf);
             return script;
         } else {
             return null;
         }
     }
-    
-    
+
     // Finds the nearest available location at which a building can be placed:
     public int findBuildingPosition(Unit u, PhysicalGameState pgs) {
         int bestPos = -1;
@@ -73,5 +71,4 @@ public class UnitScriptBuild extends UnitScript {
 
         return bestPos;
     }
-    
 }

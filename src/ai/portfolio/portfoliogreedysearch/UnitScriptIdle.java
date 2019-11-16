@@ -12,16 +12,15 @@ import rts.UnitAction;
 import rts.units.Unit;
 
 /**
- *
  * @author santi
  */
 public class UnitScriptIdle extends UnitScript {
-    
+
     AbstractAction action = null;
-    
+
     public UnitScriptIdle() {
     }
-    
+
     public UnitAction getAction(Unit u, GameState gs) {
         if (action.completed(gs)) {
             return null;
@@ -29,10 +28,10 @@ public class UnitScriptIdle extends UnitScript {
             return action.execute(gs);
         }
     }
-    
+
     public UnitScript instantiate(Unit u, GameState gs) {
         UnitScriptIdle script = new UnitScriptIdle();
         script.action = new Idle(u);
         return script;
-    }    
+    }
 }

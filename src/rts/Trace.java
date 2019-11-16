@@ -39,8 +39,7 @@ public class Trace {
     }
 
     /**
-     * Returns the list of entries, where each entry corresponds to actions
-     * executed in a frame
+     * Returns the list of entries, where each entry corresponds to actions executed in a frame
      *
      * @return
      */
@@ -62,8 +61,8 @@ public class Trace {
     }
 
     /**
-     * Returns the index of the winner player. Or returns -1 if there are no
-     * entries or the game is not over
+     * Returns the index of the winner player. Or returns -1 if there are no entries or the game is
+     * not over
      *
      * @return
      */
@@ -99,59 +98,58 @@ public class Trace {
         w.tag("/entries");
         w.tag("/" + this.getClass().getName());
     }
-    
+
     /**
-     * Dumps this trace to the XML file specified on path
-     * It can be reconstructed later (e.g. with {@link #fromXML(String, UnitTypeTable)}
+     * Dumps this trace to the XML file specified on path It can be reconstructed later (e.g. with
+     * {@link #fromXML(String, UnitTypeTable)}
+     *
      * @param path
      */
     public void toxml(String path) {
-    	try {
-			XMLWriter dumper = new XMLWriter(new FileWriter(path));
-			this.toxml(dumper);
-			dumper.close();
-		} catch (IOException e) {
-			System.err.println("Error while writing trace to: " + path);
-			e.printStackTrace();
-		}
+        try {
+            XMLWriter dumper = new XMLWriter(new FileWriter(path));
+            this.toxml(dumper);
+            dumper.close();
+        } catch (IOException e) {
+            System.err.println("Error while writing trace to: " + path);
+            e.printStackTrace();
+        }
     }
-    
+
     public void toZip(String path) {
-    	if(path.endsWith(".zip")) {
+        if (path.endsWith(".zip")) {
             path.replaceFirst("[.][^.]+$", ".xml"); // replaces .zip by .xml
-    	}
+        }
 
         File f = new File(path);
-    	ZipOutputStream out;
-		try {
-			out = new ZipOutputStream(new FileOutputStream(f));
-			ZipEntry e = new ZipEntry(f.getName());
-	    	out.putNextEntry(e);
+        ZipOutputStream out;
+        try {
+            out = new ZipOutputStream(new FileOutputStream(f));
+            ZipEntry e = new ZipEntry(f.getName());
+            out.putNextEntry(e);
 
-	    	StringWriter xmlStringContainer = new StringWriter();
-	    	XMLWriter dumper = new XMLWriter(xmlStringContainer);
-	    	//XMLWriter dumper = new XMLWriter(new FileWriter(path));
-			this.toxml(dumper);
-			
-	    	byte[] data = xmlStringContainer.toString().getBytes();
-	    	out.write(data, 0, data.length);
-	    	out.closeEntry();
-	    	out.close();
-	    	
-		} catch (FileNotFoundException e1) {
-			System.err.println("File not found: " + path);
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			System.err.println("Error while writing to " + path);
-			e1.printStackTrace();
-		}
-    	
+            StringWriter xmlStringContainer = new StringWriter();
+            XMLWriter dumper = new XMLWriter(xmlStringContainer);
+            //XMLWriter dumper = new XMLWriter(new FileWriter(path));
+            this.toxml(dumper);
+
+            byte[] data = xmlStringContainer.toString().getBytes();
+            out.write(data, 0, data.length);
+            out.closeEntry();
+            out.close();
+        } catch (FileNotFoundException e1) {
+            System.err.println("File not found: " + path);
+            e1.printStackTrace();
+        } catch (IOException e1) {
+            System.err.println("Error while writing to " + path);
+            e1.printStackTrace();
+        }
     }
-    
+
     public static Trace fromZip(String path) throws Exception {
-    	 ZipInputStream zis = new ZipInputStream(new FileInputStream(path));
-		 zis.getNextEntry();
-		 return new Trace(new SAXBuilder().build(zis).getRootElement());
+        ZipInputStream zis = new ZipInputStream(new FileInputStream(path));
+        zis.getNextEntry();
+        return new Trace(new SAXBuilder().build(zis).getRootElement());
     }
 
     /**
@@ -170,8 +168,8 @@ public class Trace {
     }
 
     /**
-     * Constructs the Trace from a XML element, overriding the UnitTypeTable of
-     * that element with one provided
+     * Constructs the Trace from a XML element, overriding the UnitTypeTable of that element with
+     * one provided
      *
      * @param e
      * @param a_utt
@@ -192,9 +190,9 @@ public class Trace {
     GameState getGameStateAtCycle_cache = null;
 
     /**
-     * Simulates the game from the from the last cached cycle (initialized as
-     * null) to get the appropriate unit actions. Thus, this function can be
-     * slow, do not use in the internal loop of any AI!
+     * Simulates the game from the from the last cached cycle (initialized as null) to get the
+     * appropriate unit actions. Thus, this function can be slow, do not use in the internal loop of
+     * any AI!
      *
      * @param cycle
      * @return
@@ -203,7 +201,8 @@ public class Trace {
         GameState gs = null;
         for (TraceEntry te : getEntries()) {
             if (gs == null) {
-                if (getGameStateAtCycle_cache != null && cycle >= getGameStateAtCycle_cache.getTime()) {
+                if (getGameStateAtCycle_cache != null && cycle >= getGameStateAtCycle_cache
+                    .getTime()) {
                     if (te.getTime() < getGameStateAtCycle_cache.getTime()) {
                         continue;
                     } else {
@@ -221,8 +220,8 @@ public class Trace {
             // synchronize the traces (some times the unit IDs might go off):
             for (Unit u1 : gs.getUnits()) {
                 for (Unit u2 : te.getPhysicalGameState().getUnits()) {
-                    if (u1.getX() == u2.getX() && u1.getY() == u2.getY() && u1.getType() == u2.getType()
-                            && u1.getID() != u2.getID()) {
+                    if (u1.getX() == u2.getX() && u1.getY() == u2.getY() && u1.getType() == u2
+                        .getType() && u1.getID() != u2.getID()) {
                         u1.setID(u2.getID());
                     }
                 }
@@ -244,7 +243,8 @@ public class Trace {
                         pa1.addUnitAction(tmp.m_a, tmp.m_b);
                     }
                 } else {
-                    System.err.println("TraceEntry at time " + te.getTime() + " has actions for undefined units! This will probably cause errors down the line...");
+                    System.err.println("TraceEntry at time " + te.getTime()
+                        + " has actions for undefined units! This will probably cause errors down the line...");
                 }
             }
             gs.issueSafe(pa0);
@@ -254,7 +254,6 @@ public class Trace {
                 getGameStateAtCycle_cache = gs;
                 return gs;
             }
-
         }
         while (gs.getTime() < cycle) {
             gs.cycle();
@@ -263,5 +262,4 @@ public class Trace {
         getGameStateAtCycle_cache = gs;
         return gs;
     }
-
 }

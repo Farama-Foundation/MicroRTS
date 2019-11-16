@@ -15,36 +15,39 @@ import rts.units.UnitTypeTable;
 import util.Pair;
 
 /**
- *
  * @author santi
  */
 public class FEStateMouseListener implements MouseListener, MouseMotionListener {
+
     PhysicalGameStatePanel panel = null;
     UnitTypeTable utt;
-    
+
     public FEStateMouseListener(PhysicalGameStatePanel a_panel, UnitTypeTable a_utt) {
         panel = a_panel;
         utt = a_utt;
     }
-    
+
     public void mouseClicked(MouseEvent e) {
         int x = e.getX();
         int y = e.getY();
-        Pair<Integer,Integer> coordinates = null;
+        Pair<Integer, Integer> coordinates = null;
         GameState gs = panel.getState();
-        
-        if (gs==null) return;
 
-        if (e.getButton()==MouseEvent.BUTTON1) {
-            Pair<Integer,Integer> tmp = panel.getContentAtCoordinates(x,y);
-            if (tmp!=null) {
+        if (gs == null) {
+            return;
+        }
+
+        if (e.getButton() == MouseEvent.BUTTON1) {
+            Pair<Integer, Integer> tmp = panel.getContentAtCoordinates(x, y);
+            if (tmp != null) {
                 coordinates = tmp;
-                PopUpStateEditorMenu menu = new PopUpStateEditorMenu(gs, utt, coordinates.m_a, coordinates.m_b, panel);
+                PopUpStateEditorMenu menu = new PopUpStateEditorMenu(gs, utt, coordinates.m_a,
+                    coordinates.m_b, panel);
                 menu.show(e.getComponent(), e.getX(), e.getY());
             }
-        }                
+        }
     }
-    
+
     public void setUnitTypeTable(UnitTypeTable a_utt) {
         utt = a_utt;
     }

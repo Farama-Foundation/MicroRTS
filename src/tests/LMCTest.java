@@ -1,6 +1,6 @@
 /*
-* This class was contributed by: Antonin Komenda, Alexander Shleyfman and Carmel Domshlak
-*/
+ * This class was contributed by: Antonin Komenda, Alexander Shleyfman and Carmel Domshlak
+ */
 
 package tests;
 
@@ -20,7 +20,8 @@ import rts.PlayerAction;
 import rts.units.UnitTypeTable;
 import util.XMLWriter;
 
- public class LMCTest {
+public class LMCTest {
+
     public static void main(String[] args) throws Exception {
         String scenarioFileName = "maps/8x8/basesWorkers8x8.xml";
 
@@ -32,36 +33,34 @@ import util.XMLWriter;
         AI simulationAi = new RandomBiasedAI();
         EvaluationFunction evalFunction = new SimpleSqrtEvaluationFunction3();
 
-//        AI ai1 = new RandomAI();
-//        AI ai1 = new RandomBiasedAI();
-//        AI ai1 = new WorkerRush(utt, new AStarPathFinding());
-//        AI ai1 = new LightRush(utt, new AStarPathFinding());
-//        AI ai1 = new RangedRush(utt, new GreedyPathFinding());
-//        AI ai1 = new NaiveMonteCarlo(SIMULATION_COUNT, LOOKAHEAD_TIME, 0.33f, 0.2f, simulationAi, evalFunction);
-//        AI ai1 = new LinearMonteCarlo(SIMULATION_COUNT, LOOKAHEAD_TIME, simulationAi, evalFunction);
-//        AI ai1 = new LocalLinearMonteCarlo(SIMULATION_COUNT, LOOKAHEAD_TIME, simulationAi, evalFunction);
-        AI ai1 = new LSI(SIMULATION_BUDGET, LOOKAHEAD_CYCLES,
-                0.25, LSI.EstimateType.RANDOM_TAIL, LSI.EstimateReuseType.ALL,
-                LSI.GenerateType.PER_AGENT, AgentOrderingType.ENTROPY,
-                LSI.EvaluateType.HALVING, false,
-                LSI.RelaxationType.NONE, 2,
-                false,
-                simulationAi, evalFunction);
+        //        AI ai1 = new RandomAI();
+        //        AI ai1 = new RandomBiasedAI();
+        //        AI ai1 = new WorkerRush(utt, new AStarPathFinding());
+        //        AI ai1 = new LightRush(utt, new AStarPathFinding());
+        //        AI ai1 = new RangedRush(utt, new GreedyPathFinding());
+        //        AI ai1 = new NaiveMonteCarlo(SIMULATION_COUNT, LOOKAHEAD_TIME, 0.33f, 0.2f, simulationAi, evalFunction);
+        //        AI ai1 = new LinearMonteCarlo(SIMULATION_COUNT, LOOKAHEAD_TIME, simulationAi, evalFunction);
+        //        AI ai1 = new LocalLinearMonteCarlo(SIMULATION_COUNT, LOOKAHEAD_TIME, simulationAi, evalFunction);
+        AI ai1 = new LSI(SIMULATION_BUDGET, LOOKAHEAD_CYCLES, 0.25, LSI.EstimateType.RANDOM_TAIL,
+            LSI.EstimateReuseType.ALL, LSI.GenerateType.PER_AGENT, AgentOrderingType.ENTROPY,
+            LSI.EvaluateType.HALVING, false, LSI.RelaxationType.NONE, 2, false, simulationAi,
+            evalFunction);
 
-//        HumanAI ai2 = new HumanAI();
-//        AI ai2 = new RandomBiasedAI();
-//        AI ai2 = new WorkerRush(utt, new AStarPathFinding());
-//        AI ai2 = new LightRush(utt, new AStarPathFinding());
-//        AI ai2 = new RangedRush(utt, new AStarPathFinding());
+        //        HumanAI ai2 = new HumanAI();
+        //        AI ai2 = new RandomBiasedAI();
+        //        AI ai2 = new WorkerRush(utt, new AStarPathFinding());
+        //        AI ai2 = new LightRush(utt, new AStarPathFinding());
+        //        AI ai2 = new RangedRush(utt, new AStarPathFinding());
         // by setting "MAX_DEPTH = 1" in the next bot, this effectively makes it Monte Carlo search, instead of Monte Carlo Tree Search
-        AI ai2 = new NaiveMCTS(-1, SIMULATION_BUDGET, LOOKAHEAD_CYCLES, 1, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), evalFunction, true);
-//        AI ai2 = new GenerateEvaluateMonteCarlo(SIMULATION_BUDGET, LOOKAHEAD_CYCLES,
-//                0.25, EstimateType.RANDOM_TAIL, EstimateReuseType.ALL,
-//                GenerateType.PER_AGENT, AgentOrderingType.ENTROPY,
-//                EvaluateType.HALVING, true,
-//                RelaxationType.NONE, 2,
-//                false,
-//                simulationAi, evalFunction);
+        AI ai2 = new NaiveMCTS(-1, SIMULATION_BUDGET, LOOKAHEAD_CYCLES, 1, 0.33f, 0.0f, 0.75f,
+            new RandomBiasedAI(), evalFunction, true);
+        //        AI ai2 = new GenerateEvaluateMonteCarlo(SIMULATION_BUDGET, LOOKAHEAD_CYCLES,
+        //                0.25, EstimateType.RANDOM_TAIL, EstimateReuseType.ALL,
+        //                GenerateType.PER_AGENT, AgentOrderingType.ENTROPY,
+        //                EvaluateType.HALVING, true,
+        //                RelaxationType.NONE, 2,
+        //                false,
+        //                simulationAi, evalFunction);
 
         PhysicalGameState pgs = PhysicalGameState.load(scenarioFileName, utt);
         GameState gs = new GameState(pgs, utt);
@@ -70,7 +69,8 @@ import util.XMLWriter;
         pgs.toxml(xml);
         xml.flush();
 
-        PhysicalGameStateJFrame w = PhysicalGameStatePanel.newVisualizer(gs, 640, 640, evalFunction);
+        PhysicalGameStateJFrame w = PhysicalGameStatePanel
+            .newVisualizer(gs, 640, 640, evalFunction);
         w.repaint();
 
         // for HumanAI
@@ -94,7 +94,7 @@ import util.XMLWriter;
             // simulate:
             gameover = gs.cycle();
             w.repaint();
-        } while(!gameover && gs.getTime() < MAX_GAME_CYCLES);
+        } while (!gameover && gs.getTime() < MAX_GAME_CYCLES);
 
         System.out.println("Game Over");
 
@@ -113,5 +113,4 @@ import util.XMLWriter;
         rec += ai2.statisticsString() + "\t";
         System.out.println(rec);
     }
-
 }

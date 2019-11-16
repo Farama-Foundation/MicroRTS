@@ -11,10 +11,10 @@ import rts.GameState;
 import rts.PlayerAction;
 
 /**
- *
  * @author santi
  */
 public abstract class MCTSNode {
+
     public static Random r = new Random();
 
     public int type;    // 0 : max, 1 : min, -1: Game-over
@@ -27,7 +27,7 @@ public abstract class MCTSNode {
 
     public double accum_evaluation = 0;
     public int visit_count = 0;
-    
+
     // These variables are just used to improve the efficiency of the algorithm, 
     // and avoid linear searches:
     // "creation_ID": Starts at 0 for the root of the tree, and increases by one
@@ -43,17 +43,23 @@ public abstract class MCTSNode {
     //                      to compute it from scratch.
     public int creation_ID = -1;
     public int highest_children_creation_ID = -1;
-    public int best_child_so_far = -1;   
-    
-    
+    public int best_child_so_far = -1;
+
     public void showNode(int depth, int maxdepth, EvaluationFunction ef) {
-        if (children!=null) {
-            for(int i = 0;i<children.size();i++) {
+        if (children != null) {
+            for (int i = 0; i < children.size(); i++) {
                 MCTSNode child = children.get(i);
-                for(int j = 0;j<depth;j++) System.out.print("    ");
-                System.out.println("child explored " + child.visit_count + " (EF: " + ef.evaluate(0, 1, child.gs) + ") Avg evaluation: " + (child.accum_evaluation/((double)child.visit_count)) + " : " + actions.get(i));
-                if (depth<maxdepth) child.showNode(depth+1,maxdepth, ef);
-            }        
+                for (int j = 0; j < depth; j++) {
+                    System.out.print("    ");
+                }
+                System.out.println(
+                    "child explored " + child.visit_count + " (EF: " + ef.evaluate(0, 1, child.gs)
+                        + ") Avg evaluation: " + (child.accum_evaluation
+                        / ((double) child.visit_count)) + " : " + actions.get(i));
+                if (depth < maxdepth) {
+                    child.showNode(depth + 1, maxdepth, ef);
+                }
+            }
         }
-    }    
+    }
 }

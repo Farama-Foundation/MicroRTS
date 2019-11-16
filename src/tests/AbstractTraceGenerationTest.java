@@ -20,37 +20,42 @@ import rts.units.UnitTypeTable;
 import util.XMLWriter;
 
 /**
- *
  * @author santi
  */
 public class AbstractTraceGenerationTest {
+
     public static void main(String[] args) throws Exception {
         UnitTypeTable utt = new UnitTypeTable();
         PhysicalGameState pgs = PhysicalGameState.load("maps/16x16/basesWorkers16x16.xml", utt);
         GameState gs = new GameState(pgs, utt);
         int MAXCYCLES = 5000;
         boolean gameover;
-        
+
         AbstractionLayerAI ai1 = new LightRush(utt, new BFSPathFinding());
         AbstractionLayerAI ai2 = new WorkerRush(utt, new BFSPathFinding());
-        
+
         AbstractTrace trace = new AbstractTrace(utt);
-        AbstractTraceEntry te = new AbstractTraceEntry(gs.getPhysicalGameState().clone(),gs.getTime());
+        AbstractTraceEntry te = new AbstractTraceEntry(gs.getPhysicalGameState().clone(),
+            gs.getTime());
         trace.addEntry(te);
-        
-        do{
+
+        do {
             PlayerAction pa1 = ai1.getAction(0, gs);
             PlayerAction pa2 = ai2.getAction(1, gs);
-            
+
             if (!pa1.isEmpty() || !pa2.isEmpty()) {
-                te = new AbstractTraceEntry(gs.getPhysicalGameState().clone(),gs.getTime());
-                for(Unit u:gs.getUnits()) {
+                te = new AbstractTraceEntry(gs.getPhysicalGameState().clone(), gs.getTime());
+                for (Unit u : gs.getUnits()) {
                     AbstractAction aa = ai1.getAbstractAction(u);
-                    if (aa!=null) te.addAbstractActionIfNew(u, aa, trace);
+                    if (aa != null) {
+                        te.addAbstractActionIfNew(u, aa, trace);
+                    }
                 }
-                for(Unit u:gs.getUnits()) {
+                for (Unit u : gs.getUnits()) {
                     AbstractAction aa = ai2.getAbstractAction(u);
-                    if (aa!=null) te.addAbstractActionIfNew(u, aa, trace);
+                    if (aa != null) {
+                        te.addAbstractActionIfNew(u, aa, trace);
+                    }
                 }
                 trace.addEntry(te);
             }
@@ -60,15 +65,13 @@ public class AbstractTraceGenerationTest {
 
             // simulate:
             gameover = gs.cycle();
-        }while(!gameover && gs.getTime()<MAXCYCLES);
-        
+        } while (!gameover && gs.getTime() < MAXCYCLES);
+
         te = new AbstractTraceEntry(gs.getPhysicalGameState().clone(), gs.getTime());
         trace.addEntry(te);
-        
+
         XMLWriter xml = new XMLWriter(new FileWriter("abstracttrace.xml"));
         trace.toxml(xml);
         xml.flush();
-        
-        
-    }    
+    }
 }

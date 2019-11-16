@@ -1,6 +1,6 @@
 /*
-* This class was contributed by: Antonin Komenda, Alexander Shleyfman and Carmel Domshlak
-*/
+ * This class was contributed by: Antonin Komenda, Alexander Shleyfman and Carmel Domshlak
+ */
 
 package util;
 
@@ -30,7 +30,7 @@ public class CartesianProduct<E> {
 
     /**
      * Returns i-th element of the Cartesian product based on the domain definition.
-     *
+     * <p>
      * For all {@code i >= size()} the method returns {@code null};
      *
      * @param i index
@@ -70,5 +70,4 @@ public class CartesianProduct<E> {
 
         return result;
     }
-
 }

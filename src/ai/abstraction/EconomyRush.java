@@ -72,22 +72,20 @@ public class EconomyRush extends AbstractionLayerAI {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         Player p = gs.getPlayer(player);
         PlayerAction pa = new PlayerAction();
-        resourcesUsed=gs.getResourceUsage().getResourcesUsed(player); 
+        resourcesUsed = gs.getResourceUsage().getResourcesUsed(player);
 
         // behavior of bases:
         for (Unit u : pgs.getUnits()) {
-            if (u.getType() == baseType
-                    && u.getPlayer() == player
-                    && gs.getActionAssignment(u) == null) {
+            if (u.getType() == baseType && u.getPlayer() == player
+                && gs.getActionAssignment(u) == null) {
                 baseBehavior(u, p, pgs);
             }
         }
 
         // behavior of barracks:
         for (Unit u : pgs.getUnits()) {
-            if (u.getType() == barracksType
-                    && u.getPlayer() == player
-                    && gs.getActionAssignment(u) == null) {
+            if (u.getType() == barracksType && u.getPlayer() == player
+                && gs.getActionAssignment(u) == null) {
                 barracksBehavior(u, p, pgs);
             }
         }
@@ -95,9 +93,7 @@ public class EconomyRush extends AbstractionLayerAI {
         // behavior of workers:
         List<Unit> workers = new ArrayList<Unit>();
         for (Unit u : pgs.getUnits()) {
-            if (u.getType().canHarvest
-                    && u.getPlayer() == player
-                    && u.getType() == workerType) {
+            if (u.getType().canHarvest && u.getPlayer() == player && u.getType() == workerType) {
                 workers.add(u);
             }
         }
@@ -105,9 +101,8 @@ public class EconomyRush extends AbstractionLayerAI {
 
         // behavior of melee units:
         for (Unit u : pgs.getUnits()) {
-            if (u.getType().canAttack && !u.getType().canHarvest
-                    && u.getPlayer() == player
-                    && gs.getActionAssignment(u) == null) {
+            if (u.getType().canAttack && !u.getType().canHarvest && u.getPlayer() == player
+                && gs.getActionAssignment(u) == null) {
                 meleeUnitBehavior(u, p, gs);
             }
         }
@@ -124,7 +119,8 @@ public class EconomyRush extends AbstractionLayerAI {
     public List<ParameterSpecification> getParameters() {
         List<ParameterSpecification> parameters = new ArrayList<>();
 
-        parameters.add(new ParameterSpecification("PathFinding", PathFinding.class, new AStarPathFinding()));
+        parameters.add(
+            new ParameterSpecification("PathFinding", PathFinding.class, new AStarPathFinding()));
 
         return parameters;
     }
@@ -132,19 +128,17 @@ public class EconomyRush extends AbstractionLayerAI {
     public void baseBehavior(Unit u, Player p, PhysicalGameState pgs) {
         int nworkers = 0;
         for (Unit u2 : pgs.getUnits()) {
-            if (u2.getType() == workerType
-                    && u2.getPlayer() == p.getID()) {
+            if (u2.getType() == workerType && u2.getPlayer() == p.getID()) {
                 nworkers++;
             }
         }
         int nBases = 0;
         for (Unit u2 : pgs.getUnits()) {
-            if (u2.getType() == baseType
-                    && u2.getPlayer() == p.getID()) {
+            if (u2.getType() == baseType && u2.getPlayer() == p.getID()) {
                 nBases++;
             }
         }
-        int qtdWorkLim = nWorkerBase  +nBases ;///* nBases;
+        int qtdWorkLim = nWorkerBase + nBases;///* nBases;
 
         if (nworkers < qtdWorkLim && p.getResources() >= (workerType.cost + resourcesUsed)) {
             train(u, workerType);
@@ -157,20 +151,17 @@ public class EconomyRush extends AbstractionLayerAI {
         int nRanged = 0;
         int nHeavy = 0;
         for (Unit u2 : pgs.getUnits()) {
-            if (u2.getType() == lightType
-                    && u.getPlayer() == p.getID()) {
+            if (u2.getType() == lightType && u.getPlayer() == p.getID()) {
                 nLight++;
             }
-            if (u2.getType() == rangedType
-                    && u.getPlayer() == p.getID()) {
+            if (u2.getType() == rangedType && u.getPlayer() == p.getID()) {
                 nRanged++;
             }
-            if (u2.getType() == heavyType
-                    && u.getPlayer() == p.getID()) {
+            if (u2.getType() == heavyType && u.getPlayer() == p.getID()) {
                 nHeavy++;
             }
         }
-        
+
         if (nLight == 0 && p.getResources() >= (lightType.cost + resourcesUsed)) {
             train(u, lightType);
             resourcesUsed += lightType.cost;
@@ -186,19 +177,19 @@ public class EconomyRush extends AbstractionLayerAI {
             int number = r.nextInt(3);
             switch (number) {
                 case 0:
-                    if (p.getResources() >= (baseType.cost+lightType.cost)) {
+                    if (p.getResources() >= (baseType.cost + lightType.cost)) {
                         train(u, lightType);
                         resourcesUsed += lightType.cost;
                     }
                     break;
                 case 1:
-                    if (p.getResources() >= (baseType.cost+rangedType.cost)) {
+                    if (p.getResources() >= (baseType.cost + rangedType.cost)) {
                         train(u, rangedType);
                         resourcesUsed += rangedType.cost;
                     }
                     break;
                 case 2:
-                    if (p.getResources() >= (baseType.cost+ heavyType.cost)) {
+                    if (p.getResources() >= (baseType.cost + heavyType.cost)) {
                         train(u, heavyType);
                         resourcesUsed += heavyType.cost;
                     }
@@ -235,12 +226,10 @@ public class EconomyRush extends AbstractionLayerAI {
             return;
         }
         for (Unit u2 : pgs.getUnits()) {
-            if (u2.getType() == baseType
-                    && u2.getPlayer() == p.getID()) {
+            if (u2.getType() == baseType && u2.getPlayer() == p.getID()) {
                 nbases++;
             }
-            if (u2.getType() == barracksType
-                    && u2.getPlayer() == p.getID()) {
+            if (u2.getType() == barracksType && u2.getPlayer() == p.getID()) {
                 nbarracks++;
             }
         }
@@ -250,7 +239,8 @@ public class EconomyRush extends AbstractionLayerAI {
             // build a base:
             if (p.getResources() >= baseType.cost + resourcesUsed) {
                 Unit u = freeWorkers.remove(0);
-                buildIfNotAlreadyBuilding(u, baseType, u.getX(), u.getY(), reservedPositions, p, pgs);
+                buildIfNotAlreadyBuilding(u, baseType, u.getX(), u.getY(), reservedPositions, p,
+                    pgs);
                 resourcesUsed += baseType.cost;
             }
         }
@@ -259,7 +249,8 @@ public class EconomyRush extends AbstractionLayerAI {
             // build a barracks:
             if (p.getResources() >= barracksType.cost + resourcesUsed) {
                 Unit u = freeWorkers.remove(0);
-                buildIfNotAlreadyBuilding(u, barracksType, u.getX(), u.getY(), reservedPositions, p, pgs);
+                buildIfNotAlreadyBuilding(u, barracksType, u.getX(), u.getY(), reservedPositions, p,
+                    pgs);
                 resourcesUsed += barracksType.cost;
             }
         }
@@ -269,15 +260,15 @@ public class EconomyRush extends AbstractionLayerAI {
                 if (!freeWorkers.isEmpty()) {
                     if (p.getResources() >= baseType.cost + resourcesUsed) {
                         Unit u = freeWorkers.remove(0);
-                        buildIfNotAlreadyBuilding(u, baseType, otherResources.get(0).getX()-1, otherResources.get(0).getY()-1, reservedPositions, p, pgs);
+                        buildIfNotAlreadyBuilding(u, baseType, otherResources.get(0).getX() - 1,
+                            otherResources.get(0).getY() - 1, reservedPositions, p, pgs);
                         resourcesUsed += baseType.cost;
                     }
                 }
-            } 
+            }
         }
         // harvest with all the free workers:
         harvestWorkers(freeWorkers, p, pgs);
-
     }
 
     protected List<Unit> otherResourcePoint(Player p, PhysicalGameState pgs) {
@@ -287,7 +278,8 @@ public class EconomyRush extends AbstractionLayerAI {
         Set<Unit> otherResources = new HashSet<>();
 
         for (Unit base : bases) {
-            List<Unit> closestUnits = new ArrayList<>(pgs.getUnitsAround(base.getX(), base.getY(), 10));
+            List<Unit> closestUnits = new ArrayList<>(
+                pgs.getUnitsAround(base.getX(), base.getY(), 10));
             for (Unit closestUnit : closestUnits) {
                 if (closestUnit.getType().isResource) {
                     myResources.add(closestUnit);
@@ -302,23 +294,23 @@ public class EconomyRush extends AbstractionLayerAI {
                 }
             }
         }
-        if(!bases.isEmpty()){
+        if (!bases.isEmpty()) {
             return getOrderedResources(new ArrayList<>(otherResources), bases.get(0));
-        }else{
+        } else {
             return new ArrayList<>(otherResources);
         }
     }
-    
-    protected List<Unit> getOrderedResources(List<Unit> resources, Unit base){
+
+    protected List<Unit> getOrderedResources(List<Unit> resources, Unit base) {
         List<Unit> resReturn = new ArrayList<Unit>();
-        
+
         HashMap<Integer, ArrayList<Unit>> map = new HashMap<>();
         for (Unit res : resources) {
             int d = Math.abs(res.getX() - base.getX()) + Math.abs(res.getY() - base.getY());
-            if(map.containsKey(d)){
-               ArrayList<Unit> nResourc = map.get(d);
-               nResourc.add(res);
-            }else{
+            if (map.containsKey(d)) {
+                ArrayList<Unit> nResourc = map.get(d);
+                nResourc.add(res);
+            } else {
                 ArrayList<Unit> nResourc = new ArrayList<>();
                 nResourc.add(res);
                 map.put(d, nResourc);
@@ -326,11 +318,11 @@ public class EconomyRush extends AbstractionLayerAI {
         }
         ArrayList<Integer> keysOrdered = new ArrayList<>(map.keySet());
         Collections.sort(keysOrdered);
-        
+
         for (Integer key : keysOrdered) {
             resReturn.addAll(map.get(key));
         }
-        
+
         return resReturn;
     }
 
@@ -338,8 +330,7 @@ public class EconomyRush extends AbstractionLayerAI {
 
         List<Unit> bases = new ArrayList<>();
         for (Unit u2 : pgs.getUnits()) {
-            if (u2.getType() == baseType
-                    && u2.getPlayer() == p.getID()) {
+            if (u2.getType() == baseType && u2.getPlayer() == p.getID()) {
                 bases.add(u2);
             }
         }
@@ -383,5 +374,4 @@ public class EconomyRush extends AbstractionLayerAI {
             }
         }
     }
-
 }

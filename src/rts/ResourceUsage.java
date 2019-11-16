@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- *
  * @author santi
  */
 public class ResourceUsage {
@@ -20,9 +19,9 @@ public class ResourceUsage {
     }
 
     /**
-     * Returns whether this instance is consistent with another ResourceUsage in
-     * a given game state. Resource usages are consistent if they respect the
-     * players' resource amount and don't have conflicting uses
+     * Returns whether this instance is consistent with another ResourceUsage in a given game state.
+     * Resource usages are consistent if they respect the players' resource amount and don't have
+     * conflicting uses
      *
      * @param anotherUsage
      * @param gs
@@ -36,12 +35,14 @@ public class ResourceUsage {
         }
 
         for (int i = 0; i < resourcesUsed.length; i++) {
-            if (anotherUsage.resourcesUsed[i] == 0) continue;
-            if (resourcesUsed[i] + anotherUsage.resourcesUsed[i] > 0
-                    && // this extra condition (which should not be needed), is because
-                    // if an AI has a bug and allows execution of actions that
-                    // brings resources below 0, this code would fail.
-                    resourcesUsed[i] + anotherUsage.resourcesUsed[i] > gs.getPlayer(i).getResources()) {
+            if (anotherUsage.resourcesUsed[i] == 0) {
+                continue;
+            }
+            if (resourcesUsed[i] + anotherUsage.resourcesUsed[i] > 0 &&
+                // this extra condition (which should not be needed), is because
+                // if an AI has a bug and allows execution of actions that
+                // brings resources below 0, this code would fail.
+                resourcesUsed[i] + anotherUsage.resourcesUsed[i] > gs.getPlayer(i).getResources()) {
                 return false;
             }
         }
@@ -105,7 +106,7 @@ public class ResourceUsage {
     }
 
     public String toString() {
-        return "ResourceUsage: " + resourcesUsed[0] + "," + resourcesUsed[1] + " positions: " + positionsUsed;
+        return "ResourceUsage: " + resourcesUsed[0] + "," + resourcesUsed[1] + " positions: "
+            + positionsUsed;
     }
-
 }

@@ -12,7 +12,6 @@ import rts.units.UnitTypeTable;
 import util.XMLWriter;
 
 /**
- *
  * @author santi
  */
 public class UnitAction {
@@ -54,9 +53,8 @@ public class UnitAction {
      */
     public static final int NUMBER_OF_ACTION_TYPES = 6;
 
-    public static String[] actionName = {
-        "wait", "move", "harvest", "return", "produce", "attack_location"
-    };
+    public static String[] actionName = {"wait", "move", "harvest", "return", "produce",
+        "attack_location"};
 
     /**
      * Direction of 'standing still'
@@ -84,14 +82,14 @@ public class UnitAction {
     public static final int DIRECTION_LEFT = 3;
 
     /**
-     * The offset caused by each direction of movement in X Indexes correspond
-     * to the constants used in this class
+     * The offset caused by each direction of movement in X Indexes correspond to the constants used
+     * in this class
      */
     public static final int[] DIRECTION_OFFSET_X = {0, 1, 0, -1};
 
     /**
-     * The offset caused by each direction of movement in y Indexes correspond
-     * to the constants used in this class
+     * The offset caused by each direction of movement in y Indexes correspond to the constants used
+     * in this class
      */
     public static final int[] DIRECTION_OFFSET_Y = {-1, 0, 1, 0};
 
@@ -201,7 +199,6 @@ public class UnitAction {
         } else {
             return a.parameter == parameter && a.unitType == unitType;
         }
-
     }
 
     @Override
@@ -233,8 +230,7 @@ public class UnitAction {
     }
 
     /**
-     * Returns the ResourceUsage associated with this action, given a Unit and a
-     * PhysicalGameState
+     * Returns the ResourceUsage associated with this action, given a Unit and a PhysicalGameState
      *
      * @param u
      * @param pgs
@@ -293,10 +289,9 @@ public class UnitAction {
     }
 
     /**
-     * Returns the estimated time of conclusion of this action The Unit
-     * parameter is necessary for actions of {@link #TYPE_MOVE},
-     * {@link #TYPE_ATTACK_LOCATION} and {@link #TYPE_RETURN}. In other cases it
-     * can be null
+     * Returns the estimated time of conclusion of this action The Unit parameter is necessary for
+     * actions of {@link #TYPE_MOVE}, {@link #TYPE_ATTACK_LOCATION} and {@link #TYPE_RETURN}. In
+     * other cases it can be null
      *
      * @param u
      * @return
@@ -326,8 +321,8 @@ public class UnitAction {
     }
 
     /**
-     * Effects this action in the game state. If the action is related to a
-     * unit, changes it position accordingly
+     * Effects this action in the game state. If the action is related to a unit, changes it
+     * position accordingly
      *
      * @param u
      * @param s
@@ -335,7 +330,7 @@ public class UnitAction {
     public void execute(Unit u, GameState s) {
         PhysicalGameState pgs = s.getPhysicalGameState();
         switch (type) {
-            case TYPE_NONE:	//no-op
+            case TYPE_NONE:    //no-op
                 break;
 
             case TYPE_MOVE: //moves the unit in the intended direction
@@ -362,7 +357,8 @@ public class UnitAction {
                     if (u.getMinDamage() == u.getMaxDamage()) {
                         damage = u.getMinDamage();
                     } else {
-                        damage = u.getMinDamage() + r.nextInt(1 + (u.getMaxDamage() - u.getMinDamage()));
+                        damage =
+                            u.getMinDamage() + r.nextInt(1 + (u.getMaxDamage() - u.getMinDamage()));
                     }
                     other.setHitPoints(other.getHitPoints() - damage);
                     if (other.getHitPoints() <= 0) {
@@ -389,9 +385,11 @@ public class UnitAction {
                         maybeAResource = pgs.getUnitAt(u.getX() - 1, u.getY());
                         break;
                 }
-                if (maybeAResource != null && maybeAResource.getType().isResource && u.getType().canHarvest && u.getResources() == 0) {
+                if (maybeAResource != null && maybeAResource.getType().isResource && u
+                    .getType().canHarvest && u.getResources() == 0) {
                     //indeed it is a resource, harvest from it
-                    maybeAResource.setResources(maybeAResource.getResources() - u.getHarvestAmount());
+                    maybeAResource
+                        .setResources(maybeAResource.getResources() - u.getHarvestAmount());
                     if (maybeAResource.getResources() <= 0) {
                         s.removeUnit(maybeAResource);
                     }
@@ -452,7 +450,9 @@ public class UnitAction {
                 Player p = pgs.getPlayer(u.getPlayer());
                 p.setResources(p.getResources() - newUnit.getCost());
                 if (p.getResources() < 0) {
-                    System.err.print("Illegal action executed! resources of player " + p.ID + " are now " + p.getResources() + "\n");
+                    System.err.print(
+                        "Illegal action executed! resources of player " + p.ID + " are now " + p
+                            .getResources() + "\n");
                     System.err.print(s);
                 }
             }
@@ -608,8 +608,7 @@ public class UnitAction {
     }
 
     /**
-     * Creates a UnitAction from a XML element (calls the corresponding
-     * constructor)
+     * Creates a UnitAction from a XML element (calls the corresponding constructor)
      *
      * @param e
      * @param utt
@@ -650,5 +649,4 @@ public class UnitAction {
 
         return ua;
     }
-
 }

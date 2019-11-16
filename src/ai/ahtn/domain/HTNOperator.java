@@ -9,10 +9,10 @@ package ai.ahtn.domain;
 import ai.ahtn.domain.LispParser.LispElement;
 
 /**
- *
  * @author santi
  */
 public class HTNOperator {
+
     Term head;
     Clause precondition;
     // postconditions are not defined in the operators, but directly as part of the simulator
@@ -21,27 +21,26 @@ public class HTNOperator {
         head = a_head;
         precondition = a_prec;
     }
-    
+
     public Term getHead() {
         return head;
     }
-    
+
     public Clause getPrecondition() {
         return precondition;
     }
-    
+
     public static HTNOperator fromLispElement(LispElement e) throws Exception {
         LispElement head_e = e.children.get(1);
         LispElement precondition_e = e.children.get(2);
-        
+
         Term head = Term.fromLispElement(head_e);
         Clause prec = Clause.fromLispElement(precondition_e);
-        
-        return new HTNOperator(head,prec);
+
+        return new HTNOperator(head, prec);
     }
-    
+
     public String toString() {
         return "operator: " + head + ", precondition: " + precondition;
     }
-    
 }

@@ -20,79 +20,81 @@ import rts.units.UnitTypeTable;
 import util.Sampler;
 
 /**
- *
  * @author santi
- * 
  */
 public class UnitActionProbabilityDistributionAI extends AI {
+
     public static int DEBUG = 0;
-    
+
     Random r = new Random();
     UnitActionProbabilityDistribution model = null;
     String modelName = "";  // name of the model for the toString method, so it can be identified
     UnitTypeTable utt = null;
-    
-    
+
     public UnitActionProbabilityDistributionAI(UnitTypeTable utt) throws Exception {
-        this(new UnitActionTypeConstantDistribution(utt,new double[]{1.0,1.0,1.0,1.0,1.0,1.0}),
-             utt,
-             "uniform");
+        this(
+            new UnitActionTypeConstantDistribution(utt, new double[]{1.0, 1.0, 1.0, 1.0, 1.0, 1.0}),
+            utt, "uniform");
     }
-    
-    
-    public UnitActionProbabilityDistributionAI(UnitActionProbabilityDistribution a_model, UnitTypeTable a_utt, String a_modelName) {
+
+    public UnitActionProbabilityDistributionAI(UnitActionProbabilityDistribution a_model,
+        UnitTypeTable a_utt, String a_modelName) {
         model = a_model;
         utt = a_utt;
         modelName = a_modelName;
     }
-    
-    
+
     @Override
     public String toString() {
-        return this.getClass().getSimpleName()+"("+modelName+")";
-    }   
-    
-    
+        return this.getClass().getSimpleName() + "(" + modelName + ")";
+    }
+
     @Override
-    public void reset() {   
-    }    
-    
-    
+    public void reset() {
+    }
+
     public AI clone() {
         return new UnitActionProbabilityDistributionAI(model, utt, modelName);
     }
-    
-    
+
     public PlayerAction getAction(int player, GameState gs) throws Exception {
-        if (gs.getUnitTypeTable() != utt) throw new Exception("UnitActionDistributionAI uses a UnitTypeTable different from the one used to play!");
+        if (gs.getUnitTypeTable() != utt) {
+            throw new Exception(
+                "UnitActionDistributionAI uses a UnitTypeTable different from the one used to play!");
+        }
         PhysicalGameState pgs = gs.getPhysicalGameState();
         PlayerAction pa = new PlayerAction();
-        
-        if (!gs.canExecuteAnyAction(player)) return pa;
+
+        if (!gs.canExecuteAnyAction(player)) {
+            return pa;
+        }
 
         // Generate the reserved resources:
-        for(Unit u:pgs.getUnits()) {
+        for (Unit u : pgs.getUnits()) {
             UnitActionAssignment uaa = gs.getActionAssignment(u);
-            if (uaa!=null) {
+            if (uaa != null) {
                 ResourceUsage ru = uaa.action.resourceUsage(u, pgs);
                 pa.getResourceUsage().merge(ru);
             }
         }
-        
-        for(Unit u:pgs.getUnits()) {
-            if (u.getPlayer()==player) {
-                if (gs.getActionAssignment(u)==null) {
+
+        for (Unit u : pgs.getUnits()) {
+            if (u.getPlayer() == player) {
+                if (gs.getActionAssignment(u) == null) {
                     List<UnitAction> l = u.getUnitActions(gs);
-                    double []distribution = model.predictDistribution(u, gs, l);
+                    double[] distribution = model.predictDistribution(u, gs, l);
                     UnitAction none = null;
-                    for(UnitAction ua:l) 
-                        if (ua.getType()==UnitAction.TYPE_NONE) none = ua;
-                    
+                    for (UnitAction ua : l) {
+                        if (ua.getType() == UnitAction.TYPE_NONE) {
+                            none = ua;
+                        }
+                    }
+
                     try {
                         UnitAction ua = l.get(Sampler.weighted(distribution));
                         if (ua.resourceUsage(u, pgs).consistentWith(pa.getResourceUsage(), gs)) {
                             ResourceUsage ru = ua.resourceUsage(u, pgs);
-                            pa.getResourceUsage().merge(ru);                        
+                            pa.getResourceUsage().merge(ru);
                             pa.addUnitAction(u, ua);
                         } else {
                             pa.addUnitAction(u, none);
@@ -104,43 +106,40 @@ public class UnitActionProbabilityDistributionAI extends AI {
                 }
             }
         }
-        
+
         return pa;
     }
-    
-    
+
     @Override
-    public List<ParameterSpecification> getParameters()
-    {
+    public List<ParameterSpecification> getParameters() {
         List<ParameterSpecification> parameters = new ArrayList<>();
-        
+
         try {
-            parameters.add(new ParameterSpecification("Model",UnitActionProbabilityDistribution.class,
-                           new UnitActionTypeConstantDistribution(utt,new double[]{1.0,1.0,1.0,1.0,1.0,1.0})));
-            parameters.add(new ParameterSpecification("ModelName",String.class,"uniformDistribution"));
-        }catch(Exception e) {
+            parameters.add(
+                new ParameterSpecification("Model", UnitActionProbabilityDistribution.class,
+                    new UnitActionTypeConstantDistribution(utt,
+                        new double[]{1.0, 1.0, 1.0, 1.0, 1.0, 1.0})));
+            parameters
+                .add(new ParameterSpecification("ModelName", String.class, "uniformDistribution"));
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
         return parameters;
     }
-    
-    
+
     public UnitActionProbabilityDistribution getModel() {
         return model;
     }
-    
-    
+
     public void setModel(UnitActionProbabilityDistribution a) {
         model = a;
     }
-    
-    
+
     public String getModelName() {
         return modelName;
     }
-    
-    
+
     public void setModelName(String a) {
         modelName = a;
     }

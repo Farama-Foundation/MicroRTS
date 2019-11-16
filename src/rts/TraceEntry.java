@@ -9,8 +9,7 @@ import util.Pair;
 import util.XMLWriter;
 
 /**
- * Stores the actions executed in a game state, useful to re-trace / re-play the
- * match
+ * Stores the actions executed in a game state, useful to re-trace / re-play the match
  *
  * @author santi
  */
@@ -39,7 +38,6 @@ public class TraceEntry {
      */
     public void addUnitAction(Unit u, UnitAction a) {
         actions.add(new Pair<Unit, UnitAction>(u, a));
-
     }
 
     /**
@@ -51,10 +49,9 @@ public class TraceEntry {
         for (Pair<Unit, UnitAction> ua : a.actions) {
             if (pgs.getUnit(ua.m_a.getID()) == null) {
                 boolean found = false;
-                for(Unit u:pgs.units) {
-                    if (u.getClass()==ua.m_a.getClass() &&
-                        u.getX()==ua.m_a.getX() &&
-                        u.getY()==ua.m_a.getY()) {
+                for (Unit u : pgs.units) {
+                    if (u.getClass() == ua.m_a.getClass() && u.getX() == ua.m_a.getX()
+                        && u.getY() == ua.m_a.getY()) {
                         ua.m_a = u;
                         found = true;
                         break;
@@ -65,7 +62,7 @@ public class TraceEntry {
                     System.err.println(this);
                     System.err.println("The problem was with unit " + ua.m_a);
                 }
-            }               
+            }
             actions.add(ua);
         }
     }
@@ -134,7 +131,8 @@ public class TraceEntry {
             UnitAction a = new UnitAction(action_e.getChild("UnitAction"), utt);
             Unit u = pgs.getUnit(ID);
             if (u == null) {
-                System.err.println("Undefined unit ID " + ID + " in action " + a + " at time " + time);
+                System.err
+                    .println("Undefined unit ID " + ID + " in action " + a + " at time " + time);
             }
             actions.add(new Pair<Unit, UnitAction>(u, a));
         }

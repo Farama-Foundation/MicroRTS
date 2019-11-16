@@ -10,12 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author santi
  */
 public class FeatureGeneratorEmpty extends FeatureGenerator {
-        
+
     public List<Object> generateFeatures(TrainingInstance ti) {
         return new ArrayList<Object>();
-    }    
+    }
 }

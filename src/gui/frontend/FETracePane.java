@@ -27,24 +27,23 @@ import rts.TraceEntry;
 import util.XMLWriter;
 
 /**
- *
  * @author santi
  */
 public class FETracePane extends JPanel {
-    
+
     Trace currentTrace = null;
     int currentGameCycle = 0;
-    
+
     PhysicalGameStatePanel statePanel = null;
-    
+
     JFileChooser fileChooser = new JFileChooser();
     FEStatePane stateTab = null;
-    
+
     public FETracePane(FEStatePane a_stateTab) {
         stateTab = a_stateTab;
-        
+
         setLayout(new BorderLayout());
-        
+
         JPanel p1 = new JPanel();
         p1.setLayout(new BoxLayout(p1, BoxLayout.X_AXIS));
 
@@ -55,26 +54,29 @@ public class FETracePane extends JPanel {
             b.setAlignmentX(Component.CENTER_ALIGNMENT);
             b.setAlignmentY(Component.TOP_ALIGNMENT);
             b.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    int returnVal = fileChooser.showOpenDialog((Component)null);
+                public void actionPerformed(ActionEvent e) {
+                    int returnVal = fileChooser.showOpenDialog(null);
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
                         File file = fileChooser.getSelectedFile();
                         try {
                             if (file.getAbsolutePath().endsWith(".zip")) {
                                 ZipInputStream zip = new ZipInputStream(new FileInputStream(file));
                                 zip.getNextEntry(); // note: this assumes the zip file contains a single trace!
-                                currentTrace = new Trace(new SAXBuilder().build(zip).getRootElement());
+                                currentTrace = new Trace(
+                                    new SAXBuilder().build(zip).getRootElement());
                             } else {
-                                currentTrace = new Trace(new SAXBuilder().build(file.getAbsolutePath()).getRootElement());
+                                currentTrace = new Trace(
+                                    new SAXBuilder().build(file.getAbsolutePath())
+                                        .getRootElement());
                             }
                             currentGameCycle = 0;
-                            statePanel.setStateDirect(currentTrace.getGameStateAtCycle(currentGameCycle));
+                            statePanel
+                                .setStateDirect(currentTrace.getGameStateAtCycle(currentGameCycle));
                             statePanel.repaint();
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
-                   }
+                    }
                 }
             });
             p1west.add(b);
@@ -84,9 +86,8 @@ public class FETracePane extends JPanel {
             b.setAlignmentX(Component.CENTER_ALIGNMENT);
             b.setAlignmentY(Component.TOP_ALIGNMENT);
             b.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    int returnVal = fileChooser.showSaveDialog((Component)null);
+                public void actionPerformed(ActionEvent e) {
+                    int returnVal = fileChooser.showSaveDialog(null);
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
                         File file = fileChooser.getSelectedFile();
                         try {
@@ -106,8 +107,7 @@ public class FETracePane extends JPanel {
             b.setAlignmentX(Component.CENTER_ALIGNMENT);
             b.setAlignmentY(Component.TOP_ALIGNMENT);
             b.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
+                public void actionPerformed(ActionEvent e) {
                     stateTab.setState(statePanel.getState().clone());
                 }
             });
@@ -120,8 +120,7 @@ public class FETracePane extends JPanel {
             b.setAlignmentX(Component.CENTER_ALIGNMENT);
             b.setAlignmentY(Component.TOP_ALIGNMENT);
             b.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
+                public void actionPerformed(ActionEvent e) {
                     if (!statePanel.getState().gameover()) {
                         currentGameCycle++;
                         GameState tmp_gs = currentTrace.getGameStateAtCycle(currentGameCycle);
@@ -137,11 +136,11 @@ public class FETracePane extends JPanel {
             b.setAlignmentX(Component.CENTER_ALIGNMENT);
             b.setAlignmentY(Component.TOP_ALIGNMENT);
             b.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    if (currentGameCycle>0) {
+                public void actionPerformed(ActionEvent e) {
+                    if (currentGameCycle > 0) {
                         currentGameCycle--;
-                        statePanel.setStateDirect(currentTrace.getGameStateAtCycle(currentGameCycle));
+                        statePanel
+                            .setStateDirect(currentTrace.getGameStateAtCycle(currentGameCycle));
                         statePanel.repaint();
                     }
                 }
@@ -153,12 +152,12 @@ public class FETracePane extends JPanel {
             b.setAlignmentX(Component.CENTER_ALIGNMENT);
             b.setAlignmentY(Component.TOP_ALIGNMENT);
             b.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    for(TraceEntry te:currentTrace.getEntries()) {
-                        if (te.getTime()>currentGameCycle) {
+                public void actionPerformed(ActionEvent e) {
+                    for (TraceEntry te : currentTrace.getEntries()) {
+                        if (te.getTime() > currentGameCycle) {
                             currentGameCycle = te.getTime();
-                            statePanel.setStateDirect(currentTrace.getGameStateAtCycle(currentGameCycle));
+                            statePanel
+                                .setStateDirect(currentTrace.getGameStateAtCycle(currentGameCycle));
                             statePanel.repaint();
                             break;
                         }
@@ -172,37 +171,36 @@ public class FETracePane extends JPanel {
             b.setAlignmentX(Component.CENTER_ALIGNMENT);
             b.setAlignmentY(Component.TOP_ALIGNMENT);
             b.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
+                public void actionPerformed(ActionEvent e) {
                     TraceEntry target = null;
-                    for(TraceEntry te:currentTrace.getEntries()) {
-                        if (te.getTime()<currentGameCycle) {
-                            if (target==null || te.getTime()>target.getTime()) {
+                    for (TraceEntry te : currentTrace.getEntries()) {
+                        if (te.getTime() < currentGameCycle) {
+                            if (target == null || te.getTime() > target.getTime()) {
                                 target = te;
                             }
                         }
                     }
-                    if (target!=null) {
+                    if (target != null) {
                         currentGameCycle = target.getTime();
-                        statePanel.setStateDirect(currentTrace.getGameStateAtCycle(currentGameCycle));
+                        statePanel
+                            .setStateDirect(currentTrace.getGameStateAtCycle(currentGameCycle));
                         statePanel.repaint();
                     }
                 }
             });
             p1east.add(b);
         }
-        
+
         p1.add(p1west);
-        p1.add(p1east);        
-        
+        p1.add(p1east);
+
         JPanel p2 = new JPanel();
         p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));
-        statePanel = new PhysicalGameStatePanel((GameState)null);
+        statePanel = new PhysicalGameStatePanel((GameState) null);
         statePanel.setPreferredSize(new Dimension(512, 512));
         p2.add(statePanel);
-        
+
         add(p1, BorderLayout.NORTH);
-        add(p2, BorderLayout.SOUTH);    
+        add(p2, BorderLayout.SOUTH);
     }
-    
 }

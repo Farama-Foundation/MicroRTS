@@ -1,6 +1,6 @@
 /*
-* This class was contributed by: Antonin Komenda, Alexander Shleyfman and Carmel Domshlak
-*/
+ * This class was contributed by: Antonin Komenda, Alexander Shleyfman and Carmel Domshlak
+ */
 
 package ai.montecarlo.lsi;
 
@@ -33,14 +33,16 @@ public class Sampling {
 
     private int simulationCount = 0;
 
-    public Sampling(AgentOrderingType agentOrderingType, int lookAhead, AI simulationAi, EvaluationFunction evalFunction) {
+    public Sampling(AgentOrderingType agentOrderingType, int lookAhead, AI simulationAi,
+        EvaluationFunction evalFunction) {
         this.agentOrderingType = agentOrderingType;
         this.lookAhead = lookAhead;
         this.evalFunction = evalFunction;
         this.simulationAi = simulationAi;
     }
 
-    public double evaluatePlayerAction(int player, GameState gs, PlayerAction playerAction, int numEval) throws Exception {
+    public double evaluatePlayerAction(int player, GameState gs, PlayerAction playerAction,
+        int numEval) throws Exception {
         double evalMean = 0;
 
         for (int step = 0; step < numEval; step++) {
@@ -48,7 +50,8 @@ public class Sampling {
             GameState gs3 = gs2.clone();
             simulate(gs3, gs3.getTime() + lookAhead);
             int time = gs3.getTime() - gs2.getTime();
-            double eval = evalFunction.evaluate(player, 1 - player, gs3)*Math.pow(0.99, time / 10.0);
+            double eval =
+                evalFunction.evaluate(player, 1 - player, gs3) * Math.pow(0.99, time / 10.0);
 
             evalMean = (step * evalMean + eval) / (step + 1);
         }
@@ -71,13 +74,14 @@ public class Sampling {
         } while (!gameover && gs.getTime() < lookaheadTime);
     }
 
-    public PlayerAction generatePlayerActionGivenDist(List<UnitActionTableEntry> unitActionTable, int player,
-            GameState gameState, List<double []> distributions, List<Integer> forcedAgentOrder) throws Exception {
+    public PlayerAction generatePlayerActionGivenDist(List<UnitActionTableEntry> unitActionTable,
+        int player, GameState gameState, List<double[]> distributions,
+        List<Integer> forcedAgentOrder) throws Exception {
         ResourceUsage base_ru = new ResourceUsage();
         PhysicalGameState pgs = gameState.getPhysicalGameState();
-        for(Unit u:pgs.getUnits()) {
+        for (Unit u : pgs.getUnits()) {
             UnitActionAssignment uaa = gameState.getUnitActions().get(u);
-            if (uaa!=null) {
+            if (uaa != null) {
                 ResourceUsage ru = uaa.action.resourceUsage(u, pgs);
                 base_ru.merge(ru);
             }
@@ -87,29 +91,29 @@ public class Sampling {
         pa.setResourceUsage(base_ru.clone());
 
         // entropy-based agent ordering
-        ArrayList<Pair<Integer, Double>> ent_list = new ArrayList<Pair<Integer, Double>>(distributions.size());
+        ArrayList<Pair<Integer, Double>> ent_list = new ArrayList<Pair<Integer, Double>>(
+            distributions.size());
         if (forcedAgentOrder == null) {
-            for(int j = 0; j < distributions.size(); j++) {
+            for (int j = 0; j < distributions.size(); j++) {
                 ent_list.add(new Pair<Integer, Double>(j, entropy(distributions.get(j))));
             }
 
-            switch(agentOrderingType) {
-            case RANDOM:
-                Collections.shuffle(ent_list);
-                break;
-            case ENTROPY:
-                Collections.sort(ent_list, new Comparator<Pair<Integer, Double>>() {
+            switch (agentOrderingType) {
+                case RANDOM:
+                    Collections.shuffle(ent_list);
+                    break;
+                case ENTROPY:
+                    Collections.sort(ent_list, new Comparator<Pair<Integer, Double>>() {
 
-                    @Override
-                    public int compare(Pair<Integer, Double> p1, Pair<Integer, Double> p2) {
-                        return p1.m_b > p2.m_b ? 1 : (p1.m_b < p2.m_b ? -1 : 0);
-                    }
+                        @Override
+                        public int compare(Pair<Integer, Double> p1, Pair<Integer, Double> p2) {
+                            return p1.m_b > p2.m_b ? 1 : (p1.m_b < p2.m_b ? -1 : 0);
+                        }
+                    });
+                    break;
 
-                });
-                break;
-
-            default:
-                throw new RuntimeException("Unknown AgentOrderingType");
+                default:
+                    throw new RuntimeException("Unknown AgentOrderingType");
             }
         } else {
             for (Integer agentIndex : forcedAgentOrder) {
@@ -118,7 +122,7 @@ public class Sampling {
         }
 
         for (Pair<Integer, Double> idx_of_dist : ent_list) {
-            double [] distribution = distributions.get(idx_of_dist.m_a);
+            double[] distribution = distributions.get(idx_of_dist.m_a);
 
             UnitActionTableEntry ate = unitActionTable.get(idx_of_dist.m_a);
 
@@ -131,7 +135,7 @@ public class Sampling {
                 List<Double> dist_l = new ArrayList<Double>();
                 List<Integer> dist_outputs = new ArrayList<Integer>();
 
-                for(int j = 0; j < distribution.length; j++) {
+                for (int j = 0; j < distribution.length; j++) {
                     dist_l.add(distribution[j]);
                     dist_outputs.add(j);
                 }
@@ -139,10 +143,10 @@ public class Sampling {
                     int idx = dist_outputs.indexOf(code);
                     dist_l.remove(idx);
                     dist_outputs.remove(idx);
-                    code = (Integer)Sampler.weighted(dist_l, dist_outputs);
+                    code = (Integer) Sampler.weighted(dist_l, dist_outputs);
                     ua = ate.actions.get(code);
                     r2 = ua.resourceUsage(ate.u, pgs);
-                } while(!pa.getResourceUsage().consistentWith(r2, gameState));
+                } while (!pa.getResourceUsage().consistentWith(r2, gameState));
             }
 
             pa.getResourceUsage().merge(r2);
@@ -163,13 +167,13 @@ public class Sampling {
         return pa;
     }
 
-    public PlayerAction generatePlayerActionOneDist(List<UnitActionTableEntry> unitActionTable, int player,
-            GameState gameState, List<double[]> distributions) throws Exception {
+    public PlayerAction generatePlayerActionOneDist(List<UnitActionTableEntry> unitActionTable,
+        int player, GameState gameState, List<double[]> distributions) throws Exception {
         ResourceUsage base_ru = new ResourceUsage();
         PhysicalGameState pgs = gameState.getPhysicalGameState();
-        for(Unit u:pgs.getUnits()) {
+        for (Unit u : pgs.getUnits()) {
             UnitActionAssignment uaa = gameState.getUnitActions().get(u);
-            if (uaa!=null) {
+            if (uaa != null) {
                 ResourceUsage ru = uaa.action.resourceUsage(u, pgs);
                 base_ru.merge(ru);
             }
@@ -178,48 +182,46 @@ public class Sampling {
         PlayerAction pa = new PlayerAction();
         pa.setResourceUsage(base_ru.clone());
 
-        ArrayList<Pair<Integer,ArrayList<Integer>>> idxTable = new ArrayList<Pair<Integer,ArrayList<Integer>>>();
-        ArrayList<Pair<Double,ArrayList<Double>>> distTable = new ArrayList<Pair<Double,ArrayList<Double>>>();
+        ArrayList<Pair<Integer, ArrayList<Integer>>> idxTable = new ArrayList<Pair<Integer, ArrayList<Integer>>>();
+        ArrayList<Pair<Double, ArrayList<Double>>> distTable = new ArrayList<Pair<Double, ArrayList<Double>>>();
         int i = 0;
-        for(double [] actionDist :distributions) {
+        for (double[] actionDist : distributions) {
             double sum = 0;
             ArrayList<Double> distList = new ArrayList<Double>();
             ArrayList<Integer> idxList = new ArrayList<Integer>();
-            for(int j = 0; j < actionDist.length; j++){
+            for (int j = 0; j < actionDist.length; j++) {
                 distList.add(actionDist[j]);
                 idxList.add(j);
                 sum += actionDist[j];
             }
 
-            Pair<Double,ArrayList<Double>> distPair = new Pair<Double,ArrayList<Double>>(sum, distList);
-            Pair<Integer,ArrayList<Integer>> idxPair = new Pair<Integer,ArrayList<Integer>>(i, idxList);
+            Pair<Double, ArrayList<Double>> distPair = new Pair<Double, ArrayList<Double>>(sum,
+                distList);
+            Pair<Integer, ArrayList<Integer>> idxPair = new Pair<Integer, ArrayList<Integer>>(i,
+                idxList);
             distTable.add(distPair);
             idxTable.add(idxPair);
             i++;
         }
 
-
         double density = 0;
-        for (Pair<Double, ArrayList<Double>> sumAndDist: distTable){
+        for (Pair<Double, ArrayList<Double>> sumAndDist : distTable) {
             density += sumAndDist.m_a;
         }
 
-        while(!distTable.isEmpty()) {
+        while (!distTable.isEmpty()) {
 
             Random gen = new Random();
             double random = gen.nextDouble() * density;
 
-
-            for(int x = 0; x < distTable.size(); x++){
-                if (random > distTable.get(x).m_a){
+            for (int x = 0; x < distTable.size(); x++) {
+                if (random > distTable.get(x).m_a) {
                     random -= distTable.get(x).m_a;
-                }
-                else{
-                    for(int y = 0; y < distTable.get(x).m_b.size(); y++){
-                        if (random > distTable.get(x).m_b.get(y)){
+                } else {
+                    for (int y = 0; y < distTable.get(x).m_b.size(); y++) {
+                        if (random > distTable.get(x).m_b.get(y)) {
                             random -= distTable.get(x).m_b.get(y);
-                        }
-                        else{
+                        } else {
                             UnitActionTableEntry ate = unitActionTable.get(idxTable.get(x).m_a);
                             UnitAction ua = ate.actions.get(idxTable.get(x).m_b.get(y));
                             ResourceUsage r2 = ua.resourceUsage(ate.u, pgs);
@@ -239,7 +241,6 @@ public class Sampling {
                                 pa.addUnitAction(ate.u, ua);
 
                                 break;
-
                             }
                         }
                     }
@@ -250,25 +251,27 @@ public class Sampling {
         return pa;
     }
 
-    public Set<PlayerAction> generatePlayerActionAll(List<UnitActionTableEntry> unitActionTable, int player,
-            GameState gameState, boolean includeNoops) throws Exception {
+    public Set<PlayerAction> generatePlayerActionAll(List<UnitActionTableEntry> unitActionTable,
+        int player, GameState gameState, boolean includeNoops) throws Exception {
         ResourceUsage base_ru = new ResourceUsage();
         PhysicalGameState pgs = gameState.getPhysicalGameState();
-        for(Unit u:pgs.getUnits()) {
+        for (Unit u : pgs.getUnits()) {
             UnitActionAssignment uaa = gameState.getUnitActions().get(u);
-            if (uaa!=null) {
+            if (uaa != null) {
                 ResourceUsage ru = uaa.action.resourceUsage(u, pgs);
                 base_ru.merge(ru);
             }
         }
-        
+
         Set<PlayerAction> actionSet = new HashSet<PlayerAction>();
 
-        List<Set<Integer>> definitionOfDomains = new ArrayList<Set<Integer>>(unitActionTable.size());
+        List<Set<Integer>> definitionOfDomains = new ArrayList<Set<Integer>>(
+            unitActionTable.size());
         for (UnitActionTableEntry unitActionTableEntry : unitActionTable) {
             HashSet<Integer> domain = new HashSet<Integer>();
             for (int i = 0; i < unitActionTableEntry.nactions; i++) {
-                if (unitActionTableEntry.actions.get(i).getType() != UnitAction.TYPE_NONE || includeNoops) {
+                if (unitActionTableEntry.actions.get(i).getType() != UnitAction.TYPE_NONE
+                    || includeNoops) {
                     domain.add(i);
                 }
             }
@@ -289,7 +292,8 @@ public class Sampling {
 
                 UnitActionTableEntry unitActionTableEntry = unitActionTable.get(i);
                 UnitAction unitAction = unitActionTableEntry.actions.get(actionIndex);
-                if (!pa.consistentWith(unitAction.resourceUsage(unitActionTableEntry.u, pgs), gameState)) {
+                if (!pa.consistentWith(unitAction.resourceUsage(unitActionTableEntry.u, pgs),
+                    gameState)) {
                     isValid = false;
                     break;
                 } else {
@@ -309,8 +313,9 @@ public class Sampling {
         return actionSet;
     }
 
-    public List<Pair<PlayerAction, Pair<Double, Integer>>> halvedSampling(List<Pair<PlayerAction,Pair<Double,Integer>>> actionList, GameState gameState,
-            int player, int num) throws Exception {
+    public List<Pair<PlayerAction, Pair<Double, Integer>>> halvedSampling(
+        List<Pair<PlayerAction, Pair<Double, Integer>>> actionList, GameState gameState, int player,
+        int num) throws Exception {
         for (Pair<PlayerAction, Pair<Double, Integer>> pair : actionList) {
             double eval = evaluatePlayerAction(player, gameState, pair.m_a, num);
 
@@ -324,23 +329,23 @@ public class Sampling {
         Collections.sort(actionList, new Comparator<Pair<PlayerAction, Pair<Double, Integer>>>() {
 
             @Override
-            public int compare(Pair<PlayerAction, Pair<Double, Integer>> p1, Pair<PlayerAction, Pair<Double, Integer>> p2) {
+            public int compare(Pair<PlayerAction, Pair<Double, Integer>> p1,
+                Pair<PlayerAction, Pair<Double, Integer>> p2) {
                 double eval1 = p1.m_b.m_a / p1.m_b.m_b;
                 double eval2 = p2.m_b.m_a / p2.m_b.m_b;
                 return eval1 < eval2 ? 1 : (eval1 > eval2 ? -1 : 0);
-
             }
-
         });
 
-        return actionList.subList(0, actionList.size()/2 +1);
+        return actionList.subList(0, actionList.size() / 2 + 1);
     }
 
-    public List<Pair<PlayerAction, Double>> halvedOriginalSampling(List<Pair<PlayerAction, Double>> actionList, GameState gameState,
-            int player, int numEval, int numEvalPrevious) throws Exception {
+    public List<Pair<PlayerAction, Double>> halvedOriginalSampling(
+        List<Pair<PlayerAction, Double>> actionList, GameState gameState, int player, int numEval,
+        int numEvalPrevious) throws Exception {
         for (Pair<PlayerAction, Double> pair : actionList) {
             double eval = evaluatePlayerAction(player, gameState, pair.m_a, numEval);
-            pair.m_b = (pair.m_b*numEvalPrevious + eval*numEval)/(numEvalPrevious + numEval);
+            pair.m_b = (pair.m_b * numEvalPrevious + eval * numEval) / (numEvalPrevious + numEval);
         }
 
         Collections.sort(actionList, new Comparator<Pair<PlayerAction, Double>>() {
@@ -349,17 +354,17 @@ public class Sampling {
             public int compare(Pair<PlayerAction, Double> p1, Pair<PlayerAction, Double> p2) {
                 return p1.m_b < p2.m_b ? 1 : (p1.m_b > p2.m_b ? -1 : 0);
             }
-
         });
 
-        return actionList.subList(0, actionList.size()/2 +1);
+        return actionList.subList(0, actionList.size() / 2 + 1);
     }
 
-    public List<Pair<PlayerAction, Double>> halvedOriginalSamplingFill(List<Pair<PlayerAction, Double>> actionList, GameState gameState,
-            int player, int numEval, int numEvalPrevious) throws Exception {
+    public List<Pair<PlayerAction, Double>> halvedOriginalSamplingFill(
+        List<Pair<PlayerAction, Double>> actionList, GameState gameState, int player, int numEval,
+        int numEvalPrevious) throws Exception {
         for (Pair<PlayerAction, Double> pair : actionList) {
             double eval = evaluatePlayerAction(player, gameState, pair.m_a, numEval);
-            pair.m_b = (pair.m_b*numEvalPrevious + eval*numEval)/(numEvalPrevious + numEval);
+            pair.m_b = (pair.m_b * numEvalPrevious + eval * numEval) / (numEvalPrevious + numEval);
         }
 
         Collections.sort(actionList, new Comparator<Pair<PlayerAction, Double>>() {
@@ -368,7 +373,6 @@ public class Sampling {
             public int compare(Pair<PlayerAction, Double> p1, Pair<PlayerAction, Double> p2) {
                 return p1.m_b < p2.m_b ? 1 : (p1.m_b > p2.m_b ? -1 : 0);
             }
-
         });
 
         return actionList.subList(0, actionList.size() / 2);
@@ -390,16 +394,18 @@ public class Sampling {
         return ent;
     }
 
-    public double difference(List<UnitActionTableEntry> unitActionTable, List<double[]> distributions, PlayerAction playerAction, int agentIndex) {
+    public double difference(List<UnitActionTableEntry> unitActionTable,
+        List<double[]> distributions, PlayerAction playerAction, int agentIndex) {
         Pair<Unit, UnitAction> ute = playerAction.getActions().get(agentIndex);
         int j = 0;
         for (UnitAction ua : unitActionTable.get(agentIndex).actions) {
-            if (ute.m_b.equals(ua)){
+            if (ute.m_b.equals(ua)) {
                 break;
             }
             j++;
         }
-        return distributions.get(agentIndex)[j] - distributions.get(agentIndex)[distributions.get(agentIndex).length - 1];
+        return distributions.get(agentIndex)[j] - distributions.get(agentIndex)[
+            distributions.get(agentIndex).length - 1];
     }
 
     public void resetSimulationCount() {
@@ -410,12 +416,12 @@ public class Sampling {
         return simulationCount;
     }
 
-    public static double log(double x, double base)
-    {
+    public static double log(double x, double base) {
         return Math.log(x) / Math.log(base);
     }
 
     public static class UnitActionTableEntry {
+
         public int idx;
         public Unit u;
         public int nactions = 0;
@@ -425,11 +431,10 @@ public class Sampling {
     }
 
     public enum AgentOrderingType {
-        RANDOM,  ENTROPY
+        RANDOM, ENTROPY
     }
 
     public void increaseSimulationCount(double d) {
         simulationCount += d;
     }
-
 }

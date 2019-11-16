@@ -51,18 +51,18 @@ import weka.core.converters.ConverterUtils;
 
 
 /* Strategy Generation for Multi-Unit Real-Time Games via Voting.
-*  ToG 2018.
-*/
+ *  ToG 2018.
+ */
 
 public class SCV extends AIWithComputationBudget {
 
-     protected class infBattles {
+    protected class infBattles {
 
         Integer tMapa;
         String enemy, strategy;
         double ltd3;
     }
-    
+
     AI[] strategies = null;
     int playerForThisComputation;
     GameState gs_to_start_from = null;
@@ -70,16 +70,14 @@ public class SCV extends AIWithComputationBudget {
     UnitTypeTable localUtt = null;
     Instances dataSet = null;
     long tempoInicial = 0;
-    
-    HashMap<String, HashMap<Integer, List<infBattles> > > indice;
+
+    HashMap<String, HashMap<Integer, List<infBattles>>> indice;
     int heightMap;
-    
+
     // This is the default constructor that microRTS will call
     public SCV(UnitTypeTable utt) {
 
-        this(new AI[]{new WorkerRush(utt),
-            new LightRush(utt),
-            new RangedRush(utt),
+        this(new AI[]{new WorkerRush(utt), new LightRush(utt), new RangedRush(utt),
             new RandomBiasedAI()}, 100, -1, utt);
     }
 
@@ -97,10 +95,10 @@ public class SCV extends AIWithComputationBudget {
     @Override
     public PlayerAction getAction(int player, GameState gs) throws Exception {
         tempoInicial = System.currentTimeMillis();
-        if(rf == null){
-        	this.heightMap = gs.getPhysicalGameState().getHeight();
-        	loadModel();
-        	loadLtd3Battles();
+        if (rf == null) {
+            this.heightMap = gs.getPhysicalGameState().getHeight();
+            loadModel();
+            loadLtd3Battles();
         }
         tryClassify(player, gs);
         if (gs.canExecuteAnyAction(player)) {
@@ -110,88 +108,89 @@ public class SCV extends AIWithComputationBudget {
         } else {
             return new PlayerAction();
         }
-
     }
-    
-    
+
     protected void loadLtd3Battles() {
         ArrayList<infBattles> infTemp = new ArrayList<infBattles>();
         String linha;
         try {
-        	BufferedReader learArq;
-        	
-        	switch (this.heightMap) {
-			case 8:
-				learArq = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("models/ltdsFinais8.csv")));
-				break;
-			case 9:
-				learArq = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("models/ltdsFinais9.csv")));
-				break;
-			case 16:
-				learArq = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("models/ltdsFinais16.csv")));
-				break;
-			case 24:
-				learArq = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("models/ltdsFinais24.csv")));
-				break;
-			case 32:
-				learArq = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("models/ltdsFinais32.csv")));
-				break;
-			case 64:
-				learArq = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("models/ltdsFinais64.csv")));
-				break;
-				
-			default:
-				//map 128
-				learArq = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("models/ltdsFinaisSCV.csv")));
-				break;
-			}
-        	
-        	
-            
+            BufferedReader learArq;
+
+            switch (this.heightMap) {
+                case 8:
+                    learArq = new BufferedReader(new InputStreamReader(
+                        getClass().getResourceAsStream("models/ltdsFinais8.csv")));
+                    break;
+                case 9:
+                    learArq = new BufferedReader(new InputStreamReader(
+                        getClass().getResourceAsStream("models/ltdsFinais9.csv")));
+                    break;
+                case 16:
+                    learArq = new BufferedReader(new InputStreamReader(
+                        getClass().getResourceAsStream("models/ltdsFinais16.csv")));
+                    break;
+                case 24:
+                    learArq = new BufferedReader(new InputStreamReader(
+                        getClass().getResourceAsStream("models/ltdsFinais24.csv")));
+                    break;
+                case 32:
+                    learArq = new BufferedReader(new InputStreamReader(
+                        getClass().getResourceAsStream("models/ltdsFinais32.csv")));
+                    break;
+                case 64:
+                    learArq = new BufferedReader(new InputStreamReader(
+                        getClass().getResourceAsStream("models/ltdsFinais64.csv")));
+                    break;
+
+                default:
+                    //map 128
+                    learArq = new BufferedReader(new InputStreamReader(
+                        getClass().getResourceAsStream("models/ltdsFinaisSCV.csv")));
+                    break;
+            }
+
             linha = learArq.readLine();
 
             while (linha != null) {
                 infBattles bat = new infBattles();
                 String[] itens = linha.split(";");
-                
+
                 bat.ltd3 = Double.valueOf(itens[0]);
                 bat.tMapa = Integer.decode(itens[1]);
                 bat.enemy = itens[2];
                 bat.strategy = itens[3];
-                
+
                 infTemp.add(bat);
-                
+
                 linha = learArq.readLine();
             }
             learArq.close();
-
         } catch (Exception e) {
             System.err.printf("Erro na abertura do arquivo: %s.\n", e.getMessage());
             System.out.println(e.toString());
         }
-        
-        buildIndice(infTemp);
 
+        buildIndice(infTemp);
     }
-    
-    protected void buildIndice(ArrayList<infBattles> infTemp){
+
+    protected void buildIndice(ArrayList<infBattles> infTemp) {
         HashMap<Integer, List<infBattles>> batTemp;
         int cont = 0;
         for (infBattles bat : infTemp) {
             cont++;
-            if(indice.containsKey(bat.strategy)){
+            if (indice.containsKey(bat.strategy)) {
                 //if it contains a verifiable strategy if the map
                 batTemp = indice.get(bat.strategy);
-                if(!batTemp.containsKey(bat.tMapa)){
+                if (!batTemp.containsKey(bat.tMapa)) {
                     //if it does not contain I'll add the map
                     ArrayList<infBattles> infT = new ArrayList<infBattles>();
                     infT.add(bat);
                     batTemp.put(bat.tMapa, infT);
-                }else{
+                } else {
                     //I add the battle to the list
                     batTemp.get(bat.tMapa).add(bat);
                 }
-            }else{
+            } else {
                 //if it does not contain the
                 batTemp = new HashMap<Integer, List<infBattles>>();
                 ArrayList<infBattles> infT = new ArrayList<infBattles>();
@@ -200,7 +199,6 @@ public class SCV extends AIWithComputationBudget {
                 indice.put(bat.strategy, batTemp);
             }
         }
-        
     }
 
     public void startNewComputation(int a_player, GameState gs) {
@@ -280,9 +278,8 @@ public class SCV extends AIWithComputationBudget {
             }
 
             resultado.addUnitAction(uAux, action);
+        }
 
-        }    
-        
         return resultado;
     }
 
@@ -302,32 +299,40 @@ public class SCV extends AIWithComputationBudget {
     protected void loadModel() {
         dataSet = null;
         try {
-        	switch (heightMap) {
-			case 8:
-				rf = (SimpleLogistic) SerializationHelper.read(getClass().getResourceAsStream("models/SimpleLogisticSCV8.model"));
-				break;
-			case 9:
-				rf = (SimpleLogistic) SerializationHelper.read(getClass().getResourceAsStream("models/SimpleLogisticSCV9.model"));
-				break;
-			case 16:
-				rf = (SimpleLogistic) SerializationHelper.read(getClass().getResourceAsStream("models/SimpleLogisticSCV16.model"));
-				break;
-			case 24:
-				rf = (SimpleLogistic) SerializationHelper.read(getClass().getResourceAsStream("models/SimpleLogisticSCV24.model"));
-				break;
-			case 32:
-				rf = (SimpleLogistic) SerializationHelper.read(getClass().getResourceAsStream("models/SimpleLogisticSCV32.model"));
-				break;
-			case 64:
-				rf = (SimpleLogistic) SerializationHelper.read(getClass().getResourceAsStream("models/SimpleLogisticSCV64.model"));
-				break;
-			default:
-				//map 128
-				rf = (SimpleLogistic) SerializationHelper.read(getClass().getResourceAsStream("models/SimpleLogisticSCV.model"));
-				break;
-			}
-            
-            ConverterUtils.DataSource source = new ConverterUtils.DataSource(getClass().getResourceAsStream("models/dadosEnemyDistModelTemplateSCV.arff"));
+            switch (heightMap) {
+                case 8:
+                    rf = (SimpleLogistic) SerializationHelper
+                        .read(getClass().getResourceAsStream("models/SimpleLogisticSCV8.model"));
+                    break;
+                case 9:
+                    rf = (SimpleLogistic) SerializationHelper
+                        .read(getClass().getResourceAsStream("models/SimpleLogisticSCV9.model"));
+                    break;
+                case 16:
+                    rf = (SimpleLogistic) SerializationHelper
+                        .read(getClass().getResourceAsStream("models/SimpleLogisticSCV16.model"));
+                    break;
+                case 24:
+                    rf = (SimpleLogistic) SerializationHelper
+                        .read(getClass().getResourceAsStream("models/SimpleLogisticSCV24.model"));
+                    break;
+                case 32:
+                    rf = (SimpleLogistic) SerializationHelper
+                        .read(getClass().getResourceAsStream("models/SimpleLogisticSCV32.model"));
+                    break;
+                case 64:
+                    rf = (SimpleLogistic) SerializationHelper
+                        .read(getClass().getResourceAsStream("models/SimpleLogisticSCV64.model"));
+                    break;
+                default:
+                    //map 128
+                    rf = (SimpleLogistic) SerializationHelper
+                        .read(getClass().getResourceAsStream("models/SimpleLogisticSCV.model"));
+                    break;
+            }
+
+            ConverterUtils.DataSource source = new ConverterUtils.DataSource(
+                getClass().getResourceAsStream("models/dadosEnemyDistModelTemplateSCV.arff"));
             dataSet = source.getDataSet();
             dataSet.setClassIndex(dataSet.numAttributes() - 1);
 
@@ -345,10 +350,10 @@ public class SCV extends AIWithComputationBudget {
             double enemy = rf.classifyInstance(avai);
         } catch (FileNotFoundException ex) {
             Logger.getLogger(SCV.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("Erro "+ex);
+            System.out.println("Erro " + ex);
         } catch (Exception ex) {
             Logger.getLogger(SCV.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("Erro "+ex);
+            System.out.println("Erro " + ex);
         }
     }
 
@@ -362,29 +367,22 @@ public class SCV extends AIWithComputationBudget {
         } else if (gs.getTime() == 0) {
             PhysicalGameState pgs = gs.getPhysicalGameState();
             if (pgs.getHeight() == 8) {
-                this.strategies = new AI[]{new WorkerRushPlusPlus(localUtt), 
+                this.strategies = new AI[]{new WorkerRushPlusPlus(localUtt),
                     new WorkerDefense(localUtt)};
             } else if (pgs.getHeight() == 16) {
                 this.strategies = new AI[]{new WorkerRushPlusPlus(localUtt)};
             } else if (pgs.getHeight() == 24) {
                 this.strategies = new AI[]{new WorkerRushPlusPlus(localUtt),
-                    new WorkerDefense(localUtt),
-                    new LightDefense(localUtt)};
+                    new WorkerDefense(localUtt), new LightDefense(localUtt)};
             } else if (pgs.getHeight() == 32) {
-                this.strategies = new AI[]{
-                    new POLightRush(localUtt),
-                    new WorkerDefense(localUtt),
-                    new EconomyMilitaryRush(localUtt)
-                };
+                this.strategies = new AI[]{new POLightRush(localUtt), new WorkerDefense(localUtt),
+                    new EconomyMilitaryRush(localUtt)};
             } else if (pgs.getHeight() == 64) {
                 this.strategies = new AI[]{//new POWorkerRush(localUtt),
-                    new POLightRush(localUtt),
-                    new EconomyMilitaryRush(localUtt),
+                    new POLightRush(localUtt), new EconomyMilitaryRush(localUtt),
                     new WorkerDefense(localUtt)};
-            }else {
-                this.strategies = new AI[]{
-                    new EconomyMilitaryRush(localUtt)
-                };
+            } else {
+                this.strategies = new AI[]{new EconomyMilitaryRush(localUtt)};
             }
         }
     }
@@ -426,7 +424,6 @@ public class SCV extends AIWithComputationBudget {
             if (u.getType().name.equals("Heavy") && u.getPlayer() == playerEnemy) {
                 ++nHeavy;
             }
-
         }
         Instance avai = new DenseInstance(10);
         avai.setDataset(dataSet);
@@ -445,14 +442,14 @@ public class SCV extends AIWithComputationBudget {
         }
 
         try {
-            setNewStrategy(getStrategyByDistribution(rf.distributionForInstance(avai), pgs.getHeight()));
-
+            setNewStrategy(
+                getStrategyByDistribution(rf.distributionForInstance(avai), pgs.getHeight()));
         } catch (Exception ex) {
             Logger.getLogger(SCV.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("Erro na classificação="+ex);
+            System.out.println("Erro na classificação=" + ex);
         }
     }
-    
+
     public int distRealUnitEneBase(Unit base, Player p, GameState gs) {
         AStarPathFinding aStar = new AStarPathFinding();
 
@@ -463,19 +460,20 @@ public class SCV extends AIWithComputationBudget {
         for (Unit u2 : pgs.getUnits()) {
             if (u2.getPlayer() >= 0 && u2.getPlayer() != p.getID()) {
                 if (base != null) {
-                    d = aStar.findDistToPositionInRange(base, u2.getPosition(pgs), 1, gs, gs.getResourceUsage());
+                    d = aStar.findDistToPositionInRange(base, u2.getPosition(pgs), 1, gs,
+                        gs.getResourceUsage());
                     if (closestEnemy == null || d < closestDistance) {
                         closestEnemy = u2;
                         closestDistance = d;
                     }
                 }
-
             }
         }
         if (closestEnemy == null) {
             return -1;
         } else {
-            return aStar.findDistToPositionInRange(base, closestEnemy.getPosition(pgs), 1, gs, gs.getResourceUsage());
+            return aStar.findDistToPositionInRange(base, closestEnemy.getPosition(pgs), 1, gs,
+                gs.getResourceUsage());
         }
     }
 
@@ -498,13 +496,13 @@ public class SCV extends AIWithComputationBudget {
     protected String getStrategyByDistribution(double[] distrib, int alturaMapa) {
         String bestStrategy = "POWorkerRush";
         double bestPondValue = -1;
-        
-        for (String s : indice.keySet()) {
-            
-            double heavy=0, economy= 0, ranged =0, light = 0, worker = 0;
 
-            for(infBattles i : indice.get(s).get(alturaMapa)){
-                switch (i.enemy){
+        for (String s : indice.keySet()) {
+
+            double heavy = 0, economy = 0, ranged = 0, light = 0, worker = 0;
+
+            for (infBattles i : indice.get(s).get(alturaMapa)) {
+                switch (i.enemy) {
                     case "POHeavyRush":
                         heavy = i.ltd3;
                         break;
@@ -524,9 +522,11 @@ public class SCV extends AIWithComputationBudget {
                         System.err.println("Erro na seleção");
                 }
             }
-            double pondTemp = (distrib[0]* light + distrib[1]*worker +distrib[2]* ranged + distrib[3]* economy + distrib[4]* heavy )/(distrib[0]+distrib[1]+distrib[2]+distrib[3]+distrib[4]);
-            
-            if(pondTemp > bestPondValue){
+            double pondTemp = (distrib[0] * light + distrib[1] * worker + distrib[2] * ranged
+                + distrib[3] * economy + distrib[4] * heavy) / (distrib[0] + distrib[1] + distrib[2]
+                + distrib[3] + distrib[4]);
+
+            if (pondTemp > bestPondValue) {
                 bestPondValue = pondTemp;
                 bestStrategy = s;
             }
@@ -579,5 +579,4 @@ public class SCV extends AIWithComputationBudget {
             this.strategies[i] = newStrat.get(i);
         }
     }
-    
 }

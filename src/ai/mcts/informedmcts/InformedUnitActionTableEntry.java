@@ -9,20 +9,18 @@ import rts.UnitAction;
 import rts.units.Unit;
 
 /**
- *
  * @author santi
  */
 public class InformedUnitActionTableEntry {
+
     public Unit u;
     public int nactions = 0;
     public List<UnitAction> actions = null;
     public double[] prior_distribution = null;
     public double[] accum_evaluation = null;
     public int[] visit_count = null;
-    
-    
-    public InformedUnitActionTableEntry(Unit a_u, List<UnitAction> a_actions, double []a_prior) 
-    {
+
+    public InformedUnitActionTableEntry(Unit a_u, List<UnitAction> a_actions, double[] a_prior) {
         u = a_u;
         actions = a_actions;
         nactions = actions.size();
@@ -33,6 +31,6 @@ public class InformedUnitActionTableEntry {
             visit_count[i] = 0;
         }
         prior_distribution = a_prior;
-        assert(a_prior.length == nactions);
+        assert (a_prior.length == nactions);
     }
 }

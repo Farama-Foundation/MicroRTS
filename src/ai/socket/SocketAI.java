@@ -23,35 +23,34 @@ import rts.units.UnitTypeTable;
 import util.XMLWriter;
 
 /**
- *
  * @author santi
  */
 public class SocketAI extends AIWithComputationBudget {
+
     public static int DEBUG = 0;
-    
+
     public static final int LANGUAGE_XML = 1;
     public static final int LANGUAGE_JSON = 2;
-    
+
     UnitTypeTable utt = null;
-            
+
     int communication_language = LANGUAGE_XML;
     String serverAddress = "127.0.0.1";
     int serverPort = 9898;
     Socket socket = null;
     BufferedReader in_pipe = null;
     PrintWriter out_pipe = null;
-    
+
     public SocketAI(UnitTypeTable a_utt) {
-        super(100,-1);
+        super(100, -1);
         utt = a_utt;
         try {
             connectToServer();
-        }catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
-        
+
     public SocketAI(int mt, int mi, String a_sa, int a_port, int a_language, UnitTypeTable a_utt) {
         super(mt, mi);
         serverAddress = a_sa;
@@ -60,7 +59,7 @@ public class SocketAI extends AIWithComputationBudget {
         utt = a_utt;
         try {
             connectToServer();
-        }catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -75,29 +74,35 @@ public class SocketAI extends AIWithComputationBudget {
             out_pipe = new PrintWriter(socket.getOutputStream(), true);
 
             // Consume the initial welcoming messages from the server
-            while(!in_pipe.ready());
-            while(in_pipe.ready()) in_pipe.readLine();
+            while (!in_pipe.ready()) {
+            }
+            while (in_pipe.ready()) {
+                in_pipe.readLine();
+            }
 
-            if (DEBUG>=1) System.out.println("SocketAI: welcome message received");
+            if (DEBUG >= 1) {
+                System.out.println("SocketAI: welcome message received");
+            }
             reset();
-        }catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     /**
      * Creates a SocketAI from an existing socket.
-     * @param mt The time budget in milliseconds.
-     * @param mi The iterations budget in milliseconds
-     * @param a_utt The unit type table.
+     *
+     * @param mt         The time budget in milliseconds.
+     * @param mi         The iterations budget in milliseconds
+     * @param a_utt      The unit type table.
      * @param a_language The communication layer to use.
-     * @param socket The socket the ai will communicate over.
+     * @param socket     The socket the ai will communicate over.
      */
-    public static SocketAI createFromExistingSocket(int mt, int mi, UnitTypeTable a_utt, int a_language, Socket socket) {
+    public static SocketAI createFromExistingSocket(int mt, int mi, UnitTypeTable a_utt,
+        int a_language, Socket socket) {
         return new SocketAI(mt, mi, a_utt, a_language, socket);
     }
-    
-    
+
     public void connectToServer() throws Exception {
         // Make connection and initialize streams
         socket = new Socket(serverAddress, serverPort);
@@ -105,29 +110,40 @@ public class SocketAI extends AIWithComputationBudget {
         out_pipe = new PrintWriter(socket.getOutputStream(), true);
 
         // Consume the initial welcoming messages from the server
-        while(!in_pipe.ready());
-        while(in_pipe.ready()) in_pipe.readLine();
+        while (!in_pipe.ready()) {
+        }
+        while (in_pipe.ready()) {
+            in_pipe.readLine();
+        }
 
-        if (DEBUG>=1) System.out.println("SocketAI: welcome message received");
-            
+        if (DEBUG >= 1) {
+            System.out.println("SocketAI: welcome message received");
+        }
+
         reset();
     }
-    
-    
+
     @Override
     public void reset() {
         try {
             // set the game parameters:
-            out_pipe.append("budget ").append(String.valueOf(TIME_BUDGET)).append(" ").append(String.valueOf(ITERATIONS_BUDGET)).append("\n");
+            out_pipe.append("budget ").append(String.valueOf(TIME_BUDGET)).append(" ")
+                .append(String.valueOf(ITERATIONS_BUDGET)).append("\n");
             out_pipe.flush();
 
-            if (DEBUG>=1) System.out.println("SocketAI: budgetd sent, waiting for ack");
-            
+            if (DEBUG >= 1) {
+                System.out.println("SocketAI: budgetd sent, waiting for ack");
+            }
+
             // wait for ack:
             in_pipe.readLine();
-            while(in_pipe.ready()) in_pipe.readLine();
+            while (in_pipe.ready()) {
+                in_pipe.readLine();
+            }
 
-            if (DEBUG>=1) System.out.println("SocketAI: ack received");
+            if (DEBUG >= 1) {
+                System.out.println("SocketAI: ack received");
+            }
 
             // send the utt:
             out_pipe.append("utt\n");
@@ -136,28 +152,33 @@ public class SocketAI extends AIWithComputationBudget {
                 utt.toxml(w);
                 w.flush();
                 out_pipe.append("\n");
-                out_pipe.flush();                
+                out_pipe.flush();
             } else if (communication_language == LANGUAGE_JSON) {
                 utt.toJSON(out_pipe);
                 out_pipe.append("\n");
                 out_pipe.flush();
             } else {
-                throw new Exception("Communication language " + communication_language + " not supported!");
+                throw new Exception(
+                    "Communication language " + communication_language + " not supported!");
             }
-            if (DEBUG>=1) System.out.println("SocketAI: UTT sent, waiting for ack");
-            
+            if (DEBUG >= 1) {
+                System.out.println("SocketAI: UTT sent, waiting for ack");
+            }
+
             // wait for ack:
             in_pipe.readLine();
-            
-            // read any extra left-over lines
-            while(in_pipe.ready()) in_pipe.readLine();
-            if (DEBUG>=1) System.out.println("SocketAI: ack received");
 
-        }catch(Exception e) {
+            // read any extra left-over lines
+            while (in_pipe.ready()) {
+                in_pipe.readLine();
+            }
+            if (DEBUG >= 1) {
+                System.out.println("SocketAI: ack received");
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
 
     @Override
     public PlayerAction getAction(int player, GameState gs) throws Exception {
@@ -170,15 +191,18 @@ public class SocketAI extends AIWithComputationBudget {
             w.flush();
 
             // wait to get an action:
-//            while(!in_pipe.ready()) {
-//                Thread.sleep(0);
-//                if (DEBUG>=1) System.out.println("waiting");
-//            }
-                
+            //            while(!in_pipe.ready()) {
+            //                Thread.sleep(0);
+            //                if (DEBUG>=1) System.out.println("waiting");
+            //            }
+
             // parse the action:
             String actionString = in_pipe.readLine();
-            if (DEBUG>=1) System.out.println("action received from server: " + actionString);
-            Element action_e = new SAXBuilder().build(new StringReader(actionString)).getRootElement();
+            if (DEBUG >= 1) {
+                System.out.println("action received from server: " + actionString);
+            }
+            Element action_e = new SAXBuilder().build(new StringReader(actionString))
+                .getRootElement();
             PlayerAction pa = PlayerAction.fromXML(action_e, gs, utt);
             pa.fillWithNones(gs, player, 10);
             return pa;
@@ -186,10 +210,10 @@ public class SocketAI extends AIWithComputationBudget {
             gs.toJSON(out_pipe);
             out_pipe.append("\n");
             out_pipe.flush();
-            
+
             // wait to get an action:
             //while(!in_pipe.ready());
-                
+
             // parse the action:
             String actionString = in_pipe.readLine();
             // System.out.println("action received from server: " + actionString);
@@ -197,14 +221,13 @@ public class SocketAI extends AIWithComputationBudget {
             pa.fillWithNones(gs, player, 10);
             return pa;
         } else {
-            throw new Exception("Communication language " + communication_language + " not supported!");
-        }        
+            throw new Exception(
+                "Communication language " + communication_language + " not supported!");
+        }
     }
-    
 
     @Override
-    public void preGameAnalysis(GameState gs, long milliseconds) throws Exception 
-    {
+    public void preGameAnalysis(GameState gs, long milliseconds) throws Exception {
         // send the game state:
         out_pipe.append("preGameAnalysis ").append(String.valueOf(milliseconds)).append("\n");
         switch (communication_language) {
@@ -217,7 +240,7 @@ public class SocketAI extends AIWithComputationBudget {
                 // wait for ack:
                 in_pipe.readLine();
                 break;
-                
+
             case LANGUAGE_JSON:
                 gs.toJSON(out_pipe);
                 out_pipe.append("\n");
@@ -225,18 +248,19 @@ public class SocketAI extends AIWithComputationBudget {
                 // wait for ack:
                 in_pipe.readLine();
                 break;
-                
+
             default:
-                throw new Exception("Communication language " + communication_language + " not supported!");        
+                throw new Exception(
+                    "Communication language " + communication_language + " not supported!");
         }
     }
 
-    
     @Override
-    public void preGameAnalysis(GameState gs, long milliseconds, String readWriteFolder) throws Exception 
-    {
+    public void preGameAnalysis(GameState gs, long milliseconds, String readWriteFolder)
+        throws Exception {
         // send the game state:
-        out_pipe.append("preGameAnalysis ").append(String.valueOf(milliseconds)).append("  \"").append(readWriteFolder).append("\"\n");
+        out_pipe.append("preGameAnalysis ").append(String.valueOf(milliseconds)).append("  \"")
+            .append(readWriteFolder).append("\"\n");
         switch (communication_language) {
             case LANGUAGE_XML:
                 XMLWriter w = new XMLWriter(out_pipe, " ");
@@ -247,7 +271,7 @@ public class SocketAI extends AIWithComputationBudget {
                 // wait for ack:
                 in_pipe.readLine();
                 break;
-                
+
             case LANGUAGE_JSON:
                 gs.toJSON(out_pipe);
                 out_pipe.append("\n");
@@ -255,39 +279,37 @@ public class SocketAI extends AIWithComputationBudget {
                 // wait for ack:
                 in_pipe.readLine();
                 break;
-                
+
             default:
-                throw new Exception("Communication language " + communication_language + " not supported!");        
+                throw new Exception(
+                    "Communication language " + communication_language + " not supported!");
         }
     }
-    
-    
+
     @Override
-    public void gameOver(int winner) throws Exception
-    {
+    public void gameOver(int winner) throws Exception {
         // send the game state:
         out_pipe.append("gameOver ").append(String.valueOf(winner)).append("\n");
         out_pipe.flush();
-                
+
         // wait for ack:
-        in_pipe.readLine();        
+        in_pipe.readLine();
     }
-    
-    
+
     @Override
     public AI clone() {
-        return new SocketAI(TIME_BUDGET, ITERATIONS_BUDGET, serverAddress, serverPort, communication_language, utt);
+        return new SocketAI(TIME_BUDGET, ITERATIONS_BUDGET, serverAddress, serverPort,
+            communication_language, utt);
     }
-    
 
     @Override
     public List<ParameterSpecification> getParameters() {
         List<ParameterSpecification> l = new ArrayList<>();
-        
+
         l.add(new ParameterSpecification("Server Address", String.class, "127.0.0.1"));
         l.add(new ParameterSpecification("Server Port", Integer.class, 9898));
         l.add(new ParameterSpecification("Language", Integer.class, LANGUAGE_XML));
-        
+
         return l;
     }
 }

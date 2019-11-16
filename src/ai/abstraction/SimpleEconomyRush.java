@@ -21,7 +21,6 @@ import rts.units.UnitType;
 import rts.units.UnitTypeTable;
 
 /**
- *
  * @author rubensolv
  */
 public class SimpleEconomyRush extends AbstractionLayerAI {
@@ -67,21 +66,19 @@ public class SimpleEconomyRush extends AbstractionLayerAI {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         Player p = gs.getPlayer(player);
         PlayerAction pa = new PlayerAction();
-        
+
         // behavior of bases:
         for (Unit u : pgs.getUnits()) {
-            if (u.getType() == baseType
-                    && u.getPlayer() == player
-                    && gs.getActionAssignment(u) == null) {
+            if (u.getType() == baseType && u.getPlayer() == player
+                && gs.getActionAssignment(u) == null) {
                 baseBehavior(u, p, pgs);
             }
         }
-        
+
         // behavior of barracks:
         for (Unit u : pgs.getUnits()) {
-            if (u.getType() == barracksType
-                    && u.getPlayer() == player
-                    && gs.getActionAssignment(u) == null) {
+            if (u.getType() == barracksType && u.getPlayer() == player
+                && gs.getActionAssignment(u) == null) {
                 barracksBehavior(u, p, pgs);
             }
         }
@@ -89,9 +86,7 @@ public class SimpleEconomyRush extends AbstractionLayerAI {
         // behavior of workers:
         List<Unit> workers = new ArrayList<Unit>();
         for (Unit u : pgs.getUnits()) {
-            if (u.getType().canHarvest
-                    && u.getPlayer() == player
-                    && u.getType() == workerType) {
+            if (u.getType().canHarvest && u.getPlayer() == player && u.getType() == workerType) {
                 workers.add(u);
             }
         }
@@ -99,9 +94,8 @@ public class SimpleEconomyRush extends AbstractionLayerAI {
 
         // behavior of melee units:
         for (Unit u : pgs.getUnits()) {
-            if (u.getType().canAttack && !u.getType().canHarvest
-                    && u.getPlayer() == player
-                    && gs.getActionAssignment(u) == null) {
+            if (u.getType().canAttack && !u.getType().canHarvest && u.getPlayer() == player
+                && gs.getActionAssignment(u) == null) {
                 meleeUnitBehavior(u, p, gs);
             }
         }
@@ -118,7 +112,8 @@ public class SimpleEconomyRush extends AbstractionLayerAI {
     public List<ParameterSpecification> getParameters() {
         List<ParameterSpecification> parameters = new ArrayList<>();
 
-        parameters.add(new ParameterSpecification("PathFinding", PathFinding.class, new AStarPathFinding()));
+        parameters.add(
+            new ParameterSpecification("PathFinding", PathFinding.class, new AStarPathFinding()));
 
         return parameters;
     }
@@ -126,16 +121,14 @@ public class SimpleEconomyRush extends AbstractionLayerAI {
     public void baseBehavior(Unit u, Player p, PhysicalGameState pgs) {
         int nworkers = 0;
         for (Unit u2 : pgs.getUnits()) {
-            if (u2.getType() == workerType
-                    && u2.getPlayer() == p.getID()) {
+            if (u2.getType() == workerType && u2.getPlayer() == p.getID()) {
                 nworkers++;
             }
         }
         //calculo numero de bases
         int nBases = 0;
         for (Unit u2 : pgs.getUnits()) {
-            if (u2.getType() == baseType
-                    && u2.getPlayer() == p.getID()) {
+            if (u2.getType() == baseType && u2.getPlayer() == p.getID()) {
                 nBases++;
             }
         }
@@ -151,28 +144,24 @@ public class SimpleEconomyRush extends AbstractionLayerAI {
         int nRanged = 0;
         int nHeavy = 0;
         for (Unit u2 : pgs.getUnits()) {
-            if (u2.getType() == lightType
-                    && u.getPlayer() == p.getID()) {
+            if (u2.getType() == lightType && u.getPlayer() == p.getID()) {
                 nLight++;
             }
-            if (u2.getType() == rangedType
-                    && u.getPlayer() == p.getID()) {
+            if (u2.getType() == rangedType && u.getPlayer() == p.getID()) {
                 nRanged++;
             }
-            if (u2.getType() == heavyType
-                    && u.getPlayer() == p.getID()) {
+            if (u2.getType() == heavyType && u.getPlayer() == p.getID()) {
                 nHeavy++;
             }
         }
-        
+
         //check if I already have some light, if not, create.
         if (nLight == 0 && p.getResources() >= lightType.cost) {
             train(u, lightType);
-        }else if (nRanged == 0 && p.getResources() >= rangedType.cost) {
-                   // check if I already have some Ranged, if not, create
+        } else if (nRanged == 0 && p.getResources() >= rangedType.cost) {
+            // check if I already have some Ranged, if not, create
             train(u, rangedType);
-            
-        }else if (nHeavy == 0 && p.getResources() >= heavyType.cost) {
+        } else if (nHeavy == 0 && p.getResources() >= heavyType.cost) {
             //check if I already have some Heavy, if not, create.
             train(u, heavyType);
         }
@@ -230,12 +219,10 @@ public class SimpleEconomyRush extends AbstractionLayerAI {
         }
 
         for (Unit u2 : pgs.getUnits()) {
-            if (u2.getType() == baseType
-                    && u2.getPlayer() == p.getID()) {
+            if (u2.getType() == baseType && u2.getPlayer() == p.getID()) {
                 nbases++;
             }
-            if (u2.getType() == barracksType
-                    && u2.getPlayer() == p.getID()) {
+            if (u2.getType() == barracksType && u2.getPlayer() == p.getID()) {
                 nbarracks++;
             }
         }
@@ -245,7 +232,8 @@ public class SimpleEconomyRush extends AbstractionLayerAI {
             // build a base:
             if (p.getResources() >= baseType.cost + resourcesUsed) {
                 Unit u = freeWorkers.remove(0);
-                buildIfNotAlreadyBuilding(u, baseType, u.getX(), u.getY(), reservedPositions, p, pgs);
+                buildIfNotAlreadyBuilding(u, baseType, u.getX(), u.getY(), reservedPositions, p,
+                    pgs);
                 resourcesUsed += baseType.cost;
             }
         }
@@ -254,7 +242,8 @@ public class SimpleEconomyRush extends AbstractionLayerAI {
             // build a barracks:
             if (p.getResources() >= barracksType.cost + resourcesUsed) {
                 Unit u = freeWorkers.remove(0);
-                buildIfNotAlreadyBuilding(u, barracksType, u.getX(), u.getY(), reservedPositions, p, pgs);
+                buildIfNotAlreadyBuilding(u, barracksType, u.getX(), u.getY(), reservedPositions, p,
+                    pgs);
                 resourcesUsed += barracksType.cost;
             }
         }
@@ -296,5 +285,4 @@ public class SimpleEconomyRush extends AbstractionLayerAI {
             }
         }
     }
-
 }

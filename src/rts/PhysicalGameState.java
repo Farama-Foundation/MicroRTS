@@ -53,10 +53,12 @@ public class PhysicalGameState {
      */
     public static PhysicalGameState load(String fileName, UnitTypeTable utt) throws Exception {
         try {
-            return PhysicalGameState.fromXML(new SAXBuilder().build(fileName).getRootElement(), utt);
+            return PhysicalGameState
+                .fromXML(new SAXBuilder().build(fileName).getRootElement(), utt);
         } catch (IllegalArgumentException | FileNotFoundException e) {
             // Attempt to load the resource as a resource stream.
-            try (InputStream is = PhysicalGameState.class.getClassLoader().getResourceAsStream(fileName)) {
+            try (InputStream is = PhysicalGameState.class.getClassLoader()
+                .getResourceAsStream(fileName)) {
                 return fromXML((new SAXBuilder()).build(is).getRootElement(), utt);
             } catch (IllegalArgumentException var3) {
                 throw new IllegalArgumentException("Error loading map: " + fileName, var3);
@@ -65,8 +67,8 @@ public class PhysicalGameState {
     }
 
     /**
-     * Creates a new game state map with the informed width and height.
-     * Initializes an empty terrain.
+     * Creates a new game state map with the informed width and height. Initializes an empty
+     * terrain.
      *
      * @param a_width
      * @param a_height
@@ -78,8 +80,8 @@ public class PhysicalGameState {
     }
 
     /**
-     * Creates a new game state map with the informed width and height.
-     * Initializes with the received terrain.
+     * Creates a new game state map with the informed width and height. Initializes with the
+     * received terrain.
      *
      * @param a_width
      * @param a_height
@@ -106,8 +108,8 @@ public class PhysicalGameState {
     }
 
     /**
-     * Sets a new width. This do not change the terrain array, remember to
-     * change that when you change the map width or height
+     * Sets a new width. This do not change the terrain array, remember to change that when you
+     * change the map width or height
      *
      * @param w
      */
@@ -116,8 +118,8 @@ public class PhysicalGameState {
     }
 
     /**
-     * Sets a new height. This do not change the terrain array, remember to
-     * change that when you change the map width or height
+     * Sets a new height. This do not change the terrain array, remember to change that when you
+     * change the map width or height
      *
      * @param h
      */
@@ -163,7 +165,8 @@ public class PhysicalGameState {
      */
     public void addPlayer(Player p) {
         if (p.getID() != players.size()) {
-            throw new IllegalArgumentException("PhysicalGameState.addPlayer: player added in the wrong order.");
+            throw new IllegalArgumentException(
+                "PhysicalGameState.addPlayer: player added in the wrong order.");
         }
         players.add(p);
     }
@@ -172,14 +175,14 @@ public class PhysicalGameState {
      * Adds a new {@link Unit} to the map if its position is free
      *
      * @param newUnit
-     * @throws IllegalArgumentException if the new unit's position is already
-     * occupied
+     * @throws IllegalArgumentException if the new unit's position is already occupied
      */
     public void addUnit(Unit newUnit) throws IllegalArgumentException {
         for (Unit existingUnit : units) {
             if (newUnit.getX() == existingUnit.getX() && newUnit.getY() == existingUnit.getY()) {
                 throw new IllegalArgumentException(
-                        "PhysicalGameState.addUnit: added two units in position: (" + newUnit.getX() + ", " + newUnit.getY() + ")");
+                    "PhysicalGameState.addUnit: added two units in position: (" + newUnit.getX()
+                        + ", " + newUnit.getY() + ")");
             }
         }
         units.add(newUnit);
@@ -238,8 +241,7 @@ public class PhysicalGameState {
     }
 
     /**
-     * Returns the {@link Unit} at a given coordinate or null if no unit is
-     * present
+     * Returns the {@link Unit} at a given coordinate or null if no unit is present
      *
      * @param x
      * @param y
@@ -257,21 +259,22 @@ public class PhysicalGameState {
     /**
      * Returns the units within a squared area
      *
-     * @param x top left coordinate of the square
-     * @param y top left coordinate of the square
+     * @param x           top left coordinate of the square
+     * @param y           top left coordinate of the square
      * @param squareRange square size
      * @return
      */
     public Collection<Unit> getUnitsAround(int x, int y, int squareRange) {
         // returns the units around a rectangle with same width and height
-    	return getUnitsAround(x, y, squareRange, squareRange);
+        return getUnitsAround(x, y, squareRange, squareRange);
     }
-    
+
     /**
-     * Returns units within a rectangular area 
-     * @param x top left coordinate of the rectangle
-     * @param y top left coordinate of the square 
-     * @param width rectangle width
+     * Returns units within a rectangular area
+     *
+     * @param x      top left coordinate of the rectangle
+     * @param y      top left coordinate of the square
+     * @param width  rectangle width
      * @param height rectangle height
      * @return
      */
@@ -284,12 +287,10 @@ public class PhysicalGameState {
         }
         return closeUnits;
     }
-    
-    
 
     /**
-     * Returns the winner of the game, given the unit counts or -1 if the game
-     * is not over TODO: verify where unit counts are being compared!
+     * Returns the winner of the game, given the unit counts or -1 if the game is not over TODO:
+     * verify where unit counts are being compared!
      *
      * @return
      */
@@ -315,8 +316,7 @@ public class PhysicalGameState {
     }
 
     /**
-     * Returns whether the game is over. The game is over when a player has zero
-     * units
+     * Returns whether the game is over. The game is over when a player has zero units
      *
      * @return
      */
@@ -352,7 +352,8 @@ public class PhysicalGameState {
      * @see java.lang.Object#clone()
      */
     public PhysicalGameState clone() {
-        PhysicalGameState pgs = new PhysicalGameState(width, height, terrain);  // The terrain is shared amongst all instances, since it never changes
+        PhysicalGameState pgs = new PhysicalGameState(width, height,
+            terrain);  // The terrain is shared amongst all instances, since it never changes
         for (Player p : players) {
             pgs.players.add(p.clone());
         }
@@ -363,13 +364,14 @@ public class PhysicalGameState {
     }
 
     /**
-     * Clone the physical game state, but does not clone the units The terrain
-     * is shared amongst all instances, since it never changes
+     * Clone the physical game state, but does not clone the units The terrain is shared amongst all
+     * instances, since it never changes
      *
      * @return
      */
     public PhysicalGameState cloneKeepingUnits() {
-        PhysicalGameState pgs = new PhysicalGameState(width, height, terrain);  // The terrain is shared amongst all instances, since it never changes
+        PhysicalGameState pgs = new PhysicalGameState(width, height,
+            terrain);  // The terrain is shared amongst all instances, since it never changes
         pgs.players.addAll(players);
         pgs.units.addAll(units);
         return pgs;
@@ -408,8 +410,8 @@ public class PhysicalGameState {
     }
 
     /**
-     * This function tests if two PhysicalGameStates are identical (I didn't
-     * name this method "equals" since I don't want Java to use it)
+     * This function tests if two PhysicalGameStates are identical (I didn't name this method
+     * "equals" since I don't want Java to use it)
      *
      * @param pgs
      * @return
@@ -453,21 +455,21 @@ public class PhysicalGameState {
     }
 
     /**
-     * This function tests if two PhysicalGameStates are identical, including their terrain
-     *      *
+     * This function tests if two PhysicalGameStates are identical, including their terrain *
+     *
      * @param pgs
      * @return
      */
     public boolean equivalentsIncludingTerrain(PhysicalGameState pgs) {
         if (this.equivalents(pgs)) {
             return Arrays.toString(this.terrain).equals(Arrays.toString(pgs.terrain));
-        } else
+        } else {
             return false;
+        }
     }
 
     /**
-     * Returns an array with true if the given position has
-     * {@link PhysicalGameState.TERRAIN_NONE}
+     * Returns an array with true if the given position has {@link PhysicalGameState.TERRAIN_NONE}
      *
      * @return
      */
@@ -492,7 +494,8 @@ public class PhysicalGameState {
      * @param w
      */
     public void toxml(XMLWriter w) {
-        w.tagWithAttributes(this.getClass().getName(), "width=\"" + width + "\" height=\"" + height + "\"");
+        w.tagWithAttributes(this.getClass().getName(),
+            "width=\"" + width + "\" height=\"" + height + "\"");
         StringBuilder tmp = new StringBuilder(height * width);
 
         for (int i = 0; i < height * width; i++) {
@@ -626,5 +629,4 @@ public class PhysicalGameState {
             u.setHitPoints(u.getType().hp);
         }
     }
-
 }

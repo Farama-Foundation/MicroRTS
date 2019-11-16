@@ -16,15 +16,15 @@ import rts.units.Unit;
 import rts.units.UnitTypeTable;
 
 /**
- * The believe state stores the last observed location of an opponent's unit.
- * If the locations is visible again we remove the unit from the believe state.
+ * The believe state stores the last observed location of an opponent's unit. If the locations is
+ * visible again we remove the unit from the believe state.
  *
  * @author albertouri
  */
 public class BS2_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
 
     GameState initialGameState = null;
-    
+
     // list of units we "believe" exist (for now it's just "last seen" position)
     List<Unit> lastKnownPosition = new LinkedList<Unit>();
     PartiallyObservableGameState lastObservedGame = null;
@@ -34,26 +34,33 @@ public class BS2_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
     }
 
     public BS2_NaiveMCTS(int available_time, int max_playouts, int lookahead, int max_depth,
-            float e_l, float discout_l, float e_g, float discout_g, float e_0, float discout_0, AI policy, EvaluationFunction a_ef, boolean fensa) {
-        super(available_time, max_playouts, lookahead, max_depth, e_l, discout_l, e_g, discout_g, e_0, discout_0, policy, a_ef, fensa);
+        float e_l, float discout_l, float e_g, float discout_g, float e_0, float discout_0,
+        AI policy, EvaluationFunction a_ef, boolean fensa) {
+        super(available_time, max_playouts, lookahead, max_depth, e_l, discout_l, e_g, discout_g,
+            e_0, discout_0, policy, a_ef, fensa);
     }
 
     public BS2_NaiveMCTS(int available_time, int max_playouts, int lookahead, int max_depth,
-            float e_l, float e_g, float e_0, AI policy, EvaluationFunction a_ef, boolean fensa) {
-        super(available_time, max_playouts, lookahead, max_depth, e_l, e_g, e_0, policy, a_ef, fensa);
+        float e_l, float e_g, float e_0, AI policy, EvaluationFunction a_ef, boolean fensa) {
+        super(available_time, max_playouts, lookahead, max_depth, e_l, e_g, e_0, policy, a_ef,
+            fensa);
     }
 
     public BS2_NaiveMCTS(int available_time, int max_playouts, int lookahead, int max_depth,
-            float e_l, float e_g, float e_0, int a_global_strategy, AI policy, EvaluationFunction a_ef, boolean fensa) {
-        super(available_time, max_playouts, lookahead, max_depth, e_l, e_g, e_0, a_global_strategy, policy, a_ef, fensa);
+        float e_l, float e_g, float e_0, int a_global_strategy, AI policy, EvaluationFunction a_ef,
+        boolean fensa) {
+        super(available_time, max_playouts, lookahead, max_depth, e_l, e_g, e_0, a_global_strategy,
+            policy, a_ef, fensa);
     }
 
     @Override
     public AI clone() {
-        return new BS2_NaiveMCTS(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME, MAX_TREE_DEPTH, epsilon_l, discount_l, epsilon_g, discount_g, epsilon_0, discount_0, playoutPolicy, ef, forceExplorationOfNonSampledActions);
+        return new BS2_NaiveMCTS(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME, MAX_TREE_DEPTH,
+            epsilon_l, discount_l, epsilon_g, discount_g, epsilon_0, discount_0, playoutPolicy, ef,
+            forceExplorationOfNonSampledActions);
     }
 
-   @Override
+    @Override
     public final PlayerAction getAction(int player, GameState gs) throws Exception {
         if (gs.canExecuteAnyAction(player)) {
             startNewComputation(player, gs);
@@ -63,51 +70,48 @@ public class BS2_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
             return new PlayerAction();
         }
     }
-    
-    
+
     @Override
     public void startNewComputation(int a_player, GameState gs) throws Exception {
-        if (initialGameState!=null && gs.getTime()==0) {
-            setInitialBelieveState(a_player, initialGameState.clone(), new PartiallyObservableGameState(initialGameState, a_player));
+        if (initialGameState != null && gs.getTime() == 0) {
+            setInitialBelieveState(a_player, initialGameState.clone(),
+                new PartiallyObservableGameState(initialGameState, a_player));
         }
-        
+
         if (gs instanceof PartiallyObservableGameState) {
             // create a sampling world from our believe-states
             updateBelieveState(player, (PartiallyObservableGameState) gs);
             gs = sampleWorld(player, (PartiallyObservableGameState) gs);
-        }        
-        
+        }
+
         player = a_player;
         current_iteration = 0;
-        tree = new NaiveMCTSNode(player, 1-player, gs, null, ef.upperBound(gs), current_iteration++, forceExplorationOfNonSampledActions);
-        
-        if (tree.moveGenerator==null) {
+        tree = new NaiveMCTSNode(player, 1 - player, gs, null, ef.upperBound(gs),
+            current_iteration++, forceExplorationOfNonSampledActions);
+
+        if (tree.moveGenerator == null) {
             max_actions_so_far = 0;
         } else {
-            max_actions_so_far = Math.max(tree.moveGenerator.getSize(),max_actions_so_far);        
+            max_actions_so_far = Math.max(tree.moveGenerator.getSize(), max_actions_so_far);
         }
         gs_to_start_from = gs;
-        
+
         epsilon_l = initial_epsilon_l;
         epsilon_g = initial_epsilon_g;
-        epsilon_0 = initial_epsilon_0;        
-    }    
+        epsilon_0 = initial_epsilon_0;
+    }
 
-    
-    public void reset()
-    {
+    public void reset() {
         initialGameState = null;
-    }   
-    
+    }
 
-    public void preGameAnalysis(GameState gs, long milliseconds) throws Exception
-    {
+    public void preGameAnalysis(GameState gs, long milliseconds) throws Exception {
         initialGameState = gs.clone();
-    }    
-    
+    }
 
     @Override
-    public void setInitialBelieveState(int player, GameState gs, PartiallyObservableGameState pogs) {
+    public void setInitialBelieveState(int player, GameState gs,
+        PartiallyObservableGameState pogs) {
         int opponent = 1 - player;
         // save all enemy's units that are not visible
         for (Unit u : gs.getUnits()) {
@@ -153,21 +157,30 @@ public class BS2_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
                 if (uaa != null && uaa.action.getType() == UnitAction.TYPE_MOVE) {
                     int offsx = 0;
                     int offsy = 0;
-                    if (uaa.action.getDirection() == UnitAction.DIRECTION_UP) offsy = -1;
-                    if (uaa.action.getDirection() == UnitAction.DIRECTION_RIGHT) offsx = 1;
-                    if (uaa.action.getDirection() == UnitAction.DIRECTION_DOWN) offsy = 1;
-                    if (uaa.action.getDirection() == UnitAction.DIRECTION_LEFT) offsx = -1;
+                    if (uaa.action.getDirection() == UnitAction.DIRECTION_UP) {
+                        offsy = -1;
+                    }
+                    if (uaa.action.getDirection() == UnitAction.DIRECTION_RIGHT) {
+                        offsx = 1;
+                    }
+                    if (uaa.action.getDirection() == UnitAction.DIRECTION_DOWN) {
+                        offsy = 1;
+                    }
+                    if (uaa.action.getDirection() == UnitAction.DIRECTION_LEFT) {
+                        offsx = -1;
+                    }
                     if (!gs.observable(u.getX() + offsx, u.getY() + offsy)) {
-//                        System.out.println("Enemy moved to fog of war!");
+                        //                        System.out.println("Enemy moved to fog of war!");
                         lastKnownPosition.add(u.clone());
                     }
                 } else { // unit was static
                     if (!gs.observable(u.getX(), u.getY())) { // is location still observable?
-                        if (!wasUnderAttack(u)) { // wasn't under attack (sometimes units kill each other)
-//                            System.out.println("Enemy now is out of sight! " + u.toString());
+                        if (!wasUnderAttack(
+                            u)) { // wasn't under attack (sometimes units kill each other)
+                            //                            System.out.println("Enemy now is out of sight! " + u.toString());
                             lastKnownPosition.add(u.clone());
                         } else {
-//                            System.out.println("Enemy unit killed out of sight! (probably they kill each other)");
+                            //                            System.out.println("Enemy unit killed out of sight! (probably they kill each other)");
                         }
                     }
                 }
@@ -188,13 +201,22 @@ public class BS2_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
 
                 // sometimes a visible unit start to move or produce a unit on top of a believe unit
                 UnitActionAssignment uaa = gs.getActionAssignment(u);
-                if (uaa != null && (uaa.action.getType() == UnitAction.TYPE_MOVE || uaa.action.getType() == UnitAction.TYPE_PRODUCE)) {
+                if (uaa != null && (uaa.action.getType() == UnitAction.TYPE_MOVE
+                    || uaa.action.getType() == UnitAction.TYPE_PRODUCE)) {
                     int offsx = u.getX();
                     int offsy = u.getY();
-                    if (uaa.action.getDirection() == UnitAction.DIRECTION_UP) offsy -= 1;
-                    if (uaa.action.getDirection() == UnitAction.DIRECTION_RIGHT) offsx += 1;
-                    if (uaa.action.getDirection() == UnitAction.DIRECTION_DOWN) offsy += 1;
-                    if (uaa.action.getDirection() == UnitAction.DIRECTION_LEFT) offsx -= 1;
+                    if (uaa.action.getDirection() == UnitAction.DIRECTION_UP) {
+                        offsy -= 1;
+                    }
+                    if (uaa.action.getDirection() == UnitAction.DIRECTION_RIGHT) {
+                        offsx += 1;
+                    }
+                    if (uaa.action.getDirection() == UnitAction.DIRECTION_DOWN) {
+                        offsy += 1;
+                    }
+                    if (uaa.action.getDirection() == UnitAction.DIRECTION_LEFT) {
+                        offsx -= 1;
+                    }
                     for (Unit bu : lastKnownPosition) {
                         if (bu.getX() == offsx && bu.getY() == offsy) {
                             lastKnownPosition.remove(bu);
@@ -213,12 +235,11 @@ public class BS2_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
 
         for (UnitActionAssignment ua : lastObservedGame.getUnitActions().values()) {
             if (ua.action.getType() == UnitAction.TYPE_ATTACK_LOCATION
-                    && ua.action.getLocationX() == u.getX() && ua.action.getLocationY() == u.getY()) {
+                && ua.action.getLocationX() == u.getX() && ua.action.getLocationY() == u.getY()) {
                 return true;
             }
         }
 
         return false;
     }
-
 }

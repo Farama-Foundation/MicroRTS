@@ -8,10 +8,7 @@ import java.util.Properties;
 public class GameSettings {
 
     public enum LaunchMode {
-        STANDALONE,
-        GUI,
-        SERVER,
-        CLIENT
+        STANDALONE, GUI, SERVER, CLIENT
     }
 
     // Networking
@@ -29,16 +26,14 @@ public class GameSettings {
     private boolean partiallyObservable = false;
     private int uttVersion = 1;
     private int conflictPolicy = 1;
-    
+
     // Opponents:
     private String AI1 = "";
     private String AI2 = "";
-    
 
-    public GameSettings( LaunchMode launchMode, String serverAddress, int serverPort, 
-                          int serializationType, String mapLocation, int maxCycles, 
-                          boolean partiallyObservable, int uttVersion, int confictPolicy, 
-                          String AI1, String AI2) {
+    public GameSettings(LaunchMode launchMode, String serverAddress, int serverPort,
+        int serializationType, String mapLocation, int maxCycles, boolean partiallyObservable,
+        int uttVersion, int confictPolicy, String AI1, String AI2) {
         this.launchMode = launchMode;
         this.serverAddress = serverAddress;
         this.serverPort = serverPort;
@@ -97,27 +92,32 @@ public class GameSettings {
     }
 
     /**
-     * Fetches the default configuration file which will be located in the root direction called "config.properties".
+     * Fetches the default configuration file which will be located in the root direction called
+     * "config.properties".
      */
     public static Properties fetchDefaultConfig() throws IOException {
         Properties prop = new Properties();
         InputStream is = GameSettings.class.getResourceAsStream("/config.properties");
-        if (is == null) is = new FileInputStream("resources/config.properties");
+        if (is == null) {
+            is = new FileInputStream("resources/config.properties");
+        }
         prop.load(is);
         return prop;
     }
-   
-     /**
+
+    /**
      * Fetches the configuration file which will be located in the path on propertiesFile.
      */
     public static Properties fetchConfig(String propertiesFile) throws IOException {
         Properties prop = new Properties();
         InputStream is = GameSettings.class.getResourceAsStream(propertiesFile);
-        if (is == null) is = new FileInputStream(propertiesFile);
+        if (is == null) {
+            is = new FileInputStream(propertiesFile);
+        }
         prop.load(is);
         return prop;
     }
-    
+
     /**
      * Generates game settings based on the provided configuration file.
      */
@@ -130,42 +130,35 @@ public class GameSettings {
         int serializationType = readIntegerProperty(prop, "serialization_type", 2);
         String mapLocation = prop.getProperty("map_location");
         int maxCycles = readIntegerProperty(prop, "max_cycles", 5000);
-        boolean partiallyObservable = Boolean.parseBoolean(prop.getProperty("partially_observable"));
+        boolean partiallyObservable = Boolean
+            .parseBoolean(prop.getProperty("partially_observable"));
         int uttVersion = readIntegerProperty(prop, "UTT_version", 2);
         int conflictPolicy = readIntegerProperty(prop, "conflict_policy", 1);
         LaunchMode launchMode = LaunchMode.valueOf(prop.getProperty("launch_mode"));
         String AI1 = prop.getProperty("AI1");
         String AI2 = prop.getProperty("AI2");
 
-        return new GameSettings(launchMode, serverAddress, serverPort,
-                                serializationType, mapLocation, maxCycles,
-                                partiallyObservable, uttVersion, conflictPolicy, 
-                                AI1, AI2);
+        return new GameSettings(launchMode, serverAddress, serverPort, serializationType,
+            mapLocation, maxCycles, partiallyObservable, uttVersion, conflictPolicy, AI1, AI2);
     }
-    
-    
-    public static int readIntegerProperty(Properties prop, String name, int defaultValue)
-    {
+
+    public static int readIntegerProperty(Properties prop, String name, int defaultValue) {
         String stringValue = prop.getProperty(name);
-        if (stringValue == null) return defaultValue;
+        if (stringValue == null) {
+            return defaultValue;
+        }
         return Integer.parseInt(stringValue);
     }
-    
 
     @Override
     public String toString() {
-        return "----------Game Settings----------\n" +
-                "Running as Server: " + getLaunchMode().toString() + "\n" +
-                "Server Address: " + getServerAddress() + "\n" +
-                "Server Port: " + getServerPort() + "\n" +
-                "Serialization Type: " + getSerializationType() + "\n" +
-                "Map Location: " + getMapLocation() + "\n" +
-                "Max Cycles: " + getMaxCycles() + "\n" +
-                "Partially Observable: " + isPartiallyObservable() + "\n" +
-                "Rules Version: " + getUTTVersion() + "\n" +
-                "Conflict Policy: " + getConflictPolicy() + "\n" +
-                "AI1: " + getAI1() + "\n" +
-                "AI2: " + getAI2() + "\n" +
-                "------------------------------------------------";
+        return "----------Game Settings----------\n" + "Running as Server: " + getLaunchMode()
+            .toString() + "\n" + "Server Address: " + getServerAddress() + "\n" + "Server Port: "
+            + getServerPort() + "\n" + "Serialization Type: " + getSerializationType() + "\n"
+            + "Map Location: " + getMapLocation() + "\n" + "Max Cycles: " + getMaxCycles() + "\n"
+            + "Partially Observable: " + isPartiallyObservable() + "\n" + "Rules Version: "
+            + getUTTVersion() + "\n" + "Conflict Policy: " + getConflictPolicy() + "\n" + "AI1: "
+            + getAI1() + "\n" + "AI2: " + getAI2() + "\n"
+            + "------------------------------------------------";
     }
 }

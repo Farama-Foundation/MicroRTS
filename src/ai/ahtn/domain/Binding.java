@@ -7,25 +7,25 @@
 package ai.ahtn.domain;
 
 /**
- *
  * @author santi
  */
 public class Binding {
+
     public Variable v;
     public Parameter p;
-    
+
     public Binding(Variable a_v, Parameter a_p) {
         v = a_v;
         p = a_p;
     }
-    
+
     public String toString() {
         return "(" + v + " -> " + p + ")";
     }
-    
+
     public boolean equals(Object o) {
         if (o instanceof Binding) {
-            Binding b = (Binding)o;
+            Binding b = (Binding) o;
             return v.equals(b.v) && p.equals(b.p);
         }
         return false;

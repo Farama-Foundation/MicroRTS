@@ -17,33 +17,30 @@ import rts.units.UnitTypeTable;
 import util.Pair;
 
 /**
- *
  * @author santi
- *
- * This class implements the diea of "randomized alpha-beta" search form Michael
- * Buro's group into RTMM
- *
+ * <p>
+ * This class implements the diea of "randomized alpha-beta" search form Michael Buro's group into
+ * RTMM
  */
 public class IDRTMinimaxRandomized extends IDRTMinimax {
+
     int m_repeats = 10; // howmany times will we repeat the search for each action in the root node?
-    
-    
+
     public IDRTMinimaxRandomized(UnitTypeTable utt) {
         this(100, 10, new SimpleSqrtEvaluationFunction3());
     }
 
-    
     public IDRTMinimaxRandomized(int tpc, int repeats, EvaluationFunction a_ef) {
         super(tpc, a_ef);
     }
 
-    
     public AI clone() {
         return new IDRTMinimaxRandomized(TIME_BUDGET, m_repeats, ef);
     }
 
-
-    public PlayerAction timeBoundedRealTimeMinimaxRandomizedABOutsideStack(GameState initial_gs, int maxplayer, int minplayer, int lookAhead, long cutOffTime, boolean needAResult) throws Exception {
+    public PlayerAction timeBoundedRealTimeMinimaxRandomizedABOutsideStack(GameState initial_gs,
+        int maxplayer, int minplayer, int lookAhead, long cutOffTime, boolean needAResult)
+        throws Exception {
         RTMiniMaxNode head;
         if (stack == null) {
             stack = new LinkedList<RTMiniMaxNode>();
@@ -57,9 +54,9 @@ public class IDRTMinimaxRandomized extends IDRTMinimax {
         }
         while (!stack.isEmpty() && System.currentTimeMillis() < cutOffTime) {
 
-//            System.out.print("Stack: [ ");
-//            for(RTMiniMaxNode n:stack) System.out.print(" " + n.type + "(" + n.gs.getTime() + ") ");
-//            System.out.println("]");
+            //            System.out.print("Stack: [ ");
+            //            for(RTMiniMaxNode n:stack) System.out.print(" " + n.type + "(" + n.gs.getTime() + ") ");
+            //            System.out.println("]");
 
             RTMiniMaxNode current = stack.get(0);
             switch (current.type) {
@@ -77,17 +74,17 @@ public class IDRTMinimaxRandomized extends IDRTMinimax {
                             }
                         }
                         nLeaves++;
-                        lastResult = new Pair<PlayerAction, Float>(null, ef.evaluate(maxplayer, minplayer, current.gs));
+                        lastResult = new Pair<PlayerAction, Float>(null,
+                            ef.evaluate(maxplayer, minplayer, current.gs));
                         stack.remove(0);
                     } else if (current.gs.canExecuteAnyAction(maxplayer)) {
-                        if (stack.size() == 1
-                                || !current.gs.canExecuteAnyAction(minplayer)) {
+                        if (stack.size() == 1 || !current.gs.canExecuteAnyAction(minplayer)) {
                             current.type = 0;
                         } else {
                             // randomize which player we will consider next!
                             // this is the ONLY difference between this method and the starndard alpha-beta:                                    
                             current.type = r.nextInt(2) + 1;
-//                                    System.out.println(current.type);
+                            //                                    System.out.println(current.type);
                         }
                     } else if (current.gs.canExecuteAnyAction(minplayer)) {
                         current.type = 1;
@@ -110,11 +107,12 @@ public class IDRTMinimaxRandomized extends IDRTMinimax {
                         //                            while(current.actions.size()>MAX_BRANCHING_FACTOR) current.actions.remove(r.nextInt(current.actions.size()));
                         currentRR.best = null;
                         PlayerAction next = currentRR.actions.getNextAction(cutOffTime);
-//                        System.out.println("Randomized start!");
+                        //                        System.out.println("Randomized start!");
                         if (next != null) {
-//                            System.out.println("- action: " + next.toString());
+                            //                            System.out.println("- action: " + next.toString());
                             GameState gs2 = currentRR.gs.cloneIssue(next);
-                            stack.add(0, new RTMiniMaxNode(-1, gs2, -EvaluationFunction.VICTORY, EvaluationFunction.VICTORY));
+                            stack.add(0, new RTMiniMaxNode(-1, gs2, -EvaluationFunction.VICTORY,
+                                EvaluationFunction.VICTORY));
                         } else {
                             // This can only happen if the getNextAction call times out...
                             break;
@@ -124,14 +122,16 @@ public class IDRTMinimaxRandomized extends IDRTMinimax {
                         currentRR.iterations_run++;
                         if (currentRR.iterations_run < m_repeats) {
                             PlayerAction next = currentRR.actions.getLastAction();
-                            if (next==null) {
-                                System.out.println("getLastAction returned null!!! time: " + System.currentTimeMillis() + "  cutOff: " + cutOffTime);
+                            if (next == null) {
+                                System.out.println("getLastAction returned null!!! time: " + System
+                                    .currentTimeMillis() + "  cutOff: " + cutOffTime);
                                 System.out.println("Action generator status:");
                                 System.out.println(currentRR.actions);
                             }
                             GameState gs2 = currentRR.gs.cloneIssue(next);
-                            stack.add(0, new RTMiniMaxNode(-1, gs2, -EvaluationFunction.VICTORY, EvaluationFunction.VICTORY));
-//                            System.out.println("  " + currentRR.iterations_run + " cycle: " + gs2.getTime());
+                            stack.add(0, new RTMiniMaxNode(-1, gs2, -EvaluationFunction.VICTORY,
+                                EvaluationFunction.VICTORY));
+                            //                            System.out.println("  " + currentRR.iterations_run + " cycle: " + gs2.getTime());
                         } else {
                             // compute the score:
                             float mean = 0;
@@ -142,7 +142,8 @@ public class IDRTMinimaxRandomized extends IDRTMinimax {
                             }
                             mean /= (float) m_repeats;
                             for (int i = 0; i < m_repeats; i++) {
-                                std_dev += (mean - currentRR.scores[i]) * (mean - currentRR.scores[i]);
+                                std_dev +=
+                                    (mean - currentRR.scores[i]) * (mean - currentRR.scores[i]);
                             }
                             std_dev /= (float) m_repeats;
                             std_dev = (float) Math.sqrt(std_dev);
@@ -169,9 +170,10 @@ public class IDRTMinimaxRandomized extends IDRTMinimax {
                                     max_branching_so_far = current.actions.getGenerated();
                                 }
                             } else {
-//                                System.out.println("- action: " + next.toString());
+                                //                                System.out.println("- action: " + next.toString());
                                 GameState gs2 = currentRR.gs.cloneIssue(next);
-                                stack.add(0, new RTMiniMaxNode(-1, gs2, -EvaluationFunction.VICTORY, EvaluationFunction.VICTORY));
+                                stack.add(0, new RTMiniMaxNode(-1, gs2, -EvaluationFunction.VICTORY,
+                                    EvaluationFunction.VICTORY));
                             }
                         }
                     }
@@ -185,7 +187,7 @@ public class IDRTMinimaxRandomized extends IDRTMinimax {
                         if (l > max_potential_branching_so_far) {
                             max_potential_branching_so_far = l;
                         }
-//                            while(current.actions.size()>MAX_BRANCHING_FACTOR) current.actions.remove(r.nextInt(current.actions.size()));
+                        //                            while(current.actions.size()>MAX_BRANCHING_FACTOR) current.actions.remove(r.nextInt(current.actions.size()));
                         current.best = null;
                         PlayerAction next = current.actions.getNextAction(cutOffTime);
                         if (next != null) {
@@ -221,7 +223,7 @@ public class IDRTMinimaxRandomized extends IDRTMinimax {
                         if (l > max_potential_branching_so_far) {
                             max_potential_branching_so_far = l;
                         }
-//                            while(current.actions.size()>MAX_BRANCHING_FACTOR) current.actions.remove(r.nextInt(current.actions.size()));
+                        //                            while(current.actions.size()>MAX_BRANCHING_FACTOR) current.actions.remove(r.nextInt(current.actions.size()));
                         current.best = null;
                         PlayerAction next = current.actions.getNextAction(cutOffTime);
                         if (next != null) {
@@ -252,11 +254,10 @@ public class IDRTMinimaxRandomized extends IDRTMinimax {
                     break;
                 case 2: // simulation node:
                     current.gs = current.gs.clone();
-                    while (current.gs.winner() == -1
-                            && !current.gs.gameover()
-                            && //current.gs.getTime()<lookAhead && 
-                            !current.gs.canExecuteAnyAction(maxplayer)
-                            && !current.gs.canExecuteAnyAction(minplayer)) {
+                    while (current.gs.winner() == -1 && !current.gs.gameover() &&
+                        //current.gs.getTime()<lookAhead &&
+                        !current.gs.canExecuteAnyAction(maxplayer) && !current.gs
+                        .canExecuteAnyAction(minplayer)) {
                         current.gs.cycle();
                     }
                     current.type = -1;
@@ -275,29 +276,25 @@ public class IDRTMinimaxRandomized extends IDRTMinimax {
         }
         return null;
     }
-    
-    
+
     public String toString() {
-        return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", " + m_repeats + ", " + ef + ")";
-    }     
-    
-    
+        return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", "
+            + m_repeats + ", " + ef + ")";
+    }
+
     @Override
-    public List<ParameterSpecification> getParameters()
-    {
+    public List<ParameterSpecification> getParameters() {
         List<ParameterSpecification> parameters = super.getParameters();
-        
-        parameters.add(new ParameterSpecification("Repeats",int.class,10));
-        
+
+        parameters.add(new ParameterSpecification("Repeats", int.class, 10));
+
         return parameters;
-    }        
-    
-    
+    }
+
     public int getRepeats() {
         return m_repeats;
     }
-    
-    
+
     public void setRepeats(int a_r) {
         m_repeats = a_r;
     }

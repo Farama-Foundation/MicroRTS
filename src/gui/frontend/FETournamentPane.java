@@ -38,17 +38,16 @@ import tournaments.FixedOpponentsTournament;
 import tournaments.LoadTournamentAIs;
 import tournaments.RoundRobinTournament;
 
-
 /**
- *
  * @author santi
  */
 public class FETournamentPane extends JPanel {
+
     public static final String TOURNAMENT_ROUNDROBIN = "Round Robin";
     public static final String TOURNAMENT_FIXED_OPPONENTS = "Fixed Opponents";
-    
+
     JComboBox tournamentTypeComboBox = null;
-    
+
     DefaultListModel availableAIsListModel = null;
     JList availableAIsList = null;
     DefaultListModel selectedAIsListModel = null;
@@ -57,28 +56,28 @@ public class FETournamentPane extends JPanel {
     JList opponentAIsList = null;
     JButton opponentAddButton = null;
     JButton opponentRemoveButton = null;
-    
+
     JFileChooser mapFileChooser = new JFileChooser();
     JList mapList = null;
     DefaultListModel mapListModel = null;
-    
+
     JFormattedTextField iterationsField = null;
     JFormattedTextField maxGameLengthField = null;
     JFormattedTextField timeBudgetField = null;
     JFormattedTextField iterationsBudgetField = null;
     JFormattedTextField preAnalysisTimeField = null;
-    
+
     JComboBox unitTypeTableBox = null;
     JCheckBox fullObservabilityCheckBox = null;
     JCheckBox selfMatchesCheckBox = null;
     JCheckBox timeoutCheckBox = null;
     JCheckBox gcCheckBox = null;
     JCheckBox tracesCheckBox = null;
-    
+
     JTextArea tournamentProgressTextArea = null;
-    
-    JFileChooser fileChooser = new JFileChooser();    
-    
+
+    JFileChooser fileChooser = new JFileChooser();
+
     public FETournamentPane() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         {
@@ -87,10 +86,9 @@ public class FETournamentPane extends JPanel {
             tournamentTypeComboBox.setAlignmentX(Component.CENTER_ALIGNMENT);
             tournamentTypeComboBox.setAlignmentY(Component.TOP_ALIGNMENT);
             tournamentTypeComboBox.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    JComboBox combo = (JComboBox)e.getSource();
-                    if (combo.getSelectedIndex()==1) {
+                public void actionPerformed(ActionEvent e) {
+                    JComboBox combo = (JComboBox) e.getSource();
+                    if (combo.getSelectedIndex() == 1) {
                         opponentAIsList.setEnabled(true);
                         opponentAddButton.setEnabled(true);
                         opponentRemoveButton.setEnabled(true);
@@ -101,14 +99,14 @@ public class FETournamentPane extends JPanel {
                     }
                 }
             });
-            tournamentTypeComboBox.setMaximumSize(new Dimension(300,24));
+            tournamentTypeComboBox.setMaximumSize(new Dimension(300, 24));
             add(tournamentTypeComboBox);
         }
-        
+
         {
             JPanel p1 = new JPanel();
             p1.setLayout(new BoxLayout(p1, BoxLayout.X_AXIS));
-            
+
             {
                 JPanel p1left = new JPanel();
                 p1left.setLayout(new BoxLayout(p1left, BoxLayout.Y_AXIS));
@@ -116,9 +114,9 @@ public class FETournamentPane extends JPanel {
 
                 availableAIsListModel = new DefaultListModel();
 
-                for(int i = 0;i<FEStatePane.AIs.length;i++) {
+                for (int i = 0; i < FEStatePane.AIs.length; i++) {
                     availableAIsListModel.addElement(FEStatePane.AIs[i]);
-                }                
+                }
                 availableAIsList = new JList(availableAIsListModel);
                 availableAIsList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
                 availableAIsList.setLayoutOrientation(JList.VERTICAL);
@@ -126,61 +124,65 @@ public class FETournamentPane extends JPanel {
                 JScrollPane listScroller = new JScrollPane(availableAIsList);
                 listScroller.setPreferredSize(new Dimension(200, 200));
                 p1left.add(listScroller);
-                
+
                 JButton loadJAR = new JButton("Load Specific JAR");
                 loadJAR.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e)
-                    {
+                    public void actionPerformed(ActionEvent e) {
                         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-                        int returnVal = fileChooser.showOpenDialog((Component)null);
+                        int returnVal = fileChooser.showOpenDialog(null);
                         if (returnVal == JFileChooser.APPROVE_OPTION) {
                             File file = fileChooser.getSelectedFile();
                             try {
-                                List<Class> cl = LoadTournamentAIs.loadTournamentAIsFromJAR(file.getAbsolutePath());
-                                for(Class c:cl) {
+                                List<Class> cl = LoadTournamentAIs
+                                    .loadTournamentAIsFromJAR(file.getAbsolutePath());
+                                for (Class c : cl) {
                                     boolean exists = false;
-                                    for(int i = 0;i<availableAIsListModel.size();i++) {
-                                        Class c2 = (Class)availableAIsListModel.get(i);
+                                    for (int i = 0; i < availableAIsListModel.size(); i++) {
+                                        Class c2 = (Class) availableAIsListModel.get(i);
                                         if (c2.getName().equals(c.getName())) {
                                             exists = true;
                                             break;
                                         }
                                     }
-                                    if (!exists) availableAIsListModel.addElement(c);
+                                    if (!exists) {
+                                        availableAIsListModel.addElement(c);
+                                    }
                                 }
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
-                       }
+                        }
                     }
                 });
                 p1left.add(loadJAR);
-                
+
                 JButton loadJARFolder = new JButton("Load All JARS from Folder");
                 loadJARFolder.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e)
-                    {
+                    public void actionPerformed(ActionEvent e) {
                         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                        int returnVal = fileChooser.showOpenDialog((Component)null);
+                        int returnVal = fileChooser.showOpenDialog(null);
                         if (returnVal == JFileChooser.APPROVE_OPTION) {
                             File file = fileChooser.getSelectedFile();
                             try {
-                                List<Class> cl = LoadTournamentAIs.loadTournamentAIsFromFolder(file.getAbsolutePath());
-                                for(Class c:cl) {
-                                     boolean exists = false;
-                                    for(int i = 0;i<availableAIsListModel.size();i++) {
-                                        Class c2 = (Class)availableAIsListModel.get(i);
+                                List<Class> cl = LoadTournamentAIs
+                                    .loadTournamentAIsFromFolder(file.getAbsolutePath());
+                                for (Class c : cl) {
+                                    boolean exists = false;
+                                    for (int i = 0; i < availableAIsListModel.size(); i++) {
+                                        Class c2 = (Class) availableAIsListModel.get(i);
                                         if (c2.getName().equals(c.getName())) {
                                             exists = true;
                                             break;
                                         }
                                     }
-                                    if (!exists) availableAIsListModel.addElement(c);
-                               }
+                                    if (!exists) {
+                                        availableAIsListModel.addElement(c);
+                                    }
+                                }
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
-                       }
+                        }
                     }
                 });
                 p1left.add(loadJARFolder);
@@ -202,21 +204,22 @@ public class FETournamentPane extends JPanel {
                 p1center.add(listScroller);
                 JButton add = new JButton("+");
                 add.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e)
-                    {
+                    public void actionPerformed(ActionEvent e) {
                         int[] selected = availableAIsList.getSelectedIndices();
-                        for(int idx:selected) {
-                            selectedAIsListModel.addElement(availableAIsList.getModel().getElementAt(idx));
+                        for (int idx : selected) {
+                            selectedAIsListModel
+                                .addElement(availableAIsList.getModel().getElementAt(idx));
                         }
                     }
                 });
                 p1center.add(add);
                 JButton remove = new JButton("-");
                 remove.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e)
-                    {
+                    public void actionPerformed(ActionEvent e) {
                         int selectedIndex = selectedAIsList.getSelectedIndex();
-                        if (selectedIndex>=0) selectedAIsListModel.remove(selectedIndex);
+                        if (selectedIndex >= 0) {
+                            selectedAIsListModel.remove(selectedIndex);
+                        }
                     }
                 });
                 p1center.add(remove);
@@ -237,21 +240,22 @@ public class FETournamentPane extends JPanel {
                 p1right.add(listScroller);
                 opponentAddButton = new JButton("+");
                 opponentAddButton.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e)
-                    {
+                    public void actionPerformed(ActionEvent e) {
                         int[] selected = availableAIsList.getSelectedIndices();
-                        for(int idx:selected) {
-                            opponentAIsListModel.addElement(availableAIsList.getModel().getElementAt(idx));
+                        for (int idx : selected) {
+                            opponentAIsListModel
+                                .addElement(availableAIsList.getModel().getElementAt(idx));
                         }
                     }
                 });
                 p1right.add(opponentAddButton);
                 opponentRemoveButton = new JButton("-");
                 opponentRemoveButton.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e)
-                    {
+                    public void actionPerformed(ActionEvent e) {
                         int selectedIndex = opponentAIsList.getSelectedIndex();
-                        if (selectedIndex>=0) opponentAIsListModel.remove(selectedIndex);
+                        if (selectedIndex >= 0) {
+                            opponentAIsListModel.remove(selectedIndex);
+                        }
                     }
                 });
                 p1right.add(opponentRemoveButton);
@@ -264,7 +268,7 @@ public class FETournamentPane extends JPanel {
             add(p1);
         }
         add(new JSeparator(SwingConstants.HORIZONTAL));
-                
+
         {
             JPanel p2 = new JPanel();
             p2.setLayout(new BoxLayout(p2, BoxLayout.X_AXIS));
@@ -283,9 +287,8 @@ public class FETournamentPane extends JPanel {
                 p2maps.add(listScroller);
                 JButton add = new JButton("+");
                 add.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        int returnVal = mapFileChooser.showOpenDialog((Component)null);
+                    public void actionPerformed(ActionEvent e) {
+                        int returnVal = mapFileChooser.showOpenDialog(null);
                         if (returnVal == JFileChooser.APPROVE_OPTION) {
                             File file = mapFileChooser.getSelectedFile();
                             try {
@@ -293,22 +296,21 @@ public class FETournamentPane extends JPanel {
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
-                       }
+                        }
                     }
                 });
                 p2maps.add(add);
                 JButton remove = new JButton("-");
                 remove.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e)
-                    {
+                    public void actionPerformed(ActionEvent e) {
                         int selected = mapList.getSelectedIndex();
-                        if (selected>=0) {
+                        if (selected >= 0) {
                             mapListModel.remove(selected);
                         }
                     }
                 });
                 p2maps.add(remove);
-                
+
                 p2.add(p2maps);
             }
             p2.add(new JSeparator(SwingConstants.VERTICAL));
@@ -316,22 +318,26 @@ public class FETournamentPane extends JPanel {
             {
                 JPanel p2left = new JPanel();
                 p2left.setLayout(new BoxLayout(p2left, BoxLayout.Y_AXIS));
-                
+
                 // N, maxgame length, time budget, iterations budget
-                iterationsField = FEStatePane.addTextField(p2left,"Iterations:", "10", 4);
-                maxGameLengthField = FEStatePane.addTextField(p2left,"Max Game Length:", "3000", 4);
-                timeBudgetField = FEStatePane.addTextField(p2left,"Time Budget:", "100", 5);
-                iterationsBudgetField = FEStatePane.addTextField(p2left,"Iterations Budget:", "-1", 8);
-                preAnalysisTimeField = FEStatePane.addTextField(p2left,"pre-Analisys time budget:", "1000", 8);
-                p2left.setMaximumSize(new Dimension(1000,1000));    // something sufficiently big for all these options
-                p2.add(p2left);            
-            }            
+                iterationsField = FEStatePane.addTextField(p2left, "Iterations:", "10", 4);
+                maxGameLengthField = FEStatePane
+                    .addTextField(p2left, "Max Game Length:", "3000", 4);
+                timeBudgetField = FEStatePane.addTextField(p2left, "Time Budget:", "100", 5);
+                iterationsBudgetField = FEStatePane
+                    .addTextField(p2left, "Iterations Budget:", "-1", 8);
+                preAnalysisTimeField = FEStatePane
+                    .addTextField(p2left, "pre-Analisys time budget:", "1000", 8);
+                p2left.setMaximumSize(new Dimension(1000,
+                    1000));    // something sufficiently big for all these options
+                p2.add(p2left);
+            }
             p2.add(new JSeparator(SwingConstants.VERTICAL));
 
             {
                 JPanel p2right = new JPanel();
                 p2right.setLayout(new BoxLayout(p2right, BoxLayout.Y_AXIS));
-                
+
                 {
                     JPanel ptmp = new JPanel();
                     ptmp.setLayout(new BoxLayout(ptmp, BoxLayout.X_AXIS));
@@ -339,12 +345,13 @@ public class FETournamentPane extends JPanel {
                     unitTypeTableBox = new JComboBox(FEStatePane.unitTypeTableNames);
                     unitTypeTableBox.setAlignmentX(Component.CENTER_ALIGNMENT);
                     unitTypeTableBox.setAlignmentY(Component.CENTER_ALIGNMENT);
-                    unitTypeTableBox.setMaximumSize(new Dimension(160,20));
+                    unitTypeTableBox.setMaximumSize(new Dimension(160, 20));
                     ptmp.add(unitTypeTableBox);
-                    p2right.setMaximumSize(new Dimension(1000,1000));    // something sufficiently big for all these options
+                    p2right.setMaximumSize(new Dimension(1000,
+                        1000));    // something sufficiently big for all these options
                     p2right.add(ptmp);
-                }                
-                
+                }
+
                 fullObservabilityCheckBox = new JCheckBox("Full Obsservability");
                 fullObservabilityCheckBox.setSelected(true);
                 p2right.add(fullObservabilityCheckBox);
@@ -355,52 +362,52 @@ public class FETournamentPane extends JPanel {
                 timeoutCheckBox.setSelected(true);
                 p2right.add(timeoutCheckBox);
                 gcCheckBox = new JCheckBox("Call garbage collector right before each AI call");
-                gcCheckBox.setSelected(false);                
+                gcCheckBox.setSelected(false);
                 p2right.add(gcCheckBox);
                 tracesCheckBox = new JCheckBox("Save game traces");
-                tracesCheckBox.setSelected(false);                
+                tracesCheckBox.setSelected(false);
                 p2right.add(tracesCheckBox);
-//                preGameAnalysisCheckBox = new JCheckBox("Give time to the AIs before game starts to analyze initial game state");
-//                preGameAnalysisCheckBox.setSelected(false);                
-//                p2right.add(preGameAnalysisCheckBox);
+                //                preGameAnalysisCheckBox = new JCheckBox("Give time to the AIs before game starts to analyze initial game state");
+                //                preGameAnalysisCheckBox.setSelected(false);
+                //                p2right.add(preGameAnalysisCheckBox);
                 p2.add(p2right);
-            }            
+            }
             add(p2);
         }
-        
+
         JButton run = new JButton("Run Tournament");
-        add(run);        
+        add(run);
         run.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 try {
                     // get all the necessary info:
-                    UnitTypeTable utt = FEStatePane.unitTypeTables[unitTypeTableBox.getSelectedIndex()];
-                    String tournamentType = (String)tournamentTypeComboBox.getSelectedItem();
+                    UnitTypeTable utt = FEStatePane.unitTypeTables[unitTypeTableBox
+                        .getSelectedIndex()];
+                    String tournamentType = (String) tournamentTypeComboBox.getSelectedItem();
                     List<AI> selectedAIs = new ArrayList<>();
                     List<AI> opponentAIs = new ArrayList<>();
                     List<String> maps = new ArrayList<>();
-                    for(int i = 0;i<selectedAIsListModel.getSize();i++) {
-                        Class c = (Class)selectedAIsListModel.get(i);
+                    for (int i = 0; i < selectedAIsListModel.getSize(); i++) {
+                        Class c = (Class) selectedAIsListModel.get(i);
                         Constructor cons = c.getConstructor(UnitTypeTable.class);
-                        selectedAIs.add((AI)cons.newInstance(utt));
+                        selectedAIs.add((AI) cons.newInstance(utt));
                     }
-                    for(int i = 0;i<opponentAIsListModel.getSize();i++) {
-                        Class c = (Class)opponentAIsListModel.get(i);
+                    for (int i = 0; i < opponentAIsListModel.getSize(); i++) {
+                        Class c = (Class) opponentAIsListModel.get(i);
                         Constructor cons = c.getConstructor(UnitTypeTable.class);
-                        opponentAIs.add((AI)cons.newInstance(utt));
+                        opponentAIs.add((AI) cons.newInstance(utt));
                     }
-                    for(int i = 0;i<mapListModel.getSize();i++) {
-                        String mapname = (String)mapListModel.getElementAt(i);
+                    for (int i = 0; i < mapListModel.getSize(); i++) {
+                        String mapname = (String) mapListModel.getElementAt(i);
                         maps.add(mapname);
                     }
-                    
+
                     int iterations = Integer.parseInt(iterationsField.getText());
                     int maxGameLength = Integer.parseInt(maxGameLengthField.getText());
                     int timeBudget = Integer.parseInt(timeBudgetField.getText());
                     int iterationsBudget = Integer.parseInt(iterationsBudgetField.getText());
                     int preAnalysisBudget = Integer.parseInt(preAnalysisTimeField.getText());
-                    
+
                     boolean fullObservability = fullObservabilityCheckBox.isSelected();
                     boolean selfMatches = selfMatchesCheckBox.isSelected();
                     boolean timeOutCheck = timeoutCheckBox.isSelected();
@@ -409,19 +416,20 @@ public class FETournamentPane extends JPanel {
 
                     String prefix = "tournament_";
                     int idx = 0;
-//                    String sufix = ".tsv";
+                    //                    String sufix = ".tsv";
                     File file;
                     do {
                         idx++;
                         file = new File(prefix + idx);
-                    }while(file.exists());
+                    } while (file.exists());
                     file.mkdir();
                     String tournamentfolder = file.getName();
                     final File fileToUse = new File(tournamentfolder + "/tournament.csv");
-                    final String tracesFolder = (tracesCheckBox.isSelected() ? tournamentfolder + "/traces":null);
-                                                            
+                    final String tracesFolder = (tracesCheckBox.isSelected() ? tournamentfolder
+                        + "/traces" : null);
+
                     if (tournamentType.equals(TOURNAMENT_ROUNDROBIN)) {
-                        if (selectedAIs.size()<2) {
+                        if (selectedAIs.size() < 2) {
                             tournamentProgressTextArea.append("Select at least two AIs\n");
                         } else if (maps.isEmpty()) {
                             tournamentProgressTextArea.append("Select at least one map\n");
@@ -431,22 +439,24 @@ public class FETournamentPane extends JPanel {
                                     public void run() {
                                         try {
                                             Writer writer = new FileWriter(fileToUse);
-                                            Writer writerProgress = new JTextAreaWriter(tournamentProgressTextArea);
-                                            RoundRobinTournament.runTournament(selectedAIs, -1, maps, 
-                                                                               iterations, maxGameLength, timeBudget, iterationsBudget, 
-                                                                               preAnalysisBudget, 1000, // 1000 is just to give 1 second to the AIs to load their read/write folder saved content
-                                                                               fullObservability, selfMatches, timeOutCheck, gcCheck, preGameAnalysis, 
-                                                                               utt, tracesFolder,
-                                                                               writer, writerProgress,
-                                                                               tournamentfolder);
+                                            Writer writerProgress = new JTextAreaWriter(
+                                                tournamentProgressTextArea);
+                                            RoundRobinTournament
+                                                .runTournament(selectedAIs, -1, maps, iterations,
+                                                    maxGameLength, timeBudget, iterationsBudget,
+                                                    preAnalysisBudget, 1000,
+                                                    // 1000 is just to give 1 second to the AIs to load their read/write folder saved content
+                                                    fullObservability, selfMatches, timeOutCheck,
+                                                    gcCheck, preGameAnalysis, utt, tracesFolder,
+                                                    writer, writerProgress, tournamentfolder);
                                             writer.close();
-                                        } catch(Exception e2) {
+                                        } catch (Exception e2) {
                                             e2.printStackTrace();
                                         }
-                                    }                                
+                                    }
                                 };
                                 (new Thread(r)).start();
-                            } catch(Exception e3) {
+                            } catch (Exception e3) {
                                 e3.printStackTrace();
                             }
                         }
@@ -463,38 +473,41 @@ public class FETournamentPane extends JPanel {
                                     public void run() {
                                         try {
                                             Writer writer = new FileWriter(fileToUse);
-                                            Writer writerProgress = new JTextAreaWriter(tournamentProgressTextArea);
-                                            FixedOpponentsTournament.runTournament(selectedAIs, opponentAIs, maps, 
-                                                                               iterations, maxGameLength, timeBudget, iterationsBudget, 
-                                                                               preAnalysisBudget, 1000, // 1000 is just to give 1 second to the AIs to load their read/write folder saved content
-                                                                               fullObservability, timeOutCheck, gcCheck, preGameAnalysis, 
-                                                                               utt, tracesFolder,
-                                                                               writer, writerProgress,
-                                                                               tournamentfolder);
+                                            Writer writerProgress = new JTextAreaWriter(
+                                                tournamentProgressTextArea);
+                                            FixedOpponentsTournament
+                                                .runTournament(selectedAIs, opponentAIs, maps,
+                                                    iterations, maxGameLength, timeBudget,
+                                                    iterationsBudget, preAnalysisBudget, 1000,
+                                                    // 1000 is just to give 1 second to the AIs to load their read/write folder saved content
+                                                    fullObservability, timeOutCheck, gcCheck,
+                                                    preGameAnalysis, utt, tracesFolder, writer,
+                                                    writerProgress, tournamentfolder);
                                             writer.close();
-                                        } catch(Exception e2) {
+                                        } catch (Exception e2) {
                                             e2.printStackTrace();
                                         }
-                                    }                                
+                                    }
                                 };
                                 (new Thread(r)).start();
-                            } catch(Exception e3) {
+                            } catch (Exception e3) {
                                 e3.printStackTrace();
                             }
-                        }                        
+                        }
                     }
-                }catch(Exception ex) {
+                } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             }
         });
-        
+
         tournamentProgressTextArea = new JTextArea(5, 20);
         JScrollPane scrollPane = new JScrollPane(tournamentProgressTextArea);
         tournamentProgressTextArea.setEditable(false);
         scrollPane.setPreferredSize(new Dimension(512, 192));
         add(scrollPane);
-        DefaultCaret caret = (DefaultCaret)tournamentProgressTextArea.getCaret(); //autoscroll the progress Text Area
-        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);        
+        DefaultCaret caret = (DefaultCaret) tournamentProgressTextArea
+            .getCaret(); //autoscroll the progress Text Area
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
     }
 }

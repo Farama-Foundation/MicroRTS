@@ -12,40 +12,44 @@ import rts.units.Unit;
 import rts.units.UnitTypeTable;
 
 /**
- *
  * @author santi
  */
 public class UnitActionTypeConstantDistribution extends UnitActionProbabilityDistribution {
 
     double[] m_distribution = null;
-    
-    public UnitActionTypeConstantDistribution(UnitTypeTable a_utt, double[] distribution) throws Exception {
+
+    public UnitActionTypeConstantDistribution(UnitTypeTable a_utt, double[] distribution)
+        throws Exception {
         super(a_utt);
-        
-        if (distribution==null || distribution.length != UnitAction.NUMBER_OF_ACTION_TYPES) throw new Exception("distribution does not have the right number of elements!");
+
+        if (distribution == null || distribution.length != UnitAction.NUMBER_OF_ACTION_TYPES) {
+            throw new Exception("distribution does not have the right number of elements!");
+        }
         m_distribution = distribution;
     }
-    
-    
-    public double[] predictDistribution(Unit u, GameState gs, List<UnitAction> actions) throws Exception
-    {
+
+    public double[] predictDistribution(Unit u, GameState gs, List<UnitAction> actions)
+        throws Exception {
         int nActions = actions.size();
         double[] d = new double[nActions];
         double accum = 0;
-        for(int i = 0;i<nActions;i++) {
+        for (int i = 0; i < nActions; i++) {
             int type = actions.get(i).getType();
             d[i] = m_distribution[type];
             accum += d[i];
         }
-        
+
         if (accum <= 0) {
             // if 0 accum, then just make uniform distribution:
-            for(int i = 0;i<nActions;i++) d[i] = 1.0/nActions;
+            for (int i = 0; i < nActions; i++) {
+                d[i] = 1.0 / nActions;
+            }
         } else {
-            for(int i = 0;i<nActions;i++) d[i] /= accum;
+            for (int i = 0; i < nActions; i++) {
+                d[i] /= accum;
+            }
         }
-        
-        return d;    
-    }   
-    
+
+        return d;
+    }
 }

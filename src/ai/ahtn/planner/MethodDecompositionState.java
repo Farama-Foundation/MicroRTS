@@ -11,10 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author santi
  */
 public class MethodDecompositionState {
+
     int executionState = 0;
     int operatorExecutingState = 0;
     List<MethodDecomposition> operatorsBeingExecuted = null;
@@ -22,8 +22,8 @@ public class MethodDecompositionState {
     public MethodDecompositionState(MethodDecomposition md) {
         executionState = md.getExecutionState();
         operatorExecutingState = md.getOperatorExecutingState();
-        if (md.getOperatorsBeingExecuted()!=null) {
-            operatorsBeingExecuted = new ArrayList<>();            
+        if (md.getOperatorsBeingExecuted() != null) {
+            operatorsBeingExecuted = new ArrayList<>();
             operatorsBeingExecuted.addAll(md.getOperatorsBeingExecuted());
         }
     }
@@ -31,16 +31,16 @@ public class MethodDecompositionState {
     public void restoreState(MethodDecomposition md) {
         md.setExecutionState(executionState);
         md.setOperatorExecutingState(operatorExecutingState);
-        if (operatorsBeingExecuted==null) {
+        if (operatorsBeingExecuted == null) {
             md.setOperatorsBeingExecuted(null);
         } else {
             List<MethodDecomposition> l = md.getOperatorsBeingExecuted();
-            if (l==null) {
+            if (l == null) {
                 l = new ArrayList<>();
                 md.setOperatorsBeingExecuted(l);
             }
             l.clear();
             l.addAll(operatorsBeingExecuted);
         }
-    }    
+    }
 }

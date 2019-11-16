@@ -9,10 +9,10 @@ import rts.UnitAction;
 import rts.units.Unit;
 
 /**
- *
  * @author santi
  */
 public class UnitActionTableEntry {
+
     public Unit u;
     public int nactions = 0;
     public List<UnitAction> actions = null;

@@ -10,18 +10,19 @@ import java.util.List;
 import rts.GameState;
 
 /**
- *
  * @author santi
  */
 public interface Parameter {
+
     // If a match is found:
     // - the return value is a list with the required bindings
     // If a match is not found: return null
     List<Binding> match(int v) throws Exception;
+
     List<Binding> match(String s) throws Exception;
-    
+
     Parameter cloneParameter();
-    
+
     Parameter applyBindingsParameter(List<Binding> l) throws Exception;
 
     // applies all the bindings and evaluates in case it is a function:

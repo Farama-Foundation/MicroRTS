@@ -13,18 +13,17 @@ import rts.UnitAction;
 import rts.units.Unit;
 
 /**
- *
  * @author santi
  */
 public class UnitScriptAttack extends UnitScript {
-    
+
     AbstractAction action = null;
     PathFinding pf = null;
-    
+
     public UnitScriptAttack(PathFinding a_pf) {
         pf = a_pf;
     }
-    
+
     public UnitAction getAction(Unit u, GameState gs) {
         if (action.completed(gs)) {
             return null;
@@ -32,7 +31,7 @@ public class UnitScriptAttack extends UnitScript {
             return action.execute(gs);
         }
     }
-    
+
     public UnitScript instantiate(Unit u, GameState gs) {
         Unit closestEnemy = closestEnemyUnit(u, gs);
         if (closestEnemy != null) {
@@ -43,13 +42,12 @@ public class UnitScriptAttack extends UnitScript {
             return null;
         }
     }
-    
-    
+
     public Unit closestEnemyUnit(Unit u, GameState gs) {
         Unit closest = null;
         int closestDistance = 0;
         for (Unit u2 : gs.getPhysicalGameState().getUnits()) {
-            if (u2.getPlayer()>=0 && u2.getPlayer() != u.getPlayer()) {
+            if (u2.getPlayer() >= 0 && u2.getPlayer() != u.getPlayer()) {
                 int d = Math.abs(u2.getX() - u.getX()) + Math.abs(u2.getY() - u.getY());
                 if (closest == null || d < closestDistance) {
                     closest = u2;
@@ -59,5 +57,4 @@ public class UnitScriptAttack extends UnitScript {
         }
         return closest;
     }
-    
 }

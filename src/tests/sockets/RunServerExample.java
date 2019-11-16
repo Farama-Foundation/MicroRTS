@@ -11,20 +11,18 @@ import ai.socket.JSONSocketWrapperAI;
 import rts.units.UnitTypeTable;
 
 /**
- *
  * @author santi
- * 
- * Run this file first in the computer where you want the server to
- * be running.
- * 
+ * <p>
+ * Run this file first in the computer where you want the server to be running.
  */
 public class RunServerExample {
+
     public static void main(String[] args) throws Exception {
         AIWithComputationBudget ai = new WorkerRush(new UnitTypeTable());
         int port = 9898;
-        
-//        XMLSocketWrapperAI.DEBUG = 1;
-//        XMLSocketWrapperAI.runServer(ai, port);
+
+        //        XMLSocketWrapperAI.DEBUG = 1;
+        //        XMLSocketWrapperAI.runServer(ai, port);
         JSONSocketWrapperAI.DEBUG = 1;
         JSONSocketWrapperAI.runServer(ai, port);
     }

@@ -13,18 +13,17 @@ import rts.units.Unit;
 import rts.units.UnitType;
 
 /**
- *
  * @author santi
  */
 public class UnitScriptTrain extends UnitScript {
-    
+
     AbstractAction action = null;
     UnitType ut = null;
-    
+
     public UnitScriptTrain(UnitType a_ut) {
         ut = a_ut;
     }
-    
+
     public UnitAction getAction(Unit u, GameState gs) {
         if (action.completed(gs)) {
             return null;
@@ -32,7 +31,7 @@ public class UnitScriptTrain extends UnitScript {
             return action.execute(gs);
         }
     }
-    
+
     public UnitScript instantiate(Unit u, GameState gs) {
         UnitScriptTrain script = new UnitScriptTrain(ut);
         script.action = new Train(u, ut);

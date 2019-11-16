@@ -12,7 +12,6 @@ import rts.units.Unit;
 import rts.units.UnitTypeTable;
 
 /**
- *
  * @author santi
  */
 public class UnitActionUniformDistribution extends UnitActionProbabilityDistribution {
@@ -20,15 +19,15 @@ public class UnitActionUniformDistribution extends UnitActionProbabilityDistribu
     public UnitActionUniformDistribution(UnitTypeTable a_utt) throws Exception {
         super(a_utt);
     }
-    
-    
-    public double[] predictDistribution(Unit u, GameState gs, List<UnitAction> actions) throws Exception
-    {
+
+    public double[] predictDistribution(Unit u, GameState gs, List<UnitAction> actions)
+        throws Exception {
         int nActions = actions.size();
         double[] d = new double[nActions];
-        for(int i = 0;i<nActions;i++) d[i] = 1.0/nActions;
-        
-        return d;    
-    }   
-    
+        for (int i = 0; i < nActions; i++) {
+            d[i] = 1.0 / nActions;
+        }
+
+        return d;
+    }
 }

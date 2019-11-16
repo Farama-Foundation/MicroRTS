@@ -10,20 +10,19 @@ import java.io.Writer;
 import javax.swing.JTextArea;
 
 /**
- *
  * @author santi
  */
 public class JTextAreaWriter extends Writer {
 
     JTextArea m_ta = null;
-    
+
     public JTextAreaWriter(JTextArea ta) {
         m_ta = ta;
     }
-            
+
     public void write(char[] cbuf, int off, int len) throws IOException {
         StringBuffer tmp = new StringBuffer();
-        for(int i = off;i<off+len;i++) {
+        for (int i = off; i < off + len; i++) {
             tmp.append(cbuf[i]);
         }
         m_ta.append(tmp.toString());
@@ -36,5 +35,4 @@ public class JTextAreaWriter extends Writer {
 
     public void close() throws IOException {
     }
-    
 }

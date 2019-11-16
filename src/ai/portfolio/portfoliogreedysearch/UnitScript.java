@@ -10,10 +10,11 @@ import rts.UnitAction;
 import rts.units.Unit;
 
 /**
- *
  * @author santi
  */
 public abstract class UnitScript {
+
     public abstract UnitAction getAction(Unit u, GameState gs);
+
     public abstract UnitScript instantiate(Unit u, GameState gs);
 }

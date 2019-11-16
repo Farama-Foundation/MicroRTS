@@ -23,7 +23,6 @@ import rts.units.UnitType;
 import rts.units.UnitTypeTable;
 
 /**
- *
  * @author rubensolv
  */
 public class EMRDeterministico extends AbstractionLayerAI {
@@ -70,22 +69,20 @@ public class EMRDeterministico extends AbstractionLayerAI {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         Player p = gs.getPlayer(player);
         PlayerAction pa = new PlayerAction();
-//        System.out.println("LightRushAI for player " + player + " (cycle " + gs.getTime() + ")");
+        //        System.out.println("LightRushAI for player " + player + " (cycle " + gs.getTime() + ")");
 
         // behavior of bases:
         for (Unit u : pgs.getUnits()) {
-            if (u.getType() == baseType
-                    && u.getPlayer() == player
-                    && gs.getActionAssignment(u) == null) {
+            if (u.getType() == baseType && u.getPlayer() == player
+                && gs.getActionAssignment(u) == null) {
                 baseBehavior(u, p, pgs);
             }
         }
 
         // behavior of barracks:
         for (Unit u : pgs.getUnits()) {
-            if (u.getType() == barracksType
-                    && u.getPlayer() == player
-                    && gs.getActionAssignment(u) == null) {
+            if (u.getType() == barracksType && u.getPlayer() == player
+                && gs.getActionAssignment(u) == null) {
                 barracksBehavior(u, p, pgs);
             }
         }
@@ -93,9 +90,7 @@ public class EMRDeterministico extends AbstractionLayerAI {
         // behavior of workers:
         List<Unit> workers = new ArrayList<Unit>();
         for (Unit u : pgs.getUnits()) {
-            if (u.getType().canHarvest
-                    && u.getPlayer() == player
-                    && u.getType() == workerType) {
+            if (u.getType().canHarvest && u.getPlayer() == player && u.getType() == workerType) {
                 workers.add(u);
             }
         }
@@ -103,9 +98,8 @@ public class EMRDeterministico extends AbstractionLayerAI {
 
         // behavior of melee units:
         for (Unit u : pgs.getUnits()) {
-            if (u.getType().canAttack && !u.getType().canHarvest
-                    && u.getPlayer() == player
-                    && gs.getActionAssignment(u) == null) {
+            if (u.getType().canAttack && !u.getType().canHarvest && u.getPlayer() == player
+                && gs.getActionAssignment(u) == null) {
                 meleeUnitBehavior(u, p, gs);
             }
         }
@@ -122,7 +116,8 @@ public class EMRDeterministico extends AbstractionLayerAI {
     public List<ParameterSpecification> getParameters() {
         List<ParameterSpecification> parameters = new ArrayList<>();
 
-        parameters.add(new ParameterSpecification("PathFinding", PathFinding.class, new AStarPathFinding()));
+        parameters.add(
+            new ParameterSpecification("PathFinding", PathFinding.class, new AStarPathFinding()));
 
         return parameters;
     }
@@ -130,8 +125,7 @@ public class EMRDeterministico extends AbstractionLayerAI {
     public void baseBehavior(Unit u, Player p, PhysicalGameState pgs) {
         int nworkers = 0;
         for (Unit u2 : pgs.getUnits()) {
-            if (u2.getType() == workerType
-                    && u2.getPlayer() == p.getID()) {
+            if (u2.getType() == workerType && u2.getPlayer() == p.getID()) {
                 nworkers++;
             }
         }
@@ -139,18 +133,16 @@ public class EMRDeterministico extends AbstractionLayerAI {
         int nBases = 0;
         int nBarracks = 0;
         for (Unit u2 : pgs.getUnits()) {
-            if (u2.getType() == baseType
-                    && u2.getPlayer() == p.getID()) {
+            if (u2.getType() == baseType && u2.getPlayer() == p.getID()) {
                 nBases++;
-            } else if (u2.getType() == barracksType
-                    && u2.getPlayer() == p.getID()) {
+            } else if (u2.getType() == barracksType && u2.getPlayer() == p.getID()) {
                 nBarracks++;
             }
         }
         int qtdWorkLim;
-        if(nBarracks == 0){
+        if (nBarracks == 0) {
             qtdWorkLim = 4;
-        }else{
+        } else {
             qtdWorkLim = nWorkerBase * nBases;
         }
 
@@ -164,28 +156,24 @@ public class EMRDeterministico extends AbstractionLayerAI {
         int nRanged = 0;
         int nHeavy = 0;
         for (Unit u2 : pgs.getUnits()) {
-            if (u2.getType() == lightType
-                    && u2.getPlayer() == p.getID()) {
+            if (u2.getType() == lightType && u2.getPlayer() == p.getID()) {
                 nLight++;
             }
-            if (u2.getType() == rangedType
-                    && u2.getPlayer() == p.getID()) {
+            if (u2.getType() == rangedType && u2.getPlayer() == p.getID()) {
                 nRanged++;
             }
-            if (u2.getType() == heavyType
-                    && u2.getPlayer() == p.getID()) {
+            if (u2.getType() == heavyType && u2.getPlayer() == p.getID()) {
                 nHeavy++;
             }
         }
-        
+
         int sum = nLight + nHeavy + nRanged;
 
-        if (sum%3 == 0 && p.getResources() >= lightType.cost) {
+        if (sum % 3 == 0 && p.getResources() >= lightType.cost) {
             train(u, lightType);
-        } else if (sum%3 == 1 && p.getResources() >= rangedType.cost) {
+        } else if (sum % 3 == 1 && p.getResources() >= rangedType.cost) {
             train(u, rangedType);
-
-        } else if (sum%3 == 2 && p.getResources() >= heavyType.cost) {
+        } else if (sum % 3 == 2 && p.getResources() >= heavyType.cost) {
             train(u, heavyType);
         }
     }
@@ -221,16 +209,14 @@ public class EMRDeterministico extends AbstractionLayerAI {
         }
 
         for (Unit u2 : pgs.getUnits()) {
-            if (u2.getType() == baseType
-                    && u2.getPlayer() == p.getID()) {
+            if (u2.getType() == baseType && u2.getPlayer() == p.getID()) {
                 nbases++;
             }
-            if (u2.getType() == barracksType
-                    && u2.getPlayer() == p.getID()) {
+            if (u2.getType() == barracksType && u2.getPlayer() == p.getID()) {
                 nbarracks++;
             }
-            if ( (u2.getType() == lightType || u2.getType() == rangedType || u2.getType() == heavyType)
-                    && u2.getPlayer() == p.getID()) {
+            if ((u2.getType() == lightType || u2.getType() == rangedType
+                || u2.getType() == heavyType) && u2.getPlayer() == p.getID()) {
                 nArmyUnits++;
             }
         }
@@ -240,7 +226,8 @@ public class EMRDeterministico extends AbstractionLayerAI {
             // build a base:
             if (p.getResources() >= baseType.cost + resourcesUsed) {
                 Unit u = freeWorkers.remove(0);
-                buildIfNotAlreadyBuilding(u, baseType, u.getX(), u.getY(), reservedPositions, p, pgs);
+                buildIfNotAlreadyBuilding(u, baseType, u.getX(), u.getY(), reservedPositions, p,
+                    pgs);
                 resourcesUsed += baseType.cost;
             }
         }
@@ -249,25 +236,28 @@ public class EMRDeterministico extends AbstractionLayerAI {
             // build a barracks:
             if (p.getResources() >= barracksType.cost + resourcesUsed) {
                 Unit u = freeWorkers.remove(0);
-                buildIfNotAlreadyBuilding(u, barracksType, u.getX(), u.getY(), reservedPositions, p, pgs);
+                buildIfNotAlreadyBuilding(u, barracksType, u.getX(), u.getY(), reservedPositions, p,
+                    pgs);
                 resourcesUsed += barracksType.cost;
             }
-        }else if (nbarracks > 0 && !freeWorkers.isEmpty() && nArmyUnits > 2){
-             // build a new barracks:
+        } else if (nbarracks > 0 && !freeWorkers.isEmpty() && nArmyUnits > 2) {
+            // build a new barracks:
             if (p.getResources() >= barracksType.cost + resourcesUsed) {
                 Unit u = freeWorkers.remove(0);
-                buildIfNotAlreadyBuilding(u, barracksType, u.getX(), u.getY(), reservedPositions, p, pgs);
+                buildIfNotAlreadyBuilding(u, barracksType, u.getX(), u.getY(), reservedPositions, p,
+                    pgs);
                 resourcesUsed += barracksType.cost;
             }
         }
-        
+
         if (nbarracks != 0) {
             List<Unit> otherResources = new ArrayList<>(otherResourcePoint(p, pgs));
             if (!otherResources.isEmpty()) {
                 if (!freeWorkers.isEmpty()) {
                     if (p.getResources() >= baseType.cost + resourcesUsed) {
                         Unit u = freeWorkers.remove(0);
-                        buildIfNotAlreadyBuilding(u, baseType, otherResources.get(0).getX()+1, otherResources.get(0).getY()+1, reservedPositions, p, pgs);
+                        buildIfNotAlreadyBuilding(u, baseType, otherResources.get(0).getX() + 1,
+                            otherResources.get(0).getY() + 1, reservedPositions, p, pgs);
                         resourcesUsed += baseType.cost;
                     }
                 }
@@ -275,7 +265,6 @@ public class EMRDeterministico extends AbstractionLayerAI {
         }
         // harvest with all the free workers:
         harvestWorkers(freeWorkers, p, pgs);
-
     }
 
     protected List<Unit> otherResourcePoint(Player p, PhysicalGameState pgs) {
@@ -285,7 +274,8 @@ public class EMRDeterministico extends AbstractionLayerAI {
         Set<Unit> otherResources = new HashSet<>();
 
         for (Unit base : bases) {
-            List<Unit> closestUnits = new ArrayList<>(pgs.getUnitsAround(base.getX(), base.getY(), 10));
+            List<Unit> closestUnits = new ArrayList<>(
+                pgs.getUnitsAround(base.getX(), base.getY(), 10));
             for (Unit closestUnit : closestUnits) {
                 if (closestUnit.getType().isResource) {
                     myResources.add(closestUnit);
@@ -308,8 +298,7 @@ public class EMRDeterministico extends AbstractionLayerAI {
 
         List<Unit> bases = new ArrayList<>();
         for (Unit u2 : pgs.getUnits()) {
-            if (u2.getType() == baseType
-                    && u2.getPlayer() == p.getID()) {
+            if (u2.getType() == baseType && u2.getPlayer() == p.getID()) {
                 bases.add(u2);
             }
         }
@@ -353,5 +342,4 @@ public class EMRDeterministico extends AbstractionLayerAI {
             }
         }
     }
-
 }
