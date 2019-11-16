@@ -63,7 +63,7 @@ public class SCV extends AIWithComputationBudget {
         double ltd3;
     }
     
-    AI strategies[] = null;
+    AI[] strategies = null;
     int playerForThisComputation;
     GameState gs_to_start_from = null;
     SimpleLogistic rf = null;
@@ -83,11 +83,11 @@ public class SCV extends AIWithComputationBudget {
             new RandomBiasedAI()}, 100, -1, utt);
     }
 
-    public SCV(AI s[], int time, int max_playouts, UnitTypeTable utt) {
+    public SCV(AI[] s, int time, int max_playouts, UnitTypeTable utt) {
         super(time, max_playouts);
         strategies = s;
         localUtt = utt;
-        indice =  new HashMap();
+        indice = new HashMap<>();
     }
 
     @Override
@@ -211,7 +211,7 @@ public class SCV extends AIWithComputationBudget {
     public PlayerAction getBestActionSoFar() throws Exception {
         int slength = strategies.length;
         AI ai[] = new AI[slength];
-        PlayerAction pa[] = new PlayerAction[slength];
+        PlayerAction[] pa = new PlayerAction[slength];
         ArrayList<TreeMap<Long, UnitAction>> s = new ArrayList<>();
 
         for (int i = 0; i < slength; i++) {

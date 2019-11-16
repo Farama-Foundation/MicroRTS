@@ -57,7 +57,7 @@ public class BranchingFactorCalculatorBigInteger {
 
 
     public static BigInteger[] branchingFactorByResourceUsage(GameState gs, int player) throws Exception {
-        BigInteger n[] = new BigInteger[gs.getPlayer(player).getResources()+1];
+        BigInteger[] n = new BigInteger[gs.getPlayer(player).getResources()+1];
         for(int i = 0;i<n.length;i++) n[i] = BigInteger.ZERO;
         PlayerActionGenerator pag = new PlayerActionGenerator(gs, player);
         PlayerAction pa = null;
@@ -76,7 +76,7 @@ public class BranchingFactorCalculatorBigInteger {
     }
 
     
-    public static void addFootPrint(int map[][], int ID, int x, int y) {
+    public static void addFootPrint(int[][] map, int ID, int x, int y) {
 //        System.out.println(ID + " -> " + x + "," + y);
         if (map[x][y]==0) {
             map[x][y] = ID;
@@ -179,9 +179,9 @@ public class BranchingFactorCalculatorBigInteger {
         if (branchingOfSeparatedAreas.isEmpty()) return BigInteger.ONE;
                 
         // accumulate:
-        BigInteger n[] = branchingOfSeparatedAreas.remove(0);
-        for(BigInteger n2[]:branchingOfSeparatedAreas) {
-            BigInteger n_tmp[] = new BigInteger[playerResources+1];
+        BigInteger[] n = branchingOfSeparatedAreas.remove(0);
+        for(BigInteger[] n2 :branchingOfSeparatedAreas) {
+            BigInteger[] n_tmp = new BigInteger[playerResources+1];
             for(int i = 0;i<playerResources+1;i++) n_tmp[i] = BigInteger.ZERO;
             for(int i = 0;i<playerResources+1;i++) {
                 for(int j = 0;j<(playerResources-i)+1;j++) {
@@ -200,7 +200,7 @@ public class BranchingFactorCalculatorBigInteger {
     
     public static BigInteger branchingFactorByResourceUsageFast(GameState gs, int player) throws Exception {
         int playerResources = gs.getPlayer(player).getResources();
-        BigInteger n[] = branchingFactorByResourceUsageFastInternal(gs,player);
+        BigInteger[] n = branchingFactorByResourceUsageFastInternal(gs,player);
         
         BigInteger branching = BigInteger.ZERO;
         for(int i = 0;i<playerResources+1;i++) branching=branching.add(n[i]);
@@ -277,19 +277,19 @@ public class BranchingFactorCalculatorBigInteger {
         if (!unitsThatCannotBeSeparated.isEmpty()) {
             // consider the rest of the board as a single unit:
 //            System.out.println("  recursive call...");
-            BigInteger n[] = branchingFactorByResourceUsage(gs2,player);
+            BigInteger[] n = branchingFactorByResourceUsage(gs2,player);
 //            System.out.println("  branching of non separated: " + Arrays.toString(n));
             branchingOfSeparatedUnits.add(n);
         }
         
         // accumulate:
-        BigInteger n[] = branchingOfSeparatedUnits.remove(0);
+        BigInteger[] n = branchingOfSeparatedUnits.remove(0);
         
 //        System.out.println("INITIAL " + Arrays.toString(n));
 
-        for(BigInteger n2[]:branchingOfSeparatedUnits) {
+        for(BigInteger[] n2 :branchingOfSeparatedUnits) {
 //            System.out.println("NEW " + Arrays.toString(n2));
-            BigInteger n_tmp[] = new BigInteger[playerResources+1];
+            BigInteger[] n_tmp = new BigInteger[playerResources+1];
             for(int i = 0;i<playerResources+1;i++) n_tmp[i] = BigInteger.ZERO;
             for(int i = 0;i<playerResources+1;i++) {
                 for(int j = 0;j<(playerResources-i)+1;j++) {

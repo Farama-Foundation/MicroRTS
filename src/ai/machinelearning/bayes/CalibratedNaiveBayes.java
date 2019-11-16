@@ -34,10 +34,10 @@ public class CalibratedNaiveBayes extends BayesianModel {
     DiscreteCPD []distributions = null;
     boolean []selectedFeatures = null;
     int Ysize = 0;
-    int Xsizes[];
+    int[] Xsizes;
    
 
-    public CalibratedNaiveBayes(int a_Xsizes[], int a_Ysize, int estimation, double a_correctionFactor, UnitTypeTable utt, FeatureGenerator fg, String a_name) {
+    public CalibratedNaiveBayes(int[] a_Xsizes, int a_Ysize, int estimation, double a_correctionFactor, UnitTypeTable utt, FeatureGenerator fg, String a_name) {
         super(utt, fg, a_name);
         Ysize = a_Ysize;
         Xsizes = a_Xsizes;
@@ -103,7 +103,7 @@ public class CalibratedNaiveBayes extends BayesianModel {
                 } 
                 
                 if (possibleUnitActions.size()>1) {
-                    double predicted_distribution[] = predictDistribution(x_l.get(i), i_l.get(i));
+                    double[] predicted_distribution = predictDistribution(x_l.get(i), i_l.get(i));
 
                     predicted_distribution = filterByPossibleActionIndexes(predicted_distribution, possibleUnitActionIndexes);
                     int actual_y = y_l.get(i);
@@ -175,7 +175,7 @@ public class CalibratedNaiveBayes extends BayesianModel {
     
         
     public double[] predictDistribution(int []x, TrainingInstance ti, double correction) {
-        double d[] = new double[Ysize];
+        double[] d = new double[Ysize];
         for(int i = 0;i<Ysize;i++) {
             if (prior_distribution==null) {
                 d[i] = 1;
@@ -190,12 +190,12 @@ public class CalibratedNaiveBayes extends BayesianModel {
                 n_used_features++;
                 if (estimationMethod == ESTIMATION_COUNTS) {
                     for(int j = 0;j<Ysize;j++) {
-                        double d2[] = distributions[i].distribution(j);
+                        double[] d2 = distributions[i].distribution(j);
                         d[j] *= d2[x[i]];
                     }
                 } else {
                     for(int j = 0;j<Ysize;j++) {
-                        double d2[] = distributions[i].distributionLaplace(j, laplaceBeta);
+                        double[] d2 = distributions[i].distributionLaplace(j, laplaceBeta);
                         double v = 1;
                         if (d2.length > x[i]) {
                             v = d2[x[i]];
@@ -312,7 +312,7 @@ public class CalibratedNaiveBayes extends BayesianModel {
         int nfeatures = distributions.length;
 
         System.out.println("featureSelectionByCrossValidation " + x_l.size());
-        boolean bestSelection[] = new boolean[nfeatures];
+        boolean[] bestSelection = new boolean[nfeatures];
         for(int i = 0;i<nfeatures;i++) bestSelection[i] = false;
         selectedFeatures = bestSelection;
         double best_score = FeatureSelection.crossValidation(this, x_l, y_l, i_l, allPossibleActions, 10).m_a;
@@ -321,10 +321,10 @@ public class CalibratedNaiveBayes extends BayesianModel {
         boolean change;
         do {
             change = false;
-            boolean bestLastSelection[] = bestSelection;
+            boolean[] bestLastSelection = bestSelection;
             for(int i = 0;i<nfeatures;i++) {
                 if (!bestSelection[i]) {
-                    boolean currentSelection[] = new boolean[nfeatures];
+                    boolean[] currentSelection = new boolean[nfeatures];
                     for(int j = 0;j<nfeatures;j++) currentSelection[j] = bestSelection[j];
                     currentSelection[i] = true;
 

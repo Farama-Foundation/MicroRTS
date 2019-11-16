@@ -34,7 +34,7 @@ public class ActionInterdependenceModel extends BayesianModel {
     boolean []selectedFeatures = null;
     int Ysize = 0;
     int YtypeSize = 0;
-    int Xsizes[];
+    int[] Xsizes;
     
     int []action_allowed_counts_prior = null;    // number of times actions were allowed
     int [][]selected_allowed_action_prior = null;    // [i][j]: number of times i was selected when j was also allowed
@@ -46,7 +46,7 @@ public class ActionInterdependenceModel extends BayesianModel {
     boolean consider_individual_actions = false;
     boolean consider_action_types = true;
     
-    public ActionInterdependenceModel(int a_Xsizes[], int a_Ysize, int estimation, double a_correctionFactor, UnitTypeTable utt, FeatureGenerator fg, String a_name) {
+    public ActionInterdependenceModel(int[] a_Xsizes, int a_Ysize, int estimation, double a_correctionFactor, UnitTypeTable utt, FeatureGenerator fg, String a_name) {
         super(utt, fg, a_name);
         Ysize = a_Ysize;
         Xsizes = a_Xsizes;
@@ -155,7 +155,7 @@ public class ActionInterdependenceModel extends BayesianModel {
                 } 
                 
                 if (possibleUnitActions.size()>1) {
-                    double predicted_distribution[] = predictDistribution(x_l.get(i), i_l.get(i));
+                    double[] predicted_distribution = predictDistribution(x_l.get(i), i_l.get(i));
 
                     predicted_distribution = filterByPossibleActionIndexes(predicted_distribution, possibleUnitActionIndexes);
                     int actual_y = y_l.get(i);
@@ -227,7 +227,7 @@ public class ActionInterdependenceModel extends BayesianModel {
         
     public double[] predictDistribution(int []x, TrainingInstance ti, double correction) {
         List<Integer> l = ti.getPossibleActions(allPossibleActions);            
-        double d[] = new double[Ysize];
+        double[] d = new double[Ysize];
         double n_factors = 1; // this includes the prior
         
         // start with P(y)
@@ -246,7 +246,7 @@ public class ActionInterdependenceModel extends BayesianModel {
                 n_factors++;
                 if (estimationMethod == ESTIMATION_COUNTS) {
                     for(int j:l) {
-                        double d2[] = distributions[i].distribution(j);
+                        double[] d2 = distributions[i].distribution(j);
                         d[j] *= d2[x[i]];
                     }
                 } else {
@@ -347,7 +347,7 @@ public class ActionInterdependenceModel extends BayesianModel {
         w.rawXML("\n");
         w.tag("/action_allowed_counts_prior");
         w.tag("selected_action_pairs_prior");
-        for(int row[]:selected_allowed_action_prior) {
+        for(int[] row :selected_allowed_action_prior) {
             for(int v:row) {
                 w.rawXML(v + " ");
             }
@@ -362,7 +362,7 @@ public class ActionInterdependenceModel extends BayesianModel {
         w.rawXML("\n");
         w.tag("/actiontypes_allowed_counts_prior");
         w.tag("selected_allowed_actiontype_prior");
-        for(int row[]:selected_allowed_actiontype_prior) {
+        for(int[] row :selected_allowed_actiontype_prior) {
             for(int v:row) {
                 w.rawXML(v + " ");
             }
@@ -437,7 +437,7 @@ public class ActionInterdependenceModel extends BayesianModel {
         {
             Element selected_action_pairs_prior_xml = e.getChild("selected_action_pairs_prior");
             String text = selected_action_pairs_prior_xml.getTextTrim();
-            String tokens[] = text.split(" |\n");
+            String[] tokens = text.split(" |\n");
             selected_allowed_action_prior = new int[Ysize][Ysize];
             for(int k = 0,i = 0;i<Ysize;i++) {
                 for(int j = 0;j<Ysize;j++,k++) {
@@ -457,7 +457,7 @@ public class ActionInterdependenceModel extends BayesianModel {
         {
             Element selected_allowed_actiontype_prior_xml = e.getChild("selected_allowed_actiontype_prior");
             String text = selected_allowed_actiontype_prior_xml.getTextTrim();
-            String tokens[] = text.split(" |\n");
+            String[] tokens = text.split(" |\n");
             selected_allowed_actiontype_prior = new int[YtypeSize][YtypeSize];
             for(int k = 0,i = 0;i<YtypeSize;i++) {
                 for(int j = 0;j<YtypeSize;j++,k++) {
@@ -480,7 +480,7 @@ public class ActionInterdependenceModel extends BayesianModel {
         int nfeatures = distributions.length;
 
         System.out.println("featureSelectionByCrossValidation " + x_l.size());
-        boolean bestSelection[] = new boolean[nfeatures];
+        boolean[] bestSelection = new boolean[nfeatures];
         for(int i = 0;i<nfeatures;i++) bestSelection[i] = false;
         selectedFeatures = bestSelection;
         double best_score = FeatureSelection.crossValidation(this, x_l, y_l, i_l, allPossibleActions, 10).m_a;
@@ -490,10 +490,10 @@ public class ActionInterdependenceModel extends BayesianModel {
         boolean change;
         do {
             change = false;
-            boolean bestLastSelection[] = bestSelection;
+            boolean[] bestLastSelection = bestSelection;
             for(int i = 0;i<nfeatures;i++) {
                 if (!bestSelection[i]) {
-                    boolean currentSelection[] = new boolean[nfeatures];
+                    boolean[] currentSelection = new boolean[nfeatures];
                     for(int j = 0;j<nfeatures;j++) currentSelection[j] = bestSelection[j];
                     currentSelection[i] = true;
 

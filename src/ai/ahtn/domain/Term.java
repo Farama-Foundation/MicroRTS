@@ -21,7 +21,7 @@ public class Term {
     public static int DEBUG = 0;
     
     Symbol functor;
-    Parameter parameters[]; 
+    Parameter[] parameters;
     
     public Term() {
         functor = null;
@@ -118,7 +118,7 @@ public class Term {
         if (!functor.equals(t.functor)) return null;
         if (parameters.length!=t.parameters.length) return null;
         List<Binding> bindings = new LinkedList<>();
-        Parameter resolved[] = new Parameter[parameters.length];
+        Parameter[] resolved = new Parameter[parameters.length];
         
         for(int i = 0;i<parameters.length;i++) {
             Parameter p1 = parameters[i].resolveParameter(bindings, gs);

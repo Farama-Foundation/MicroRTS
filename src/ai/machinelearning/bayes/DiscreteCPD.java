@@ -18,7 +18,7 @@ import util.XMLWriter;
 public class DiscreteCPD {
     public int Xvalues = 0;
     public int Yvalues = 0;
-    public int counts[][];
+    public int[][] counts;
 
     public DiscreteCPD(int nX, int nY) {
         Xvalues = nX;
@@ -116,7 +116,7 @@ public class DiscreteCPD {
         Yvalues = Integer.parseInt(e.getAttributeValue("Yvalues"));
         counts = new int[Xvalues][Yvalues];
         String text = e.getTextTrim();
-        String tokens[] = text.split(" |\n");
+        String[] tokens = text.split(" |\n");
         for(int k = 0,i = 0;i<Xvalues;i++) {
             for(int j = 0;j<Yvalues;j++,k++) {
                 while(tokens[k].equals("")) k++;

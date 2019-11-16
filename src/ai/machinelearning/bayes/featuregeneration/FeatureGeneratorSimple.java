@@ -75,8 +75,8 @@ public class FeatureGeneratorSimple extends FeatureGenerator {
         features.add(direction_enemy);
         features.add(have_barracks);
         
-        int xo[] = {-2, 0, 2, 0};
-        int yo[] = { 0,-2, 0, 2};
+        int[] xo = {-2, 0, 2, 0};
+        int[] yo = { 0,-2, 0, 2};
         int x = ti.u.getX();
         int y = ti.u.getY();
         int width = ti.gs.getPhysicalGameState().getWidth();

@@ -64,13 +64,13 @@ public class Experimenter {
     public static void runExperiments(List<AI> bots, List<PhysicalGameState> maps, UnitTypeTable utt, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize, PrintStream out, 
                                       int run_only_those_involving_this_AI, boolean skip_self_play, boolean partiallyObservable,
                                       boolean saveTrace, boolean saveZip, String traceDir) throws Exception {
-        int wins[][] = new int[bots.size()][bots.size()];
-        int ties[][] = new int[bots.size()][bots.size()];
-        int loses[][] = new int[bots.size()][bots.size()];
+        int[][] wins = new int[bots.size()][bots.size()];
+        int[][] ties = new int[bots.size()][bots.size()];
+        int[][] loses = new int[bots.size()][bots.size()];
         
-        double win_time[][] = new double[bots.size()][bots.size()];
-        double tie_time[][] = new double[bots.size()][bots.size()];
-        double lose_time[][] = new double[bots.size()][bots.size()];
+        double[][] win_time = new double[bots.size()][bots.size()];
+        double[][] tie_time = new double[bots.size()][bots.size()];
+        double[][] lose_time = new double[bots.size()][bots.size()];
 
         List<AI> bots2 = new LinkedList<>();
         for(AI bot:bots) bots2.add(bot.clone());

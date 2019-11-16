@@ -40,7 +40,7 @@ import ai.core.InterruptibleAI;
  */
 public class CompareAllAIsPartiallyObservable {
     
-    public static void main(String args[]) throws Exception 
+    public static void main(String[] args) throws Exception
     {
     	boolean CONTINUING = true;
         int TIME = 100;

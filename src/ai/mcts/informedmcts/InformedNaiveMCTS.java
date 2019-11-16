@@ -368,7 +368,7 @@ public class InformedNaiveMCTS extends AIWithComputationBudget implements Interr
         parameters.add(new ParameterSpecification("Discount_0",float.class,1.0));
 
         try {
-            String biasNames[] = {
+            String[] biasNames = {
                 "AIM-WR",
                 "AIM-LR",
                 "AIM-HR",
@@ -378,7 +378,7 @@ public class InformedNaiveMCTS extends AIWithComputationBudget implements Interr
                 "AIM-NaiveMCTS500",
                 "AIM-NaiveMCTS10000",                
             };
-            UnitActionProbabilityDistribution biasOptions[] = {
+            UnitActionProbabilityDistribution[] biasOptions = {
                    new BayesianModelByUnitTypeWithDefaultModel(new SAXBuilder().build(
                        "data/bayesianmodels/pretrained/ActionInterdependenceModel-WR.xml").getRootElement(), utt,
                        new ActionInterdependenceModel(null, 0, 0, 0, utt, new FeatureGeneratorSimple(), ""), "AIM-WR"),

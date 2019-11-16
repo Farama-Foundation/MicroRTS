@@ -31,7 +31,7 @@ import util.XMLWriter;
 public class GenerateTrainingTraces {
     public static int DEBUG = 0;
     
-    public static void main(String args[]) throws Exception 
+    public static void main(String[] args) throws Exception
     {
         AI randomAI = new RandomBiasedAI();
         EvaluationFunction ef = new SimpleSqrtEvaluationFunction3();
@@ -58,7 +58,7 @@ public class GenerateTrainingTraces {
         // NaiveMCTS up to depth 8:
         bots.add(new NaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, 16, 0.33f, 0.0f, 0.4f, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3(), true));
 
-        String mapnames[] = {"maps/8x8/OneBaseWorker8x8.xml",
+        String[] mapnames = {"maps/8x8/OneBaseWorker8x8.xml",
                              "maps/8x8/TwoBasesWorkers8x8.xml",
                              "maps/8x8/ThreeBasesWorkers8x8.xml",
                              "maps/8x8/FourBasesWorkers8x8.xml",
@@ -77,13 +77,13 @@ public class GenerateTrainingTraces {
     public static void runExperiments(List<AI> bots, List<PhysicalGameState> maps, UnitTypeTable utt, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize, PrintStream out, 
                                       int run_only_those_involving_this_AI, boolean skip_self_play, boolean partiallyObservable,
                                       String tracePrefix) throws Exception {
-        int wins[][] = new int[bots.size()][bots.size()];
-        int ties[][] = new int[bots.size()][bots.size()];
-        int loses[][] = new int[bots.size()][bots.size()];
+        int[][] wins = new int[bots.size()][bots.size()];
+        int[][] ties = new int[bots.size()][bots.size()];
+        int[][] loses = new int[bots.size()][bots.size()];
         
-        double win_time[][] = new double[bots.size()][bots.size()];
-        double tie_time[][] = new double[bots.size()][bots.size()];
-        double lose_time[][] = new double[bots.size()][bots.size()];
+        double[][] win_time = new double[bots.size()][bots.size()];
+        double[][] tie_time = new double[bots.size()][bots.size()];
+        double[][] lose_time = new double[bots.size()][bots.size()];
 
         List<AI> bots2 = new LinkedList<>();
         for(AI bot:bots) bots2.add(bot.clone());

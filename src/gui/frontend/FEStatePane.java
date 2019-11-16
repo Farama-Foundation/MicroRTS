@@ -118,14 +118,14 @@ public class FEStatePane extends JPanel {
 
     JFileChooser fileChooser = new JFileChooser();
 
-    EvaluationFunction efs[] = {new SimpleEvaluationFunction(),
+    EvaluationFunction[] efs = {new SimpleEvaluationFunction(),
                                 new SimpleSqrtEvaluationFunction(),
                                 new SimpleSqrtEvaluationFunction2(),
                                 new SimpleSqrtEvaluationFunction3(),
                                 new EvaluationFunctionForwarding(new SimpleEvaluationFunction()),
                                 new SimpleOptEvaluationFunction()};
 
-    public static Class AIs[] = {PassiveAI.class,
+    public static Class[] AIs = {PassiveAI.class,
                    MouseController.class,
                    RandomAI.class,
                    RandomBiasedAI.class,
@@ -165,7 +165,7 @@ public class FEStatePane extends JPanel {
                   };
 
     
-    Class PlayoutAIs[] = {
+    Class[] PlayoutAIs = {
                    RandomAI.class,
                    RandomBiasedAI.class,
                    WorkerRush.class,
@@ -174,12 +174,12 @@ public class FEStatePane extends JPanel {
                    RangedRush.class,
                   };
     
-    PathFinding pathFinders[] = {new AStarPathFinding(),
+    PathFinding[] pathFinders = {new AStarPathFinding(),
                                  new BFSPathFinding(),
                                  new GreedyPathFinding(),
                                  new FloodFillPathFinding()};
     
-    public static UnitTypeTable unitTypeTables[] = {new UnitTypeTable(UnitTypeTable.VERSION_ORIGINAL, UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH),
+    public static UnitTypeTable[] unitTypeTables = {new UnitTypeTable(UnitTypeTable.VERSION_ORIGINAL, UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH),
                                       new UnitTypeTable(UnitTypeTable.VERSION_ORIGINAL, UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_ALTERNATING),
                                       new UnitTypeTable(UnitTypeTable.VERSION_ORIGINAL, UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_RANDOM),
                                       new UnitTypeTable(UnitTypeTable.VERSION_ORIGINAL_FINETUNED, UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH),
@@ -189,7 +189,7 @@ public class FEStatePane extends JPanel {
                                       new UnitTypeTable(UnitTypeTable.VERSION_NON_DETERMINISTIC, UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_ALTERNATING),
                                       new UnitTypeTable(UnitTypeTable.VERSION_NON_DETERMINISTIC, UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_RANDOM),   
     };
-    public static String unitTypeTableNames[] = {"Original-Both",
+    public static String[] unitTypeTableNames = {"Original-Both",
                                    "Original-Alternating",
                                    "Original-Random",
                                    "Finetuned-Both",
@@ -208,10 +208,10 @@ public class FEStatePane extends JPanel {
     JCheckBox saveTraceBox = null;
     JCheckBox slowDownBox = null;    
     
-    JComboBox aiComboBox[] = {null,null};    
-    JCheckBox continuingBox[] = {null,null};
-    JPanel AIOptionsPanel[] = {null, null};
-    HashMap AIOptionsPanelComponents[] = {new HashMap<String, JComponent>(), new HashMap<String, JComponent>()};
+    JComboBox[] aiComboBox = {null,null};
+    JCheckBox[] continuingBox = {null,null};
+    JPanel[] AIOptionsPanel = {null, null};
+    HashMap[] AIOptionsPanelComponents = {new HashMap<String, JComponent>(), new HashMap<String, JComponent>()};
     
     
     FEStateMouseListener mouseListener = null;
@@ -465,7 +465,7 @@ public class FEStatePane extends JPanel {
             p1.add(ptmp);
         }
         {
-            String colorSchemes[] = {"Color Scheme Black","Color Scheme White"};
+            String[] colorSchemes = {"Color Scheme Black","Color Scheme White"};
             JComboBox b = new JComboBox(colorSchemes);
             b.setAlignmentX(Component.CENTER_ALIGNMENT);
             b.setAlignmentY(Component.TOP_ALIGNMENT);
@@ -708,7 +708,7 @@ public class FEStatePane extends JPanel {
                 l1.setAlignmentX(Component.CENTER_ALIGNMENT);
                 l1.setAlignmentY(Component.TOP_ALIGNMENT);
                 ptmp.add(l1);
-                String AINames[] = new String[AIs.length];
+                String[] AINames = new String[AIs.length];
                 for(int i = 0;i<AIs.length;i++) {
                     AINames[i] = AIs[i].getSimpleName();
                 }
@@ -921,7 +921,7 @@ public class FEStatePane extends JPanel {
                 ptmp.add(new JLabel(p.name));
                 int defaultValue = 0;
                 
-                PathFinding PFSNames[] = new PathFinding[pathFinders.length];
+                PathFinding[] PFSNames = new PathFinding[pathFinders.length];
                 for(int i = 0;i<pathFinders.length;i++) {
                     PFSNames[i] = pathFinders[i];
                     if (pathFinders[i].getClass() == p.defaultValue.getClass()) defaultValue = i;
@@ -942,7 +942,7 @@ public class FEStatePane extends JPanel {
                 ptmp.add(new JLabel(p.name));
                 int defaultValue = 0;
                 
-                EvaluationFunction EFSNames[] = new EvaluationFunction[efs.length];
+                EvaluationFunction[] EFSNames = new EvaluationFunction[efs.length];
                 for(int i = 0;i<efs.length;i++) {
                     EFSNames[i] = efs[i];
                     if (efs[i].getClass() == p.defaultValue.getClass()) defaultValue = i;
@@ -964,7 +964,7 @@ public class FEStatePane extends JPanel {
                 ptmp.add(new JLabel(p.name));
                 int defaultValue = 0;
                 
-                AI AINames[] = null;
+                AI[] AINames = null;
                 if (p.possibleValues==null) {                
                     AINames= new AI[PlayoutAIs.length];
                     for(int i = 0;i<PlayoutAIs.length;i++) {
@@ -994,7 +994,7 @@ public class FEStatePane extends JPanel {
                 ptmp.add(new JLabel(p.name));
                 int defaultValue = 0;
                 
-                UnitActionProbabilityDistribution names[] = null;
+                UnitActionProbabilityDistribution[] names = null;
                 names= new UnitActionProbabilityDistribution[p.possibleValues.size()];
                 for(int i = 0;i<p.possibleValues.size();i++) {
                     names[i] = (UnitActionProbabilityDistribution)p.possibleValues.get(i);

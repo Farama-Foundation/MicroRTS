@@ -25,14 +25,14 @@ public class UnitScriptsAI extends AI {
 
     public static int DEBUG = 0;
     
-    UnitScript scriptsInput[];
+    UnitScript[] scriptsInput;
     List<Unit> unitsInput;
     HashMap<Long,UnitScript> scripts = new HashMap<>();
     HashMap<UnitType, List<UnitScript>> allScripts = null;
     UnitScript defaultScript = null;
     
     
-    public UnitScriptsAI(UnitScript a_scripts[], List<Unit> a_units,
+    public UnitScriptsAI(UnitScript[] a_scripts, List<Unit> a_units,
                          HashMap<UnitType, List<UnitScript>> a_allScripts,
                          UnitScript a_defaultScript) {
         scriptsInput = a_scripts;

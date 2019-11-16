@@ -149,8 +149,8 @@ public class PGSAI extends AIWithComputationBudget {
         int n1 = playerUnits.size();
         int n2 = enemyUnits.size();
 
-        UnitScript playerScripts[] = new UnitScript[n1];
-        UnitScript enemyScripts[] = new UnitScript[n2];
+        UnitScript[] playerScripts = new UnitScript[n1];
+        UnitScript[] enemyScripts = new UnitScript[n2];
 
         // Init the players:
         for(int i = 0;i<n1;i++) playerScripts[i] = defaultScript(playerUnits.get(i), gs);
@@ -203,8 +203,8 @@ public class PGSAI extends AIWithComputationBudget {
 
 
     public void improve(int player,
-                        UnitScript scriptsToImprove[], List<Unit> units,
-                        UnitScript otherScripts[], List<Unit> otherUnits, GameState gs) throws Exception {
+                        UnitScript[] scriptsToImprove, List<Unit> units,
+                        UnitScript[] otherScripts, List<Unit> otherUnits, GameState gs) throws Exception {
         for(int i = 0;i<I;i++) {
             if (DEBUG>=1) System.out.println("Improve player " + player + "(" + i + "/" + I + ")");
             for(int u = 0;u<scriptsToImprove.length;u++) {
@@ -241,8 +241,8 @@ public class PGSAI extends AIWithComputationBudget {
 
 
     public double playout(int player,
-                          UnitScript scripts1[], List<Unit> units1,
-                          UnitScript scripts2[], List<Unit> units2, GameState gs) throws Exception {
+                          UnitScript[] scripts1, List<Unit> units1,
+                          UnitScript[] scripts2, List<Unit> units2, GameState gs) throws Exception {
 //        if (DEBUG>=1) System.out.println("  playout... " + LOOKAHEAD);
         nplayouts++;
 

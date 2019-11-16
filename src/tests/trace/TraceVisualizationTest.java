@@ -20,7 +20,7 @@ import rts.*;
  */
 public class TraceVisualizationTest {
 
-  public static void main(String []args) throws JDOMException, IOException, Exception {
+  public static void main(String []args) throws Exception {
 	  boolean zip = false;
 	  
 	  Trace t;

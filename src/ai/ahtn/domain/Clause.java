@@ -29,7 +29,7 @@ public class Clause {
     
     int type = CLAUSE_AND;
     Term term = null;
-    Clause clauses[] = null;
+    Clause[] clauses = null;
     
     // variables to continue finding matches after the first:
     List<List<Binding>> matches_left;

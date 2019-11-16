@@ -31,13 +31,13 @@ public class PortfolioAI extends AIWithComputationBudget implements Interruptibl
     public static int DEBUG = 0;
 
     int LOOKAHEAD = 500;
-    AI strategies[] = null;
-    boolean deterministic[] = null;
+    AI[] strategies = null;
+    boolean[] deterministic = null;
     EvaluationFunction evaluation = null;
     
     GameState gs_to_start_from = null;
-    double scores[][] = null;
-    int counts[][] = null;
+    double[][] scores = null;
+    int[][] counts = null;
     int nplayouts = 0;
     int playerForThisComputation;
     
@@ -53,7 +53,7 @@ public class PortfolioAI extends AIWithComputationBudget implements Interruptibl
     }
     
     
-    public PortfolioAI(AI s[], boolean d[], int time, int max_playouts, int la, EvaluationFunction e) {
+    public PortfolioAI(AI[] s, boolean[] d, int time, int max_playouts, int la, EvaluationFunction e) {
         super(time, max_playouts);
         LOOKAHEAD = la;
         strategies = s;

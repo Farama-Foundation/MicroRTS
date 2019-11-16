@@ -27,7 +27,7 @@ import rts.units.UnitTypeTable;
  * 
  */
 public class RunClientExample {
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         String serverIP = "127.0.0.1";
         int serverPort = 9898;
         

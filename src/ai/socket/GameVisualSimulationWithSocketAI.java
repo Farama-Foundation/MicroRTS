@@ -18,7 +18,7 @@ import rts.units.UnitTypeTable;
  * @author santi
  */
 public class GameVisualSimulationWithSocketAI {
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         UnitTypeTable utt = new UnitTypeTable();
         PhysicalGameState pgs = PhysicalGameState.load("maps/16x16/basesWorkers16x16.xml", utt);
 //        PhysicalGameState pgs = MapGenerator.basesWorkers8x8Obstacle();

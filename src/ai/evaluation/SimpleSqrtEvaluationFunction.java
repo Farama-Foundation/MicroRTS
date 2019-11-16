@@ -37,7 +37,7 @@ public class SimpleSqrtEvaluationFunction extends EvaluationFunction {
     public float upperBound(GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         int free_resources = 0;
-        int player_resources[] = {gs.getPlayer(0).getResources(),gs.getPlayer(1).getResources()};
+        int[] player_resources = {gs.getPlayer(0).getResources(),gs.getPlayer(1).getResources()};
         for(Unit u:pgs.getUnits()) {
             if (u.getPlayer()==-1) free_resources+=u.getResources();
             if (u.getPlayer()==0) {

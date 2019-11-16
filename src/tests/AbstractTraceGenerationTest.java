@@ -23,12 +23,12 @@ import util.XMLWriter;
  * @author santi
  */
 public class AbstractTraceGenerationTest {
-    public static void main(String args[]) throws IOException, Exception {
+    public static void main(String[] args) throws Exception {
         UnitTypeTable utt = new UnitTypeTable();
         PhysicalGameState pgs = PhysicalGameState.load("maps/16x16/basesWorkers16x16.xml", utt);
         GameState gs = new GameState(pgs, utt);
         int MAXCYCLES = 5000;
-        boolean gameover = false;
+        boolean gameover;
         
         AI ai1 = new LightRush(utt, new BFSPathFinding());
         AI ai2 = new WorkerRush(utt, new BFSPathFinding());

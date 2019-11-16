@@ -17,9 +17,9 @@ import rts.units.UnitTypeTable;
  */
 public class UnitActionTypeConstantDistribution extends UnitActionProbabilityDistribution {
 
-    double m_distribution[] = null;
+    double[] m_distribution = null;
     
-    public UnitActionTypeConstantDistribution(UnitTypeTable a_utt, double distribution[]) throws Exception {
+    public UnitActionTypeConstantDistribution(UnitTypeTable a_utt, double[] distribution) throws Exception {
         super(a_utt);
         
         if (distribution==null || distribution.length != UnitAction.NUMBER_OF_ACTION_TYPES) throw new Exception("distribution does not have the right number of elements!");
@@ -30,7 +30,7 @@ public class UnitActionTypeConstantDistribution extends UnitActionProbabilityDis
     public double[] predictDistribution(Unit u, GameState gs, List<UnitAction> actions) throws Exception
     {
         int nActions = actions.size();
-        double d[] = new double[nActions];
+        double[] d = new double[nActions];
         double accum = 0;
         for(int i = 0;i<nActions;i++) {
             int type = actions.get(i).getType();

@@ -40,7 +40,7 @@ public class MapGenerator {
         rangedType = utt.getUnitType("Ranged");
     }
     
-    public static void main(String args[]) throws IOException {
+    public static void main(String[] args) throws IOException {
         MapGenerator mg = new MapGenerator(new UnitTypeTable());
         // Complete game maps:
         XMLWriter xml = new XMLWriter(new FileWriter("maps/8x8/bases8x8.xml"));

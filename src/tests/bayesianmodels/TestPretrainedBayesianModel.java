@@ -29,7 +29,7 @@ import rts.units.UnitTypeTable;
 public class TestPretrainedBayesianModel {
     
     // note: before running this method, you need to generte traces
-    public static void main(String args[]) throws Exception {   
+    public static void main(String[] args) throws Exception {
         UnitTypeTable utt = new UnitTypeTable();
         FeatureGenerator fg = new FeatureGeneratorSimple();
         
@@ -108,9 +108,9 @@ public class TestPretrainedBayesianModel {
         if (DEBUG) System.out.println("Xsizes: " + Arrays.toString(Xsizes));
         if (DEBUG) System.out.println("Ysize: " + Ysize);
         
-        double correct_per_unit[] = new double[utt.getUnitTypes().size()];
-        double total_per_unit[] = new double[utt.getUnitTypes().size()];
-        double loglikelihood_per_unit[] = new double[utt.getUnitTypes().size()];
+        double[] correct_per_unit = new double[utt.getUnitTypes().size()];
+        double[] total_per_unit = new double[utt.getUnitTypes().size()];
+        double[] loglikelihood_per_unit = new double[utt.getUnitTypes().size()];
         for(int fold = 0;fold<nfolds;fold++) {
             if (DEBUG) System.out.println("Evaluating fold " + (fold+1) + "/" + nfolds + ":");
             
@@ -152,9 +152,9 @@ public class TestPretrainedBayesianModel {
 //            model = new NaiveBayesByUnitTypeCorrectedByActionSet(e, allPossibleActions, utt);
 */
             // test the model:
-            int fold_correct_per_unit[] = new int[utt.getUnitTypes().size()];
-            int fold_total_per_unit[] = new int[utt.getUnitTypes().size()];
-            double fold_loglikelihood_per_unit[] = new double[utt.getUnitTypes().size()];
+            int[] fold_correct_per_unit = new int[utt.getUnitTypes().size()];
+            int[] fold_total_per_unit = new int[utt.getUnitTypes().size()];
+            double[] fold_loglikelihood_per_unit = new double[utt.getUnitTypes().size()];
             double numPossibleActionsAccum = 0;
             for(int i = 0;i<X_test.size();i++) {
                 Unit u = i_test.get(i).u;
@@ -174,7 +174,7 @@ public class TestPretrainedBayesianModel {
 
 //                    double predicted_distribution[] = ((SimpleNaiveBayes)model).predictDistribution(X_test.get(i), i_test.get(i), true);
 //                    double predicted_distribution_nocorrection[] = ((SimpleNaiveBayes)model).predictDistribution(X_test.get(i), i_test.get(i), false);
-                    double predicted_distribution[] = model.predictDistribution(X_test.get(i), i_test.get(i));
+                    double[] predicted_distribution = model.predictDistribution(X_test.get(i), i_test.get(i));
 //                    double predicted_distribution[] = model.predictDistribution(X_test.get(i), u.getType());
 //                    double predicted_distribution[] = model.predictDistribution(X_test.get(i));
     //                double predicted_distribution[] = new double[allPossibleActions.size()];
@@ -238,7 +238,7 @@ public class TestPretrainedBayesianModel {
 //                    System.out.println(loglikelihood + "\t" + loglikelihood_nocorrection);
                 }
             }
-            double fold_accuracy_per_unit[] = new double[utt.getUnitTypes().size()];
+            double[] fold_accuracy_per_unit = new double[utt.getUnitTypes().size()];
             if (DEBUG) System.out.println("Average possible actions: " + numPossibleActionsAccum/X_test.size());
             for(int i = 0;i<utt.getUnitTypes().size();i++) {
                 fold_accuracy_per_unit[i] = fold_correct_per_unit[i]/(double)fold_total_per_unit[i];
@@ -279,7 +279,7 @@ public class TestPretrainedBayesianModel {
     
     public static List<UnitAction> generateAllPossibleUnitActions(UnitTypeTable utt) {
         List<UnitAction> l = new ArrayList<>();
-        int directions[] = {UnitAction.DIRECTION_UP, UnitAction.DIRECTION_RIGHT, UnitAction.DIRECTION_DOWN, UnitAction.DIRECTION_LEFT};
+        int[] directions = {UnitAction.DIRECTION_UP, UnitAction.DIRECTION_RIGHT, UnitAction.DIRECTION_DOWN, UnitAction.DIRECTION_LEFT};
         
         l.add(new UnitAction(UnitAction.TYPE_NONE, 10));
         for(int d:directions) l.add(new UnitAction(UnitAction.TYPE_MOVE, d));

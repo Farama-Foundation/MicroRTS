@@ -12,7 +12,7 @@ import util.Pair;
 public abstract class ConfigurableScript<T extends Enum<T>> extends AbstractionLayerAI {
 	class Options{
 		int id;
-		int options[];
+		int[] options;
 		public Options(int id,int[] options){
 			this.id=id;
 			this.options=options;

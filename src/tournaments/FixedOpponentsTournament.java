@@ -54,13 +54,13 @@ public class FixedOpponentsTournament {
                                      String folderForReadWriteFolders) throws Exception {
         if (progress!=null) progress.write("FixedOpponentsTournament: Starting tournament\n");
 
-        int wins[][] = new int[AIs.size()][opponentAIs.size()];
-        int ties[][] = new int[AIs.size()][opponentAIs.size()];
-        int AIcrashes[][] = new int[AIs.size()][opponentAIs.size()];
-        int opponentAIcrashes[][] = new int[opponentAIs.size()][opponentAIs.size()];
-        int AItimeout[][] = new int[AIs.size()][opponentAIs.size()];
-        int opponentAItimeout[][] = new int[AIs.size()][opponentAIs.size()];
-        double accumTime[][] = new double[AIs.size()][opponentAIs.size()];
+        int[][] wins = new int[AIs.size()][opponentAIs.size()];
+        int[][] ties = new int[AIs.size()][opponentAIs.size()];
+        int[][] AIcrashes = new int[AIs.size()][opponentAIs.size()];
+        int[][] opponentAIcrashes = new int[opponentAIs.size()][opponentAIs.size()];
+        int[][] AItimeout = new int[AIs.size()][opponentAIs.size()];
+        int[][] opponentAItimeout = new int[AIs.size()][opponentAIs.size()];
+        double[][] accumTime = new double[AIs.size()][opponentAIs.size()];
 
         out.write("FixedOpponentsTournament\n");
         out.write("AIs\n");
@@ -86,8 +86,8 @@ public class FixedOpponentsTournament {
         out.flush();
         
         // create all the read/write folders:
-        String readWriteFolders[] = new String[AIs.size()];
-        boolean firstPreAnalysis[][] = new boolean[AIs.size()][maps.size()];
+        String[] readWriteFolders = new String[AIs.size()];
+        boolean[][] firstPreAnalysis = new boolean[AIs.size()][maps.size()];
         for(int i = 0;i<AIs.size();i++) {
             readWriteFolders[i] = folderForReadWriteFolders + "/AI" + i + "readWriteFolder";
             File f = new File(readWriteFolders[i]);
@@ -97,8 +97,8 @@ public class FixedOpponentsTournament {
             }
         }
 
-        String opponentReadWriteFolders[] = new String[opponentAIs.size()];
-        boolean opponentFirstPreAnalysis[][] = new boolean[opponentAIs.size()][maps.size()];
+        String[] opponentReadWriteFolders = new String[opponentAIs.size()];
+        boolean[][] opponentFirstPreAnalysis = new boolean[opponentAIs.size()][maps.size()];
         for(int i = 0;i<opponentAIs.size();i++) {
             opponentReadWriteFolders[i] = folderForReadWriteFolders + "/opponentAI" + i + "readWriteFolder";
             File f = new File(opponentReadWriteFolders[i]);

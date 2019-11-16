@@ -82,7 +82,7 @@ public class FETournamentPane extends JPanel {
     public FETournamentPane() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         {
-            String tournamentTypes[] = {TOURNAMENT_ROUNDROBIN, TOURNAMENT_FIXED_OPPONENTS};
+            String[] tournamentTypes = {TOURNAMENT_ROUNDROBIN, TOURNAMENT_FIXED_OPPONENTS};
             tournamentTypeComboBox = new JComboBox(tournamentTypes);
             tournamentTypeComboBox.setAlignmentX(Component.CENTER_ALIGNMENT);
             tournamentTypeComboBox.setAlignmentY(Component.TOP_ALIGNMENT);
@@ -204,7 +204,7 @@ public class FETournamentPane extends JPanel {
                 add.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e)
                     {
-                        int selected[] = availableAIsList.getSelectedIndices();
+                        int[] selected = availableAIsList.getSelectedIndices();
                         for(int idx:selected) {
                             selectedAIsListModel.addElement(availableAIsList.getModel().getElementAt(idx));
                         }
@@ -239,7 +239,7 @@ public class FETournamentPane extends JPanel {
                 opponentAddButton.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e)
                     {
-                        int selected[] = availableAIsList.getSelectedIndices();
+                        int[] selected = availableAIsList.getSelectedIndices();
                         for(int idx:selected) {
                             opponentAIsListModel.addElement(availableAIsList.getModel().getElementAt(idx));
                         }

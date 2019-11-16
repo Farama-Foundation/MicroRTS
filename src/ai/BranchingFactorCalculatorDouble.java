@@ -56,7 +56,7 @@ public class BranchingFactorCalculatorDouble {
 
 
     public static double[] branchingFactorByResourceUsage(GameState gs, int player) throws Exception {
-        double n[] = new double[gs.getPlayer(player).getResources()+1];
+        double[] n = new double[gs.getPlayer(player).getResources()+1];
         PlayerActionGenerator pag = new PlayerActionGenerator(gs, player);
         PlayerAction pa = null;
         do{
@@ -74,7 +74,7 @@ public class BranchingFactorCalculatorDouble {
     }
 
     
-    public static void addFootPrint(int map[][], int ID, int x, int y) {
+    public static void addFootPrint(int[][] map, int ID, int x, int y) {
 //        System.out.println(ID + " -> " + x + "," + y);
         if (map[x][y]==0) {
             map[x][y] = ID;
@@ -177,9 +177,9 @@ public class BranchingFactorCalculatorDouble {
         if (branchingOfSeparatedAreas.isEmpty()) return 1;
                 
         // accumulate:
-        double n[] = branchingOfSeparatedAreas.remove(0);
-        for(double n2[]:branchingOfSeparatedAreas) {
-            double n_tmp[] = new double[playerResources+1];
+        double[] n = branchingOfSeparatedAreas.remove(0);
+        for(double[] n2 :branchingOfSeparatedAreas) {
+            double[] n_tmp = new double[playerResources+1];
             for(int i = 0;i<playerResources+1;i++) {
                 for(int j = 0;j<(playerResources-i)+1;j++) {
                     n_tmp[i+j] += n2[i]*n[j];
@@ -197,7 +197,7 @@ public class BranchingFactorCalculatorDouble {
     
     public static double branchingFactorByResourceUsageFast(GameState gs, int player) throws Exception {
         int playerResources = gs.getPlayer(player).getResources();
-        double n[] = branchingFactorByResourceUsageFastInternal(gs,player);
+        double[] n = branchingFactorByResourceUsageFastInternal(gs,player);
         
         double branching = 0;
         for(int i = 0;i<playerResources+1;i++) branching+=n[i];
@@ -270,19 +270,19 @@ public class BranchingFactorCalculatorDouble {
         if (!unitsThatCannotBeSeparated.isEmpty()) {
             // consider the rest of the board as a single unit:
 //            System.out.println("  recursive call...");
-            double n[] = branchingFactorByResourceUsage(gs2,player);
+            double[] n = branchingFactorByResourceUsage(gs2,player);
 //            System.out.println("  branching of non separated: " + Arrays.toString(n));
             branchingOfSeparatedUnits.add(n);
         }
         
         // accumulate:
-        double n[] = branchingOfSeparatedUnits.remove(0);
+        double[] n = branchingOfSeparatedUnits.remove(0);
         
 //        System.out.println("INITIAL " + Arrays.toString(n));
 
-        for(double n2[]:branchingOfSeparatedUnits) {
+        for(double[] n2 :branchingOfSeparatedUnits) {
 //            System.out.println("NEW " + Arrays.toString(n2));
-            double n_tmp[] = new double[playerResources+1];
+            double[] n_tmp = new double[playerResources+1];
             for(int i = 0;i<playerResources+1;i++) {
                 for(int j = 0;j<(playerResources-i)+1;j++) {
                     n_tmp[i+j] += n2[i]*n[j];

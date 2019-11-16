@@ -67,13 +67,13 @@ public class ExperimenterAsymmetric {
     }
         
     public static void runExperiments(List<AI> bots1, List<AI> bots2, List<PhysicalGameState> maps, UnitTypeTable utt, int iterations, int max_cycles, int max_inactive_cycles, boolean visualize, PrintStream out, boolean saveTrace, boolean saveZip, String traceDir) throws Exception {
-    	int wins[][] = new int[bots1.size()][bots2.size()];
-        int ties[][] = new int[bots1.size()][bots2.size()];
-        int loses[][] = new int[bots1.size()][bots2.size()];
+    	int[][] wins = new int[bots1.size()][bots2.size()];
+        int[][] ties = new int[bots1.size()][bots2.size()];
+        int[][] loses = new int[bots1.size()][bots2.size()];
         
-        double win_time[][] = new double[bots1.size()][bots2.size()];
-        double tie_time[][] = new double[bots1.size()][bots2.size()];
-        double lose_time[][] = new double[bots1.size()][bots2.size()];
+        double[][] win_time = new double[bots1.size()][bots2.size()];
+        double[][] tie_time = new double[bots1.size()][bots2.size()];
+        double[][] lose_time = new double[bots1.size()][bots2.size()];
 
         for (int ai1_idx = 0; ai1_idx < bots1.size(); ai1_idx++) 
         {

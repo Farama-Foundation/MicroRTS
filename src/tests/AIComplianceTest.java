@@ -32,7 +32,7 @@ import rts.units.UnitTypeTable;
  */
 public class AIComplianceTest {
     
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         complianceTest(WorkerRush.class);
         complianceTest(NaiveMCTS.class);
         complianceTest(InformedNaiveMCTS.class);

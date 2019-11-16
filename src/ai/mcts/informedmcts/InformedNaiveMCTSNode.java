@@ -31,7 +31,7 @@ public class InformedNaiveMCTSNode extends MCTSNode {
     // Decomposition of the player actions in unit actions, and their contributions:
     public List<InformedUnitActionTableEntry> unitActionTable = null;
     double evaluation_bound;    // this is the maximum positive value that the evaluation function can return
-    public BigInteger multipliers[];
+    public BigInteger[] multipliers;
     UnitActionProbabilityDistribution model = null;
     
 

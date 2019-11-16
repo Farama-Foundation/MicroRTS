@@ -21,8 +21,8 @@ public class PlayerActionGenerator {
     PlayerAction lastAction = null;
     long size = 1;  // this will be capped at Long.MAX_VALUE;
     long generated = 0;
-    int choiceSizes[] = null;
-    int currentChoice[] = null;
+    int[] choiceSizes = null;
+    int[] currentChoice = null;
     boolean moreActions = true;
     
     /**
@@ -222,7 +222,7 @@ public class PlayerActionGenerator {
      * @return
      */
 	public long getActionIndex(PlayerAction a) {
-		int choice[] = new int[choices.size()];
+		int[] choice = new int[choices.size()];
 		for (Pair<Unit, UnitAction> ua : a.actions) {
 			int idx = 0;
 			Pair<Unit, List<UnitAction>> ua_choice = null;

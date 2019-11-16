@@ -12,7 +12,7 @@ class PuppetGameState{
 	static final int MAX_DEPTH=100;
 	static final int MAX_CHOICE_POINTS=10;
 	static final int MAX_CHOICES=10;
-	static int zobrist[][][][]=new int[MAX_DEPTH][2][MAX_CHOICE_POINTS][MAX_CHOICES];
+	static int[][][][] zobrist =new int[MAX_DEPTH][2][MAX_CHOICE_POINTS][MAX_CHOICES];
 	static{
 		Random rng=new Random();
 		for(int depth=0;depth<MAX_DEPTH;depth++){

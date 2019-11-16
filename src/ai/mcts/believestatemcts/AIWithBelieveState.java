@@ -22,7 +22,7 @@ public interface AIWithBelieveState {
         double AB_intersection = 0.0;
         double A = believeUnits.size(); // visible units in gs + believe units
         double B = 0.0; // all opponent units in gs
-        boolean[] unitSeen = new boolean[believeUnits.size()];;
+        boolean[] unitSeen = new boolean[believeUnits.size()];
 
         for (Unit u : gs.getUnits()) {
             if (u.getPlayer() == player) {

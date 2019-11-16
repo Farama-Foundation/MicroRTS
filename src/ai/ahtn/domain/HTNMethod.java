@@ -45,7 +45,7 @@ public class HTNMethod {
         return c;
     }
     
-    public HTNMethod cloneTrackingDescendants(MethodDecomposition descendantsToTrack[], MethodDecomposition newDescendants[]) {
+    public HTNMethod cloneTrackingDescendants(MethodDecomposition[] descendantsToTrack, MethodDecomposition[] newDescendants) {
         HTNMethod c = new HTNMethod(name, head.clone(), method.cloneTrackingDescendants(descendantsToTrack,newDescendants));
         return c;
     }

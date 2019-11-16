@@ -19,8 +19,8 @@ public class GreedyPathFinding extends PathFinding {
     public UnitAction findPath(Unit start, int targetpos, GameState gs, ResourceUsage ru) {
         PhysicalGameState pgs = gs.getPhysicalGameState();        
         int w = pgs.getWidth();
-        int dx[] = { 0, 1, 0,-1};
-        int dy[] = {-1, 0, 1, 0};
+        int[] dx = { 0, 1, 0,-1};
+        int[] dy = {-1, 0, 1, 0};
         
         int x1 = start.getX();
         int y1 = start.getY();
@@ -55,8 +55,8 @@ public class GreedyPathFinding extends PathFinding {
     public UnitAction findPathToPositionInRange(Unit start, int targetpos, int range, GameState gs, ResourceUsage ru) {
         PhysicalGameState pgs = gs.getPhysicalGameState();        
         int w = pgs.getWidth();
-        int dx[] = { 0, 1, 0,-1};
-        int dy[] = {-1, 0, 1, 0};
+        int[] dx = { 0, 1, 0,-1};
+        int[] dy = {-1, 0, 1, 0};
         
         int x1 = start.getX();
         int y1 = start.getY();

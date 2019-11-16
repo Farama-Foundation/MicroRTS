@@ -39,7 +39,7 @@ public class MLPSNode extends MCTSNode {
     double evaluation_bound = 0;
     int max_nactions = 0;
     
-    public long multipliers[];
+    public long[] multipliers;
 
 
     public MLPSNode(int maxplayer, int minplayer, GameState a_gs, MLPSNode a_parent, double bound, int a_creation_ID) throws Exception {

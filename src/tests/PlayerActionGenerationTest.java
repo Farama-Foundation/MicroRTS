@@ -13,7 +13,7 @@ import rts.units.UnitTypeTable;
  * @author santi
  */
 public class PlayerActionGenerationTest {
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         UnitTypeTable utt = new UnitTypeTable();
         MapGenerator mg = new MapGenerator(utt);
         PhysicalGameState pgs = mg.melee8x8light4();        

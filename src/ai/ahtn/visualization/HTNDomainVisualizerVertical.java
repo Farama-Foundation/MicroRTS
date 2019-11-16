@@ -26,7 +26,7 @@ import javax.imageio.ImageIO;
  * @author santi
  */
 public class HTNDomainVisualizerVertical {
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         {
             DomainDefinition dd = DomainDefinition.fromLispFile("ahtn/microrts-ahtn-definition-lowest-level.lisp");
             HTNDomainVisualizerVertical v = new HTNDomainVisualizerVertical();

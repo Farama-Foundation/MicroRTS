@@ -14,9 +14,9 @@ import util.Pair;
 public class FloodFillPathFinding extends PathFinding {
 	PathFinding altPF=new AStarPathFinding();
 	private static final int ALT_THRESHOLD = 0;
-	HashMap<Integer,int[][]> cache=new HashMap<Integer,int[][]>();
-	boolean free[][] = null;
-	int distances[][] = null;
+	HashMap<Integer,int[][]> cache= new HashMap<>();
+	boolean[][] free = null;
+	int[][] distances = null;
 	int w,h;
 	int lastFrame=-1;
 	@Override
@@ -42,7 +42,7 @@ public class FloodFillPathFinding extends PathFinding {
 	}
 	private void doFloodFill(int x, int y, GameState gs, int finalX, int finalY){
 		assert(distances[x][y]!=Integer.MAX_VALUE);
-		boolean gsFree[][]=gs.getAllFree();
+		boolean[][] gsFree =gs.getAllFree();
 		int index=0;
 		ArrayList<Pair<Integer,Integer>> fringe=new ArrayList<Pair<Integer,Integer>>(h*w);
 		fringe.add(new Pair<Integer,Integer>(x,y));
@@ -117,7 +117,7 @@ public class FloodFillPathFinding extends PathFinding {
 		if (free==null || free.length<w || free[0].length<h) {
 			free = new boolean[w][h];  
 		}
-		for(boolean row[]:free){
+		for(boolean[] row :free){
 			Arrays.fill(row, true);
 		}
 
@@ -131,7 +131,7 @@ public class FloodFillPathFinding extends PathFinding {
 		int x=start.getX();
 		int y=start.getY();
 		
-		int dists[]={bounds(x-1,y)?distances[x-1][y]:Integer.MAX_VALUE,
+		int[] dists ={bounds(x-1,y)?distances[x-1][y]:Integer.MAX_VALUE,
 					 bounds(x,y-1)?distances[x][y-1]:Integer.MAX_VALUE,
 					 bounds(x+1,y)?distances[x+1][y]:Integer.MAX_VALUE,
 					 bounds(x,y+1)?distances[x][y+1]:Integer.MAX_VALUE};

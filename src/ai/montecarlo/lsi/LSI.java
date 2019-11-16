@@ -1269,7 +1269,7 @@ public class LSI extends AIWithComputationBudget {
 
     class PlayerActionTableEntry {
         long code;
-        int selectedUnitActions[];
+        int[] selectedUnitActions;
         PlayerAction pa;
         float accum_evaluation;
         int visit_count;

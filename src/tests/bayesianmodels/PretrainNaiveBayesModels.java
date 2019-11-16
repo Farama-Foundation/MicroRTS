@@ -39,7 +39,7 @@ public class PretrainNaiveBayesModels {
     
     // Note: to run this method, you first need to generate traces, and place them in the appropriate folders
     //       traces are generated with tests.bayesianmodels.GenerateTrainingTraces.java"
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         pretrain("data/bayesianmodels/trainingdata/learning-traces-500","AI0", "data/bayesianmodels/pretrained/ActionInterdependenceModel-WR.xml", ACTION_INTERDEPENDENCE_MODEL_BY_UNIT_TYPE, new FeatureGeneratorSimple());
         pretrain("data/bayesianmodels/trainingdata/learning-traces-500","AI1", "data/bayesianmodels/pretrained/ActionInterdependenceModel-LR.xml", ACTION_INTERDEPENDENCE_MODEL_BY_UNIT_TYPE, new FeatureGeneratorSimple());
         pretrain("data/bayesianmodels/trainingdata/learning-traces-500","AI2", "data/bayesianmodels/pretrained/ActionInterdependenceModel-HR.xml", ACTION_INTERDEPENDENCE_MODEL_BY_UNIT_TYPE, new FeatureGeneratorSimple());

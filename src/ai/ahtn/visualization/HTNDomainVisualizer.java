@@ -29,7 +29,7 @@ import javax.imageio.ImageIO;
 public class HTNDomainVisualizer {
     public static int DEBUG = 0;
     
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
 //        DomainDefinition dd = DomainDefinition.fromLispFile("ahtn/microrts-ahtn-definition-lowest-level.lisp");
 //        DomainDefinition dd = DomainDefinition.fromLispFile("ahtn/microrts-ahtn-definition-low-level.lisp");
         DomainDefinition dd = DomainDefinition.fromLispFile("ahtn/microrts-ahtn-definition-portfolio.lisp");

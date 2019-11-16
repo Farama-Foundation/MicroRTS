@@ -50,7 +50,7 @@ public class FrontEnd extends JPanel {
         return panel;
     }    
     
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         JFrame frame = new JFrame("microRTS Front End");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);         
         frame.add(new FrontEnd(), BorderLayout.CENTER);

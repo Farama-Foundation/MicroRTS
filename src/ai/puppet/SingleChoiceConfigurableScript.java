@@ -15,9 +15,9 @@ import rts.PlayerAction;
 enum SingleChoice{SINGLE};
 
 public class SingleChoiceConfigurableScript extends ConfigurableScript<SingleChoice> {
-	AI scripts[];
+	AI[] scripts;
 	
-	public SingleChoiceConfigurableScript(PathFinding a_pf,AI scripts[]) {
+	public SingleChoiceConfigurableScript(PathFinding a_pf, AI[] scripts) {
 		super(a_pf);
 		this.scripts=scripts;
 		
@@ -55,7 +55,7 @@ public class SingleChoiceConfigurableScript extends ConfigurableScript<SingleCho
 
 	@Override
     public ConfigurableScript<SingleChoice> clone() {
-		AI scripts2[]=new AI[scripts.length];
+		AI[] scripts2 =new AI[scripts.length];
 		for(int i=0;i<scripts.length;i++)
 			scripts2[i]=scripts[i].clone();
     	SingleChoiceConfigurableScript sc = new SingleChoiceConfigurableScript(pf,scripts2);

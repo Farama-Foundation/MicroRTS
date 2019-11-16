@@ -39,7 +39,7 @@ public class PhysicalGameState {
 
     int width = 8;
     int height = 8;
-    int terrain[] = null;
+    int[] terrain = null;
     List<Player> players = new ArrayList<Player>();
     List<Unit> units = new LinkedList<Unit>();
 
@@ -86,7 +86,7 @@ public class PhysicalGameState {
      * @param a_height
      * @param t
      */
-    PhysicalGameState(int a_width, int a_height, int t[]) {
+    PhysicalGameState(int a_width, int a_height, int[] t) {
         width = a_width;
         height = a_height;
         terrain = t;
@@ -153,7 +153,7 @@ public class PhysicalGameState {
      *
      * @param t
      */
-    public void setTerrain(int t[]) {
+    public void setTerrain(int[] t) {
         terrain = t;
     }
 
@@ -295,7 +295,7 @@ public class PhysicalGameState {
      * @return
      */
     public int winner() {
-        int unitcounts[] = new int[players.size()];
+        int[] unitcounts = new int[players.size()];
         for (Unit u : units) {
             if (u.getPlayer() >= 0) {
                 unitcounts[u.getPlayer()]++;
@@ -322,7 +322,7 @@ public class PhysicalGameState {
      * @return
      */
     boolean gameover() {
-        int unitcounts[] = new int[players.size()];
+        int[] unitcounts = new int[players.size()];
         int totalunits = 0;
         for (Unit u : units) {
             if (u.getPlayer() >= 0) {
@@ -386,7 +386,7 @@ public class PhysicalGameState {
      * @return
      */
     public PhysicalGameState cloneIncludingTerrain() {
-        int new_terrain[] = new int[terrain.length];
+        int[] new_terrain = new int[terrain.length];
         for (int i = 0; i < terrain.length; i++) {
             new_terrain[i] = terrain[i];
         }
@@ -480,7 +480,7 @@ public class PhysicalGameState {
      */
     public boolean[][] getAllFree() {
 
-        boolean free[][] = new boolean[getWidth()][getHeight()];
+        boolean[][] free = new boolean[getWidth()][getHeight()];
         for (int x = 0; x < getWidth(); x++) {
             for (int y = 0; y < getHeight(); y++) {
                 free[x][y] = (getTerrain(x, y) == PhysicalGameState.TERRAIN_NONE);
@@ -566,7 +566,7 @@ public class PhysicalGameState {
 
         int width = Integer.parseInt(e.getAttributeValue("width"));
         int height = Integer.parseInt(e.getAttributeValue("height"));
-        int terrain[] = new int[width * height];
+        int[] terrain = new int[width * height];
         String terrainString = terrain_e.getValue();
         for (int i = 0; i < width * height; i++) {
             String c = terrainString.substring(i, i + 1);
@@ -606,7 +606,7 @@ public class PhysicalGameState {
 
         int width = o.getInt("width", 8);
         int height = o.getInt("height", 8);
-        int terrain[] = new int[width * height];
+        int[] terrain = new int[width * height];
         for (int i = 0; i < width * height; i++) {
             String c = terrainString.substring(i, i + 1);
             terrain[i] = Integer.parseInt(c);

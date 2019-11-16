@@ -32,7 +32,7 @@ public class NaiveMCTSNode extends MCTSNode {
     // Decomposition of the player actions in unit actions, and their contributions:
     public List<UnitActionTableEntry> unitActionTable = null;
     double evaluation_bound;    // this is the maximum positive value that the evaluation function can return
-    public BigInteger multipliers[];
+    public BigInteger[] multipliers;
 
 
     public NaiveMCTSNode(int maxplayer, int minplayer, GameState a_gs, NaiveMCTSNode a_parent, double a_evaluation_bound, int a_creation_ID, boolean fensa) throws Exception {

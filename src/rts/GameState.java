@@ -197,7 +197,7 @@ public class GameState {
      */
     public boolean[][] getAllFree() {
     	
-    	boolean free[][]=pgs.getAllFree();
+    	boolean[][] free =pgs.getAllFree();
         for(UnitActionAssignment ua:unitActions.values()) {
             if (ua.action.type==UnitAction.TYPE_MOVE ||
                 ua.action.type==UnitAction.TYPE_PRODUCE) {

@@ -19,7 +19,7 @@ import rts.units.UnitTypeTable;
  * 
  */
 public class RunServerExample {
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         AIWithComputationBudget ai = new WorkerRush(new UnitTypeTable());
         int port = 9898;
         

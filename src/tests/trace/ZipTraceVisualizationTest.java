@@ -15,7 +15,7 @@ import rts.Trace;
  */
 public class ZipTraceVisualizationTest {
 
-  public static void main(String []args) throws JDOMException, IOException, Exception {
+  public static void main(String []args) throws Exception {
 	  
 	  Trace t = Trace.fromZip(args[0]);
 	  

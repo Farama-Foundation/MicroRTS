@@ -53,8 +53,8 @@ public class FeatureSelection {
         
 //        System.out.println("n values: " + n_x_values + " / " + n_y_values);
         
-        int x_distribution[] = new int[n_x_values];
-        List<Integer> y_x_distributions[] = new List[n_x_values];
+        int[] x_distribution = new int[n_x_values];
+        List<Integer>[] y_x_distributions = new List[n_x_values];
         for(int i = 0;i<n_x_values;i++) {
             y_x_distributions[i] = new ArrayList<>();
         }
@@ -65,7 +65,7 @@ public class FeatureSelection {
         }        
 
         double H = entropy(Y_l, n_y_values);
-        double H_x[] = new double[n_x_values];
+        double[] H_x = new double[n_x_values];
         for(int i = 0;i<n_x_values;i++) {
             if (x_distribution[i]>0) {
                 H_x[i] = entropy(y_x_distributions[i], n_y_values);
@@ -105,7 +105,7 @@ public class FeatureSelection {
     
     
     public static double entropy(List<Integer> l, int nValues) {
-        int histogram[] = new int[nValues];
+        int[] histogram = new int[nValues];
         double total = 0;
         for(int v:l) {
             histogram[v]++;
@@ -130,7 +130,7 @@ public class FeatureSelection {
                                          int nfolds) throws Exception
     {
         Random r = new Random();
-        List<Integer> folds[] = new List[nfolds];
+        List<Integer>[] folds = new List[nfolds];
         int nfeatures = X_l.get(0).length;
         int []Xsizes = new int[nfeatures];
         int Ysize = 0;
@@ -152,9 +152,9 @@ public class FeatureSelection {
         if (DEBUG>=1) System.out.println("Xsizes: " + Arrays.toString(Xsizes));
         if (DEBUG>=1) System.out.println("Ysize: " + Ysize);
         
-        double correct_per_unit[] = new double[utt.getUnitTypes().size()];
-        double total_per_unit[] = new double[utt.getUnitTypes().size()];
-        double loglikelihood_per_unit[] = new double[utt.getUnitTypes().size()];
+        double[] correct_per_unit = new double[utt.getUnitTypes().size()];
+        double[] total_per_unit = new double[utt.getUnitTypes().size()];
+        double[] loglikelihood_per_unit = new double[utt.getUnitTypes().size()];
         for(int fold = 0;fold<nfolds;fold++) {
             if (DEBUG>=1) System.out.println("Evaluating fold " + (fold+1) + "/" + nfolds + ":");
             
@@ -195,9 +195,9 @@ public class FeatureSelection {
 //            model = new NaiveBayesByUnitTypeCorrectedByActionSet(e, allPossibleActions, utt);
 */
             // test the model:
-            int fold_correct_per_unit[] = new int[utt.getUnitTypes().size()];
-            int fold_total_per_unit[] = new int[utt.getUnitTypes().size()];
-            double fold_loglikelihood_per_unit[] = new double[utt.getUnitTypes().size()];
+            int[] fold_correct_per_unit = new int[utt.getUnitTypes().size()];
+            int[] fold_total_per_unit = new int[utt.getUnitTypes().size()];
+            double[] fold_loglikelihood_per_unit = new double[utt.getUnitTypes().size()];
             double numPossibleActionsAccum = 0;
             for(int i = 0;i<X_test.size();i++) {
                 Unit u = i_test.get(i).u;
@@ -217,7 +217,7 @@ public class FeatureSelection {
 
 //                    double predicted_distribution[] = ((SimpleNaiveBayes)model).predictDistribution(X_test.get(i), i_test.get(i), true);
 //                    double predicted_distribution_nocorrection[] = ((SimpleNaiveBayes)model).predictDistribution(X_test.get(i), i_test.get(i), false);
-                    double predicted_distribution[] = model.predictDistribution(X_test.get(i), i_test.get(i));
+                    double[] predicted_distribution = model.predictDistribution(X_test.get(i), i_test.get(i));
 //                    double predicted_distribution[] = model.predictDistribution(X_test.get(i), u.getType());
 //                    double predicted_distribution[] = model.predictDistribution(X_test.get(i));
     //                double predicted_distribution[] = new double[allPossibleActions.size()];
@@ -281,7 +281,7 @@ public class FeatureSelection {
 //                    System.out.println(loglikelihood + "\t" + loglikelihood_nocorrection);
                 }
             }
-            double fold_accuracy_per_unit[] = new double[utt.getUnitTypes().size()];
+            double[] fold_accuracy_per_unit = new double[utt.getUnitTypes().size()];
             if (DEBUG>=1) System.out.println("Average possible actions: " + numPossibleActionsAccum/X_test.size());
             for(int i = 0;i<utt.getUnitTypes().size();i++) {
                 fold_accuracy_per_unit[i] = fold_correct_per_unit[i]/(double)fold_total_per_unit[i];

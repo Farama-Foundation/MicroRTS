@@ -53,7 +53,7 @@ public class UnitAction {
      */
     public static final int NUMBER_OF_ACTION_TYPES = 6;
 
-    public static String actionName[] = {
+    public static String[] actionName = {
         "wait", "move", "harvest", "return", "produce", "attack_location"
     };
 
@@ -86,18 +86,18 @@ public class UnitAction {
      * The offset caused by each direction of movement in X Indexes correspond
      * to the constants used in this class
      */
-    public static final int DIRECTION_OFFSET_X[] = {0, 1, 0, -1};
+    public static final int[] DIRECTION_OFFSET_X = {0, 1, 0, -1};
 
     /**
      * The offset caused by each direction of movement in y Indexes correspond
      * to the constants used in this class
      */
-    public static final int DIRECTION_OFFSET_Y[] = {-1, 0, 1, 0};
+    public static final int[] DIRECTION_OFFSET_Y = {-1, 0, 1, 0};
 
     /**
      * Direction names. Indexes correspond to the constants used in this class
      */
-    public static final String DIRECTION_NAMES[] = {"up", "right", "down", "left"};
+    public static final String[] DIRECTION_NAMES = {"up", "right", "down", "left"};
 
     /**
      * Type of this UnitAction

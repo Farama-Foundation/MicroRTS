@@ -82,7 +82,7 @@ public abstract class BayesianModel extends UnitActionProbabilityDistribution {
     
     
     public int predictMax(int []x, TrainingInstance ti) {
-        double d[] = predictDistribution(x, ti);
+        double[] d = predictDistribution(x, ti);
         
         int argmax = 0;
         for(int i = 1;i<d.length;i++) {
@@ -93,7 +93,7 @@ public abstract class BayesianModel extends UnitActionProbabilityDistribution {
     }
 
     public int predictSample(int []x, TrainingInstance ti) throws Exception {
-        double d[] = predictDistribution(x, ti);
+        double[] d = predictDistribution(x, ti);
 
         return Sampler.weighted(d);
     }
@@ -102,7 +102,7 @@ public abstract class BayesianModel extends UnitActionProbabilityDistribution {
     public double[] filterByPossibleActionIndexes(double[] predicted_distribution, List<Integer> possibleUnitActionIndexes) {
         double accum = 0;
         int n = predicted_distribution.length;
-        double d[] = new double[n];
+        double[] d = new double[n];
         for(int i = 0;i<n;i++) {
             if (possibleUnitActionIndexes.contains(i)) accum+=predicted_distribution[i];
         }
@@ -144,7 +144,7 @@ public abstract class BayesianModel extends UnitActionProbabilityDistribution {
     public static List<UnitAction> generateAllPossibleUnitActions(UnitTypeTable utt) {
         List<UnitAction> l = new ArrayList<>();
         int maxAttackRange = 1;
-        int directions[] = {UnitAction.DIRECTION_UP, UnitAction.DIRECTION_RIGHT, UnitAction.DIRECTION_DOWN, UnitAction.DIRECTION_LEFT};
+        int[] directions = {UnitAction.DIRECTION_UP, UnitAction.DIRECTION_RIGHT, UnitAction.DIRECTION_DOWN, UnitAction.DIRECTION_LEFT};
         
         for(UnitType ut:utt.getUnitTypes()) {
             if (ut.attackRange > maxAttackRange) maxAttackRange = ut.attackRange;

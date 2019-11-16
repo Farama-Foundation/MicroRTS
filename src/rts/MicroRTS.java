@@ -14,7 +14,7 @@ import rts.units.UnitTypeTable;
  */
 public class MicroRTS {
 
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         
         String configFile = "resources/config.properties";
                 

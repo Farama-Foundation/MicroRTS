@@ -60,11 +60,11 @@ public class RoundRobinTournament {
             progress.write("RoundRobinTournament: Starting tournament\n");
         }
 
-        int wins[][] = new int[AIs.size()][AIs.size()];
-        int ties[][] = new int[AIs.size()][AIs.size()];
-        int AIcrashes[][] = new int[AIs.size()][AIs.size()];
-        int AItimeout[][] = new int[AIs.size()][AIs.size()];
-        double accumTime[][] = new double[AIs.size()][AIs.size()];
+        int[][] wins = new int[AIs.size()][AIs.size()];
+        int[][] ties = new int[AIs.size()][AIs.size()];
+        int[][] AIcrashes = new int[AIs.size()][AIs.size()];
+        int[][] AItimeout = new int[AIs.size()][AIs.size()];
+        double[][] accumTime = new double[AIs.size()][AIs.size()];
 
         out.write("RoundRobinTournament\n");
         out.write("AIs\n");
@@ -87,7 +87,7 @@ public class RoundRobinTournament {
         out.flush();
         
         // create all the read/write folders:
-        String readWriteFolders[] = new String[AIs.size()];
+        String[] readWriteFolders = new String[AIs.size()];
         for(int i = 0;i<AIs.size();i++) {
             readWriteFolders[i] = folderForReadWriteFolders + "/AI" + i + "readWriteFolder";
             File f = new File(readWriteFolders[i]);

@@ -21,7 +21,7 @@ import rts.units.UnitTypeTable;
 import util.XMLWriter;
 
  public class LMCTest {
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         String scenarioFileName = "maps/8x8/basesWorkers8x8.xml";
 
         UnitTypeTable utt = new UnitTypeTable(); // original game (NOOP length = move length)

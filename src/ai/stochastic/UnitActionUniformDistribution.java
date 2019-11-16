@@ -25,7 +25,7 @@ public class UnitActionUniformDistribution extends UnitActionProbabilityDistribu
     public double[] predictDistribution(Unit u, GameState gs, List<UnitAction> actions) throws Exception
     {
         int nActions = actions.size();
-        double d[] = new double[nActions];
+        double[] d = new double[nActions];
         for(int i = 0;i<nActions;i++) d[i] = 1.0/nActions;
         
         return d;    

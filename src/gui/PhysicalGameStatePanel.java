@@ -47,7 +47,7 @@ public class PhysicalGameStatePanel extends JPanel {
     int m_mouse_selection_y1 = -1;
 
     // the state observed by each player:
-    PartiallyObservableGameState pogs[] = new PartiallyObservableGameState[2];
+    PartiallyObservableGameState[] pogs = new PartiallyObservableGameState[2];
 
     // Coordinates where things were drawn the last time this was redrawn:
     int last_start_x = 0;
@@ -238,7 +238,7 @@ public class PhysicalGameStatePanel extends JPanel {
                             PhysicalGameStatePanel panel,
                             int dx,int dy,
                             GameState gs,
-                            PartiallyObservableGameState pogs[],
+                            PartiallyObservableGameState[] pogs,
                             int colorScheme,
                             boolean fullObservability,
                             int drawFromPerspectiveOfPlayer,
@@ -487,7 +487,7 @@ public class PhysicalGameStatePanel extends JPanel {
     public void resizeGameState(int width, int height) {
         if (width>=1 && height>=1) {
             PhysicalGameState pgs = gs.getPhysicalGameState();
-            int newTerrain[] = new int[width*height];
+            int[] newTerrain = new int[width*height];
             for(int i = 0;i<width*height;i++) newTerrain[i] = PhysicalGameState.TERRAIN_NONE;
             for(int i = 0;i<height && i<pgs.getHeight();i++) {
                 for(int j = 0;j<width && j<pgs.getWidth();j++) {
