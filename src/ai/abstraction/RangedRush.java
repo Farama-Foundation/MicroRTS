@@ -150,8 +150,7 @@ public class RangedRush extends AbstractionLayerAI {
         int nbarracks = 0;
 
         int resourcesUsed = 0;
-        List<Unit> freeWorkers = new LinkedList<Unit>();
-        freeWorkers.addAll(workers);
+        List<Unit> freeWorkers = new LinkedList<Unit>(workers);
 
         if (workers.isEmpty()) {
             return;

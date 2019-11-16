@@ -420,9 +420,7 @@ public class LSI extends AIWithComputationBudget {
         for (UnitActionTableEntry entry : unitActionTable) {
             double[] armsDist = new double[entry.nactions];
             actionDist.add(armsDist);
-            for (int i = 0; i < armsDist.length; i++) {
-                armsDist[i] = 0;
-            }
+            Arrays.fill(armsDist, 0);
         }
 
         int sample = 0;
@@ -747,9 +745,7 @@ public class LSI extends AIWithComputationBudget {
                 default:
                     throw new RuntimeException("Unkonwn GenerateType");
             }
-            if (!actionSet.contains(playerAction)) {
-                actionSet.add(playerAction);
-            }
+            actionSet.add(playerAction);
         }
 
         return actionSet;

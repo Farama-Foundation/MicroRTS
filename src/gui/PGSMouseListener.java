@@ -329,8 +329,7 @@ public class PGSMouseListener implements MouseListener, MouseMotionListener, Key
         List<UnitType> shared = null;
         for(Unit u:selectedUnits) {
             if (shared==null) {
-                shared = new ArrayList<>();
-                shared.addAll(u.getType().produces);
+                shared = new ArrayList<>(u.getType().produces);
             } else {
                 List<UnitType> toDelete = new ArrayList<>();
                 for(UnitType ut:shared) {

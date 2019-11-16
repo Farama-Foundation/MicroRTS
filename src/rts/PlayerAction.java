@@ -140,8 +140,8 @@ public class PlayerAction {
      */
     public PlayerAction merge(PlayerAction a) {
         PlayerAction merge = new PlayerAction();
-        for(Pair<Unit,UnitAction> ua : actions) merge.actions.add(ua);
-        for(Pair<Unit,UnitAction> ua : a.actions) merge.actions.add(ua);
+        merge.actions.addAll(actions);
+        merge.actions.addAll(a.actions);
         merge.r = r.mergeIntoNew(a.r);
         
         return merge;

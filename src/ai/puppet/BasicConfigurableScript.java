@@ -252,9 +252,8 @@ public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint
                 bases.add(u2);
             }
         }
-        
-        List<Unit> freeWorkers = new LinkedList<Unit>();
-        freeWorkers.addAll(workers);
+
+        List<Unit> freeWorkers = new LinkedList<Unit>(workers);
         List<Integer> reservedPositions = new LinkedList<Integer>();
         if (nbases == 0 && !freeWorkers.isEmpty()) {
             // build a base:

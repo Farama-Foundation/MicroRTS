@@ -257,11 +257,10 @@ public class SCV extends AIWithComputationBudget {
                 ua.remove(ua.firstKey());
             });
 
-            vote.stream().map((valor) -> {
+            vote.stream().peek((valor) -> {
                 if (!contagem.containsKey(valor)) {
                     contagem.put(valor, 0);
                 }
-                return valor;
             }).forEachOrdered((valor) -> {
                 contagem.put(valor, contagem.get(valor) + 1);
             });

@@ -7,6 +7,7 @@
 package ai;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,7 +59,7 @@ public class BranchingFactorCalculatorBigInteger {
 
     public static BigInteger[] branchingFactorByResourceUsage(GameState gs, int player) throws Exception {
         BigInteger[] n = new BigInteger[gs.getPlayer(player).getResources()+1];
-        for(int i = 0;i<n.length;i++) n[i] = BigInteger.ZERO;
+        Arrays.fill(n, BigInteger.ZERO);
         PlayerActionGenerator pag = new PlayerActionGenerator(gs, player);
         PlayerAction pa = null;
         do{

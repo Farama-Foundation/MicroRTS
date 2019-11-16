@@ -232,7 +232,9 @@ public class AdversarialBoundedDepthPlannerAlphaBeta {
                     choicePoint.restoreExecutionState();
                     // undo the bindings:
                     int n = bindings.size() - bl;
-                    for(int i = 0;i<n;i++) bindings.remove(0);
+                    if (n > 0) {
+                        bindings.subList(0, n).clear();
+                    }
                     if (alphaBetaTest) break;
                 } else {
                     last_tree_nodes++;
@@ -600,7 +602,9 @@ public class AdversarialBoundedDepthPlannerAlphaBeta {
         cp.restoreAfterPop();
         int tmp = trail.remove(0);
         if (DEBUG>=2) System.out.println("StackPop! removing " + tmp + " bindings.");
-        for(int i = 0;i<tmp;i++) bindings.remove(0);
+        if (tmp > 0) {
+            bindings.subList(0, tmp).clear();
+        }
         if (!stack.isEmpty()) stack.get(0).restoreExecutionState();
     }
     

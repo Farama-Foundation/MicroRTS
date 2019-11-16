@@ -331,7 +331,7 @@ public class MethodDecomposition {
     }
     
     
-    public MethodDecomposition cloneTrackingDescendants(MethodDecomposition descendantsToTrack[], MethodDecomposition newDescendants[]) {
+    public MethodDecomposition cloneTrackingDescendants(MethodDecomposition[] descendantsToTrack, MethodDecomposition[] newDescendants) {
         MethodDecomposition c = new MethodDecomposition();
         for(int i = 0;i<descendantsToTrack.length;i++) {
             if (descendantsToTrack[i]==this) newDescendants[i] = c;

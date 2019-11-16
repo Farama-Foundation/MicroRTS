@@ -223,8 +223,7 @@ public class EconomyRushBurster extends AbstractionLayerAI {
         int nbarracks = 0;
         int resourcesUsed = 0;
 
-        List<Unit> freeWorkers = new ArrayList<Unit>();
-        freeWorkers.addAll(workers);
+        List<Unit> freeWorkers = new ArrayList<Unit>(workers);
 
         if (workers.isEmpty()) {
             return;

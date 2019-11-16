@@ -149,8 +149,7 @@ public class WorkerDefense extends AbstractionLayerAI {
         int nbases = 0;
         int resourcesUsed = 0;
         Unit harvestWorker = null;
-        List<Unit> freeWorkers = new LinkedList<Unit>();
-        freeWorkers.addAll(workers);
+        List<Unit> freeWorkers = new LinkedList<Unit>(workers);
         
         if (workers.isEmpty()) return;
         
