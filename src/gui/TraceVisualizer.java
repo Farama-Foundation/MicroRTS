@@ -71,11 +71,11 @@ public class TraceVisualizer extends JPanel implements ListSelectionListener {
 
         for(int i = 0;i<t.getEntries().size();i++) {
             if (!t.getEntries().get(i).getActions().isEmpty()) {
-                String tmp = "";
+                StringBuilder tmp = new StringBuilder();
                 for(Pair<Unit,UnitAction> uap:t.getEntries().get(i).getActions()) {
-                    tmp += "(" + uap.m_a.getID() + ", " + uap.m_b.getActionName() + "), ";
+                    tmp.append("(").append(uap.m_a.getID()).append(", ").append(uap.m_b.getActionName()).append("), ");
                 }
-                actionList[i] = tmp;
+                actionList[i] = tmp.toString();
             } else {
                 actionList[i] = "-";
             }

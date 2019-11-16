@@ -46,31 +46,31 @@ public class LispTokenizer {
         
         if (!br.ready()) return null;
         
-        String currentToken = null;
+        StringBuilder currentToken = null;
         do {
             int c = nextCharacter();
             if (c==-1) break;
             if (c==';') {
                 // skip the whole line:
                 br.readLine();
-                if (currentToken!=null) return currentToken;
+                if (currentToken!=null) return currentToken.toString();
             } else if (c==' ' || c=='\n' || c=='\r' || c=='\t') {
-                if (currentToken!=null) return currentToken;
+                if (currentToken!=null) return currentToken.toString();
             } else if (c=='(' || c==')') {
                 if (currentToken==null) {
                     return "" + (char)c;
                 } else {
                     nextCharacter = c;
-                    return currentToken;
+                    return currentToken.toString();
                 }
             } else {
                 if (currentToken==null) {
-                    currentToken = "" + (char)c;
+                    currentToken = new StringBuilder("" + (char) c);
                 } else {
-                    currentToken += (char)c;
+                    currentToken.append((char) c);
                 }
-                if (currentToken.length()>=2 && currentToken.endsWith("#|")) {
-                    currentToken = currentToken.substring(0, currentToken.length()-2);
+                if (currentToken.length()>=2 && currentToken.toString().endsWith("#|")) {
+                    currentToken = new StringBuilder(currentToken.substring(0, currentToken.length() - 2));
                     // skip comments:
                     int previous = -1;
                     while(br.ready()) {
@@ -84,12 +84,12 @@ public class LispTokenizer {
                     if (currentToken.length()==0) {
                         currentToken = null;
                     } else {
-                        return currentToken;                    
+                        return currentToken.toString();
                     }
                 }
             }
         }while(br.ready());
         
-        return currentToken;
+        return currentToken.toString();
     }    
 }
