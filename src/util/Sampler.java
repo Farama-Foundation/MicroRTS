@@ -92,24 +92,13 @@ public class Sampler {
      * Returns the score with maximum probability (ties are resolved randomly)
      */
     public static Double maxScore(double[] distribution) {
-        List<Integer> best = new LinkedList<Integer>();
         double max = distribution[0];
 
-        for (int i = 0; i < distribution.length; i++) {
-            double f = distribution[i];
-            if (f == max) {
-                best.add(new Integer(i));
-            } else {
-                if (f > max) {
-                    best.clear();
-                    best.add(new Integer(i));
-                    max = f;
-                }
-            }
-        }
+        for (int i = 1; i < distribution.length; i++)
+                if (max<distribution[i])
+                    max = distribution[i];
 
         return max;
-
     }
 
     /*
