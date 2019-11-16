@@ -206,21 +206,21 @@ public class GenerateTrainingTraces {
             for (int ai2_idx = 0; ai2_idx < bots.size(); ai2_idx++) {
                 out.print(wins[ai1_idx][ai2_idx] + ", ");
             }
-            out.println("");
+            out.println();
         }
         out.println("Ties: ");
         for (int ai1_idx = 0; ai1_idx < bots.size(); ai1_idx++) {
             for (int ai2_idx = 0; ai2_idx < bots.size(); ai2_idx++) {
                 out.print(ties[ai1_idx][ai2_idx] + ", ");
             }
-            out.println("");
+            out.println();
         }
         out.println("Loses: ");
         for (int ai1_idx = 0; ai1_idx < bots.size(); ai1_idx++) {
             for (int ai2_idx = 0; ai2_idx < bots.size(); ai2_idx++) {
                 out.print(loses[ai1_idx][ai2_idx] + ", ");
             }
-            out.println("");
+            out.println();
         }        
         out.println("Win average time: ");
         for (int ai1_idx = 0; ai1_idx < bots.size(); ai1_idx++) {
@@ -231,7 +231,7 @@ public class GenerateTrainingTraces {
                     out.print("-, ");
                 }
             }
-            out.println("");
+            out.println();
         }
         out.println("Tie average time: ");
         for (int ai1_idx = 0; ai1_idx < bots.size(); ai1_idx++) {
@@ -242,7 +242,7 @@ public class GenerateTrainingTraces {
                     out.print("-, ");
                 }
             }
-            out.println("");
+            out.println();
         }
         out.println("Lose average time: ");
         for (int ai1_idx = 0; ai1_idx < bots.size(); ai1_idx++) {
@@ -253,7 +253,7 @@ public class GenerateTrainingTraces {
                     out.print("-, ");
                 }
             }
-            out.println("");
+            out.println();
         }              
         out.flush();
     }    

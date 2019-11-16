@@ -149,7 +149,7 @@ public class PortfolioAI extends AIWithComputationBudget implements Interruptibl
                 for(int j = 0;j<n;j++) {
                     System.out.print(counts[i][j] + "\t");
                 }
-                System.out.println("");
+                System.out.println();
             }
             System.out.println("  scores:");
             for(int i = 0;i<n;i++) {
@@ -157,7 +157,7 @@ public class PortfolioAI extends AIWithComputationBudget implements Interruptibl
                 for(int j = 0;j<n;j++) {
                     System.out.print(scores[i][j]/counts[i][j] + "\t");
                 }
-                System.out.println("");
+                System.out.println();
             }
         }
         
