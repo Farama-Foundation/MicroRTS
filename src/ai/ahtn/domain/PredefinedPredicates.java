@@ -282,7 +282,7 @@ public class PredefinedPredicates {
                                 if (ut1!=null) {
                                     if ((p2 instanceof SymbolConstant)) {
                                         UnitType ut2 = gs.getUnitTypeTable().getUnitType(p1.toString());
-                                        if (ut1!=null && ut2!=null && ut1.produces.contains(ut2)) return new LinkedList<>();
+                                        if (ut2 != null && ut1.produces.contains(ut2)) return new LinkedList<>();
                                     } else if ((p2 instanceof Variable)) {
                                         for(UnitType t:ut1.produces) {
                                             List<Binding> l = new LinkedList<>();
@@ -332,7 +332,7 @@ public class PredefinedPredicates {
                                 if (ut1!=null) {
                                     if ((p2 instanceof SymbolConstant)) {
                                         UnitType ut2 = gs.getUnitTypeTable().getUnitType(p1.toString());
-                                        if (ut1!=null && ut2!=null && ut1.produces.contains(ut2)) ll.add(new LinkedList<>());
+                                        if (ut2 != null && ut1.produces.contains(ut2)) ll.add(new LinkedList<>());
                                     } else if ((p2 instanceof Variable)) {
                                         for(UnitType t:ut1.produces) {
                                             List<Binding> l = new LinkedList<>();

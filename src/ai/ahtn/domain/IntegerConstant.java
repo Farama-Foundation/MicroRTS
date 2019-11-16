@@ -50,10 +50,7 @@ public class IntegerConstant implements Parameter {
     }    
     
     public boolean equals(Object o) {
-        if (o instanceof IntegerConstant) {
-            if (((IntegerConstant)o).value == value) return true;
-        }
-        return false;
+        return o instanceof IntegerConstant && ((IntegerConstant) o).value == value;
     }
     
 }

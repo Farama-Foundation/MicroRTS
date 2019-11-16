@@ -163,7 +163,6 @@ public class IDRTMinimax extends AIWithComputationBudget implements Interruptibl
         }while(System.currentTimeMillis() - startTime < TIME_BUDGET);
         last_lookAhead = lookAhead;
 //        return bestMove;
-        return;
     }
     
     

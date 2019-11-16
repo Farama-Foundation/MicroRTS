@@ -364,10 +364,8 @@ public class CRush_V2 extends AbstractionLayerAI {
                     }
                 }
             }
-            if (closestResource == null || distance(closestResource, closestEnemyBase) < distance(closestResource, closestBase)) {
-                //Do nothing
-            } else {
-                if (closestResource != null && closestBase != null) {
+            if (!(closestResource == null || distance(closestResource, closestEnemyBase) < distance(closestResource, closestBase))) {
+                if (closestBase != null) {
                     AbstractAction aa = getAbstractAction(u);
                     if (aa instanceof Harvest) {
                         Harvest h_aa = (Harvest) aa;

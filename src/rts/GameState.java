@@ -426,10 +426,8 @@ public class GameState {
                 empty.r.merge(ru);
             }
         }
-        
-        if (ua.resourceUsage(u, pgs).consistentWith(empty.getResourceUsage(), this)) return true;
-        
-        return false;
+
+        return ua.resourceUsage(u, pgs).consistentWith(empty.getResourceUsage(), this);
     }
         
     

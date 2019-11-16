@@ -35,13 +35,11 @@ public class FEStateMouseListener implements MouseListener, MouseMotionListener 
         if (gs==null) return;
 
         if (e.getButton()==MouseEvent.BUTTON1) {
-            Object tmp = panel.getContentAtCoordinates(x,y);
+            Pair<Integer,Integer> tmp = panel.getContentAtCoordinates(x,y);
             if (tmp!=null) {
-                if (tmp instanceof Pair) {
-                    coordinates = (Pair<Integer,Integer>)tmp;
-                    PopUpStateEditorMenu menu = new PopUpStateEditorMenu(gs, utt, coordinates.m_a, coordinates.m_b, panel);
-                    menu.show(e.getComponent(), e.getX(), e.getY());
-                }
+                coordinates = tmp;
+                PopUpStateEditorMenu menu = new PopUpStateEditorMenu(gs, utt, coordinates.m_a, coordinates.m_b, panel);
+                menu.show(e.getComponent(), e.getX(), e.getY());
             }
         }                
     }

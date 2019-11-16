@@ -548,7 +548,6 @@ public class MethodDecomposition {
     public void convertToOperatorList(List<Pair<Integer,List<Term>>> l) throws Exception {
         switch(type) {
             case METHOD_CONDITION:
-                return;
             case METHOD_NON_BRANCHING_CONDITION:
                 return;
             case METHOD_OPERATOR:

@@ -7,7 +7,6 @@ package tests;
 import ai.core.AI;
 import ai.RandomBiasedAI;
 import ai.evaluation.EvaluationFunction;
-import ai.evaluation.SimpleEvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import ai.mcts.naivemcts.NaiveMCTS;
 import ai.montecarlo.lsi.LSI;

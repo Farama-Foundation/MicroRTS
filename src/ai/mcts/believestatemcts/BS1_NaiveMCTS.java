@@ -107,8 +107,6 @@ public class BS1_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
                 bestIdxs.clear();
                 bestIdxs.add(i);
                 bestScore = child.visit_count;
-            } else if (child.visit_count > bestScore) {
-                bestIdxs.add(i);
             }
         }
 

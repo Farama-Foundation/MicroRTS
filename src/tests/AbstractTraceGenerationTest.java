@@ -4,9 +4,7 @@
  */
 package tests;
 
-import ai.core.AI;
 import ai.abstraction.WorkerRush;
-import ai.*;
 import ai.abstraction.AbstractAction;
 import ai.abstraction.AbstractTrace;
 import ai.abstraction.AbstractTraceEntry;
@@ -14,7 +12,7 @@ import ai.abstraction.AbstractionLayerAI;
 import ai.abstraction.LightRush;
 import ai.abstraction.pathfinding.BFSPathFinding;
 import java.io.FileWriter;
-import java.io.IOException;
+
 import rts.*;
 import rts.units.Unit;
 import rts.units.UnitTypeTable;
@@ -45,19 +43,13 @@ public class AbstractTraceGenerationTest {
             
             if (!pa1.isEmpty() || !pa2.isEmpty()) {
                 te = new AbstractTraceEntry(gs.getPhysicalGameState().clone(),gs.getTime());
-                if (ai1 instanceof AbstractionLayerAI) {
-                    AbstractionLayerAI ai1a = (AbstractionLayerAI)ai1;
-                    for(Unit u:gs.getUnits()) {
-                        AbstractAction aa = ai1a.getAbstractAction(u);
-                        if (aa!=null) te.addAbstractActionIfNew(u, aa, trace);
-                    }
+                for(Unit u:gs.getUnits()) {
+                    AbstractAction aa = ai1.getAbstractAction(u);
+                    if (aa!=null) te.addAbstractActionIfNew(u, aa, trace);
                 }
-                if (ai2 instanceof AbstractionLayerAI) {
-                    AbstractionLayerAI ai2a = (AbstractionLayerAI)ai2;
-                    for(Unit u:gs.getUnits()) {
-                        AbstractAction aa = ai2a.getAbstractAction(u);
-                        if (aa!=null) te.addAbstractActionIfNew(u, aa, trace);
-                    }
+                for(Unit u:gs.getUnits()) {
+                    AbstractAction aa = ai2.getAbstractAction(u);
+                    if (aa!=null) te.addAbstractActionIfNew(u, aa, trace);
                 }
                 trace.addEntry(te);
             }

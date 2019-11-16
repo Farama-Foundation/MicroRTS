@@ -71,7 +71,7 @@ public class SCV extends AIWithComputationBudget {
     Instances dataSet = null;
     long tempoInicial = 0;
     
-    HashMap<String, HashMap<Integer, List<infBattles> > > indice = null;
+    HashMap<String, HashMap<Integer, List<infBattles> > > indice;
     int heightMap;
     
     // This is the default constructor that microRTS will call
@@ -465,7 +465,7 @@ public class SCV extends AIWithComputationBudget {
         int d = 9999;
         for (Unit u2 : pgs.getUnits()) {
             if (u2.getPlayer() >= 0 && u2.getPlayer() != p.getID()) {
-                if (u2 != null && base != null) {
+                if (base != null) {
                     d = aStar.findDistToPositionInRange(base, u2.getPosition(pgs), 1, gs, gs.getResourceUsage());
                     if (closestEnemy == null || d < closestDistance) {
                         closestEnemy = u2;

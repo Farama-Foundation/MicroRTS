@@ -159,14 +159,11 @@ public class LSI extends AIWithComputationBudget {
         }
 
         // pre-relaxation (e.g., --LSI)
-        switch (relaxationType) {
-            case PRE_RANDOM:
-                List<Integer> indices = getRelaxedAgentIndicesRandom(unitActionTable);
-                for (int index : indices) {
-                    unitActionTable.remove(index);
-                }
-                break;
-            default:
+        if (relaxationType == RelaxationType.PRE_RANDOM) {
+            List<Integer> indices = getRelaxedAgentIndicesRandom(unitActionTable);
+            for (int index : indices) {
+                unitActionTable.remove(index);
+            }
         }
 
         PlayerAction playerAction = new PlayerAction();

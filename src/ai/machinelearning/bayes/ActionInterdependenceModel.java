@@ -251,13 +251,8 @@ public class ActionInterdependenceModel extends BayesianModel {
                     }
                 } else {
                     for(int j:l) {
-                        double d2[] = distributions[i].distributionLaplace(j, laplaceBeta);
-                        double v = 1;
-                        if (d2.length > x[i]) {
-                            v = d2[x[i]];
-                        } else {
-                            v = 1.0/Ysize;
-                        }
+                        double[] d2 = distributions[i].distributionLaplace(j, laplaceBeta);
+                        double v = d2.length > x[i] ? d2[x[i]] : 1.0 / Ysize;
                         d[j] *= v;
                     }
                 }

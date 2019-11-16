@@ -201,7 +201,6 @@ public class WorkerDefense extends AbstractionLayerAI {
                     Harvest h_aa = (Harvest)aa;
                     if (h_aa.getTarget() != closestResource || h_aa.getBase()!=closestBase) {
                         harvest(harvestWorker, closestResource, closestBase);
-                    } else {
                     }
                 } else {
                     harvest(harvestWorker, closestResource, closestBase);

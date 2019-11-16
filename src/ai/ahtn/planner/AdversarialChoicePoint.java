@@ -271,7 +271,7 @@ public class AdversarialChoicePoint {
                     return true;
                 }
             } else {
-                if (lastBindings!=null && l.equals(lastBindings)) {
+                if (l.equals(lastBindings)) {
 //                    System.out.println(this.hashCode() + " - !!! " + updatedClause + "\n    " + lastBindings + " ==\n    " + l);
                     continue;
                 } else {
@@ -373,23 +373,19 @@ public class AdversarialChoicePoint {
                 break;
         }
         
-        // alpha-beta prunning:
+        // alpha-beta pruning:
         if (minimaxType==0) {
             // max node:
             alpha = Math.max(alpha, f);
-//            System.out.println(alpha + " <= " + beta);
-            if (beta<=alpha) {
-                // beta cutoff:
-                return true;
-            }
+            // System.out.println(alpha + " <= " + beta);
+            // beta cutoff:
+            return beta <= alpha;
         } else if (minimaxType==1) {
             // min node:
             beta = Math.min(beta, f);
-//            System.out.println(alpha + " <= " + beta);
-            if (beta<=alpha) {
-                // alpha cutoff:
-                return true;
-            }
+            // System.out.println(alpha + " <= " + beta);
+            // alpha cutoff:
+            return beta <= alpha;
         }       
         return false;
     }

@@ -42,16 +42,13 @@ public class SingleChoiceConfigurableScript extends ConfigurableScript<SingleCho
 
 	@Override
 	public void initializeChoices() {
-		int opts[] = new int[scripts.length];
+		int[] opts = new int[scripts.length];
 		for(int i=0;i<scripts.length;i++){
 			opts[i]=i;
 		}
 		for(SingleChoice c:choicePointValues){
-			switch(c){
-			case SINGLE: 
-				choicePoints.put(c, new Options(c.ordinal(),opts));
-				break;
-
+			if (c == SingleChoice.SINGLE) {
+				choicePoints.put(c, new Options(c.ordinal(), opts));
 			}
 		}
 	}

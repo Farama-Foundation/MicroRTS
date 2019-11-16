@@ -114,8 +114,6 @@ public class BS3_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
                 bestIdxs.clear();
                 bestIdxs.add(i);
                 bestScore = child.visit_count;
-            } else if (child.visit_count > bestScore) {
-                bestIdxs.add(i);
             }
         }
 
@@ -196,24 +194,19 @@ public class BS3_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
         toDelete.clear();
         // add inferend units in our world sampler
         for (Unit u : inferedUnits) {
-            boolean validPosition = true;
             if (gs.observable(u.getX(), u.getY())) {
                 // infered position was wrong, update it
                 getClosestNotObservableLocationNear(u.getX(), u.getY(), gs, u);
             }
-            if (validPosition) {
-                try {
-                    newWorld.getPhysicalGameState().addUnit(u);
+            try {
+                newWorld.getPhysicalGameState().addUnit(u);
 //                    System.out.println("Infered unit added: " + u.toString());
-                } catch (IllegalArgumentException e) {
-                    System.err.println("IllegalArgumentException: " + e.getMessage());
-                    System.err.println(newWorld.getPhysicalGameState());
-                    System.err.println("adding unit: " + u);
-                    System.err.println("Infered units:");
-                    System.err.println(inferedUnits);
-                }
-            } else {
-                toDelete.add(u);
+            } catch (IllegalArgumentException e) {
+                System.err.println("IllegalArgumentException: " + e.getMessage());
+                System.err.println(newWorld.getPhysicalGameState());
+                System.err.println("adding unit: " + u);
+                System.err.println("Infered units:");
+                System.err.println(inferedUnits);
             }
         }
         inferedUnits.removeAll(toDelete);

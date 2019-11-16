@@ -44,8 +44,7 @@ public class PredefinedOperators {
                             int time = ((IntegerConstant)t.parameters[0]).value;
                             if (state.getOperatorExecutingState()==1) {
                                 // we submitted an action before, so, now we just have to wait the right amount of time:
-                                if ((gs.getTime()-state.getUpdatedTermCycle())>=time) return true;
-                                return false;
+                                return (gs.getTime() - state.getUpdatedTermCycle()) >= time;
                             } else {
                                 state.setOperatorExecutingState(1);
                                 return false;
@@ -104,8 +103,7 @@ public class PredefinedOperators {
                             if (u1==null) return true;
                             if (state.getOperatorExecutingState()==1) {
                                 // we submitted an action before, so, now we just have to wait:
-                                if (gs.getUnitAction(u1)==null) return true;
-                                return false;
+                                return gs.getUnitAction(u1) == null;
                             } else {
                                 if (pa==null) {
                                     pa = new PlayerAction();
@@ -130,8 +128,7 @@ public class PredefinedOperators {
                             if (gs.getUnitAction(u1)!=null) return false;
                             if (state.getOperatorExecutingState()==1) {
                                 // we submitted an action before, so, now we just have to wait:
-                                if (gs.getUnitAction(u1)==null) return true;
-                                return false;
+                                return gs.getUnitAction(u1) == null;
                             } else {
                                 int uID2 = ((IntegerConstant)t.parameters[1]).value;
                                 Unit u2 = gs.getUnit(uID2);
@@ -159,8 +156,7 @@ public class PredefinedOperators {
                             if (gs.getUnitAction(u1)!=null) return false;
                             if (state.getOperatorExecutingState()==1) {
                                 // we submitted an action before, so, now we just have to wait:
-                                if (gs.getUnitAction(u1)==null) return true;
-                                return false;
+                                return gs.getUnitAction(u1) == null;
                             } else {
                                 int uID2 = ((IntegerConstant)t.parameters[1]).value;
                                 Unit u2 = gs.getUnit(uID2);
@@ -194,8 +190,7 @@ public class PredefinedOperators {
                             if (gs.getUnitAction(u1)!=null) return false;
                             if (state.getOperatorExecutingState()==1) {
                                 // we submitted an action before, so, now we just have to wait:
-                                if (gs.getUnitAction(u1)==null) return true;
-                                return false;
+                                return gs.getUnitAction(u1) == null;
                             } else {
                                 int uID2 = ((IntegerConstant)t.parameters[1]).value;
                                 Unit u2 = gs.getUnit(uID2);
@@ -236,8 +231,7 @@ public class PredefinedOperators {
                             if (state.getOperatorExecutingState()==1) {
 //                                System.out.println("PRODUCE already executing for"  + uID1 + "!");
                                 // we submitted an action before, so, now we just have to wait:
-                                if (gs.getUnitAction(u1)==null) return true;
-                                return false;
+                                return gs.getUnitAction(u1) == null;
                             } else {
 //                                System.out.println("PRODUCE working fine for "  + uID1 + "!");
                                 int direction = ((IntegerConstant)t.parameters[1]).value;
