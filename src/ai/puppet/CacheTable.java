@@ -72,7 +72,8 @@ class CacheEntry{
 		_state=state;
 	}
 	CacheEntry(){}
-};
+}
+
 class CacheTable
 {
 	CacheEntry[] _entries;

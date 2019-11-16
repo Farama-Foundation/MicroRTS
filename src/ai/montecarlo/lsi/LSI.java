@@ -731,7 +731,7 @@ public class LSI extends AIWithComputationBudget {
         } while ((int) (budget / actionCount / Math.ceil(Sampling.log(actionCount, 2))) != 1);
 
         // TODO: should be map
-        Set<PlayerAction> actionSet = new HashSet<PlayerAction>();
+        Set<PlayerAction> actionSet = new HashSet<>();
 
         for (int r = 0; r < actionCount; r++) {
             PlayerAction playerAction;
@@ -1241,7 +1241,7 @@ public class LSI extends AIWithComputationBudget {
     
     
     public enum EstimateType {
-        RANDOM_TAIL, RANDOM_TAIL_ELITE, NOOP_TAIL, RANDOM, ALL_COMBINATIONS;
+        RANDOM_TAIL, RANDOM_TAIL_ELITE, NOOP_TAIL, RANDOM, ALL_COMBINATIONS
     }
 
     public enum EstimateReuseType {
@@ -1260,7 +1260,7 @@ public class LSI extends AIWithComputationBudget {
         NONE,
         PRE_RANDOM, EPOCH,
         MAX, MEAN, MEDIAN, MAX_ENT, MIN_ENT,
-        POST_RANDOM, POST_ENTROPY_MAX, POST_ENTROPY_MIN, POST_MAX_DIFF, POST_MAX_TIME_NORMALIZE;
+        POST_RANDOM, POST_ENTROPY_MAX, POST_ENTROPY_MIN, POST_MAX_DIFF, POST_MAX_TIME_NORMALIZE
     }
 
     class PlayerActionTableEntry {

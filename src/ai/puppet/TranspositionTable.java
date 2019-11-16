@@ -17,7 +17,8 @@ class Entry{
 		_upper=upper;
 	}
 	Entry(){}
-};
+}
+
 class TranspositionTable
 {
 	Entry[] _entries;
@@ -95,5 +96,5 @@ class TranspositionTable
 			return null;
 		}
 	}
-};
+}
 
