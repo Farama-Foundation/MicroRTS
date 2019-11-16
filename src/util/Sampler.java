@@ -42,11 +42,11 @@ public class Sampler {
         for (int i = 0; i < distribution.length; i++) {
             double f = distribution[i];
             if (f == max) {
-                best.add(new Integer(i));
+                best.add(i);
             } else {
                 if (f > max) {
                     best.clear();
-                    best.add(new Integer(i));
+                    best.add(i);
                     max = f;
                 }
             }
@@ -70,11 +70,11 @@ public class Sampler {
         for (int i = 0; i < distribution.size(); i++) {
             double f = distribution.get(i);
             if (f == max) {
-                best.add(new Integer(i));
+                best.add(i);
             } else {
                 if (f > max) {
                     best.clear();
-                    best.add(new Integer(i));
+                    best.add(i);
                     max = f;
                 }
             }
