@@ -250,7 +250,10 @@ public class BranchingFactorCalculatorLong {
 //                    System.out.println("  " + ua + " -> " + ru.getResourcesUsed(player));
                     for(Integer pos:ru.getPositionsUsed()) {
 //                        if (DEBUG>=1) System.out.println("    " + pos);
-                        if (positionsUsed.contains(pos)) positionConflict = true;
+                        if (positionsUsed.contains(pos)) {
+                            positionConflict = true;
+                            break;
+                        }
                     }
                 }
 //                System.out.println("  branching("+positionConflict+"): " + Arrays.toString(unitBranching));
