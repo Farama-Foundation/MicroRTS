@@ -11,11 +11,11 @@ import rts.units.Unit;
  */
 public interface AIWithBelieveState {
 
-    public abstract void setInitialBelieveState(int player, GameState gs, PartiallyObservableGameState pogs);
+    void setInitialBelieveState(int player, GameState gs, PartiallyObservableGameState pogs);
 
-    public abstract List<Unit> getBelieveUnits();
+    List<Unit> getBelieveUnits();
 
-    static public double getJaccardIndex(int player, GameState gs, PartiallyObservableGameState pogs, List<Unit> believeUnits) {
+    static double getJaccardIndex(int player, GameState gs, PartiallyObservableGameState pogs, List<Unit> believeUnits) {
         // Jaccard Index = AB_intersection / (A + B - AB_intersection)
 
         double maxDist = gs.getPhysicalGameState().getWidth() + gs.getPhysicalGameState().getHeight() + 1;
