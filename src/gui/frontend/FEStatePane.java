@@ -281,7 +281,7 @@ public class FEStatePane extends JPanel {
                     {
                         if (statePanel.getGameState()!=null) {
                             int returnVal = fileChooser.showSaveDialog((Component)null);
-                            if (returnVal == fileChooser.APPROVE_OPTION) {
+                            if (returnVal == JFileChooser.APPROVE_OPTION) {
                                 File file = fileChooser.getSelectedFile();
                                 try {
                                     XMLWriter xml = new XMLWriter(new FileWriter(file.getAbsolutePath()));
