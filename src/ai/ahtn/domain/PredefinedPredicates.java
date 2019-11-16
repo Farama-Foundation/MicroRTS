@@ -7,7 +7,6 @@
 package ai.ahtn.domain;
 
 import ai.abstraction.pathfinding.AStarPathFinding;
-import ai.abstraction.pathfinding.BFSPathFinding;
 import ai.abstraction.pathfinding.PathFinding;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,7 +18,6 @@ import rts.ResourceUsage;
 import rts.UnitAction;
 import rts.units.Unit;
 import rts.units.UnitType;
-import rts.units.UnitTypeTable;
 
 /**
  *

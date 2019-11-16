@@ -5,7 +5,6 @@
 package ai.abstraction.cRush;
 
 import ai.abstraction.AbstractAction;
-import ai.abstraction.Attack;
 import ai.abstraction.pathfinding.PathFinding;
 import rts.GameState;
 import rts.PhysicalGameState;
@@ -13,7 +12,6 @@ import rts.ResourceUsage;
 import rts.UnitAction;
 import rts.units.Unit;
 import rts.units.UnitType;
-import rts.units.UnitTypeTable;
 import util.XMLWriter;
 
 /**

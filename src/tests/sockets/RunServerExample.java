@@ -8,7 +8,6 @@ package tests.sockets;
 import ai.abstraction.WorkerRush;
 import ai.core.AIWithComputationBudget;
 import ai.socket.JSONSocketWrapperAI;
-import ai.socket.XMLSocketWrapperAI;
 import rts.units.UnitTypeTable;
 
 /**

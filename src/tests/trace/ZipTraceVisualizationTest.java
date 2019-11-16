@@ -4,14 +4,7 @@
  */
 package tests.trace;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.zip.ZipInputStream;
-
 import javax.swing.JFrame;
-
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
 
 import gui.TraceVisualizer;
 import rts.Trace;

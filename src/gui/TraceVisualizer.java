@@ -4,19 +4,15 @@
  */
 package gui;
 
-import tests.*;
 import gui.PhysicalGameStatePanel;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.geom.Point2D;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
+
 import rts.*;
 import rts.units.Unit;
 import util.Pair;

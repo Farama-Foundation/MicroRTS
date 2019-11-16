@@ -15,7 +15,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
