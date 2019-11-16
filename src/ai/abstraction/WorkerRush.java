@@ -25,8 +25,8 @@ import rts.units.UnitTypeTable;
  */
 public class WorkerRush extends AbstractionLayerAI {
 
-    Random r = new Random();
     protected UnitTypeTable utt;
+    Random r = new Random();
     UnitType workerType;
     UnitType baseType;
 
@@ -43,20 +43,12 @@ public class WorkerRush extends AbstractionLayerAI {
         reset(a_utt);
     }
 
-    public void reset() {
-        super.reset();
-    }
-
     public void reset(UnitTypeTable a_utt) {
         utt = a_utt;
         if (utt != null) {
             workerType = utt.getUnitType("Worker");
             baseType = utt.getUnitType("Base");
         }
-    }
-
-    public AI clone() {
-        return new WorkerRush(utt, pf);
     }
 
     public PlayerAction getAction(int player, GameState gs) {
@@ -91,6 +83,20 @@ public class WorkerRush extends AbstractionLayerAI {
         workersBehavior(workers, p, gs);
 
         return translateActions(player, gs);
+    }
+
+    public AI clone() {
+        return new WorkerRush(utt, pf);
+    }
+
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+
+        parameters.add(
+            new ParameterSpecification("PathFinding", PathFinding.class, new AStarPathFinding()));
+
+        return parameters;
     }
 
     public void baseBehavior(Unit u, Player p, PhysicalGameState pgs) {
@@ -193,13 +199,7 @@ public class WorkerRush extends AbstractionLayerAI {
         }
     }
 
-    @Override
-    public List<ParameterSpecification> getParameters() {
-        List<ParameterSpecification> parameters = new ArrayList<>();
-
-        parameters.add(
-            new ParameterSpecification("PathFinding", PathFinding.class, new AStarPathFinding()));
-
-        return parameters;
+    public void reset() {
+        super.reset();
     }
 }

@@ -31,30 +31,26 @@ public class AdversarialChoicePoint {
     public MethodDecomposition choicePointPlayerMax;
     public MethodDecomposition choicePointPlayerMin;
     public GameState gs;
-    int lastTimeOperatorsIssued = -1;
-    int operatorDepth = 0;      // this is to keep track of the depth of the search tree
+    // evaluation function:
+    public int minimaxType = -1;   // 0: max, 1: min, -1: not yet set.
+    public float bestEvaluation = 0;
     // keeps track of the number of instants when operators where
     // executed (if only one operator is executed at a time, this
     // is equivalent to the number of operators executed so far)
-
+    public MethodDecomposition bestMaxPlan = null;
+    public MethodDecomposition bestMinPlan = null;
+    int lastTimeOperatorsIssued = -1;
+    int operatorDepth = 0;      // this is to keep track of the depth of the search tree
+    // the previous one, the new match is ignored (to reduce
+    // useless branching)
     // Method: variables to continue finding expansions after the first:
     List<HTNMethod> possibleMethods = null;
-
     // Condition: variables to continue finding expansions after the first:
     Clause updatedClause = null;
     boolean updatedClauseHadAnyMatches = false;
     List<Binding> lastBindings = null;  // If the bindings found for a next match are the same as
-    // the previous one, the new match is ignored (to reduce
-    // useless branching)
-
     // Variables to restore the execution point of the plan after backtracking:
     HashMap<MethodDecomposition, MethodDecompositionState> executionState = null;
-
-    // evaluation function:
-    public int minimaxType = -1;   // 0: max, 1: min, -1: not yet set.
-    public float bestEvaluation = 0;
-    public MethodDecomposition bestMaxPlan = null;
-    public MethodDecomposition bestMinPlan = null;
     float alpha = 0;
     float beta = 0;
 
@@ -141,12 +137,12 @@ public class AdversarialChoicePoint {
         return alpha;
     }
 
-    public float getBeta() {
-        return beta;
-    }
-
     public void setAlpha(float a) {
         alpha = a;
+    }
+
+    public float getBeta() {
+        return beta;
     }
 
     public void setBeta(float b) {
@@ -193,12 +189,6 @@ public class AdversarialChoicePoint {
         }
     }
 
-    public void captureExecutionStateNonRecursive(MethodDecomposition md) {
-        if (executionState.get(md) == null) {
-            executionState.put(md, new MethodDecompositionState(md));
-        }
-    }
-
     public void restoreExecutionState() {
         for (MethodDecomposition md : executionState.keySet()) {
             executionState.get(md).restoreState(md);
@@ -242,6 +232,55 @@ public class AdversarialChoicePoint {
                 throw new Exception("Wrong MethodDecomposition in choicePoint!");
             }
         }
+    }
+
+    public void captureExecutionStateNonRecursive(MethodDecomposition md) {
+        if (executionState.get(md) == null) {
+            executionState.put(md, new MethodDecompositionState(md));
+        }
+    }
+
+    public boolean nextMethodExpansion(MethodDecomposition choicePoint, GameState gs,
+        DomainDefinition dd, List<Binding> bindings, int renamingIndex) throws Exception {
+        if (DEBUG >= 1) {
+            System.out.println(
+                "AdversarialChoicePoint.nextMethodExpansion: testing " + choicePoint.getTerm());
+        }
+        if (possibleMethods == null) {
+            //            System.out.println("possibleMethods = null");
+            //            System.out.println("  Method:" + choicePoint.getTerm());
+            //            System.out.println("    " + bindings);
+
+            List<HTNMethod> methods = dd.getMethodsForGoal(choicePoint.getTerm().getFunctor());
+            if (methods == null) {
+                throw new Exception("No methods for: " + choicePoint.getTerm().getFunctor());
+            }
+            possibleMethods = new ArrayList<>();
+            possibleMethods.addAll(methods);
+            if (DEBUG >= 1) {
+                System.out.println(
+                    "AdversarialChoicePoint.nextMethodExpansion: Goal: " + choicePoint.getTerm());
+            }
+            if (DEBUG >= 1) {
+                System.out.println(
+                    "AdversarialChoicePoint.nextMethodExpansion: Methods found: " + methods.size());
+            }
+        }
+
+        // if no more methods, reset, and return false:
+        if (possibleMethods.isEmpty()) {
+            possibleMethods = null;
+            choicePoint.setMethod(null);
+            return false;
+        }
+
+        // otherwise, nextExpansion:
+        HTNMethod m = possibleMethods.remove(0);
+
+        // clone the method (this clones the method, and applies any required variable substitution,
+        setMethod(choicePoint, m, gs, bindings, renamingIndex);
+
+        return true;
     }
 
     private boolean nextConditionExpansion(MethodDecomposition choicePoint, List<Binding> bindings)
@@ -293,49 +332,6 @@ public class AdversarialChoicePoint {
                 return true;
             }
         }
-    }
-
-    public boolean nextMethodExpansion(MethodDecomposition choicePoint, GameState gs,
-        DomainDefinition dd, List<Binding> bindings, int renamingIndex) throws Exception {
-        if (DEBUG >= 1) {
-            System.out.println(
-                "AdversarialChoicePoint.nextMethodExpansion: testing " + choicePoint.getTerm());
-        }
-        if (possibleMethods == null) {
-            //            System.out.println("possibleMethods = null");
-            //            System.out.println("  Method:" + choicePoint.getTerm());
-            //            System.out.println("    " + bindings);
-
-            List<HTNMethod> methods = dd.getMethodsForGoal(choicePoint.getTerm().getFunctor());
-            if (methods == null) {
-                throw new Exception("No methods for: " + choicePoint.getTerm().getFunctor());
-            }
-            possibleMethods = new ArrayList<>();
-            possibleMethods.addAll(methods);
-            if (DEBUG >= 1) {
-                System.out.println(
-                    "AdversarialChoicePoint.nextMethodExpansion: Goal: " + choicePoint.getTerm());
-            }
-            if (DEBUG >= 1) {
-                System.out.println(
-                    "AdversarialChoicePoint.nextMethodExpansion: Methods found: " + methods.size());
-            }
-        }
-
-        // if no more methods, reset, and return false:
-        if (possibleMethods.isEmpty()) {
-            possibleMethods = null;
-            choicePoint.setMethod(null);
-            return false;
-        }
-
-        // otherwise, nextExpansion:
-        HTNMethod m = possibleMethods.remove(0);
-
-        // clone the method (this clones the method, and applies any required variable substitution,
-        setMethod(choicePoint, m, gs, bindings, renamingIndex);
-
-        return true;
     }
 
     public void setMethod(MethodDecomposition choicePoint, HTNMethod original, GameState gs,

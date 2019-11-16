@@ -44,13 +44,6 @@ public class UnitScriptsAI extends AI {
     public void reset() {
     }
 
-    public void resetScripts(GameState gs) {
-        for (Long ID : scripts.keySet()) {
-            UnitScript s = scripts.get(ID);
-            scripts.put(ID, s.instantiate(gs.getUnit(ID), gs));
-        }
-    }
-
     public PlayerAction getAction(int player, GameState gs) throws Exception {
         PlayerAction pa = new PlayerAction();
         ResourceUsage ru = gs.getResourceUsage();
@@ -104,5 +97,12 @@ public class UnitScriptsAI extends AI {
             .add(new ParameterSpecification("DefaultScript", UnitScript.class, defaultScript));
 
         return parameters;
+    }
+
+    public void resetScripts(GameState gs) {
+        for (Long ID : scripts.keySet()) {
+            UnitScript s = scripts.get(ID);
+            scripts.put(ID, s.instantiate(gs.getUnit(ID), gs));
+        }
     }
 }

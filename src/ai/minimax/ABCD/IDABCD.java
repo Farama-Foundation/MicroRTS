@@ -128,11 +128,6 @@ public class IDABCD extends AIWithComputationBudget implements InterruptibleAI {
         count_potential_branching_so_far = 0;
     }
 
-    public AI clone() {
-        return new IDABCD(TIME_BUDGET, ITERATIONS_BUDGET, playoutAI, maxPlayoutTime, ef,
-            performGreedyActionScan);
-    }
-
     public final PlayerAction getAction(int player, GameState gs) throws Exception {
         if (gs.canExecuteAnyAction(player)) {
             startNewComputation(player, gs.clone());
@@ -141,6 +136,44 @@ public class IDABCD extends AIWithComputationBudget implements InterruptibleAI {
         } else {
             return new PlayerAction();
         }
+    }
+
+    public AI clone() {
+        return new IDABCD(TIME_BUDGET, ITERATIONS_BUDGET, playoutAI, maxPlayoutTime, ef,
+            performGreedyActionScan);
+    }
+
+    public String toString() {
+        return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", "
+            + playoutAI + ", " + maxPlayoutTime + ", " + ef + ", " + performGreedyActionScan + ")";
+    }
+
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+
+        parameters.add(new ParameterSpecification("TimeBudget", int.class, 100));
+        parameters.add(new ParameterSpecification("IterationsBudget", int.class, -1));
+        parameters.add(new ParameterSpecification("PlayoutAI", AI.class, playoutAI));
+        parameters.add(new ParameterSpecification("PlayoutLookahead", int.class, 100));
+        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class,
+            new SimpleSqrtEvaluationFunction3()));
+        parameters.add(new ParameterSpecification("PerformGreedyActionScan", boolean.class, true));
+
+        return parameters;
+    }
+
+    public String statisticsString() {
+        return "avg depth: " + (avg_depth_so_far / (double) count_depth_so_far) + " , max depth: "
+            + max_depth_so_far + " , avg branching factor: " + (avg_branching_so_far
+            / (double) count_branching_so_far) + " , max branching factor: " + max_branching_so_far
+            + " , avg potential branching factor: " + (avg_potential_branching_so_far
+            / (double) count_potential_branching_so_far) + " , max potential branching factor: "
+            + max_potential_branching_so_far + " , avg leaves: " + (avg_leaves_so_far
+            / (double) count_leaves_so_far) + " , max leaves: " + max_leaves_so_far
+            + " , avg nodes: " + (avg_nodes_so_far / (double) count_nodes_so_far) + " , max nodes: "
+            + max_nodes_so_far + " , avg time depth: " + (avg_time_depth_so_far
+            / count_time_depth_so_far) + " , max time depth: " + max_time_depth_so_far;
     }
 
     public void startNewComputation(int a_player, GameState gs) throws Exception {
@@ -544,39 +577,6 @@ public class IDABCD extends AIWithComputationBudget implements InterruptibleAI {
             return head.actions.getRandom();
         }
         return null;
-    }
-
-    public String statisticsString() {
-        return "avg depth: " + (avg_depth_so_far / (double) count_depth_so_far) + " , max depth: "
-            + max_depth_so_far + " , avg branching factor: " + (avg_branching_so_far
-            / (double) count_branching_so_far) + " , max branching factor: " + max_branching_so_far
-            + " , avg potential branching factor: " + (avg_potential_branching_so_far
-            / (double) count_potential_branching_so_far) + " , max potential branching factor: "
-            + max_potential_branching_so_far + " , avg leaves: " + (avg_leaves_so_far
-            / (double) count_leaves_so_far) + " , max leaves: " + max_leaves_so_far
-            + " , avg nodes: " + (avg_nodes_so_far / (double) count_nodes_so_far) + " , max nodes: "
-            + max_nodes_so_far + " , avg time depth: " + (avg_time_depth_so_far
-            / count_time_depth_so_far) + " , max time depth: " + max_time_depth_so_far;
-    }
-
-    public String toString() {
-        return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", "
-            + playoutAI + ", " + maxPlayoutTime + ", " + ef + ", " + performGreedyActionScan + ")";
-    }
-
-    @Override
-    public List<ParameterSpecification> getParameters() {
-        List<ParameterSpecification> parameters = new ArrayList<>();
-
-        parameters.add(new ParameterSpecification("TimeBudget", int.class, 100));
-        parameters.add(new ParameterSpecification("IterationsBudget", int.class, -1));
-        parameters.add(new ParameterSpecification("PlayoutAI", AI.class, playoutAI));
-        parameters.add(new ParameterSpecification("PlayoutLookahead", int.class, 100));
-        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class,
-            new SimpleSqrtEvaluationFunction3()));
-        parameters.add(new ParameterSpecification("PerformGreedyActionScan", boolean.class, true));
-
-        return parameters;
     }
 
     public AI getPlayoutAI() {

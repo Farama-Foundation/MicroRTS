@@ -22,14 +22,6 @@ public class HTNOperator {
         precondition = a_prec;
     }
 
-    public Term getHead() {
-        return head;
-    }
-
-    public Clause getPrecondition() {
-        return precondition;
-    }
-
     public static HTNOperator fromLispElement(LispElement e) throws Exception {
         LispElement head_e = e.children.get(1);
         LispElement precondition_e = e.children.get(2);
@@ -38,6 +30,14 @@ public class HTNOperator {
         Clause prec = Clause.fromLispElement(precondition_e);
 
         return new HTNOperator(head, prec);
+    }
+
+    public Term getHead() {
+        return head;
+    }
+
+    public Clause getPrecondition() {
+        return precondition;
     }
 
     public String toString() {

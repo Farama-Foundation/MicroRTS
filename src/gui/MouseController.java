@@ -44,11 +44,6 @@ public class MouseController extends AbstractionLayerAI {
         reset();
     }
 
-    public void setFrame(PhysicalGameStateMouseJFrame frame) {
-        m_frame = frame;
-        reset();
-    }
-
     public void reset() {
         // attach the mouse listener to the frame (make sure we only add one, and also remove the old ones):
         if (m_frame != null) {
@@ -63,30 +58,6 @@ public class MouseController extends AbstractionLayerAI {
             m_frame.addMouseMotionListener(m_mouseListener);
             m_frame.addKeyListener(m_mouseListener);
         }
-    }
-
-    public AI clone() {
-        return new MouseController(m_frame);
-    }
-
-    public PlayerAction getAction(int player, GameState gs) {
-
-        m_mouseListener.setPlayer(player);
-        m_mouseListener.setGameState(gs);
-
-        PhysicalGameState pgs = gs.getPhysicalGameState();
-        for (Unit u : pgs.getUnits()) {
-            if (u.getPlayer() == player) {
-                AbstractAction aa = actions.get(u);
-                if (aa == null) {
-                    idle(u);
-                } else if (aa.completed(gs)) {
-                    idle(u);
-                }
-            }
-        }
-
-        return translateActions(player, gs);
     }
 
     public PlayerAction translateActions(int player, GameState gs) {
@@ -148,6 +119,35 @@ public class MouseController extends AbstractionLayerAI {
 
         pa.fillWithNones(gs, player, 1);
         return pa;
+    }
+
+    public void setFrame(PhysicalGameStateMouseJFrame frame) {
+        m_frame = frame;
+        reset();
+    }
+
+    public PlayerAction getAction(int player, GameState gs) {
+
+        m_mouseListener.setPlayer(player);
+        m_mouseListener.setGameState(gs);
+
+        PhysicalGameState pgs = gs.getPhysicalGameState();
+        for (Unit u : pgs.getUnits()) {
+            if (u.getPlayer() == player) {
+                AbstractAction aa = actions.get(u);
+                if (aa == null) {
+                    idle(u);
+                } else if (aa.completed(gs)) {
+                    idle(u);
+                }
+            }
+        }
+
+        return translateActions(player, gs);
+    }
+
+    public AI clone() {
+        return new MouseController(m_frame);
     }
 
     @Override

@@ -29,6 +29,17 @@ import javax.imageio.ImageIO;
 public class HTNDomainVisualizer {
 
     public static int DEBUG = 0;
+    int hpadding = 8;
+    int vpadding = 4;
+    int hMethodPadding = 16;
+    int vMethodPadding = 16;
+    Font font = null;
+    FontMetrics fm = null;
+    public HTNDomainVisualizer() {
+        font = new Font("Arial", Font.PLAIN, 10);
+        Canvas c = new Canvas();
+        fm = c.getFontMetrics(font);
+    }
 
     public static void main(String[] args) throws Exception {
         //        DomainDefinition dd = DomainDefinition.fromLispFile("ahtn/microrts-ahtn-definition-lowest-level.lisp");
@@ -41,19 +52,6 @@ public class HTNDomainVisualizer {
         HTNDomainVisualizer v = new HTNDomainVisualizer();
         BufferedImage img = v.visualizeHTNDomain(dd, new Symbol("destroy-player"));
         ImageIO.write(img, "png", new File("HTN-domain.png"));
-    }
-
-    int hpadding = 8;
-    int vpadding = 4;
-    int hMethodPadding = 16;
-    int vMethodPadding = 16;
-    Font font = null;
-    FontMetrics fm = null;
-
-    public HTNDomainVisualizer() {
-        font = new Font("Arial", Font.PLAIN, 10);
-        Canvas c = new Canvas();
-        fm = c.getFontMetrics(font);
     }
 
     public BufferedImage visualizeHTNDomain(DomainDefinition d, Symbol root) throws Exception {

@@ -34,18 +34,16 @@ import util.Pair;
 public class MLPSNode extends MCTSNode {
 
     static public int DEBUG = 0;
-
-    boolean hasMoreActions = true;
     public PlayerActionGenerator moveGenerator = null;
-    HashMap<Long, MLPSNode> childrenMap = new LinkedHashMap<Long, MLPSNode>();    // associates action codes with children
     // Decomposition of the player actions in unit actions, and their contributions:
     public List<UnitActionTableEntry> unitActionTable = null;
     public List<double[]> UCBExplorationScores = null;
     public List<double[]> UCBExploitationScores = null;
+    public long[] multipliers;
+    boolean hasMoreActions = true;
+    HashMap<Long, MLPSNode> childrenMap = new LinkedHashMap<Long, MLPSNode>();    // associates action codes with children
     double evaluation_bound = 0;
     int max_nactions = 0;
-
-    public long[] multipliers;
 
     public MLPSNode(int maxplayer, int minplayer, GameState a_gs, MLPSNode a_parent, double bound,
         int a_creation_ID) throws Exception {

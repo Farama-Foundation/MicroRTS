@@ -33,14 +33,13 @@ public class InformedNaiveMCTSNode extends MCTSNode {
     static public int DEBUG = 0;
 
     public static float C = 0.05f;   // exploration constant for UCB1
-
-    boolean hasMoreActions = true;
     public PlayerActionGenerator moveGenerator = null;
-    HashMap<BigInteger, InformedNaiveMCTSNode> childrenMap = new LinkedHashMap<BigInteger, InformedNaiveMCTSNode>();    // associates action codes with children
     // Decomposition of the player actions in unit actions, and their contributions:
     public List<InformedUnitActionTableEntry> unitActionTable = null;
-    double evaluation_bound;    // this is the maximum positive value that the evaluation function can return
     public BigInteger[] multipliers;
+    boolean hasMoreActions = true;
+    HashMap<BigInteger, InformedNaiveMCTSNode> childrenMap = new LinkedHashMap<BigInteger, InformedNaiveMCTSNode>();    // associates action codes with children
+    double evaluation_bound;    // this is the maximum positive value that the evaluation function can return
     UnitActionProbabilityDistribution model = null;
 
     public InformedNaiveMCTSNode(int maxplayer, int minplayer, GameState a_gs,

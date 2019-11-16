@@ -20,16 +20,14 @@ import util.XMLWriter;
 public class Unit implements Serializable {
 
     /**
-     * The type of this unit (worker, ranged, barracks, etc.)
-     */
-    UnitType type;
-
-    /**
      * Indicates the ID to assign to a new unit. It is incremented when the constructor without
      * explicit ID is used
      */
     public static long next_ID = 0;
-
+    /**
+     * The type of this unit (worker, ranged, barracks, etc.)
+     */
+    UnitType type;
     /**
      * The unique identifier of this unit
      */
@@ -133,6 +131,55 @@ public class Unit implements Serializable {
     }
 
     /**
+     * Constructs a unit from a XML element
+     *
+     * @param e
+     * @param utt
+     * @return
+     */
+    public static Unit fromXML(Element e, UnitTypeTable utt) {
+        String typeName = e.getAttributeValue("type");
+        String IDStr = e.getAttributeValue("ID");
+        String playerStr = e.getAttributeValue("player");
+        String xStr = e.getAttributeValue("x");
+        String yStr = e.getAttributeValue("y");
+        String resourcesStr = e.getAttributeValue("resources");
+        String hitpointsStr = e.getAttributeValue("hitpoints");
+
+        long ID = Long.parseLong(IDStr);
+        if (ID >= next_ID) {
+            next_ID = ID + 1;
+        }
+        UnitType type = utt.getUnitType(typeName);
+        int player = Integer.parseInt(playerStr);
+        int x = Integer.parseInt(xStr);
+        int y = Integer.parseInt(yStr);
+        int resources = Integer.parseInt(resourcesStr);
+        int hitpoints = Integer.parseInt(hitpointsStr);
+
+        Unit u = new Unit(ID, player, type, x, y, resources);
+        u.hitpoints = hitpoints;
+        return u;
+    }
+
+    /**
+     * Constructs a unit from a JSON object
+     *
+     * @param o
+     * @param utt
+     * @return
+     */
+    public static Unit fromJSON(JsonObject o, UnitTypeTable utt) {
+
+        Unit u = new Unit(o.getLong("ID", -1), o.getInt("player", -1),
+            utt.getUnitType(o.getString("type", null)), o.getInt("x", 0), o.getInt("y", 0),
+            o.getInt("resources", 0));
+
+        u.hitpoints = o.getInt("hitpoints", 1);
+        return u;
+    }
+
+    /**
      * Returns the owner ID
      *
      * @return
@@ -201,21 +248,21 @@ public class Unit implements Serializable {
     }
 
     /**
-     * Returns the y coordinate
-     *
-     * @return
-     */
-    public int getY() {
-        return y;
-    }
-
-    /**
      * Sets x coordinate
      *
      * @param a_x
      */
     public void setX(int a_x) {
         x = a_x;
+    }
+
+    /**
+     * Returns the y coordinate
+     *
+     * @return
+     */
+    public int getY() {
+        return y;
     }
 
     /**
@@ -255,21 +302,21 @@ public class Unit implements Serializable {
     }
 
     /**
-     * Returns the maximum HP this unit could have
-     *
-     * @return
-     */
-    public int getMaxHitPoints() {
-        return type.hp;
-    }
-
-    /**
      * Sets the amount of HP
      *
      * @param a_hitpoints
      */
     public void setHitPoints(int a_hitpoints) {
         hitpoints = a_hitpoints;
+    }
+
+    /**
+     * Returns the maximum HP this unit could have
+     *
+     * @return
+     */
+    public int getMaxHitPoints() {
+        return type.hp;
     }
 
     /**
@@ -467,7 +514,7 @@ public class Unit implements Serializable {
         }
 
         // if the player has enough resources, adds a produce action for each type this unit produces.
-        // a produce action is added for each free tile around the producer 
+        // a produce action is added for each free tile around the producer
         for (UnitType ut : type.produces) {
             if (p.getResources() >= ut.cost) {
                 int tup = (y > 0 ? pgs.getTerrain(x, y - 1) : PhysicalGameState.TERRAIN_WALL);
@@ -533,20 +580,20 @@ public class Unit implements Serializable {
         return l.contains(ua);
     }
 
-    public String toString() {
-        return type.name + "(" + ID + ")" + "(" + player + ", (" + x + "," + y + "), " + hitpoints
-            + ", " + resources + ")";
+    /**
+     * Returns the unique ID
+     */
+    public int hashCode() {
+        return (int) ID;
     }
 
     public Unit clone() {
         return new Unit(this);
     }
 
-    /**
-     * Returns the unique ID
-     */
-    public int hashCode() {
-        return (int) ID;
+    public String toString() {
+        return type.name + "(" + ID + ")" + "(" + player + ", (" + x + "," + y + "), " + hitpoints
+            + ", " + resources + ")";
     }
 
     /**
@@ -573,54 +620,5 @@ public class Unit implements Serializable {
         w.write("{\"type\":\"" + type.name + "\", " + "\"ID\":" + ID + ", " + "\"player\":" + player
             + ", " + "\"x\":" + x + ", " + "\"y\":" + y + ", " + "\"resources\":" + resources + ", "
             + "\"hitpoints\":" + hitpoints + "}");
-    }
-
-    /**
-     * Constructs a unit from a XML element
-     *
-     * @param e
-     * @param utt
-     * @return
-     */
-    public static Unit fromXML(Element e, UnitTypeTable utt) {
-        String typeName = e.getAttributeValue("type");
-        String IDStr = e.getAttributeValue("ID");
-        String playerStr = e.getAttributeValue("player");
-        String xStr = e.getAttributeValue("x");
-        String yStr = e.getAttributeValue("y");
-        String resourcesStr = e.getAttributeValue("resources");
-        String hitpointsStr = e.getAttributeValue("hitpoints");
-
-        long ID = Long.parseLong(IDStr);
-        if (ID >= next_ID) {
-            next_ID = ID + 1;
-        }
-        UnitType type = utt.getUnitType(typeName);
-        int player = Integer.parseInt(playerStr);
-        int x = Integer.parseInt(xStr);
-        int y = Integer.parseInt(yStr);
-        int resources = Integer.parseInt(resourcesStr);
-        int hitpoints = Integer.parseInt(hitpointsStr);
-
-        Unit u = new Unit(ID, player, type, x, y, resources);
-        u.hitpoints = hitpoints;
-        return u;
-    }
-
-    /**
-     * Constructs a unit from a JSON object
-     *
-     * @param o
-     * @param utt
-     * @return
-     */
-    public static Unit fromJSON(JsonObject o, UnitTypeTable utt) {
-
-        Unit u = new Unit(o.getLong("ID", -1), o.getInt("player", -1),
-            utt.getUnitType(o.getString("type", null)), o.getInt("x", 0), o.getInt("y", 0),
-            o.getInt("resources", 0));
-
-        u.hitpoints = o.getInt("hitpoints", 1);
-        return u;
     }
 }

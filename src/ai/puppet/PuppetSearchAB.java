@@ -24,139 +24,30 @@ import util.Pair;
  */
 public class PuppetSearchAB extends PuppetBase {
 
-    class Result {
-
-        Move m;
-        float score;
-
-        public Result(Move m, float score) {
-            this.m = m;
-            this.score = score;
-        }
-
-        @Override
-        public String toString() {
-            return m.toString(script) + ", score: " + score;
-        }
-    }
-
-    class ABCDNode {
-
-        PuppetGameState gs;
-        Move prevMove;
-        float alpha;
-        float beta;
-        int depth;
-        int nextPlayerInSimultaneousNode;
-        MoveGenerator nextMoves;
-        Result best;
-        ABCDNode following;
-
-        public ABCDNode(PuppetGameState gs, Move prevMove, float alpha, float beta, int depth,
-            int nextPlayerInSimultaneousNode, Result best) {
-            this.gs = gs;
-            this.prevMove = prevMove;
-            this.alpha = alpha;
-            this.beta = beta;
-            this.depth = depth;
-            this.nextPlayerInSimultaneousNode = nextPlayerInSimultaneousNode;
-            this.best = best;
-            nextMoves = new MoveGenerator(script.getChoiceCombinations(toMove(), gs.gs), toMove());
-            following = null;
-        }
-
-        int toMove() {
-            if (prevMove == null) {
-                return nextPlayerInSimultaneousNode;
-            } else {
-                return (1 - prevMove.player);
-            }
-        }
-
-        boolean isMaxPlayer() {
-            return toMove() == MAXPLAYER;
-        }
-
-        void setResult(Result result, ABCDNode node) {
-            if (best == null) {
-                best = result;
-                following = node;
-            } else if (isMaxPlayer()) {
-                alpha = Math.max(alpha, best.score);
-                if (result.score > best.score) {
-                    best = result;
-                    following = node;
-                }
-            } else if (!isMaxPlayer()) {
-                beta = Math.min(beta, best.score);
-                if (result.score < best.score) {
-                    best = result;
-                    following = node;
-                }
-            }
-            if (alpha >= beta) {
-                nextMoves.ABcut();
-            }
-        }
-
-        public String toString() {
-            return " time:" + gs.gs.getTime() + " " +/*prevMove+" best="+*/best + "\n" + (
-                following != null ? following.toString() : "");
-        }
-    }
-
-    class Plan {
-
-        ABCDNode node;
-
-        Plan(ABCDNode node) {
-            this.node = node;
-        }
-
-        Plan() {
-            node = null;
-        }
-
-        void update(GameState gs) {
-            while (node != null && ((gs.getTime() - node.gs.gs.getTime()) > STEP_PLAYOUT_TIME
-                || !node.isMaxPlayer())) {
-                node = node.following;
-            }
-        }
-
-        Collection<Pair<Integer, Integer>> getChoices() {
-            if (valid()) {
-                return node.best.m.choices;
-            } else {
-                return Collections.emptyList();
-            }
-        }
-
-        boolean valid() {
-            return node != null && node.best != null;
-        }
-
-        public String toString() {
-            return node != null ? node.toString() : "";
-        }
-    }
-
     protected int DEBUG = 0;
     protected int DEPTH;
     protected int MAXPLAYER = -1;
-
     Stack<ABCDNode> stack = new Stack<ABCDNode>();
     ABCDNode head;
     ABCDNode lastFinishedHead;
     Plan currentPlan;
     TranspositionTable TT = new TranspositionTable(100000);
     CacheTable CT = new CacheTable(100000);
+    long allLeaves;
+    long allTime;
+    long allDepth;
+    long allSearches;
+    int ttHits = 0;
+    int ttQueries = 0;
+    int ctHits = 0;
+    int ctQueries = 0;
+    boolean tt = true, ct = true;
+    boolean reached;
 
     public PuppetSearchAB(UnitTypeTable utt) {
         this(100, -1, 5000, -1, 100, new BasicConfigurableScript(utt, new FloodFillPathFinding()),
             new SimpleSqrtEvaluationFunction3());
     }
-
     /**
      * @param mt
      * @param mi
@@ -181,66 +72,10 @@ public class PuppetSearchAB extends PuppetBase {
         clearStats();
     }
 
-    //todo:this clone method is broken
-    @Override
-    public AI clone() {
-        PuppetSearchAB ps = new PuppetSearchAB(TIME_BUDGET, ITERATIONS_BUDGET, PLAN_TIME,
-            PLAN_PLAYOUTS, STEP_PLAYOUT_TIME, script.clone(), eval);
-        ps.currentPlan = currentPlan;
-        ps.lastSearchFrame = lastSearchFrame;
-        ps.lastSearchTime = lastSearchTime;
-        return ps;
-    }
-
-    @Override
-    public PlayerAction getAction(int player, GameState gs) throws Exception {
-        assert (PLAN) : "This method can only be called when using a standing plan";
-        if (lastSearchFrame == -1 || stack.empty()//||(gs.getTime()-lastSearchFrame)>PLAN_VALIDITY
-        ) {
-            if (DEBUG >= 1) {
-                System.out.println(
-                    "Restarting after " + (gs.getTime() - lastSearchFrame) + " frames, " + (
-                        System.currentTimeMillis() - lastSearchTime) + " ms");
-            }
-            startNewComputation(player, gs);
-        }
-        if (DEBUG >= 2) {
-            System.out.println(
-                "Starting ABCD at frame " + gs.getTime() + ", player " + player + " with "
-                    + TIME_BUDGET + " ms");
-        }
-        if (!stack.empty()) {
-            computeDuringOneGameFrame();
-        }
-        if (gs.canExecuteAnyAction(player) && gs.winner() == -1) {
-            if (DEBUG >= 2) {
-                System.out.println("Issuing move using choices: " + currentPlan.getChoices());
-            }
-            currentPlan.update(gs);
-            script.setDefaultChoices();
-            script.setChoices(currentPlan.getChoices());
-            PlayerAction pa = script.getAction(player, gs);
-            return pa;
-        } else {
-            return new PlayerAction();
-        }
-    }
-
-    @Override
-    public String statisticsString() {
-        return "Average Number of Leaves: " + allLeaves / allSearches + ", Average Depth: "
-            + allDepth / allSearches + ", Average Time: " + allTime / allSearches;
-    }
-
     void clearStats() {
         allTime = allLeaves = allDepth = 0;
         allSearches = -1;
     }
-
-    long allLeaves;
-    long allTime;
-    long allDepth;
-    long allSearches;
 
     @Override
     public void startNewComputation(int player, GameState gs) {
@@ -258,19 +93,6 @@ public class PuppetSearchAB extends PuppetBase {
         totalLeaves = 0;
         totalTime = 0;
         DEPTH = 0;
-    }
-
-    @Override
-    public PlayerAction getBestActionSoFar() throws Exception {
-        assert (!PLAN) : "This method can only be called when not using a standing plan";
-        if (DEBUG >= 1) {
-            System.out.println(
-                "ABCD:\n" + currentPlan + " in " + (System.currentTimeMillis() - lastSearchTime)
-                    + " ms, leaves: " + totalLeaves);
-        }
-        script.setDefaultChoices();
-        script.setChoices(currentPlan.getChoices());
-        return script.getAction(MAXPLAYER, head.gs.gs);
     }
 
     @Override
@@ -332,16 +154,92 @@ public class PuppetSearchAB extends PuppetBase {
         }
     }
 
-    boolean searchDone() {
-        return PLAN && planBudgetExpired();
+    @Override
+    public PlayerAction getBestActionSoFar() throws Exception {
+        assert (!PLAN) : "This method can only be called when not using a standing plan";
+        if (DEBUG >= 1) {
+            System.out.println(
+                "ABCD:\n" + currentPlan + " in " + (System.currentTimeMillis() - lastSearchTime)
+                    + " ms, leaves: " + totalLeaves);
+        }
+        script.setDefaultChoices();
+        script.setChoices(currentPlan.getChoices());
+        return script.getAction(MAXPLAYER, head.gs.gs);
     }
 
-    int ttHits = 0;
-    int ttQueries = 0;
-    int ctHits = 0;
-    int ctQueries = 0;
-    boolean tt = true, ct = true;
-    boolean reached;
+    @Override
+    public PlayerAction getAction(int player, GameState gs) throws Exception {
+        assert (PLAN) : "This method can only be called when using a standing plan";
+        if (lastSearchFrame == -1 || stack.empty()//||(gs.getTime()-lastSearchFrame)>PLAN_VALIDITY
+        ) {
+            if (DEBUG >= 1) {
+                System.out.println(
+                    "Restarting after " + (gs.getTime() - lastSearchFrame) + " frames, " + (
+                        System.currentTimeMillis() - lastSearchTime) + " ms");
+            }
+            startNewComputation(player, gs);
+        }
+        if (DEBUG >= 2) {
+            System.out.println(
+                "Starting ABCD at frame " + gs.getTime() + ", player " + player + " with "
+                    + TIME_BUDGET + " ms");
+        }
+        if (!stack.empty()) {
+            computeDuringOneGameFrame();
+        }
+        if (gs.canExecuteAnyAction(player) && gs.winner() == -1) {
+            if (DEBUG >= 2) {
+                System.out.println("Issuing move using choices: " + currentPlan.getChoices());
+            }
+            currentPlan.update(gs);
+            script.setDefaultChoices();
+            script.setChoices(currentPlan.getChoices());
+            PlayerAction pa = script.getAction(player, gs);
+            return pa;
+        } else {
+            return new PlayerAction();
+        }
+    }
+
+    //todo:this clone method is broken
+    @Override
+    public AI clone() {
+        PuppetSearchAB ps = new PuppetSearchAB(TIME_BUDGET, ITERATIONS_BUDGET, PLAN_TIME,
+            PLAN_PLAYOUTS, STEP_PLAYOUT_TIME, script.clone(), eval);
+        ps.currentPlan = currentPlan;
+        ps.lastSearchFrame = lastSearchFrame;
+        ps.lastSearchTime = lastSearchTime;
+        return ps;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", "
+            + PLAN_TIME + ", " + PLAN_PLAYOUTS + ", " + STEP_PLAYOUT_TIME + ", " + script + ", "
+            + eval + ")";
+    }
+
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+
+        parameters.add(new ParameterSpecification("TimeBudget", int.class, 100));
+        parameters.add(new ParameterSpecification("IterationsBudget", int.class, -1));
+        parameters.add(new ParameterSpecification("PlanTimeBudget", int.class, 5000));
+        parameters.add(new ParameterSpecification("PlanIterationsBudget", int.class, -1));
+        parameters.add(new ParameterSpecification("StepPlayoutTime", int.class, 100));
+        //        parameters.add(new ParameterSpecification("Script",ConfigurableScript.class, script));
+        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class,
+            new SimpleSqrtEvaluationFunction3()));
+
+        return parameters;
+    }
+
+    @Override
+    public String statisticsString() {
+        return "Average Number of Leaves: " + allLeaves / allSearches + ", Average Depth: "
+            + allDepth / allSearches + ", Average Time: " + allTime / allSearches;
+    }
 
     protected void iterativeABCD(int maxDepth) throws Exception {
         assert (maxDepth % 2 == 0);
@@ -463,39 +361,20 @@ public class PuppetSearchAB extends PuppetBase {
         }
     }
 
+    boolean searchDone() {
+        return PLAN && planBudgetExpired();
+    }
+
+    public int getStepPlayoutTime() {
+        return STEP_PLAYOUT_TIME;
+    }
+
         /*
                         int max_time_per_frame, int max_playouts_per_frame, 
 			int max_plan_time, int max_plan_playouts, 
 			int playout_time,
 			ConfigurableScript<?> script, EvaluationFunction evaluation        
         */
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", "
-            + PLAN_TIME + ", " + PLAN_PLAYOUTS + ", " + STEP_PLAYOUT_TIME + ", " + script + ", "
-            + eval + ")";
-    }
-
-    @Override
-    public List<ParameterSpecification> getParameters() {
-        List<ParameterSpecification> parameters = new ArrayList<>();
-
-        parameters.add(new ParameterSpecification("TimeBudget", int.class, 100));
-        parameters.add(new ParameterSpecification("IterationsBudget", int.class, -1));
-        parameters.add(new ParameterSpecification("PlanTimeBudget", int.class, 5000));
-        parameters.add(new ParameterSpecification("PlanIterationsBudget", int.class, -1));
-        parameters.add(new ParameterSpecification("StepPlayoutTime", int.class, 100));
-        //        parameters.add(new ParameterSpecification("Script",ConfigurableScript.class, script));
-        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class,
-            new SimpleSqrtEvaluationFunction3()));
-
-        return parameters;
-    }
-
-    public int getStepPlayoutTime() {
-        return STEP_PLAYOUT_TIME;
-    }
 
     public void setStepPlayoutTime(int a_ib) {
         STEP_PLAYOUT_TIME = a_ib;
@@ -507,5 +386,122 @@ public class PuppetSearchAB extends PuppetBase {
 
     public void setEvaluationFunction(EvaluationFunction a_ef) {
         eval = a_ef;
+    }
+
+    class Result {
+
+        Move m;
+        float score;
+
+        public Result(Move m, float score) {
+            this.m = m;
+            this.score = score;
+        }
+
+        @Override
+        public String toString() {
+            return m.toString(script) + ", score: " + score;
+        }
+    }
+
+    class ABCDNode {
+
+        PuppetGameState gs;
+        Move prevMove;
+        float alpha;
+        float beta;
+        int depth;
+        int nextPlayerInSimultaneousNode;
+        MoveGenerator nextMoves;
+        Result best;
+        ABCDNode following;
+
+        public ABCDNode(PuppetGameState gs, Move prevMove, float alpha, float beta, int depth,
+            int nextPlayerInSimultaneousNode, Result best) {
+            this.gs = gs;
+            this.prevMove = prevMove;
+            this.alpha = alpha;
+            this.beta = beta;
+            this.depth = depth;
+            this.nextPlayerInSimultaneousNode = nextPlayerInSimultaneousNode;
+            this.best = best;
+            nextMoves = new MoveGenerator(script.getChoiceCombinations(toMove(), gs.gs), toMove());
+            following = null;
+        }
+
+        int toMove() {
+            if (prevMove == null) {
+                return nextPlayerInSimultaneousNode;
+            } else {
+                return (1 - prevMove.player);
+            }
+        }
+
+        void setResult(Result result, ABCDNode node) {
+            if (best == null) {
+                best = result;
+                following = node;
+            } else if (isMaxPlayer()) {
+                alpha = Math.max(alpha, best.score);
+                if (result.score > best.score) {
+                    best = result;
+                    following = node;
+                }
+            } else if (!isMaxPlayer()) {
+                beta = Math.min(beta, best.score);
+                if (result.score < best.score) {
+                    best = result;
+                    following = node;
+                }
+            }
+            if (alpha >= beta) {
+                nextMoves.ABcut();
+            }
+        }
+
+        boolean isMaxPlayer() {
+            return toMove() == MAXPLAYER;
+        }
+
+        public String toString() {
+            return " time:" + gs.gs.getTime() + " " +/*prevMove+" best="+*/best + "\n" + (
+                following != null ? following.toString() : "");
+        }
+    }
+
+    class Plan {
+
+        ABCDNode node;
+
+        Plan(ABCDNode node) {
+            this.node = node;
+        }
+
+        Plan() {
+            node = null;
+        }
+
+        void update(GameState gs) {
+            while (node != null && ((gs.getTime() - node.gs.gs.getTime()) > STEP_PLAYOUT_TIME
+                || !node.isMaxPlayer())) {
+                node = node.following;
+            }
+        }
+
+        Collection<Pair<Integer, Integer>> getChoices() {
+            if (valid()) {
+                return node.best.m.choices;
+            } else {
+                return Collections.emptyList();
+            }
+        }
+
+        boolean valid() {
+            return node != null && node.best != null;
+        }
+
+        public String toString() {
+            return node != null ? node.toString() : "";
+        }
     }
 }

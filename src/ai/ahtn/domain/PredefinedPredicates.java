@@ -24,19 +24,10 @@ import rts.units.UnitType;
  */
 public class PredefinedPredicates {
 
+    static final HashMap<Symbol, PredicateTester> predicates = new HashMap<>();
     public static int DEBUG = 0;
-
-    public interface PredicateTester {
-
-        List<Binding> firstMatch(Term term, GameState gs) throws Exception;
-
-        List<List<Binding>> allMatches(Term term, GameState gs) throws Exception;
-    }
-
     //    static PathFinding pf = new GreedyPathFinding();
     static PathFinding pf = new AStarPathFinding();
-
-    static final HashMap<Symbol, PredicateTester> predicates = new HashMap<>();
 
     static {
         try {
@@ -889,5 +880,12 @@ public class PredefinedPredicates {
             return null;
         }
         return pt.allMatches(term, gs);
+    }
+
+    public interface PredicateTester {
+
+        List<Binding> firstMatch(Term term, GameState gs) throws Exception;
+
+        List<List<Binding>> allMatches(Term term, GameState gs) throws Exception;
     }
 }

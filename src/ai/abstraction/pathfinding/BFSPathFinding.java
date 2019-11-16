@@ -26,6 +26,20 @@ public class BFSPathFinding extends PathFinding {
     int openinsert = 0;
     int openremove = 0;
 
+    public boolean pathExists(Unit start, int targetpos, GameState gs, ResourceUsage ru) {
+        return start.getPosition(gs.getPhysicalGameState()) == targetpos
+            || findPath(start, targetpos, gs, ru) != null;
+    }
+
+    public boolean pathToPositionInRangeExists(Unit start, int targetpos, int range, GameState gs,
+        ResourceUsage ru) {
+        int x = targetpos % gs.getPhysicalGameState().getWidth();
+        int y = targetpos / gs.getPhysicalGameState().getWidth();
+        int d = (x - start.getX()) * (x - start.getX()) + (y - start.getY()) * (y - start.getY());
+        return d <= range * range
+            || findPathToPositionInRange(start, targetpos, range, gs, ru) != null;
+    }
+
     // This fucntion finds the shortest path from 'start' to 'targetpos' and then returns
     // a UnitAction of the type 'actionType' with the direction of the first step in the shorteet path
     public UnitAction findPath(Unit start, int targetpos, GameState gs, ResourceUsage ru) {
@@ -180,19 +194,5 @@ public class BFSPathFinding extends PathFinding {
     public UnitAction findPathToAdjacentPosition(Unit start, int targetpos, GameState gs,
         ResourceUsage ru) {
         return findPathToPositionInRange(start, targetpos, 1, gs, ru);
-    }
-
-    public boolean pathExists(Unit start, int targetpos, GameState gs, ResourceUsage ru) {
-        return start.getPosition(gs.getPhysicalGameState()) == targetpos
-            || findPath(start, targetpos, gs, ru) != null;
-    }
-
-    public boolean pathToPositionInRangeExists(Unit start, int targetpos, int range, GameState gs,
-        ResourceUsage ru) {
-        int x = targetpos % gs.getPhysicalGameState().getWidth();
-        int y = targetpos / gs.getPhysicalGameState().getWidth();
-        int d = (x - start.getX()) * (x - start.getX()) + (y - start.getY()) * (y - start.getY());
-        return d <= range * range
-            || findPathToPositionInRange(start, targetpos, range, gs, ru) != null;
     }
 }

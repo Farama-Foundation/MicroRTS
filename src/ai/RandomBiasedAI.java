@@ -42,11 +42,6 @@ public class RandomBiasedAI extends AI {
     }
 
     @Override
-    public AI clone() {
-        return new RandomBiasedAI();
-    }
-
-    @Override
     public PlayerAction getAction(int player, GameState gs) {
         // attack, harvest and return have 5 times the probability of other actions
         PhysicalGameState pgs = gs.getPhysicalGameState();
@@ -107,6 +102,11 @@ public class RandomBiasedAI extends AI {
         }
 
         return pa;
+    }
+
+    @Override
+    public AI clone() {
+        return new RandomBiasedAI();
     }
 
     @Override

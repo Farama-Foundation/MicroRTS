@@ -25,25 +25,6 @@ public class DomainDefinition {
 
     HashMap<Symbol, List<HTNMethod>> methodsPerGoal = new HashMap<>();
 
-    public List<HTNOperator> getOperators() {
-        return operators;
-    }
-
-    public List<HTNMethod> getMethods() {
-        return methods;
-    }
-
-    public void addMethod(HTNMethod m) {
-        methods.add(m);
-        Symbol goal = m.head.getFunctor();
-        List<HTNMethod> l = methodsPerGoal.get(goal);
-        if (l == null) {
-            l = new LinkedList<>();
-            methodsPerGoal.put(goal, l);
-        }
-        l.add(m);
-    }
-
     public static DomainDefinition fromLispFile(String fileName) throws Exception {
 
         List<LispElement> l = LispParser.parseLispFile(fileName);
@@ -112,6 +93,25 @@ public class DomainDefinition {
         }
 
         return dd;
+    }
+
+    public void addMethod(HTNMethod m) {
+        methods.add(m);
+        Symbol goal = m.head.getFunctor();
+        List<HTNMethod> l = methodsPerGoal.get(goal);
+        if (l == null) {
+            l = new LinkedList<>();
+            methodsPerGoal.put(goal, l);
+        }
+        l.add(m);
+    }
+
+    public List<HTNMethod> getMethods() {
+        return methods;
+    }
+
+    public List<HTNOperator> getOperators() {
+        return operators;
     }
 
     public String toString() {

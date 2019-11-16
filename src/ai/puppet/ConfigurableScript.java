@@ -10,39 +10,9 @@ import util.Pair;
 
 public abstract class ConfigurableScript<T extends Enum<T>> extends AbstractionLayerAI {
 
-    class Options {
-
-        int id;
-        int[] options;
-
-        public Options(int id, int[] options) {
-            this.id = id;
-            this.options = options;
-        }
-
-        public int numOptions() {
-            return options.length;
-        }
-
-        public int getOption(int o) {
-            return options[o];
-        }
-
-        @Override
-        public Options clone() {
-            return new Options(id, options);
-        }
-
-        @Override
-        public String toString() {
-            return "(" + id + ",[" + options + "])";
-        }
-    }
-
     protected T[] choicePointValues;
     protected EnumMap<T, Options> choicePoints;
     protected EnumMap<T, Integer> choices;
-
     public ConfigurableScript(PathFinding a_pf) {
         super(a_pf);
     }
@@ -53,6 +23,14 @@ public abstract class ConfigurableScript<T extends Enum<T>> extends AbstractionL
         setDefaultChoices();
     }
 
+    public abstract void initializeChoices();
+
+    public void setDefaultChoices() {//first option is the default
+        for (T c : choicePointValues) {
+            choices.put(c, choicePoints.get(c).getOption(0));
+        }
+    }
+
     public Collection<Options> getAllChoicePoints() {
         return choicePoints.values();
     }
@@ -60,12 +38,6 @@ public abstract class ConfigurableScript<T extends Enum<T>> extends AbstractionL
     public void setChoices(Collection<Pair<Integer, Integer>> choices) {
         for (Pair<Integer, Integer> c : choices) {
             this.choices.put(choicePointValues[c.m_a], c.m_b);
-        }
-    }
-
-    public void setDefaultChoices() {//first option is the default
-        for (T c : choicePointValues) {
-            choices.put(c, choicePoints.get(c).getOption(0));
         }
     }
 
@@ -111,9 +83,36 @@ public abstract class ConfigurableScript<T extends Enum<T>> extends AbstractionL
         return combinations;
     }
 
-    public abstract ConfigurableScript<T> clone();
-
     public abstract Collection<Options> getApplicableChoicePoints(int player, GameState gs);
 
-    public abstract void initializeChoices();
+    public abstract ConfigurableScript<T> clone();
+
+    class Options {
+
+        int id;
+        int[] options;
+
+        public Options(int id, int[] options) {
+            this.id = id;
+            this.options = options;
+        }
+
+        public int numOptions() {
+            return options.length;
+        }
+
+        public int getOption(int o) {
+            return options[o];
+        }
+
+        @Override
+        public Options clone() {
+            return new Options(id, options);
+        }
+
+        @Override
+        public String toString() {
+            return "(" + id + ",[" + options + "])";
+        }
+    }
 }

@@ -16,19 +16,17 @@ import rts.PlayerActionGenerator;
  */
 public class UCTNode {
 
-    static Random r = new Random();
     public static float C = 0.05f;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
+    static Random r = new Random();
     //    public static float C = 1;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
-
     public int type;    // 0 : max, 1 : min, -1: Game-over
-    UCTNode parent = null;
     public GameState gs;
-    int depth = 0;  // the depth in the tree
-
-    boolean hasMoreActions = true;
-    PlayerActionGenerator moveGenerator = null;
     public List<PlayerAction> actions = null;
     public List<UCTNode> children = null;
+    UCTNode parent = null;
+    int depth = 0;  // the depth in the tree
+    boolean hasMoreActions = true;
+    PlayerActionGenerator moveGenerator = null;
     float evaluation_bound = 0;
     float accum_evaluation = 0;
     int visit_count = 0;

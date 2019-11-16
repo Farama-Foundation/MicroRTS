@@ -53,11 +53,8 @@ public class BS1_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
             policy, a_ef, fensa);
     }
 
-    @Override
-    public AI clone() {
-        return new BS1_NaiveMCTS(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME, MAX_TREE_DEPTH,
-            epsilon_l, discount_l, epsilon_g, discount_g, epsilon_0, discount_0, playoutPolicy, ef,
-            forceExplorationOfNonSampledActions);
+    public void reset() {
+        initialGameState = null;
     }
 
     @Override
@@ -69,6 +66,13 @@ public class BS1_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
         } else {
             return new PlayerAction();
         }
+    }
+
+    @Override
+    public AI clone() {
+        return new BS1_NaiveMCTS(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME, MAX_TREE_DEPTH,
+            epsilon_l, discount_l, epsilon_g, discount_g, epsilon_0, discount_0, playoutPolicy, ef,
+            forceExplorationOfNonSampledActions);
     }
 
     @Override
@@ -131,14 +135,6 @@ public class BS1_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
         return r.nextInt(bestIdxs.size());
     }
 
-    public void reset() {
-        initialGameState = null;
-    }
-
-    public void preGameAnalysis(GameState gs, long milliseconds) throws Exception {
-        initialGameState = gs.clone();
-    }
-
     @Override
     public void setInitialBelieveState(int player, GameState gs,
         PartiallyObservableGameState pogs) {
@@ -178,5 +174,9 @@ public class BS1_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
         lastKnownPosition.removeAll(toDelete);
 
         return newWorld;
+    }
+
+    public void preGameAnalysis(GameState gs, long milliseconds) throws Exception {
+        initialGameState = gs.clone();
     }
 }

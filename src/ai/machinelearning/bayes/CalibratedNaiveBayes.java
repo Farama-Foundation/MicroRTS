@@ -46,6 +46,11 @@ public class CalibratedNaiveBayes extends BayesianModel {
         clearTraining();
     }
 
+    public CalibratedNaiveBayes(Element e, UnitTypeTable utt, String a_name) throws Exception {
+        super(utt, null, a_name);
+        load(e);
+    }
+
     public Object clone() {
         CalibratedNaiveBayes c = new CalibratedNaiveBayes(Xsizes, Ysize, estimationMethod,
             calibrationFactor, utt, featureGenerator, name);
@@ -152,36 +157,6 @@ public class CalibratedNaiveBayes extends BayesianModel {
         calibrationFactor = best_c;
     }
 
-    public void featureSelectionByGainRatio(List<int[]> x_l, List<Integer> y_l,
-        double fractionOfFeaturesToKeep) {
-        List<Integer> featureIndexes = new ArrayList<>();
-        List<Double> featureGR = new ArrayList<>();
-        int nfeatures = distributions.length;
-        selectedFeatures = new boolean[nfeatures];
-        for (int i = 0; i < nfeatures; i++) {
-            featureIndexes.add(i);
-            featureGR.add(FeatureSelection.featureGainRatio(x_l, y_l, i));
-            selectedFeatures[i] = false;
-        }
-
-        // sort features:
-        Collections.sort(featureIndexes, new Comparator<Integer>() {
-            public int compare(Integer o1, Integer o2) {
-                return Double.compare(featureGR.get(o2), featureGR.get(o1));
-            }
-        });
-
-        //        System.out.println("FS:");
-        for (int i = 0; i < fractionOfFeaturesToKeep * nfeatures; i++) {
-            selectedFeatures[featureIndexes.get(i)] = true;
-            //            System.out.println("  Selected " + featureIndexes.get(i) + " GR: " + featureGR.get(featureIndexes.get(i)));
-        }
-    }
-
-    public double[] predictDistribution(int[] x, TrainingInstance ti) {
-        return predictDistribution(x, ti, calibrationFactor);
-    }
-
     public double[] predictDistribution(int[] x, TrainingInstance ti, double correction) {
         double[] d = new double[Ysize];
         for (int i = 0; i < Ysize; i++) {
@@ -237,6 +212,81 @@ public class CalibratedNaiveBayes extends BayesianModel {
         return d;
     }
 
+    public void featureSelectionByCrossValidation(List<int[]> x_l, List<Integer> y_l,
+        List<TrainingInstance> i_l) throws Exception {
+        int nfeatures = distributions.length;
+
+        System.out.println("featureSelectionByCrossValidation " + x_l.size());
+        boolean[] bestSelection = new boolean[nfeatures];
+        for (int i = 0; i < nfeatures; i++) {
+            bestSelection[i] = false;
+        }
+        selectedFeatures = bestSelection;
+        double best_score = FeatureSelection
+            .crossValidation(this, x_l, y_l, i_l, allPossibleActions, 10).m_a;
+        System.out.println(
+            "  loglikelihood with " + Arrays.toString(selectedFeatures) + ": " + best_score);
+
+        boolean change;
+        do {
+            change = false;
+            boolean[] bestLastSelection = bestSelection;
+            for (int i = 0; i < nfeatures; i++) {
+                if (!bestSelection[i]) {
+                    boolean[] currentSelection = new boolean[nfeatures];
+                    System.arraycopy(bestSelection, 0, currentSelection, 0, nfeatures);
+                    currentSelection[i] = true;
+
+                    selectedFeatures = currentSelection;
+                    double score = FeatureSelection
+                        .crossValidation(this, x_l, y_l, i_l, allPossibleActions, 10).m_a;
+                    //                    double score = TestNaiveBayesAsInGame.crossValidation(this, x_l, y_l, i_l, allPossibleActions, 10, false, true).m_b;
+                    System.out.println(
+                        "  loglikelihood with " + Arrays.toString(selectedFeatures) + ": " + score);
+                    if (score > best_score) {
+                        bestLastSelection = currentSelection;
+                        best_score = score;
+                        change = true;
+                    }
+                }
+            }
+            bestSelection = bestLastSelection;
+        } while (change);
+
+        selectedFeatures = bestSelection;
+        System.out.println("Selected features: " + Arrays.toString(selectedFeatures));
+    }
+
+    public void featureSelectionByGainRatio(List<int[]> x_l, List<Integer> y_l,
+        double fractionOfFeaturesToKeep) {
+        List<Integer> featureIndexes = new ArrayList<>();
+        List<Double> featureGR = new ArrayList<>();
+        int nfeatures = distributions.length;
+        selectedFeatures = new boolean[nfeatures];
+        for (int i = 0; i < nfeatures; i++) {
+            featureIndexes.add(i);
+            featureGR.add(FeatureSelection.featureGainRatio(x_l, y_l, i));
+            selectedFeatures[i] = false;
+        }
+
+        // sort features:
+        Collections.sort(featureIndexes, new Comparator<Integer>() {
+            public int compare(Integer o1, Integer o2) {
+                return Double.compare(featureGR.get(o2), featureGR.get(o1));
+            }
+        });
+
+        //        System.out.println("FS:");
+        for (int i = 0; i < fractionOfFeaturesToKeep * nfeatures; i++) {
+            selectedFeatures[featureIndexes.get(i)] = true;
+            //            System.out.println("  Selected " + featureIndexes.get(i) + " GR: " + featureGR.get(featureIndexes.get(i)));
+        }
+    }
+
+    public double[] predictDistribution(int[] x, TrainingInstance ti) {
+        return predictDistribution(x, ti, calibrationFactor);
+    }
+
     public void save(XMLWriter w) throws Exception {
         w.tagWithAttributes(this.getClass().getSimpleName(),
             "estimationMethod=\"" + estimationMethod + "\" " + "Ysize=\"" + Ysize + "\" "
@@ -268,11 +318,6 @@ public class CalibratedNaiveBayes extends BayesianModel {
         }
         w.tag("/SimpleNaiveBayes");
         w.flush();
-    }
-
-    public CalibratedNaiveBayes(Element e, UnitTypeTable utt, String a_name) throws Exception {
-        super(utt, null, a_name);
-        load(e);
     }
 
     public void load(Element e) throws Exception {
@@ -326,50 +371,5 @@ public class CalibratedNaiveBayes extends BayesianModel {
             Element cpd_xml = (Element) cpd_xml_l.get(i);
             distributions[i] = new DiscreteCPD(cpd_xml);
         }
-    }
-
-    public void featureSelectionByCrossValidation(List<int[]> x_l, List<Integer> y_l,
-        List<TrainingInstance> i_l) throws Exception {
-        int nfeatures = distributions.length;
-
-        System.out.println("featureSelectionByCrossValidation " + x_l.size());
-        boolean[] bestSelection = new boolean[nfeatures];
-        for (int i = 0; i < nfeatures; i++) {
-            bestSelection[i] = false;
-        }
-        selectedFeatures = bestSelection;
-        double best_score = FeatureSelection
-            .crossValidation(this, x_l, y_l, i_l, allPossibleActions, 10).m_a;
-        System.out.println(
-            "  loglikelihood with " + Arrays.toString(selectedFeatures) + ": " + best_score);
-
-        boolean change;
-        do {
-            change = false;
-            boolean[] bestLastSelection = bestSelection;
-            for (int i = 0; i < nfeatures; i++) {
-                if (!bestSelection[i]) {
-                    boolean[] currentSelection = new boolean[nfeatures];
-                    System.arraycopy(bestSelection, 0, currentSelection, 0, nfeatures);
-                    currentSelection[i] = true;
-
-                    selectedFeatures = currentSelection;
-                    double score = FeatureSelection
-                        .crossValidation(this, x_l, y_l, i_l, allPossibleActions, 10).m_a;
-                    //                    double score = TestNaiveBayesAsInGame.crossValidation(this, x_l, y_l, i_l, allPossibleActions, 10, false, true).m_b;
-                    System.out.println(
-                        "  loglikelihood with " + Arrays.toString(selectedFeatures) + ": " + score);
-                    if (score > best_score) {
-                        bestLastSelection = currentSelection;
-                        best_score = score;
-                        change = true;
-                    }
-                }
-            }
-            bestSelection = bestLastSelection;
-        } while (change);
-
-        selectedFeatures = bestSelection;
-        System.out.println("Selected features: " + Arrays.toString(selectedFeatures));
     }
 }

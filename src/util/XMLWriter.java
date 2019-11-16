@@ -54,33 +54,6 @@ public class XMLWriter {
     }
 
     /**
-     * Increase the indentation by the tabsize.
-     */
-    public void tab() {
-        spaces += tabsize;
-    }
-
-    /**
-     * Decrease the indentation by the tabsize.
-     */
-    private void untab() {
-        spaces -= tabsize;
-    }
-
-    /**
-     * Write out indentation.
-     */
-    private void indent() {
-        for (int i = 0; i < spaces; ++i) {
-            try {
-                writer.write(" ");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    /**
      * Set the number of tabs to use.
      *
      * @param t the number of tabs
@@ -104,6 +77,19 @@ public class XMLWriter {
             writer.write("<" + tagname + ">" + value + "</" + tagname + ">" + lineSeparator);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Write out indentation.
+     */
+    private void indent() {
+        for (int i = 0; i < spaces; ++i) {
+            try {
+                writer.write(" ");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -138,6 +124,20 @@ public class XMLWriter {
         if (tagname.charAt(0) != '/') {
             tab();
         }
+    }
+
+    /**
+     * Decrease the indentation by the tabsize.
+     */
+    private void untab() {
+        spaces -= tabsize;
+    }
+
+    /**
+     * Increase the indentation by the tabsize.
+     */
+    public void tab() {
+        spaces += tabsize;
     }
 
     public void tagWithAttributes(String tagname, String attributesString) {

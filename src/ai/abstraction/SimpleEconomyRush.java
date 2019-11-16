@@ -25,8 +25,8 @@ import rts.units.UnitTypeTable;
  */
 public class SimpleEconomyRush extends AbstractionLayerAI {
 
-    Random r = new Random();
     protected UnitTypeTable utt;
+    Random r = new Random();
     UnitType workerType;
     UnitType baseType;
     UnitType barracksType;
@@ -45,10 +45,6 @@ public class SimpleEconomyRush extends AbstractionLayerAI {
     public SimpleEconomyRush(UnitTypeTable a_utt, PathFinding a_pf) {
         super(a_pf);
         reset(a_utt);
-    }
-
-    public void reset() {
-        super.reset();
     }
 
     public void reset(UnitTypeTable a_utt) {
@@ -189,24 +185,6 @@ public class SimpleEconomyRush extends AbstractionLayerAI {
         }
     }
 
-    public void meleeUnitBehavior(Unit u, Player p, GameState gs) {
-        PhysicalGameState pgs = gs.getPhysicalGameState();
-        Unit closestEnemy = null;
-        int closestDistance = 0;
-        for (Unit u2 : pgs.getUnits()) {
-            if (u2.getPlayer() >= 0 && u2.getPlayer() != p.getID()) {
-                int d = Math.abs(u2.getX() - u.getX()) + Math.abs(u2.getY() - u.getY());
-                if (closestEnemy == null || d < closestDistance) {
-                    closestEnemy = u2;
-                    closestDistance = d;
-                }
-            }
-        }
-        if (closestEnemy != null) {
-            attack(u, closestEnemy);
-        }
-    }
-
     public void workersBehavior(List<Unit> workers, Player p, PhysicalGameState pgs) {
         int nbases = 0;
         int nbarracks = 0;
@@ -284,5 +262,27 @@ public class SimpleEconomyRush extends AbstractionLayerAI {
                 }
             }
         }
+    }
+
+    public void meleeUnitBehavior(Unit u, Player p, GameState gs) {
+        PhysicalGameState pgs = gs.getPhysicalGameState();
+        Unit closestEnemy = null;
+        int closestDistance = 0;
+        for (Unit u2 : pgs.getUnits()) {
+            if (u2.getPlayer() >= 0 && u2.getPlayer() != p.getID()) {
+                int d = Math.abs(u2.getX() - u.getX()) + Math.abs(u2.getY() - u.getY());
+                if (closestEnemy == null || d < closestDistance) {
+                    closestEnemy = u2;
+                    closestDistance = d;
+                }
+            }
+        }
+        if (closestEnemy != null) {
+            attack(u, closestEnemy);
+        }
+    }
+
+    public void reset() {
+        super.reset();
     }
 }

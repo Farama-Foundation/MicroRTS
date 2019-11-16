@@ -46,6 +46,8 @@ import rts.units.UnitTypeTable;
 
 public class RunConfigurableExperiments {
 
+    static UnitTypeTable utt = new UnitTypeTable(UnitTypeTable.VERSION_ORIGINAL_FINETUNED,
+        UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH);
     private static boolean CONTINUING = true;
     private static int TIME = 100;
     private static int MAX_ACTIONS = 100;
@@ -53,15 +55,11 @@ public class RunConfigurableExperiments {
     private static int PLAYOUT_TIME = 100;
     private static int MAX_DEPTH = 10;
     private static int RANDOMIZED_AB_REPEATS = 10;
-
     private static int PUPPET_PLAN_TIME = 5000;
     private static int PUPPET_PLAN_PLAYOUTS = -1;
-
     private static List<AI> bots1 = new LinkedList<AI>();
     private static List<AI> bots2 = new LinkedList<AI>();
     private static List<PhysicalGameState> maps = new LinkedList<PhysicalGameState>();
-    static UnitTypeTable utt = new UnitTypeTable(UnitTypeTable.VERSION_ORIGINAL_FINETUNED,
-        UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH);
 
     public static PathFinding getPathFinding() {
         //		return new BFSPathFinding();

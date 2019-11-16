@@ -28,25 +28,6 @@ public class PlayerActionGenerator {
     boolean moreActions = true;
 
     /**
-     * @return
-     */
-    public long getGenerated() {
-        return generated;
-    }
-
-    public long getSize() {
-        return size;
-    }
-
-    public PlayerAction getLastAction() {
-        return lastAction;
-    }
-
-    public List<Pair<Unit, List<UnitAction>>> getChoices() {
-        return choices;
-    }
-
-    /**
      * Generating all possible actions for a player in a given state
      *
      * @param a_gs
@@ -102,6 +83,25 @@ public class PlayerActionGenerator {
             currentChoice[i] = 0;
             i++;
         }
+    }
+
+    /**
+     * @return
+     */
+    public long getGenerated() {
+        return generated;
+    }
+
+    public long getSize() {
+        return size;
+    }
+
+    public PlayerAction getLastAction() {
+        return lastAction;
+    }
+
+    public List<Pair<Unit, List<UnitAction>>> getChoices() {
+        return choices;
     }
 
     /**

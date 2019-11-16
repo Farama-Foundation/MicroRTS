@@ -28,11 +28,8 @@ public class RTMinimax extends AI {
 
     public long max_branching_so_far = 0;
     public long max_leaves_so_far = 0;
-
-    int LOOKAHEAD = 40;
-
     protected int defaultNONEduration = 8;
-
+    int LOOKAHEAD = 40;
     EvaluationFunction ef = null;
 
     public RTMinimax(UnitTypeTable utt) {
@@ -49,11 +46,6 @@ public class RTMinimax extends AI {
     }
 
     @Override
-    public AI clone() {
-        return new RTMinimax(LOOKAHEAD, ef);
-    }
-
-    @Override
     public PlayerAction getAction(int player, GameState gs) throws Exception {
 
         if (gs.canExecuteAnyAction(player) && gs.winner() == -1) {
@@ -63,6 +55,26 @@ public class RTMinimax extends AI {
         } else {
             return new PlayerAction();
         }
+    }
+
+    @Override
+    public AI clone() {
+        return new RTMinimax(LOOKAHEAD, ef);
+    }
+
+    public String toString() {
+        return getClass().getSimpleName() + "(" + LOOKAHEAD + ", " + ef + ")";
+    }
+
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+
+        parameters.add(new ParameterSpecification("LookAhead", int.class, 50));
+        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class,
+            new SimpleSqrtEvaluationFunction3()));
+
+        return parameters;
     }
 
     public PlayerAction greedyActionScan(GameState gs, int player, long cutOffTime)
@@ -191,21 +203,6 @@ public class RTMinimax extends AI {
             }
             return realTimeMinimaxAB(gs2, maxplayer, minplayer, alpha, beta, lookAhead, depth + 1);
         }
-    }
-
-    public String toString() {
-        return getClass().getSimpleName() + "(" + LOOKAHEAD + ", " + ef + ")";
-    }
-
-    @Override
-    public List<ParameterSpecification> getParameters() {
-        List<ParameterSpecification> parameters = new ArrayList<>();
-
-        parameters.add(new ParameterSpecification("LookAhead", int.class, 50));
-        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class,
-            new SimpleSqrtEvaluationFunction3()));
-
-        return parameters;
     }
 
     public int getLookAhead() {

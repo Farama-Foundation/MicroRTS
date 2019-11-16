@@ -51,10 +51,6 @@ public class Term {
         parameters = p;
     }
 
-    public Symbol getFunctor() {
-        return functor;
-    }
-
     public static Term fromString(String s) throws Exception {
         return Term.fromLispElement(LispParser.parseString(s).get(0));
     }
@@ -90,6 +86,10 @@ public class Term {
         }
 
         return t;
+    }
+
+    public Symbol getFunctor() {
+        return functor;
     }
 
     public void renameVariables(int r) {
@@ -176,18 +176,6 @@ public class Term {
         return t;
     }
 
-    public Term clone() {
-        Term t = new Term(functor);
-        if (parameters != null) {
-            t.parameters = new Parameter[parameters.length];
-            for (int i = 0; i < t.parameters.length; i++) {
-                t.parameters[i] = parameters[i].cloneParameter();
-            }
-        }
-
-        return t;
-    }
-
     // applies all the bindings
     public void applyBindings(List<Binding> l) throws Exception {
         if (l.isEmpty()) {
@@ -265,6 +253,18 @@ public class Term {
         }
 
         return true;
+    }
+
+    public Term clone() {
+        Term t = new Term(functor);
+        if (parameters != null) {
+            t.parameters = new Parameter[parameters.length];
+            for (int i = 0; i < t.parameters.length; i++) {
+                t.parameters[i] = parameters[i].cloneParameter();
+            }
+        }
+
+        return t;
     }
 
     public String toString() {

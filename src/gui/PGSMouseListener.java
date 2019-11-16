@@ -52,29 +52,6 @@ public class PGSMouseListener implements MouseListener, MouseMotionListener, Key
         playerID = a_playerID;
     }
 
-    public void clearQuickKeys() {
-        unitTypeQuickKeys.clear();
-    }
-
-    public Character addQuickKey(String unitTypeName) {
-        for (int i = 0; i < unitTypeName.length(); i++) {
-            Character c = unitTypeName.charAt(i);
-            c = Character.toLowerCase(c);
-            boolean found = false;
-            for (Character qk : unitTypeQuickKeys.keySet()) {
-                if (qk.equals(c)) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                unitTypeQuickKeys.put(c, unitTypeName);
-                return c;
-            }
-        }
-        return null;
-    }
-
     public void mouseClicked(MouseEvent e) {
         int x = e.getX();
         int y = e.getY();
@@ -265,6 +242,68 @@ public class PGSMouseListener implements MouseListener, MouseMotionListener, Key
     public void mouseExited(MouseEvent e) {
     }
 
+    private void updateButtons() {
+        MouseControllerPanel mousePanel = frame.getMousePanel();
+        mousePanel.clearButtons();
+        clearQuickKeys();
+
+        List<UnitType> shared = null;
+        for (Unit u : selectedUnits) {
+            if (shared == null) {
+                shared = new ArrayList<>(u.getType().produces);
+            } else {
+                List<UnitType> toDelete = new ArrayList<>();
+                for (UnitType ut : shared) {
+                    if (!u.getType().produces.contains(ut)) {
+                        toDelete.add(ut);
+                    }
+                }
+                shared.removeAll(toDelete);
+            }
+        }
+
+        if (shared != null) {
+            for (UnitType ut : shared) {
+                // Add a quick Key:
+                Character qk = addQuickKey(ut.name);
+                mousePanel.addButton(ut.name, qk);
+            }
+        }
+    }
+
+    public boolean insideOfGameArea(int x, int y) {
+        Insets insets = frame.getInsets();
+        x -= insets.left;
+        y -= insets.top;
+
+        Rectangle r = frame.panel.getBounds();
+        // if mouse was outside of playing area, return:
+        return x >= r.x && x < r.x + r.width && y >= r.y && y < r.y + r.height;
+    }
+
+    public void clearQuickKeys() {
+        unitTypeQuickKeys.clear();
+    }
+
+    public Character addQuickKey(String unitTypeName) {
+        for (int i = 0; i < unitTypeName.length(); i++) {
+            Character c = unitTypeName.charAt(i);
+            c = Character.toLowerCase(c);
+            boolean found = false;
+            for (Character qk : unitTypeQuickKeys.keySet()) {
+                if (qk.equals(c)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                unitTypeQuickKeys.put(c, unitTypeName);
+                return c;
+            }
+        }
+        return null;
+    }
+
     public void mouseDragged(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
             Insets insets = frame.getInsets();
@@ -344,44 +383,5 @@ public class PGSMouseListener implements MouseListener, MouseMotionListener, Key
             mousePanel.highlight(button);
         }
         mousePanel.repaint();
-    }
-
-    private void updateButtons() {
-        MouseControllerPanel mousePanel = frame.getMousePanel();
-        mousePanel.clearButtons();
-        clearQuickKeys();
-
-        List<UnitType> shared = null;
-        for (Unit u : selectedUnits) {
-            if (shared == null) {
-                shared = new ArrayList<>(u.getType().produces);
-            } else {
-                List<UnitType> toDelete = new ArrayList<>();
-                for (UnitType ut : shared) {
-                    if (!u.getType().produces.contains(ut)) {
-                        toDelete.add(ut);
-                    }
-                }
-                shared.removeAll(toDelete);
-            }
-        }
-
-        if (shared != null) {
-            for (UnitType ut : shared) {
-                // Add a quick Key:
-                Character qk = addQuickKey(ut.name);
-                mousePanel.addButton(ut.name, qk);
-            }
-        }
-    }
-
-    public boolean insideOfGameArea(int x, int y) {
-        Insets insets = frame.getInsets();
-        x -= insets.left;
-        y -= insets.top;
-
-        Rectangle r = frame.panel.getBounds();
-        // if mouse was outside of playing area, return:
-        return x >= r.x && x < r.x + r.width && y >= r.y && y < r.y + r.height;
     }
 }

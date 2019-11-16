@@ -36,19 +36,19 @@ public class Variable implements Parameter {
         renaming = r;
     }
 
-    public boolean ignore() throws Exception {
-        if (variable_to_ignore == null) {
-            variable_to_ignore = new Symbol("?_");
-        }
-        return name.equals(variable_to_ignore);
-    }
-
     public List<Binding> match(int v) throws Exception {
         List<Binding> l = new LinkedList<>();
         if (!ignore()) {
             l.add(new Binding(this, new IntegerConstant(v)));
         }
         return l;
+    }
+
+    public boolean ignore() throws Exception {
+        if (variable_to_ignore == null) {
+            variable_to_ignore = new Symbol("?_");
+        }
+        return name.equals(variable_to_ignore);
     }
 
     public List<Binding> match(String s) throws Exception {
@@ -65,13 +65,6 @@ public class Variable implements Parameter {
         return v;
     }
 
-    public Parameter resolveParameter(List<Binding> l, GameState gs) throws Exception {
-        if (l == null) {
-            return this;
-        }
-        return applyBindingsParameter(l);
-    }
-
     public Parameter applyBindingsParameter(List<Binding> l) throws Exception {
         if (ignore()) {
             return this;
@@ -83,6 +76,13 @@ public class Variable implements Parameter {
             }
         }
         return tmp;
+    }
+
+    public Parameter resolveParameter(List<Binding> l, GameState gs) throws Exception {
+        if (l == null) {
+            return this;
+        }
+        return applyBindingsParameter(l);
     }
 
     public boolean equals(Object o) {

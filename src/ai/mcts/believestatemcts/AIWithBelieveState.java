@@ -10,10 +10,6 @@ import rts.units.Unit;
  */
 public interface AIWithBelieveState {
 
-    void setInitialBelieveState(int player, GameState gs, PartiallyObservableGameState pogs);
-
-    List<Unit> getBelieveUnits();
-
     static double getJaccardIndex(int player, GameState gs, PartiallyObservableGameState pogs,
         List<Unit> believeUnits) {
         // Jaccard Index = AB_intersection / (A + B - AB_intersection)
@@ -87,4 +83,8 @@ public interface AIWithBelieveState {
         }
         return jaccardIndex;
     }
+
+    void setInitialBelieveState(int player, GameState gs, PartiallyObservableGameState pogs);
+
+    List<Unit> getBelieveUnits();
 }

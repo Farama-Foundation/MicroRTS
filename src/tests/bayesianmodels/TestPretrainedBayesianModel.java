@@ -85,6 +85,37 @@ public class TestPretrainedBayesianModel {
             " \\------------ end testing " + tracesFolder + " - " + AIname + " --------------/ ");
     }
 
+    public static List<UnitAction> generateAllPossibleUnitActions(UnitTypeTable utt) {
+        List<UnitAction> l = new ArrayList<>();
+        int[] directions = {UnitAction.DIRECTION_UP, UnitAction.DIRECTION_RIGHT,
+            UnitAction.DIRECTION_DOWN, UnitAction.DIRECTION_LEFT};
+
+        l.add(new UnitAction(UnitAction.TYPE_NONE, 10));
+        for (int d : directions) {
+            l.add(new UnitAction(UnitAction.TYPE_MOVE, d));
+        }
+        for (int d : directions) {
+            l.add(new UnitAction(UnitAction.TYPE_HARVEST, d));
+        }
+        for (int d : directions) {
+            l.add(new UnitAction(UnitAction.TYPE_RETURN, d));
+        }
+        for (int d : directions) {
+            for (UnitType ut : utt.getUnitTypes()) {
+                l.add(new UnitAction(UnitAction.TYPE_PRODUCE, d, ut));
+            }
+        }
+        for (int ox = -3; ox <= 3; ox++) {
+            for (int oy = -3; oy <= 3; oy++) {
+                int d = (ox * ox) + (oy * oy);
+                if (d > 0 && d <= 9) {
+                    l.add(new UnitAction(UnitAction.TYPE_ATTACK_LOCATION, ox, oy));
+                }
+            }
+        }
+        return l;
+    }
+
     public static double crossValidation(BayesianModel model, List<int[]> X_l, List<Integer> Y_l,
         List<TrainingInstance> instances, List<UnitAction> allPossibleActions, int nfolds,
         boolean DEBUG, boolean calibrate) throws Exception {
@@ -160,8 +191,8 @@ public class TestPretrainedBayesianModel {
             if (calibrate) {
                 model.calibrateProbabilities(X_training, Y_training, i_training);
             }
-            
-  /*          
+
+  /*
             model.save(new XMLWriter(new FileWriter(model.getClass().getSimpleName() + ".xml")));
             Element e = new SAXBuilder().build(model.getClass().getSimpleName() + ".xml").getRootElement();
 //            model = new OldNaiveBayes(e);
@@ -329,36 +360,5 @@ public class TestPretrainedBayesianModel {
         }
         //        return accuracy;
         return loglikelihood / total;
-    }
-
-    public static List<UnitAction> generateAllPossibleUnitActions(UnitTypeTable utt) {
-        List<UnitAction> l = new ArrayList<>();
-        int[] directions = {UnitAction.DIRECTION_UP, UnitAction.DIRECTION_RIGHT,
-            UnitAction.DIRECTION_DOWN, UnitAction.DIRECTION_LEFT};
-
-        l.add(new UnitAction(UnitAction.TYPE_NONE, 10));
-        for (int d : directions) {
-            l.add(new UnitAction(UnitAction.TYPE_MOVE, d));
-        }
-        for (int d : directions) {
-            l.add(new UnitAction(UnitAction.TYPE_HARVEST, d));
-        }
-        for (int d : directions) {
-            l.add(new UnitAction(UnitAction.TYPE_RETURN, d));
-        }
-        for (int d : directions) {
-            for (UnitType ut : utt.getUnitTypes()) {
-                l.add(new UnitAction(UnitAction.TYPE_PRODUCE, d, ut));
-            }
-        }
-        for (int ox = -3; ox <= 3; ox++) {
-            for (int oy = -3; oy <= 3; oy++) {
-                int d = (ox * ox) + (oy * oy);
-                if (d > 0 && d <= 9) {
-                    l.add(new UnitAction(UnitAction.TYPE_ATTACK_LOCATION, ox, oy));
-                }
-            }
-        }
-        return l;
     }
 }

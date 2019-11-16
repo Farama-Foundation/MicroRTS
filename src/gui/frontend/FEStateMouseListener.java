@@ -48,10 +48,6 @@ public class FEStateMouseListener implements MouseListener, MouseMotionListener 
         }
     }
 
-    public void setUnitTypeTable(UnitTypeTable a_utt) {
-        utt = a_utt;
-    }
-
     public void mousePressed(MouseEvent e) {
     }
 
@@ -62,6 +58,10 @@ public class FEStateMouseListener implements MouseListener, MouseMotionListener 
     }
 
     public void mouseExited(MouseEvent e) {
+    }
+
+    public void setUnitTypeTable(UnitTypeTable a_utt) {
+        utt = a_utt;
     }
 
     public void mouseDragged(MouseEvent e) {

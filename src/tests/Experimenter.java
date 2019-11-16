@@ -39,27 +39,6 @@ public class Experimenter {
             System.out, -1, false);
     }
 
-    public static void runExperimentsPartiallyObservable(List<AI> bots,
-        List<PhysicalGameState> maps, UnitTypeTable utt, int iterations, int max_cycles,
-        int max_inactive_cycles, boolean visualize) throws Exception {
-        runExperiments(bots, maps, utt, iterations, max_cycles, max_inactive_cycles, visualize,
-            System.out, -1, true);
-    }
-
-    public static void runExperiments(List<AI> bots, List<PhysicalGameState> maps,
-        UnitTypeTable utt, int iterations, int max_cycles, int max_inactive_cycles,
-        boolean visualize, PrintStream out) throws Exception {
-        runExperiments(bots, maps, utt, iterations, max_cycles, max_inactive_cycles, visualize, out,
-            -1, false);
-    }
-
-    public static void runExperimentsPartiallyObservable(List<AI> bots,
-        List<PhysicalGameState> maps, UnitTypeTable utt, int iterations, int max_cycles,
-        int max_inactive_cycles, boolean visualize, PrintStream out) throws Exception {
-        runExperiments(bots, maps, utt, iterations, max_cycles, max_inactive_cycles, visualize, out,
-            -1, true);
-    }
-
     public static void runExperiments(List<AI> bots, List<PhysicalGameState> maps,
         UnitTypeTable utt, int iterations, int max_cycles, int max_inactive_cycles,
         boolean visualize, PrintStream out, int run_only_those_involving_this_AI,
@@ -308,5 +287,26 @@ public class Experimenter {
             out.println();
         }
         out.flush();
+    }
+
+    public static void runExperimentsPartiallyObservable(List<AI> bots,
+        List<PhysicalGameState> maps, UnitTypeTable utt, int iterations, int max_cycles,
+        int max_inactive_cycles, boolean visualize) throws Exception {
+        runExperiments(bots, maps, utt, iterations, max_cycles, max_inactive_cycles, visualize,
+            System.out, -1, true);
+    }
+
+    public static void runExperiments(List<AI> bots, List<PhysicalGameState> maps,
+        UnitTypeTable utt, int iterations, int max_cycles, int max_inactive_cycles,
+        boolean visualize, PrintStream out) throws Exception {
+        runExperiments(bots, maps, utt, iterations, max_cycles, max_inactive_cycles, visualize, out,
+            -1, false);
+    }
+
+    public static void runExperimentsPartiallyObservable(List<AI> bots,
+        List<PhysicalGameState> maps, UnitTypeTable utt, int iterations, int max_cycles,
+        int max_inactive_cycles, boolean visualize, PrintStream out) throws Exception {
+        runExperiments(bots, maps, utt, iterations, max_cycles, max_inactive_cycles, visualize, out,
+            -1, true);
     }
 }

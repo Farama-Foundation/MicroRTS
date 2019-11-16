@@ -100,6 +100,21 @@ public abstract class PuppetBase extends AIWithComputationBudget {
         lastSearchTime = -1;
     }
 
+    static void simulate(GameState gs, AI ai1, AI ai2, int player1, int player2, int time)
+        throws Exception {
+        assert (player1 != player2);
+        int timeOut = gs.getTime() + time;
+        boolean gameover = gs.gameover();
+        while (!gameover && gs.getTime() < timeOut) {
+            if (gs.isComplete()) {
+                gameover = gs.cycle();
+            } else {
+                gs.issue(ai1.getAction(player1, gs));
+                gs.issue(ai2.getAction(player2, gs));
+            }
+        }
+    }
+
     @Override
     public void reset() {
         lastSearchFrame = -1;
@@ -126,21 +141,6 @@ public abstract class PuppetBase extends AIWithComputationBudget {
     abstract void computeDuringOneGameFrame() throws Exception;
 
     abstract PlayerAction getBestActionSoFar() throws Exception;
-
-    static void simulate(GameState gs, AI ai1, AI ai2, int player1, int player2, int time)
-        throws Exception {
-        assert (player1 != player2);
-        int timeOut = gs.getTime() + time;
-        boolean gameover = gs.gameover();
-        while (!gameover && gs.getTime() < timeOut) {
-            if (gs.isComplete()) {
-                gameover = gs.cycle();
-            } else {
-                gs.issue(ai1.getAction(player1, gs));
-                gs.issue(ai2.getAction(player2, gs));
-            }
-        }
-    }
 
     public int getPlanTimeBudget() {
         return PLAN_TIME;

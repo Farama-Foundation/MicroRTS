@@ -36,6 +36,10 @@ public class Function extends Term implements Parameter {
         return null;
     }
 
+    public Parameter cloneParameter() {
+        return (Function) clone();
+    }
+
     public Term clone() {
         Function t = new Function();
         t.functor = functor;
@@ -47,8 +51,18 @@ public class Function extends Term implements Parameter {
         return t;
     }
 
-    public Parameter cloneParameter() {
-        return (Function) clone();
+    public Parameter applyBindingsParameter(List<Binding> l) throws Exception {
+        Function f = this;
+        if (!l.isEmpty()) {
+            f = new Function();
+            f.functor = functor;
+            f.parameters = new Parameter[parameters.length];
+            for (int i = 0; i < f.parameters.length; i++) {
+                f.parameters[i] = parameters[i].applyBindingsParameter(l);
+            }
+        }
+
+        return f;
     }
 
     public Parameter resolveParameter(List<Binding> l, GameState gs) throws Exception {
@@ -71,19 +85,5 @@ public class Function extends Term implements Parameter {
         } else {
             return f;
         }
-    }
-
-    public Parameter applyBindingsParameter(List<Binding> l) throws Exception {
-        Function f = this;
-        if (!l.isEmpty()) {
-            f = new Function();
-            f.functor = functor;
-            f.parameters = new Parameter[parameters.length];
-            for (int i = 0; i < f.parameters.length; i++) {
-                f.parameters[i] = parameters[i].applyBindingsParameter(l);
-            }
-        }
-
-        return f;
     }
 }

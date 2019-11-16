@@ -53,66 +53,6 @@ public class BranchingFactorCalculatorBigInteger {
         return n;
     }
 
-    public static BigInteger[] branchingFactorByResourceUsage(GameState gs, int player)
-        throws Exception {
-        BigInteger[] n = new BigInteger[gs.getPlayer(player).getResources() + 1];
-        Arrays.fill(n, BigInteger.ZERO);
-        PlayerActionGenerator pag = new PlayerActionGenerator(gs, player);
-        PlayerAction pa = null;
-        do {
-            pa = pag.getNextAction(-1);
-            if (pa != null) {
-                int r = 0;
-                for (Pair<Unit, UnitAction> tmp : pa.getActions()) {
-                    r += tmp.m_b.resourceUsage(tmp.m_a, gs.getPhysicalGameState())
-                        .getResourcesUsed(player);
-                }
-                //                n[(pa.getResourceUsage()).getResourcesUsed(player)]++;
-                n[r] = n[r].add(BigInteger.ONE);
-            }
-        } while (pa != null);
-        return n;
-    }
-
-    public static void addFootPrint(int[][] map, int ID, int x, int y) {
-        //        System.out.println(ID + " -> " + x + "," + y);
-        if (map[x][y] == 0) {
-            map[x][y] = ID;
-        } else {
-            //            System.out.println("FF");
-            // propagate this ID with floodfill:
-            int ID_to_remove = map[x][y];
-            List<Integer> open_x = new LinkedList<Integer>();
-            List<Integer> open_y = new LinkedList<Integer>();
-            open_x.add(x);
-            open_y.add(y);
-            while (!open_x.isEmpty()) {
-                x = open_x.remove(0);
-                y = open_y.remove(0);
-                if (map[x][y] == ID) {
-                    continue;
-                }
-                map[x][y] = ID;
-                if (x > 0 && map[x - 1][y] == ID_to_remove) {
-                    open_x.add(0, x - 1);
-                    open_y.add(0, y);
-                }
-                if (x < map.length - 1 && map[x + 1][y] == ID_to_remove) {
-                    open_x.add(0, x + 1);
-                    open_y.add(0, y);
-                }
-                if (y > 0 && map[x][y - 1] == ID_to_remove) {
-                    open_x.add(0, x);
-                    open_y.add(0, y - 1);
-                }
-                if (y < map[0].length - 1 && map[x][y + 1] == ID_to_remove) {
-                    open_x.add(0, x);
-                    open_y.add(0, y + 1);
-                }
-            }
-        }
-    }
-
     public static BigInteger branchingFactorByResourceUsageSeparatingFast(GameState gs, int player)
         throws Exception {
         int playerResources = gs.getPlayer(player).getResources();
@@ -208,17 +148,43 @@ public class BranchingFactorCalculatorBigInteger {
         return branching;
     }
 
-    public static BigInteger branchingFactorByResourceUsageFast(GameState gs, int player)
-        throws Exception {
-        int playerResources = gs.getPlayer(player).getResources();
-        BigInteger[] n = branchingFactorByResourceUsageFastInternal(gs, player);
-
-        BigInteger branching = BigInteger.ZERO;
-        for (int i = 0; i < playerResources + 1; i++) {
-            branching = branching.add(n[i]);
+    public static void addFootPrint(int[][] map, int ID, int x, int y) {
+        //        System.out.println(ID + " -> " + x + "," + y);
+        if (map[x][y] == 0) {
+            map[x][y] = ID;
+        } else {
+            //            System.out.println("FF");
+            // propagate this ID with floodfill:
+            int ID_to_remove = map[x][y];
+            List<Integer> open_x = new LinkedList<Integer>();
+            List<Integer> open_y = new LinkedList<Integer>();
+            open_x.add(x);
+            open_y.add(y);
+            while (!open_x.isEmpty()) {
+                x = open_x.remove(0);
+                y = open_y.remove(0);
+                if (map[x][y] == ID) {
+                    continue;
+                }
+                map[x][y] = ID;
+                if (x > 0 && map[x - 1][y] == ID_to_remove) {
+                    open_x.add(0, x - 1);
+                    open_y.add(0, y);
+                }
+                if (x < map.length - 1 && map[x + 1][y] == ID_to_remove) {
+                    open_x.add(0, x + 1);
+                    open_y.add(0, y);
+                }
+                if (y > 0 && map[x][y - 1] == ID_to_remove) {
+                    open_x.add(0, x);
+                    open_y.add(0, y - 1);
+                }
+                if (y < map[0].length - 1 && map[x][y + 1] == ID_to_remove) {
+                    open_x.add(0, x);
+                    open_y.add(0, y + 1);
+                }
+            }
         }
-
-        return branching;
     }
 
     public static BigInteger[] branchingFactorByResourceUsageFastInternal(GameState gs, int player)
@@ -323,5 +289,39 @@ public class BranchingFactorCalculatorBigInteger {
             //            System.out.println("ACCUM " + Arrays.toString(n));
         }
         return n;
+    }
+
+    public static BigInteger[] branchingFactorByResourceUsage(GameState gs, int player)
+        throws Exception {
+        BigInteger[] n = new BigInteger[gs.getPlayer(player).getResources() + 1];
+        Arrays.fill(n, BigInteger.ZERO);
+        PlayerActionGenerator pag = new PlayerActionGenerator(gs, player);
+        PlayerAction pa = null;
+        do {
+            pa = pag.getNextAction(-1);
+            if (pa != null) {
+                int r = 0;
+                for (Pair<Unit, UnitAction> tmp : pa.getActions()) {
+                    r += tmp.m_b.resourceUsage(tmp.m_a, gs.getPhysicalGameState())
+                        .getResourcesUsed(player);
+                }
+                //                n[(pa.getResourceUsage()).getResourcesUsed(player)]++;
+                n[r] = n[r].add(BigInteger.ONE);
+            }
+        } while (pa != null);
+        return n;
+    }
+
+    public static BigInteger branchingFactorByResourceUsageFast(GameState gs, int player)
+        throws Exception {
+        int playerResources = gs.getPlayer(player).getResources();
+        BigInteger[] n = branchingFactorByResourceUsageFastInternal(gs, player);
+
+        BigInteger branching = BigInteger.ZERO;
+        for (int i = 0; i < playerResources + 1; i++) {
+            branching = branching.add(n[i]);
+        }
+
+        return branching;
     }
 }

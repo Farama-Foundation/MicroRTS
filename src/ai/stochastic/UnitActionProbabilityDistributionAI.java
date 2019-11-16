@@ -45,16 +45,7 @@ public class UnitActionProbabilityDistributionAI extends AI {
     }
 
     @Override
-    public String toString() {
-        return this.getClass().getSimpleName() + "(" + modelName + ")";
-    }
-
-    @Override
     public void reset() {
-    }
-
-    public AI clone() {
-        return new UnitActionProbabilityDistributionAI(model, utt, modelName);
     }
 
     public PlayerAction getAction(int player, GameState gs) throws Exception {
@@ -108,6 +99,15 @@ public class UnitActionProbabilityDistributionAI extends AI {
         }
 
         return pa;
+    }
+
+    public AI clone() {
+        return new UnitActionProbabilityDistributionAI(model, utt, modelName);
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + "(" + modelName + ")";
     }
 
     @Override

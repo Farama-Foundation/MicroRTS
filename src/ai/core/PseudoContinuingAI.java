@@ -32,6 +32,11 @@ public class PseudoContinuingAI extends AI {
         m_AI = ai;
     }
 
+    public void reset() {
+        n_cycles_to_think = 1;
+        m_AI.reset();
+    }
+
     public PlayerAction getAction(int player, GameState gs) throws Exception {
         if (gs.canExecuteAnyAction(player)) {
             // check to make sure game is deterministic:
@@ -80,11 +85,6 @@ public class PseudoContinuingAI extends AI {
         }
     }
 
-    public void reset() {
-        n_cycles_to_think = 1;
-        m_AI.reset();
-    }
-
     public AI clone() {
         return new PseudoContinuingAI((AIWithComputationBudget) m_AI.clone());
     }
@@ -94,13 +94,13 @@ public class PseudoContinuingAI extends AI {
         return getClass().getSimpleName() + "(" + m_AI + ")";
     }
 
+    public List<ParameterSpecification> getParameters() {
+        return m_AI.getParameters();
+    }
+
     @Override
     public String statisticsString() {
         return m_AI.statisticsString();
-    }
-
-    public List<ParameterSpecification> getParameters() {
-        return m_AI.getParameters();
     }
 
     public AIWithComputationBudget getbaseAI() {

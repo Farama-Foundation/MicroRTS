@@ -40,15 +40,6 @@ public class Harvest extends AbstractAction {
         return !gs.getPhysicalGameState().getUnits().contains(target);
     }
 
-    public boolean equals(Object o) {
-        if (!(o instanceof Harvest)) {
-            return false;
-        }
-        Harvest a = (Harvest) o;
-        return target.getID() == a.target.getID() && base.getID() == a.base.getID()
-            && pf.getClass() == a.pf.getClass();
-    }
-
     public void toxml(XMLWriter w) {
         w.tagWithAttributes("Harvest",
             "unitID=\"" + unit.getID() + "\" target=\"" + target.getID() + "\" base=\"" + base
@@ -110,5 +101,14 @@ public class Harvest extends AbstractAction {
             }
         }
         return null;
+    }
+
+    public boolean equals(Object o) {
+        if (!(o instanceof Harvest)) {
+            return false;
+        }
+        Harvest a = (Harvest) o;
+        return target.getID() == a.target.getID() && base.getID() == a.base.getID()
+            && pf.getClass() == a.pf.getClass();
     }
 }

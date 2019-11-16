@@ -17,15 +17,13 @@ import rts.GameState;
  */
 public class Clause {
 
-    public static int DEBUG = 0;
-
     public static final int CLAUSE_TERM = 0;
     public static final int CLAUSE_AND = 1;
     public static final int CLAUSE_OR = 2;
     public static final int CLAUSE_NOT = 3;
     public static final int CLAUSE_TRUE = 4;
     public static final int CLAUSE_FALSE = 5;
-
+    public static int DEBUG = 0;
     int type = CLAUSE_AND;
     Term term = null;
     Clause[] clauses = null;
@@ -78,6 +76,46 @@ public class Clause {
         }
     }
 
+    // applies all the bindings and evaluates in case it is a function:
+    public Clause resolve(List<Binding> l, GameState gs) throws Exception {
+        if (l.isEmpty()) {
+            return this;
+        }
+        Clause c = new Clause();
+        c.type = type;
+        if (term != null) {
+            c.term = term.resolve(l, gs);
+        }
+        if (clauses != null) {
+            c.clauses = new Clause[clauses.length];
+            for (int i = 0; i < clauses.length; i++) {
+                c.clauses[i] = clauses[i].resolve(l, gs);
+            }
+        } else {
+            c.clauses = null;
+        }
+
+        return c;
+    }
+
+    public Clause clone() {
+        Clause c = new Clause();
+        c.type = type;
+        if (term != null) {
+            c.term = term.clone();
+        }
+        if (clauses != null) {
+            c.clauses = new Clause[clauses.length];
+            for (int i = 0; i < clauses.length; i++) {
+                c.clauses[i] = clauses[i].clone();
+            }
+        } else {
+            c.clauses = null;
+        }
+
+        return c;
+    }
+
     public String toString() {
         switch (type) {
             case CLAUSE_TERM:
@@ -118,46 +156,6 @@ public class Clause {
                 return "(false)";
         }
         return null;
-    }
-
-    // applies all the bindings and evaluates in case it is a function:
-    public Clause resolve(List<Binding> l, GameState gs) throws Exception {
-        if (l.isEmpty()) {
-            return this;
-        }
-        Clause c = new Clause();
-        c.type = type;
-        if (term != null) {
-            c.term = term.resolve(l, gs);
-        }
-        if (clauses != null) {
-            c.clauses = new Clause[clauses.length];
-            for (int i = 0; i < clauses.length; i++) {
-                c.clauses[i] = clauses[i].resolve(l, gs);
-            }
-        } else {
-            c.clauses = null;
-        }
-
-        return c;
-    }
-
-    public Clause clone() {
-        Clause c = new Clause();
-        c.type = type;
-        if (term != null) {
-            c.term = term.clone();
-        }
-        if (clauses != null) {
-            c.clauses = new Clause[clauses.length];
-            for (int i = 0; i < clauses.length; i++) {
-                c.clauses[i] = clauses[i].clone();
-            }
-        } else {
-            c.clauses = null;
-        }
-
-        return c;
     }
 
     public void renameVariables(int renamingIndex) {

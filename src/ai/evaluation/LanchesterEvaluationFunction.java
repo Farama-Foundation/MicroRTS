@@ -25,12 +25,12 @@ public class LanchesterEvaluationFunction extends EvaluationFunction {
 
     public static float order = 1.7f;
 
-    public static float sigmoid(float x) {
-        return (float) (1.0f / (1.0f + Math.pow(Math.E, (0.0f - x))));
-    }
-
     public float evaluate(int maxplayer, int minplayer, GameState gs) {
         return 2.0f * sigmoid(base_score(maxplayer, gs) - base_score(minplayer, gs)) - 1.0f;
+    }
+
+    public static float sigmoid(float x) {
+        return (float) (1.0f / (1.0f + Math.pow(Math.E, (0.0f - x))));
     }
 
     public float base_score(int player, GameState gs) {

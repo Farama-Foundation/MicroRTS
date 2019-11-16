@@ -43,30 +43,6 @@ public class PhysicalGameState {
     List<Unit> units = new LinkedList<Unit>();
 
     /**
-     * Constructs the game state map from a XML
-     *
-     * @param fileName
-     * @param utt
-     * @return
-     * @throws JDOMException
-     * @throws IOException
-     */
-    public static PhysicalGameState load(String fileName, UnitTypeTable utt) throws Exception {
-        try {
-            return PhysicalGameState
-                .fromXML(new SAXBuilder().build(fileName).getRootElement(), utt);
-        } catch (IllegalArgumentException | FileNotFoundException e) {
-            // Attempt to load the resource as a resource stream.
-            try (InputStream is = PhysicalGameState.class.getClassLoader()
-                .getResourceAsStream(fileName)) {
-                return fromXML((new SAXBuilder()).build(is).getRootElement(), utt);
-            } catch (IllegalArgumentException var3) {
-                throw new IllegalArgumentException("Error loading map: " + fileName, var3);
-            }
-        }
-    }
-
-    /**
      * Creates a new game state map with the informed width and height. Initializes an empty
      * terrain.
      *
@@ -94,48 +70,145 @@ public class PhysicalGameState {
     }
 
     /**
+     * Constructs the game state map from a XML
+     *
+     * @param fileName
+     * @param utt
+     * @return
+     * @throws JDOMException
+     * @throws IOException
+     */
+    public static PhysicalGameState load(String fileName, UnitTypeTable utt) throws Exception {
+        try {
+            return PhysicalGameState
+                .fromXML(new SAXBuilder().build(fileName).getRootElement(), utt);
+        } catch (IllegalArgumentException | FileNotFoundException e) {
+            // Attempt to load the resource as a resource stream.
+            try (InputStream is = PhysicalGameState.class.getClassLoader()
+                .getResourceAsStream(fileName)) {
+                return fromXML((new SAXBuilder()).build(is).getRootElement(), utt);
+            } catch (IllegalArgumentException var3) {
+                throw new IllegalArgumentException("Error loading map: " + fileName, var3);
+            }
+        }
+    }
+
+    /**
+     * Constructs a map from XML
+     *
+     * @param e
+     * @param utt
      * @return
      */
-    public int getWidth() {
-        return width;
+    public static PhysicalGameState fromXML(Element e, UnitTypeTable utt) throws Exception {
+        Element terrain_e = e.getChild("terrain");
+        Element players_e = e.getChild("players");
+        Element units_e = e.getChild("units");
+
+        int width = Integer.parseInt(e.getAttributeValue("width"));
+        int height = Integer.parseInt(e.getAttributeValue("height"));
+        int[] terrain = new int[width * height];
+        String terrainString = terrain_e.getValue();
+        for (int i = 0; i < width * height; i++) {
+            String c = terrainString.substring(i, i + 1);
+            terrain[i] = Integer.parseInt(c);
+        }
+        PhysicalGameState pgs = new PhysicalGameState(width, height, terrain);
+
+        for (Object o : players_e.getChildren()) {
+            Element player_e = (Element) o;
+            pgs.addPlayer(Player.fromXML(player_e));
+        }
+        for (Object o : units_e.getChildren()) {
+            Element unit_e = (Element) o;
+            Unit u = Unit.fromXML(unit_e, utt);
+            // check for repeated IDs:
+            if (pgs.getUnit(u.getID()) != null) {
+                throw new Exception("Repeated unit ID " + u.getID() + " in map!");
+            }
+            pgs.addUnit(u);
+        }
+
+        return pgs;
     }
 
     /**
+     * Adds a player
+     *
+     * @param p
+     */
+    public void addPlayer(Player p) {
+        if (p.getID() != players.size()) {
+            throw new IllegalArgumentException(
+                "PhysicalGameState.addPlayer: player added in the wrong order.");
+        }
+        players.add(p);
+    }
+
+    /**
+     * Returns a {@link Unit} given its ID or null if not found
+     *
+     * @param ID
      * @return
      */
-    public int getHeight() {
-        return height;
+    public Unit getUnit(long ID) {
+        for (Unit u : units) {
+            if (u.getID() == ID) {
+                return u;
+            }
+        }
+        return null;
     }
 
     /**
-     * Sets a new width. This do not change the terrain array, remember to change that when you
-     * change the map width or height
+     * Adds a new {@link Unit} to the map if its position is free
      *
-     * @param w
+     * @param newUnit
+     * @throws IllegalArgumentException if the new unit's position is already occupied
      */
-    public void setWidth(int w) {
-        width = w;
+    public void addUnit(Unit newUnit) throws IllegalArgumentException {
+        for (Unit existingUnit : units) {
+            if (newUnit.getX() == existingUnit.getX() && newUnit.getY() == existingUnit.getY()) {
+                throw new IllegalArgumentException(
+                    "PhysicalGameState.addUnit: added two units in position: (" + newUnit.getX()
+                        + ", " + newUnit.getY() + ")");
+            }
+        }
+        units.add(newUnit);
     }
 
     /**
-     * Sets a new height. This do not change the terrain array, remember to change that when you
-     * change the map width or height
+     * Constructs a map from JSON
      *
-     * @param h
-     */
-    public void setHeight(int h) {
-        height = h;
-    }
-
-    /**
-     * Returns what is on a given position of the terrain
-     *
-     * @param x
-     * @param y
+     * @param o
+     * @param utt
      * @return
      */
-    public int getTerrain(int x, int y) {
-        return terrain[x + y * width];
+    public static PhysicalGameState fromJSON(JsonObject o, UnitTypeTable utt) {
+
+        String terrainString = o.getString("terrain", null);
+        JsonArray players_o = o.get("players").asArray();
+        JsonArray units_o = o.get("units").asArray();
+
+        int width = o.getInt("width", 8);
+        int height = o.getInt("height", 8);
+        int[] terrain = new int[width * height];
+        for (int i = 0; i < width * height; i++) {
+            String c = terrainString.substring(i, i + 1);
+            terrain[i] = Integer.parseInt(c);
+        }
+        PhysicalGameState pgs = new PhysicalGameState(width, height, terrain);
+
+        for (JsonValue v : players_o.values()) {
+            JsonObject player_o = (JsonObject) v;
+            pgs.addPlayer(Player.fromJSON(player_o));
+        }
+        for (JsonValue v : units_o.values()) {
+            JsonObject unit_o = (JsonObject) v;
+            pgs.addUnit(Unit.fromJSON(unit_o, utt));
+        }
+
+        return pgs;
     }
 
     /**
@@ -156,36 +229,6 @@ public class PhysicalGameState {
      */
     public void setTerrain(int[] t) {
         terrain = t;
-    }
-
-    /**
-     * Adds a player
-     *
-     * @param p
-     */
-    public void addPlayer(Player p) {
-        if (p.getID() != players.size()) {
-            throw new IllegalArgumentException(
-                "PhysicalGameState.addPlayer: player added in the wrong order.");
-        }
-        players.add(p);
-    }
-
-    /**
-     * Adds a new {@link Unit} to the map if its position is free
-     *
-     * @param newUnit
-     * @throws IllegalArgumentException if the new unit's position is already occupied
-     */
-    public void addUnit(Unit newUnit) throws IllegalArgumentException {
-        for (Unit existingUnit : units) {
-            if (newUnit.getX() == existingUnit.getX() && newUnit.getY() == existingUnit.getY()) {
-                throw new IllegalArgumentException(
-                    "PhysicalGameState.addUnit: added two units in position: (" + newUnit.getX()
-                        + ", " + newUnit.getY() + ")");
-            }
-        }
-        units.add(newUnit);
     }
 
     /**
@@ -223,21 +266,6 @@ public class PhysicalGameState {
      */
     public Player getPlayer(int pID) {
         return players.get(pID);
-    }
-
-    /**
-     * Returns a {@link Unit} given its ID or null if not found
-     *
-     * @param ID
-     * @return
-     */
-    public Unit getUnit(long ID) {
-        for (Unit u : units) {
-            if (u.getID() == ID) {
-                return u;
-            }
-        }
-        return null;
     }
 
     /**
@@ -363,6 +391,20 @@ public class PhysicalGameState {
         return pgs;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    public String toString() {
+        StringBuilder tmp = new StringBuilder("PhysicalGameState:\n");
+        for (Player p : players) {
+            tmp.append("  ").append(p).append("\n");
+        }
+        for (Unit u : units) {
+            tmp.append("  ").append(u).append("\n");
+        }
+        return tmp.toString();
+    }
+
     /**
      * Clone the physical game state, but does not clone the units The terrain is shared amongst all
      * instances, since it never changes
@@ -395,18 +437,18 @@ public class PhysicalGameState {
         return pgs;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
+    /**
+     * This function tests if two PhysicalGameStates are identical, including their terrain *
+     *
+     * @param pgs
+     * @return
      */
-    public String toString() {
-        StringBuilder tmp = new StringBuilder("PhysicalGameState:\n");
-        for (Player p : players) {
-            tmp.append("  ").append(p).append("\n");
+    public boolean equivalentsIncludingTerrain(PhysicalGameState pgs) {
+        if (this.equivalents(pgs)) {
+            return Arrays.toString(this.terrain).equals(Arrays.toString(pgs.terrain));
+        } else {
+            return false;
         }
-        for (Unit u : units) {
-            tmp.append("  ").append(u).append("\n");
-        }
-        return tmp.toString();
     }
 
     /**
@@ -455,20 +497,6 @@ public class PhysicalGameState {
     }
 
     /**
-     * This function tests if two PhysicalGameStates are identical, including their terrain *
-     *
-     * @param pgs
-     * @return
-     */
-    public boolean equivalentsIncludingTerrain(PhysicalGameState pgs) {
-        if (this.equivalents(pgs)) {
-            return Arrays.toString(this.terrain).equals(Arrays.toString(pgs.terrain));
-        } else {
-            return false;
-        }
-    }
-
-    /**
      * Returns an array with true if the given position has {@link PhysicalGameState.TERRAIN_NONE}
      *
      * @return
@@ -486,6 +514,51 @@ public class PhysicalGameState {
         }
 
         return free;
+    }
+
+    /**
+     * @return
+     */
+    public int getWidth() {
+        return width;
+    }
+
+    /**
+     * @return
+     */
+    public int getHeight() {
+        return height;
+    }
+
+    /**
+     * Sets a new height. This do not change the terrain array, remember to change that when you
+     * change the map width or height
+     *
+     * @param h
+     */
+    public void setHeight(int h) {
+        height = h;
+    }
+
+    /**
+     * Returns what is on a given position of the terrain
+     *
+     * @param x
+     * @param y
+     * @return
+     */
+    public int getTerrain(int x, int y) {
+        return terrain[x + y * width];
+    }
+
+    /**
+     * Sets a new width. This do not change the terrain array, remember to change that when you
+     * change the map width or height
+     *
+     * @param w
+     */
+    public void setWidth(int w) {
+        width = w;
     }
 
     /**
@@ -546,79 +619,6 @@ public class PhysicalGameState {
         }
         w.write("]");
         w.write("}");
-    }
-
-    /**
-     * Constructs a map from XML
-     *
-     * @param e
-     * @param utt
-     * @return
-     */
-    public static PhysicalGameState fromXML(Element e, UnitTypeTable utt) throws Exception {
-        Element terrain_e = e.getChild("terrain");
-        Element players_e = e.getChild("players");
-        Element units_e = e.getChild("units");
-
-        int width = Integer.parseInt(e.getAttributeValue("width"));
-        int height = Integer.parseInt(e.getAttributeValue("height"));
-        int[] terrain = new int[width * height];
-        String terrainString = terrain_e.getValue();
-        for (int i = 0; i < width * height; i++) {
-            String c = terrainString.substring(i, i + 1);
-            terrain[i] = Integer.parseInt(c);
-        }
-        PhysicalGameState pgs = new PhysicalGameState(width, height, terrain);
-
-        for (Object o : players_e.getChildren()) {
-            Element player_e = (Element) o;
-            pgs.addPlayer(Player.fromXML(player_e));
-        }
-        for (Object o : units_e.getChildren()) {
-            Element unit_e = (Element) o;
-            Unit u = Unit.fromXML(unit_e, utt);
-            // check for repeated IDs:
-            if (pgs.getUnit(u.getID()) != null) {
-                throw new Exception("Repeated unit ID " + u.getID() + " in map!");
-            }
-            pgs.addUnit(u);
-        }
-
-        return pgs;
-    }
-
-    /**
-     * Constructs a map from JSON
-     *
-     * @param o
-     * @param utt
-     * @return
-     */
-    public static PhysicalGameState fromJSON(JsonObject o, UnitTypeTable utt) {
-
-        String terrainString = o.getString("terrain", null);
-        JsonArray players_o = o.get("players").asArray();
-        JsonArray units_o = o.get("units").asArray();
-
-        int width = o.getInt("width", 8);
-        int height = o.getInt("height", 8);
-        int[] terrain = new int[width * height];
-        for (int i = 0; i < width * height; i++) {
-            String c = terrainString.substring(i, i + 1);
-            terrain[i] = Integer.parseInt(c);
-        }
-        PhysicalGameState pgs = new PhysicalGameState(width, height, terrain);
-
-        for (JsonValue v : players_o.values()) {
-            JsonObject player_o = (JsonObject) v;
-            pgs.addPlayer(Player.fromJSON(player_o));
-        }
-        for (JsonValue v : units_o.values()) {
-            JsonObject unit_o = (JsonObject) v;
-            pgs.addUnit(Unit.fromJSON(unit_o, utt));
-        }
-
-        return pgs;
     }
 
     /**

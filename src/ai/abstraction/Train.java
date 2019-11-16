@@ -30,14 +30,6 @@ public class Train extends AbstractAction {
         return completed;
     }
 
-    public boolean equals(Object o) {
-        if (!(o instanceof Train)) {
-            return false;
-        }
-        Train a = (Train) o;
-        return type == a.type;
-    }
-
     public void toxml(XMLWriter w) {
         w.tagWithAttributes("Train", "unitID=\"" + unit.getID() + "\" type=\"" + type.name + "\"");
         w.tag("/Train");
@@ -123,5 +115,13 @@ public class Train extends AbstractAction {
         }
 
         return -distance;
+    }
+
+    public boolean equals(Object o) {
+        if (!(o instanceof Train)) {
+            return false;
+        }
+        Train a = (Train) o;
+        return type == a.type;
     }
 }

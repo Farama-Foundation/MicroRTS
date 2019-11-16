@@ -34,37 +34,6 @@ public class ExperimenterAsymmetric {
     public static long BRANCHING_CALCULATION_TIMEOUT = 7200000;
     public static boolean PRINT_BRANCHING_AT_EACH_MOVE = false;
 
-    static class BranchingCalculatorWithTimeOut {
-
-        static double branching = 0;
-        static boolean running = false;
-
-        static double branching(GameState gs, int player, long timeOutMillis) throws Exception {
-            if (running) {
-                throw new Exception("Two calls to BranchingCalculatorWithTimeOut in parallel!");
-            }
-            branching = 0;
-            running = true;
-            try {
-                RunnableWithTimeOut.runWithTimeout(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            branching = BranchingFactorCalculatorDouble
-                                .branchingFactorByResourceUsageSeparatingFast(gs, player);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, timeOutMillis, TimeUnit.MILLISECONDS);
-            } catch (TimeoutException e) {
-                //                System.out.println("BranchingCalculatorWithTimeOut: timeout!");
-            }
-            running = false;
-            return branching;
-        }
-    }
-
     public static void runExperiments(List<AI> bots1, List<AI> bots2, List<PhysicalGameState> maps,
         UnitTypeTable utt, int iterations, int max_cycles, int max_inactive_cycles,
         boolean visualize, PrintStream out) throws Exception {
@@ -267,5 +236,36 @@ public class ExperimenterAsymmetric {
             out.println();
         }
         out.flush();
+    }
+
+    static class BranchingCalculatorWithTimeOut {
+
+        static double branching = 0;
+        static boolean running = false;
+
+        static double branching(GameState gs, int player, long timeOutMillis) throws Exception {
+            if (running) {
+                throw new Exception("Two calls to BranchingCalculatorWithTimeOut in parallel!");
+            }
+            branching = 0;
+            running = true;
+            try {
+                RunnableWithTimeOut.runWithTimeout(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            branching = BranchingFactorCalculatorDouble
+                                .branchingFactorByResourceUsageSeparatingFast(gs, player);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, timeOutMillis, TimeUnit.MILLISECONDS);
+            } catch (TimeoutException e) {
+                //                System.out.println("BranchingCalculatorWithTimeOut: timeout!");
+            }
+            running = false;
+            return branching;
+        }
     }
 }

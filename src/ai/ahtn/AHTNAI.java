@@ -33,14 +33,11 @@ import util.Pair;
 public class AHTNAI extends AIWithComputationBudget {
 
     public static int DEBUG = 0;
-
+    public int PLAYOUT_LOOKAHEAD = 100;
     String domainFileName = null;
     DomainDefinition dd = null;
-
     EvaluationFunction ef = null;
     AI playoutAI = null;
-    public int PLAYOUT_LOOKAHEAD = 100;
-
     List<MethodDecomposition> actionsBeingExecuted = null;
 
     public AHTNAI(UnitTypeTable utt) throws Exception {
@@ -156,9 +153,19 @@ public class AHTNAI extends AIWithComputationBudget {
     }
 
     @Override
-    public String toString() {
-        return getClass().getSimpleName() + "(" + domainFileName + ", " + TIME_BUDGET + ", "
-            + ITERATIONS_BUDGET + ", " + PLAYOUT_LOOKAHEAD + ", " + ef + ", " + playoutAI + ")";
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+
+        parameters.add(new ParameterSpecification("DomainFileName", String.class,
+            "data/ahtn/microrts-ahtn-definition-flexible-single-target-portfolio.lisp"));
+        parameters.add(new ParameterSpecification("TimeBudget", int.class, 100));
+        parameters.add(new ParameterSpecification("IterationsBudget", int.class, -1));
+        parameters.add(new ParameterSpecification("PlayoutLookahead", int.class, 100));
+        parameters.add(new ParameterSpecification("PlayoutAI", AI.class, playoutAI));
+        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class,
+            new SimpleSqrtEvaluationFunction3()));
+
+        return parameters;
     }
 
     public String statisticsString() {
@@ -182,19 +189,9 @@ public class AHTNAI extends AIWithComputationBudget {
     }
 
     @Override
-    public List<ParameterSpecification> getParameters() {
-        List<ParameterSpecification> parameters = new ArrayList<>();
-
-        parameters.add(new ParameterSpecification("DomainFileName", String.class,
-            "data/ahtn/microrts-ahtn-definition-flexible-single-target-portfolio.lisp"));
-        parameters.add(new ParameterSpecification("TimeBudget", int.class, 100));
-        parameters.add(new ParameterSpecification("IterationsBudget", int.class, -1));
-        parameters.add(new ParameterSpecification("PlayoutLookahead", int.class, 100));
-        parameters.add(new ParameterSpecification("PlayoutAI", AI.class, playoutAI));
-        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class,
-            new SimpleSqrtEvaluationFunction3()));
-
-        return parameters;
+    public String toString() {
+        return getClass().getSimpleName() + "(" + domainFileName + ", " + TIME_BUDGET + ", "
+            + ITERATIONS_BUDGET + ", " + PLAYOUT_LOOKAHEAD + ", " + ef + ", " + playoutAI + ")";
     }
 
     public String getDomainFileName() {

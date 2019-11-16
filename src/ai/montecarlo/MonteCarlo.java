@@ -25,34 +25,22 @@ import rts.units.UnitTypeTable;
 public class MonteCarlo extends AIWithComputationBudget implements InterruptibleAI {
 
     public static final int DEBUG = 0;
+    // statistics:
+    public long total_runs = 0;
+    public long total_cycles_executed = 0;
+    public long total_actions_issued = 0;
     EvaluationFunction ef = null;
-
-    public class PlayerActionTableEntry {
-
-        PlayerAction pa;
-        float accum_evaluation = 0;
-        int visit_count = 0;
-    }
-
     Random r = new Random();
     AI randomAI = new RandomBiasedAI();
     long max_actions_so_far = 0;
-
     PlayerActionGenerator moveGenerator = null;
     boolean allMovesGenerated = false;
     List<PlayerActionTableEntry> actions = null;
     GameState gs_to_start_from = null;
     int run = 0;
     int playerForThisComputation;
-
-    // statistics:
-    public long total_runs = 0;
-    public long total_cycles_executed = 0;
-    public long total_actions_issued = 0;
-
     long MAXACTIONS = 100;
     int MAXSIMULATIONTIME = 1024;
-
     public MonteCarlo(UnitTypeTable utt) {
         this(100, -1, 100, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3());
     }
@@ -75,25 +63,11 @@ public class MonteCarlo extends AIWithComputationBudget implements Interruptible
         ef = a_ef;
     }
 
-    public void printStats() {
-        if (total_cycles_executed > 0 && total_actions_issued > 0) {
-            System.out.println(
-                "Average runs per cycle: " + ((double) total_runs) / total_cycles_executed);
-            System.out.println(
-                "Average runs per action: " + ((double) total_runs) / total_actions_issued);
-        }
-    }
-
     public void reset() {
         moveGenerator = null;
         actions = null;
         gs_to_start_from = null;
         run = 0;
-    }
-
-    public AI clone() {
-        return new MonteCarlo(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME, MAXACTIONS,
-            randomAI, ef);
     }
 
     public final PlayerAction getAction(int player, GameState gs) throws Exception {
@@ -103,6 +77,40 @@ public class MonteCarlo extends AIWithComputationBudget implements Interruptible
             return getBestActionSoFar();
         } else {
             return new PlayerAction();
+        }
+    }
+
+    public AI clone() {
+        return new MonteCarlo(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME, MAXACTIONS,
+            randomAI, ef);
+    }
+
+    public String toString() {
+        return getClass().getSimpleName() + "(" + TIME_BUDGET + "," + ITERATIONS_BUDGET + ","
+            + MAXSIMULATIONTIME + "," + MAXACTIONS + ", " + randomAI + ", " + ef + ")";
+    }
+
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+
+        parameters.add(new ParameterSpecification("TimeBudget", int.class, 100));
+        parameters.add(new ParameterSpecification("IterationsBudget", int.class, -1));
+        parameters.add(new ParameterSpecification("PlayoutLookahead", int.class, 100));
+        parameters.add(new ParameterSpecification("MaxActions", long.class, 100));
+        parameters.add(new ParameterSpecification("playoutAI", AI.class, randomAI));
+        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class,
+            new SimpleSqrtEvaluationFunction3()));
+
+        return parameters;
+    }
+
+    public void printStats() {
+        if (total_cycles_executed > 0 && total_actions_issued > 0) {
+            System.out.println(
+                "Average runs per cycle: " + ((double) total_runs) / total_cycles_executed);
+            System.out.println(
+                "Average runs per action: " + ((double) total_runs) / total_actions_issued);
         }
     }
 
@@ -118,16 +126,6 @@ public class MonteCarlo extends AIWithComputationBudget implements Interruptible
         moveGenerator = new PlayerActionGenerator(gs, playerForThisComputation);
         moveGenerator.randomizeOrder();
         allMovesGenerated = false;
-        actions = null;
-        run = 0;
-    }
-
-    public void resetSearch() {
-        if (DEBUG >= 2) {
-            System.out.println("Resetting search...");
-        }
-        gs_to_start_from = null;
-        moveGenerator = null;
         actions = null;
         run = 0;
     }
@@ -201,22 +199,6 @@ public class MonteCarlo extends AIWithComputationBudget implements Interruptible
         total_cycles_executed++;
     }
 
-    public void monteCarloRun(int player, GameState gs) throws Exception {
-        int idx = run % actions.size();
-        //        System.out.println(idx);
-        PlayerActionTableEntry pate = actions.get(idx);
-
-        GameState gs2 = gs.cloneIssue(pate.pa);
-        GameState gs3 = gs2.clone();
-        simulate(gs3, gs3.getTime() + MAXSIMULATIONTIME);
-        int time = gs3.getTime() - gs2.getTime();
-
-        pate.accum_evaluation += ef.evaluate(player, 1 - player, gs3) * Math.pow(0.99, time / 10.0);
-        pate.visit_count++;
-        run++;
-        total_runs++;
-    }
-
     public PlayerAction getBestActionSoFar() {
         // find the best:
         PlayerActionTableEntry best = null;
@@ -245,6 +227,22 @@ public class MonteCarlo extends AIWithComputationBudget implements Interruptible
         return best.pa;
     }
 
+    public void monteCarloRun(int player, GameState gs) throws Exception {
+        int idx = run % actions.size();
+        //        System.out.println(idx);
+        PlayerActionTableEntry pate = actions.get(idx);
+
+        GameState gs2 = gs.cloneIssue(pate.pa);
+        GameState gs3 = gs2.clone();
+        simulate(gs3, gs3.getTime() + MAXSIMULATIONTIME);
+        int time = gs3.getTime() - gs2.getTime();
+
+        pate.accum_evaluation += ef.evaluate(player, 1 - player, gs3) * Math.pow(0.99, time / 10.0);
+        pate.visit_count++;
+        run++;
+        total_runs++;
+    }
+
     public void simulate(GameState gs, int time) throws Exception {
         boolean gameover = false;
 
@@ -258,24 +256,14 @@ public class MonteCarlo extends AIWithComputationBudget implements Interruptible
         } while (!gameover && gs.getTime() < time);
     }
 
-    public String toString() {
-        return getClass().getSimpleName() + "(" + TIME_BUDGET + "," + ITERATIONS_BUDGET + ","
-            + MAXSIMULATIONTIME + "," + MAXACTIONS + ", " + randomAI + ", " + ef + ")";
-    }
-
-    @Override
-    public List<ParameterSpecification> getParameters() {
-        List<ParameterSpecification> parameters = new ArrayList<>();
-
-        parameters.add(new ParameterSpecification("TimeBudget", int.class, 100));
-        parameters.add(new ParameterSpecification("IterationsBudget", int.class, -1));
-        parameters.add(new ParameterSpecification("PlayoutLookahead", int.class, 100));
-        parameters.add(new ParameterSpecification("MaxActions", long.class, 100));
-        parameters.add(new ParameterSpecification("playoutAI", AI.class, randomAI));
-        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class,
-            new SimpleSqrtEvaluationFunction3()));
-
-        return parameters;
+    public void resetSearch() {
+        if (DEBUG >= 2) {
+            System.out.println("Resetting search...");
+        }
+        gs_to_start_from = null;
+        moveGenerator = null;
+        actions = null;
+        run = 0;
     }
 
     public int getPlayoutLookahead() {
@@ -308,5 +296,12 @@ public class MonteCarlo extends AIWithComputationBudget implements Interruptible
 
     public void setEvaluationFunction(EvaluationFunction a_ef) {
         ef = a_ef;
+    }
+
+    public class PlayerActionTableEntry {
+
+        PlayerAction pa;
+        float accum_evaluation = 0;
+        int visit_count = 0;
     }
 }

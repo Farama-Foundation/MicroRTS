@@ -44,6 +44,12 @@ public class ContinuingAI extends AI {
         m_AI = ai;
     }
 
+    public void reset() {
+        m_isThereAComputationGoingOn = false;
+        m_gameStateUsedForComputation = null;
+        m_AI.reset();
+    }
+
     public PlayerAction getAction(int player, GameState gs) throws Exception {
         if (gs.canExecuteAnyAction(player)) {
             // check to make sure game is deterministic:
@@ -118,12 +124,6 @@ public class ContinuingAI extends AI {
         }
     }
 
-    public void reset() {
-        m_isThereAComputationGoingOn = false;
-        m_gameStateUsedForComputation = null;
-        m_AI.reset();
-    }
-
     public AI clone() {
         try {
             return new ContinuingAI(m_AI.clone());
@@ -138,16 +138,16 @@ public class ContinuingAI extends AI {
         return getClass().getSimpleName() + "(" + m_AI + ")";
     }
 
-    @Override
-    public String statisticsString() {
-        return m_AI.statisticsString();
-    }
-
     /**
      * Returns the parameters of the internal AI
      */
     public List<ParameterSpecification> getParameters() {
         return m_AI.getParameters();
+    }
+
+    @Override
+    public String statisticsString() {
+        return m_AI.statisticsString();
     }
 
     /**

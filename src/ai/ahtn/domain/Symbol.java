@@ -57,12 +57,35 @@ public class Symbol {
         mSym = sym.mSym;
     }
 
+    static void arrangeString(StringBuffer str) {
+        int len;
+
+        while (str.charAt(0) == ' ' || str.charAt(0) == '\n' || str.charAt(0) == '\r'
+            || str.charAt(0) == '\t') {
+            str = str.deleteCharAt(0);
+        }
+
+        len = str.length();
+        while (len > 1 && (str.charAt(len - 1) == ' ' || str.charAt(len - 1) == '\n'
+            || str.charAt(len - 1) == '\r' || str.charAt(len - 1) == '\t')) {
+            str = str.deleteCharAt(len - 1);
+            len--;
+        }
+    }
+
     public String get() {
         return mSym.toString();
     }
 
     public void set(String str) {
         mSym = new StringBuffer(str);
+    }
+
+    public int hashCode() {
+        if (mSym == null) {
+            return 0;
+        }
+        return mSym.hashCode();
     }
 
     public boolean equals(Object o) {
@@ -101,30 +124,7 @@ public class Symbol {
         return mSym == sym.mSym;
     }
 
-    static void arrangeString(StringBuffer str) {
-        int len;
-
-        while (str.charAt(0) == ' ' || str.charAt(0) == '\n' || str.charAt(0) == '\r'
-            || str.charAt(0) == '\t') {
-            str = str.deleteCharAt(0);
-        }
-
-        len = str.length();
-        while (len > 1 && (str.charAt(len - 1) == ' ' || str.charAt(len - 1) == '\n'
-            || str.charAt(len - 1) == '\r' || str.charAt(len - 1) == '\t')) {
-            str = str.deleteCharAt(len - 1);
-            len--;
-        }
-    }
-
     public String toString() {
         return mSym.toString();
-    }
-
-    public int hashCode() {
-        if (mSym == null) {
-            return 0;
-        }
-        return mSym.hashCode();
     }
 }

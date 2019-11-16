@@ -15,14 +15,8 @@ import rts.UnitAction;
  */
 public class PredefinedFunctions {
 
-    public static int DEBUG = 0;
-
-    public interface FunctionEvaluator {
-
-        Parameter evaluate(Function f, GameState gs) throws Exception;
-    }
-
     static final HashMap<Symbol, FunctionEvaluator> functions = new HashMap<>();
+    public static int DEBUG = 0;
 
     static {
         try {
@@ -79,5 +73,10 @@ public class PredefinedFunctions {
             return null;
         }
         return fe.evaluate(f, gs);
+    }
+
+    public interface FunctionEvaluator {
+
+        Parameter evaluate(Function f, GameState gs) throws Exception;
     }
 }

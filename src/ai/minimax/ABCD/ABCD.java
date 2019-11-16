@@ -28,21 +28,18 @@ import rts.units.UnitTypeTable;
 public class ABCD extends AI {
 
     public static int DEBUG = 0;
-
+    protected int defaultNONEduration = 8;
     // reset at each execution of minimax:
     int nLeaves = 0;
     int nNodes = 0;
-
     int max_depth_so_far = 0;
     long max_branching_so_far = 0;
     long max_leaves_so_far = 0;
     long max_nodes_so_far = 0;
-
     int MAXDEPTH = 4;
     AI playoutAI = null;
     int maxPlayoutTime = 100;
     EvaluationFunction ef = null;
-    protected int defaultNONEduration = 8;
 
     public ABCD(UnitTypeTable utt) {
         this(4, new WorkerRush(utt, new AStarPathFinding()), 100,
@@ -63,10 +60,6 @@ public class ABCD extends AI {
         max_nodes_so_far = 0;
     }
 
-    public AI clone() {
-        return new ABCD(MAXDEPTH, playoutAI, maxPlayoutTime, ef);
-    }
-
     public PlayerAction getAction(int player, GameState gs) throws Exception {
 
         if (gs.canExecuteAnyAction(player) && gs.winner() == -1) {
@@ -76,6 +69,29 @@ public class ABCD extends AI {
         } else {
             return new PlayerAction();
         }
+    }
+
+    public AI clone() {
+        return new ABCD(MAXDEPTH, playoutAI, maxPlayoutTime, ef);
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + MAXDEPTH + ", " + playoutAI + ", "
+            + maxPlayoutTime + ", " + ef + ")";
+    }
+
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+
+        parameters.add(new ParameterSpecification("MaxDepth", int.class, 4));
+        parameters.add(new ParameterSpecification("PlayoutLookahead", int.class, 100));
+        parameters.add(new ParameterSpecification("PlayoutAI", AI.class, playoutAI));
+        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class,
+            new SimpleSqrtEvaluationFunction3()));
+
+        return parameters;
     }
 
     public PlayerAction ABCD(int player, GameState gs, int depthLeft) throws Exception {
@@ -205,25 +221,6 @@ public class ABCD extends AI {
             return ABCD(gs2, maxplayer, minplayer, alpha, beta, depthLeft,
                 nextPlayerInSimultaneousNode);
         }
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "(" + MAXDEPTH + ", " + playoutAI + ", "
-            + maxPlayoutTime + ", " + ef + ")";
-    }
-
-    @Override
-    public List<ParameterSpecification> getParameters() {
-        List<ParameterSpecification> parameters = new ArrayList<>();
-
-        parameters.add(new ParameterSpecification("MaxDepth", int.class, 4));
-        parameters.add(new ParameterSpecification("PlayoutLookahead", int.class, 100));
-        parameters.add(new ParameterSpecification("PlayoutAI", AI.class, playoutAI));
-        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class,
-            new SimpleSqrtEvaluationFunction3()));
-
-        return parameters;
     }
 
     public int getMaxDepth() {

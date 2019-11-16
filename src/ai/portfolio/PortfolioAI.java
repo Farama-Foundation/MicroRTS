@@ -79,12 +79,6 @@ public class PortfolioAI extends AIWithComputationBudget implements Interruptibl
         nplayouts = 0;
     }
 
-    public void resetSearch() {
-        scores = null;
-        counts = null;
-        gs_to_start_from = null;
-    }
-
     @Override
     public void computeDuringOneGameFrame() throws Exception {
         int n = strategies.length;
@@ -210,6 +204,12 @@ public class PortfolioAI extends AIWithComputationBudget implements Interruptibl
         //        parameters.add(new ParameterSpecification("Deterministic", boolean[].class, deterministic));
 
         return parameters;
+    }
+
+    public void resetSearch() {
+        scores = null;
+        counts = null;
+        gs_to_start_from = null;
     }
 
     public int getPlayoutLookahead() {

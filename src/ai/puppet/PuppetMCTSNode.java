@@ -22,15 +22,9 @@ public class PuppetMCTSNode {
     int total_visit_count;
     int index;
 
-    public String toString() {
-        return bestChild() == null ? ""
-            : " time:" + gs.getTime() + " " + actions[bestChild().index].toString(script)
-                + ", score: " + bestChild().score() + "\n" + bestChild().toString();
-    }
-
-    float score() {
-        assert (parent.visit_count[index] == total_visit_count);
-        return parent.accum_evaluation[index] / total_visit_count;
+    public PuppetMCTSNode(GameState gs, ConfigurableScript<?> script, float C,
+        int nextPlayerInSimultaneousNode, float bound) {
+        this(gs, script, C, nextPlayerInSimultaneousNode, bound, null, null, -1);
     }
 
     public PuppetMCTSNode(GameState gs, ConfigurableScript<?> script, float C,
@@ -52,17 +46,23 @@ public class PuppetMCTSNode {
         total_visit_count = 0;
     }
 
-    public PuppetMCTSNode(GameState gs, ConfigurableScript<?> script, float C,
-        int nextPlayerInSimultaneousNode, float bound) {
-        this(gs, script, C, nextPlayerInSimultaneousNode, bound, null, null, -1);
-    }
-
     int toMove() {
         if (prevMove == null) {
             return nextPlayerInSimultaneousNode;
         } else {
             return (1 - prevMove.player);
         }
+    }
+
+    public String toString() {
+        return bestChild() == null ? ""
+            : " time:" + gs.getTime() + " " + actions[bestChild().index].toString(script)
+                + ", score: " + bestChild().score() + "\n" + bestChild().toString();
+    }
+
+    float score() {
+        assert (parent.visit_count[index] == total_visit_count);
+        return parent.accum_evaluation[index] / total_visit_count;
     }
 
     PuppetMCTSNode bestChild() {

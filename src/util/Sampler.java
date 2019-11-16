@@ -18,20 +18,6 @@ public class Sampler {
     static Random generator = new Random();
 
     /*
-     * Returns a random element in the distribution
-     */
-    public static int random(double[] distribution) {
-        return generator.nextInt(distribution.length);
-    }
-
-    /*
-     * Returns a random element in the distribution
-     */
-    public static int random(List<Double> distribution) {
-        return generator.nextInt(distribution.size());
-    }
-
-    /*
      * Returns the element with maximum probability (ties are resolved randomly)
      */
     public static int max(double[] distribution) throws Exception {
@@ -40,33 +26,6 @@ public class Sampler {
 
         for (int i = 0; i < distribution.length; i++) {
             double f = distribution[i];
-            if (f == max) {
-                best.add(i);
-            } else {
-                if (f > max) {
-                    best.clear();
-                    best.add(i);
-                    max = f;
-                }
-            }
-        }
-
-        if (best.size() > 0) {
-            return best.get(generator.nextInt(best.size()));
-        }
-
-        throw new Exception("Input distribution empty in Sampler.max!");
-    }
-
-    /*
-     * Returns the element with maximum probability (ties are resolved randomly)
-     */
-    public static int max(List<Double> distribution) throws Exception {
-        List<Integer> best = new LinkedList<Integer>();
-        double max = distribution.get(0);
-
-        for (int i = 0; i < distribution.size(); i++) {
-            double f = distribution.get(i);
             if (f == max) {
                 best.add(i);
             } else {
@@ -98,31 +57,6 @@ public class Sampler {
         }
 
         return max;
-    }
-
-    /*
-     * Returns an element in the distribution, using the weights as their relative probabilities
-     */
-    public static int weighted(double[] distribution) throws Exception {
-        double total = 0, accum = 0, tmp;
-
-        for (double f : distribution) {
-            total += f;
-        }
-
-        if (total == 0) {
-            return random(distribution);
-        }
-
-        tmp = generator.nextDouble() * total;
-        for (int i = 0; i < distribution.length; i++) {
-            accum += distribution[i];
-            if (accum >= tmp) {
-                return i;
-            }
-        }
-
-        throw new Exception("Input distribution empty in Sampler.weighted!");
     }
 
     /*
@@ -178,6 +112,38 @@ public class Sampler {
         return weighted(exponentiated);
     }
 
+    /*
+     * Returns an element in the distribution, using the weights as their relative probabilities
+     */
+    public static int weighted(double[] distribution) throws Exception {
+        double total = 0, accum = 0, tmp;
+
+        for (double f : distribution) {
+            total += f;
+        }
+
+        if (total == 0) {
+            return random(distribution);
+        }
+
+        tmp = generator.nextDouble() * total;
+        for (int i = 0; i < distribution.length; i++) {
+            accum += distribution[i];
+            if (accum >= tmp) {
+                return i;
+            }
+        }
+
+        throw new Exception("Input distribution empty in Sampler.weighted!");
+    }
+
+    /*
+     * Returns a random element in the distribution
+     */
+    public static int random(double[] distribution) {
+        return generator.nextInt(distribution.length);
+    }
+
     public static int eGreedy(List<Double> distribution, double e) throws Exception {
         if (generator.nextDouble() < e) {
             // explore:
@@ -186,6 +152,40 @@ public class Sampler {
             // exploit:
             return max(distribution);
         }
+    }
+
+    /*
+     * Returns a random element in the distribution
+     */
+    public static int random(List<Double> distribution) {
+        return generator.nextInt(distribution.size());
+    }
+
+    /*
+     * Returns the element with maximum probability (ties are resolved randomly)
+     */
+    public static int max(List<Double> distribution) throws Exception {
+        List<Integer> best = new LinkedList<Integer>();
+        double max = distribution.get(0);
+
+        for (int i = 0; i < distribution.size(); i++) {
+            double f = distribution.get(i);
+            if (f == max) {
+                best.add(i);
+            } else {
+                if (f > max) {
+                    best.clear();
+                    best.add(i);
+                    max = f;
+                }
+            }
+        }
+
+        if (best.size() > 0) {
+            return best.get(generator.nextInt(best.size()));
+        }
+
+        throw new Exception("Input distribution empty in Sampler.max!");
     }
 
 /*

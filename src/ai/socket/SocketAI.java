@@ -27,11 +27,9 @@ import util.XMLWriter;
  */
 public class SocketAI extends AIWithComputationBudget {
 
-    public static int DEBUG = 0;
-
     public static final int LANGUAGE_XML = 1;
     public static final int LANGUAGE_JSON = 2;
-
+    public static int DEBUG = 0;
     UnitTypeTable utt = null;
 
     int communication_language = LANGUAGE_XML;
@@ -49,58 +47,6 @@ public class SocketAI extends AIWithComputationBudget {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public SocketAI(int mt, int mi, String a_sa, int a_port, int a_language, UnitTypeTable a_utt) {
-        super(mt, mi);
-        serverAddress = a_sa;
-        serverPort = a_port;
-        communication_language = a_language;
-        utt = a_utt;
-        try {
-            connectToServer();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private SocketAI(int mt, int mi, UnitTypeTable a_utt, int a_language, Socket socket) {
-        super(mt, mi);
-        communication_language = a_language;
-        utt = a_utt;
-        try {
-            this.socket = socket;
-            in_pipe = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            out_pipe = new PrintWriter(socket.getOutputStream(), true);
-
-            // Consume the initial welcoming messages from the server
-            while (!in_pipe.ready()) {
-            }
-            while (in_pipe.ready()) {
-                in_pipe.readLine();
-            }
-
-            if (DEBUG >= 1) {
-                System.out.println("SocketAI: welcome message received");
-            }
-            reset();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Creates a SocketAI from an existing socket.
-     *
-     * @param mt         The time budget in milliseconds.
-     * @param mi         The iterations budget in milliseconds
-     * @param a_utt      The unit type table.
-     * @param a_language The communication layer to use.
-     * @param socket     The socket the ai will communicate over.
-     */
-    public static SocketAI createFromExistingSocket(int mt, int mi, UnitTypeTable a_utt,
-        int a_language, Socket socket) {
-        return new SocketAI(mt, mi, a_utt, a_language, socket);
     }
 
     public void connectToServer() throws Exception {
@@ -227,9 +173,28 @@ public class SocketAI extends AIWithComputationBudget {
     }
 
     @Override
-    public void preGameAnalysis(GameState gs, long milliseconds) throws Exception {
+    public AI clone() {
+        return new SocketAI(TIME_BUDGET, ITERATIONS_BUDGET, serverAddress, serverPort,
+            communication_language, utt);
+    }
+
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> l = new ArrayList<>();
+
+        l.add(new ParameterSpecification("Server Address", String.class, "127.0.0.1"));
+        l.add(new ParameterSpecification("Server Port", Integer.class, 9898));
+        l.add(new ParameterSpecification("Language", Integer.class, LANGUAGE_XML));
+
+        return l;
+    }
+
+    @Override
+    public void preGameAnalysis(GameState gs, long milliseconds, String readWriteFolder)
+        throws Exception {
         // send the game state:
-        out_pipe.append("preGameAnalysis ").append(String.valueOf(milliseconds)).append("\n");
+        out_pipe.append("preGameAnalysis ").append(String.valueOf(milliseconds)).append("  \"")
+            .append(readWriteFolder).append("\"\n");
         switch (communication_language) {
             case LANGUAGE_XML:
                 XMLWriter w = new XMLWriter(out_pipe, " ");
@@ -256,11 +221,9 @@ public class SocketAI extends AIWithComputationBudget {
     }
 
     @Override
-    public void preGameAnalysis(GameState gs, long milliseconds, String readWriteFolder)
-        throws Exception {
+    public void preGameAnalysis(GameState gs, long milliseconds) throws Exception {
         // send the game state:
-        out_pipe.append("preGameAnalysis ").append(String.valueOf(milliseconds)).append("  \"")
-            .append(readWriteFolder).append("\"\n");
+        out_pipe.append("preGameAnalysis ").append(String.valueOf(milliseconds)).append("\n");
         switch (communication_language) {
             case LANGUAGE_XML:
                 XMLWriter w = new XMLWriter(out_pipe, " ");
@@ -296,20 +259,55 @@ public class SocketAI extends AIWithComputationBudget {
         in_pipe.readLine();
     }
 
-    @Override
-    public AI clone() {
-        return new SocketAI(TIME_BUDGET, ITERATIONS_BUDGET, serverAddress, serverPort,
-            communication_language, utt);
+    public SocketAI(int mt, int mi, String a_sa, int a_port, int a_language, UnitTypeTable a_utt) {
+        super(mt, mi);
+        serverAddress = a_sa;
+        serverPort = a_port;
+        communication_language = a_language;
+        utt = a_utt;
+        try {
+            connectToServer();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    @Override
-    public List<ParameterSpecification> getParameters() {
-        List<ParameterSpecification> l = new ArrayList<>();
+    private SocketAI(int mt, int mi, UnitTypeTable a_utt, int a_language, Socket socket) {
+        super(mt, mi);
+        communication_language = a_language;
+        utt = a_utt;
+        try {
+            this.socket = socket;
+            in_pipe = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out_pipe = new PrintWriter(socket.getOutputStream(), true);
 
-        l.add(new ParameterSpecification("Server Address", String.class, "127.0.0.1"));
-        l.add(new ParameterSpecification("Server Port", Integer.class, 9898));
-        l.add(new ParameterSpecification("Language", Integer.class, LANGUAGE_XML));
+            // Consume the initial welcoming messages from the server
+            while (!in_pipe.ready()) {
+            }
+            while (in_pipe.ready()) {
+                in_pipe.readLine();
+            }
 
-        return l;
+            if (DEBUG >= 1) {
+                System.out.println("SocketAI: welcome message received");
+            }
+            reset();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Creates a SocketAI from an existing socket.
+     *
+     * @param mt         The time budget in milliseconds.
+     * @param mi         The iterations budget in milliseconds
+     * @param a_utt      The unit type table.
+     * @param a_language The communication layer to use.
+     * @param socket     The socket the ai will communicate over.
+     */
+    public static SocketAI createFromExistingSocket(int mt, int mi, UnitTypeTable a_utt,
+        int a_language, Socket socket) {
+        return new SocketAI(mt, mi, a_utt, a_language, socket);
     }
 }

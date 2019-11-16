@@ -39,11 +39,11 @@ public class SymbolConstant extends Symbol implements Parameter {
         return this;
     }
 
-    public Parameter resolveParameter(List<Binding> l, GameState gs) {
+    public Parameter applyBindingsParameter(List<Binding> l) {
         return this;
     }
 
-    public Parameter applyBindingsParameter(List<Binding> l) {
+    public Parameter resolveParameter(List<Binding> l, GameState gs) {
         return this;
     }
 

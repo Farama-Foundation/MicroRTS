@@ -6,8 +6,6 @@ import util.Pair;
 
 class PuppetGameState {
 
-    GameState gs;
-    int hash;
     static final int MAX_DEPTH = 100;
     static final int MAX_CHOICE_POINTS = 10;
     static final int MAX_CHOICES = 10;
@@ -25,6 +23,9 @@ class PuppetGameState {
             }
         }
     }
+
+    GameState gs;
+    int hash;
 
     public PuppetGameState(GameState gs) {
         this.gs = gs.clone();

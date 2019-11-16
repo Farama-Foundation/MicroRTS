@@ -35,7 +35,25 @@ public class AdversarialBoundedDepthPlannerAlphaBeta {
     // point, in order to get as much information as possible about the effects of the
     // selected actions.
     public static boolean SIMULATE_UNTIL_NEXT_CHOICEPOINT = true;
-
+    // statistics
+    public static int n_iterative_deepening_runs = 0;
+    public static double max_iterative_deepening_depth = 0;
+    public static double average_iterative_deepening_depth = 0;
+    public static int n_trees = 0;
+    public static double max_tree_leaves = 0;
+    public static double last_tree_leaves = 0;
+    public static double average_tree_leaves = 0;
+    public static double max_tree_nodes = 0;
+    public static double last_tree_nodes = 0;
+    public static double average_tree_nodes = 0;
+    public static double max_tree_depth = 0;
+    public static double last_tree_depth = 0;
+    public static double average_tree_depth = 0;
+    public static double max_time_depth = 0;
+    public static double last_time_depth = 0;
+    public static double average_time_depth = 0;
+    static int MAX_TREE_DEPTH = 25;
+    static int nPlayouts = 0;    // number of leaves in the current search (includes all the trees in the current ID process)
     MethodDecomposition maxPlanRoot;
     MethodDecomposition minPlanRoot;
     int maxPlayer;
@@ -46,39 +64,31 @@ public class AdversarialBoundedDepthPlannerAlphaBeta {
     int PLAYOUT_LOOKAHEAD = 100;
     int maxDepth = 3;
     int operatorExecutionTimeout = 1000;
-    static int MAX_TREE_DEPTH = 25;
-    static int nPlayouts = 0;    // number of leaves in the current search (includes all the trees in the current ID process)
-
     List<AdversarialChoicePoint> stack;
     List<Integer> trail;    // how many bindings to remove, when popping this element of the stack
-
     List<Binding> bindings;
-
     int renamingIndex = 1;  // for renaming variables
-
     boolean lastRunSolvedTheProblem = false;    // if this is true, no need to continue iterative deepening
 
-    // statistics
-    public static int n_iterative_deepening_runs = 0;
-    public static double max_iterative_deepening_depth = 0;
-    public static double average_iterative_deepening_depth = 0;
+    // depth is in actions:
+    public AdversarialBoundedDepthPlannerAlphaBeta(Term goalPlayerMax, Term goalPlayerMin,
+        int a_maxPlayer, int depth, int playoutLookahead, GameState a_gs, DomainDefinition a_dd,
+        EvaluationFunction a_f, AI a_playoutAI) {
+        maxPlanRoot = new MethodDecomposition(goalPlayerMax, null);
+        minPlanRoot = new MethodDecomposition(goalPlayerMin, null);
+        minPlanRoot.renameVariables(1);
+        renamingIndex = 2;
+        maxPlayer = a_maxPlayer;
+        gs = a_gs;
+        dd = a_dd;
+        stack = null;
+        maxDepth = depth;
+        PLAYOUT_LOOKAHEAD = playoutLookahead;
+        f = a_f;
+        playoutAI = a_playoutAI;
 
-    public static int n_trees = 0;
-    public static double max_tree_leaves = 0;
-    public static double last_tree_leaves = 0;
-    public static double average_tree_leaves = 0;
-
-    public static double max_tree_nodes = 0;
-    public static double last_tree_nodes = 0;
-    public static double average_tree_nodes = 0;
-
-    public static double max_tree_depth = 0;
-    public static double last_tree_depth = 0;
-    public static double average_tree_depth = 0;
-
-    public static double max_time_depth = 0;
-    public static double last_time_depth = 0;
-    public static double average_time_depth = 0;
+        //        System.out.println(a_dd);
+    }
 
     public static void clearStatistics() {
         n_iterative_deepening_runs = 0;
@@ -99,24 +109,146 @@ public class AdversarialBoundedDepthPlannerAlphaBeta {
         average_time_depth = 0;
     }
 
-    // depth is in actions:
-    public AdversarialBoundedDepthPlannerAlphaBeta(Term goalPlayerMax, Term goalPlayerMin,
-        int a_maxPlayer, int depth, int playoutLookahead, GameState a_gs, DomainDefinition a_dd,
-        EvaluationFunction a_f, AI a_playoutAI) {
-        maxPlanRoot = new MethodDecomposition(goalPlayerMax, null);
-        minPlanRoot = new MethodDecomposition(goalPlayerMin, null);
-        minPlanRoot.renameVariables(1);
-        renamingIndex = 2;
-        maxPlayer = a_maxPlayer;
-        gs = a_gs;
-        dd = a_dd;
-        stack = null;
-        maxDepth = depth;
-        PLAYOUT_LOOKAHEAD = playoutLookahead;
-        f = a_f;
-        playoutAI = a_playoutAI;
+    /*
+    The search will end when:
+        - the tree is searched to the maximum depth
+        - or when System.currentTimeMillis() is larger or equal than timeLimit
+        - or when int is larger or equal to maxPlayouts
+    */
+    public static Pair<MethodDecomposition, MethodDecomposition> getBestPlanIterativeDeepening(
+        Term goalPlayerMax, Term goalPlayerMin, int a_maxPlayer, int timeout, int maxPlayouts,
+        int a_playoutLookahead, GameState a_gs, DomainDefinition a_dd, EvaluationFunction a_f,
+        AI a_playoutAI) throws Exception {
+        long start = System.currentTimeMillis();
+        long timeLimit = start + timeout;
+        if (timeout <= 0) {
+            timeLimit = 0;
+        }
+        Pair<MethodDecomposition, MethodDecomposition> bestLastDepth = null;
+        double tmp_leaves = 0, tmp_nodes = 0, tmp_depth = 0, tmp_time = 0;
+        int nPlayoutsBeforeStartingLastTime = 0, nPlayoutsUSedLastTime = 0;
+        nPlayouts = 0;
+        for (int depth = 1; ; depth++) {
+            //        for(int depth = 6;depth<7;depth++) {
+            Pair<MethodDecomposition, MethodDecomposition> best = null;
+            long currentTime = System.currentTimeMillis();
+            if (DEBUG >= 1) {
+                System.out.println(
+                    "Iterative Deepening depth: " + depth + " (total time so far: " + (currentTime
+                        - start) + "/" + timeout + ")" + " (total playouts so far: " + nPlayouts
+                        + "/" + maxPlayouts + ")");
+            }
+            AdversarialBoundedDepthPlannerAlphaBeta planner = new AdversarialBoundedDepthPlannerAlphaBeta(
+                goalPlayerMax, goalPlayerMin, a_maxPlayer, depth, a_playoutLookahead, a_gs, a_dd,
+                a_f, a_playoutAI);
+            nPlayoutsBeforeStartingLastTime = nPlayouts;
+            if (depth <= MAX_TREE_DEPTH) {
+                int nPlayoutsleft = maxPlayouts - nPlayouts;
+                if (maxPlayouts < 0 || nPlayoutsleft > nPlayoutsUSedLastTime) {
+                    if (DEBUG >= 1) {
+                        System.out.println(
+                            "last time we used " + nPlayoutsUSedLastTime + ", and there are "
+                                + nPlayoutsleft + " left, trying one more depth!");
+                    }
+                    best = planner.getBestPlan(timeLimit, maxPlayouts, (bestLastDepth == null));
+                } else {
+                    if (DEBUG >= 1) {
+                        System.out.println(
+                            "last time we used " + nPlayoutsUSedLastTime + ", and there are only "
+                                + nPlayoutsleft + " left..., canceling search");
+                    }
+                }
+            }
+            nPlayoutsUSedLastTime = nPlayouts - nPlayoutsBeforeStartingLastTime;
+            if (DEBUG >= 1) {
+                System.out.println("    time taken: " + (System.currentTimeMillis() - currentTime));
+            }
 
-        //        System.out.println(a_dd);
+            // print best plan:
+            if (DEBUG >= 1) {
+                if (best != null) {
+                    //                    if (best.m_a!=null) best.m_a.printDetailed();
+                    System.out.println("Max plan:");
+                    if (best.m_a != null) {
+                        List<Pair<Integer, List<Term>>> l = best.m_a.convertToOperatorList();
+                        for (Pair<Integer, List<Term>> a : l) {
+                            System.out.println("  " + a.m_a + ": " + a.m_b);
+                        }
+                    }
+                    if (best.m_b != null) {
+                        System.out.println("Min plan:");
+                        List<Pair<Integer, List<Term>>> l2 = best.m_b.convertToOperatorList();
+                        for (Pair<Integer, List<Term>> a : l2) {
+                            System.out.println("  " + a.m_a + ": " + a.m_b);
+                        }
+                    }
+                }
+            }
+
+            if (best != null) {
+                bestLastDepth = best;
+                tmp_leaves = last_tree_leaves;
+                tmp_nodes = last_tree_nodes;
+                //                System.out.println("nodes: " + tmp_nodes + ", leaves: " + tmp_leaves);
+                tmp_depth = last_tree_depth;
+                tmp_time = last_time_depth;
+                if (planner.lastRunSolvedTheProblem) {
+                    // statistics:
+                    n_trees++;
+                    if (tmp_leaves > max_tree_leaves) {
+                        max_tree_leaves = tmp_leaves;
+                    }
+                    average_tree_leaves += tmp_leaves;
+                    if (tmp_nodes > max_tree_nodes) {
+                        max_tree_nodes = tmp_nodes;
+                    }
+                    average_tree_nodes += tmp_nodes;
+                    average_tree_depth += tmp_depth;
+                    if (tmp_depth >= max_tree_depth) {
+                        max_tree_depth = tmp_depth;
+                    }
+                    average_time_depth += tmp_time;
+                    if (tmp_time >= max_time_depth) {
+                        max_time_depth = tmp_time;
+                    }
+
+                    n_iterative_deepening_runs++;
+                    average_iterative_deepening_depth += depth;
+                    if (depth > max_iterative_deepening_depth) {
+                        max_iterative_deepening_depth = depth;
+                    }
+                    return bestLastDepth;
+                }
+            } else {
+                // statistics:
+                n_trees++;
+                if (tmp_leaves > max_tree_leaves) {
+                    max_tree_leaves = tmp_leaves;
+                }
+                average_tree_leaves += tmp_leaves;
+                if (tmp_nodes > max_tree_nodes) {
+                    max_tree_nodes = tmp_nodes;
+                }
+                average_tree_nodes += tmp_nodes;
+                average_tree_depth += tmp_depth;
+                if (tmp_depth >= max_tree_depth) {
+                    max_tree_depth = tmp_depth;
+                }
+                average_time_depth += tmp_time;
+                if (tmp_time >= max_time_depth) {
+                    max_time_depth = tmp_time;
+                }
+
+                n_iterative_deepening_runs++;
+                average_iterative_deepening_depth +=
+                    depth - 1; // the last one couldn't finish, so we have to add "depth-1"
+                if ((depth - 1) > max_iterative_deepening_depth) {
+                    max_iterative_deepening_depth = depth - 1;
+                }
+                return bestLastDepth;
+            }
+        }
+        //        return bestLastDepth;
     }
 
     public Pair<MethodDecomposition, MethodDecomposition> getBestPlan() throws Exception {
@@ -184,7 +316,7 @@ public class AdversarialBoundedDepthPlannerAlphaBeta {
 /*
                 if (stack.size()==23) {
                     maxPlanRoot.printDetailed();
-                    minPlanRoot.printDetailed();                    
+                    minPlanRoot.printDetailed();
                 }
     */
             }
@@ -389,148 +521,6 @@ public class AdversarialBoundedDepthPlannerAlphaBeta {
             System.out.println(gs);
         }
         return new Pair<>(root.bestMaxPlan, root.bestMinPlan);
-    }
-
-    /*
-    The search will end when:
-        - the tree is searched to the maximum depth
-        - or when System.currentTimeMillis() is larger or equal than timeLimit
-        - or when int is larger or equal to maxPlayouts
-    */
-    public static Pair<MethodDecomposition, MethodDecomposition> getBestPlanIterativeDeepening(
-        Term goalPlayerMax, Term goalPlayerMin, int a_maxPlayer, int timeout, int maxPlayouts,
-        int a_playoutLookahead, GameState a_gs, DomainDefinition a_dd, EvaluationFunction a_f,
-        AI a_playoutAI) throws Exception {
-        long start = System.currentTimeMillis();
-        long timeLimit = start + timeout;
-        if (timeout <= 0) {
-            timeLimit = 0;
-        }
-        Pair<MethodDecomposition, MethodDecomposition> bestLastDepth = null;
-        double tmp_leaves = 0, tmp_nodes = 0, tmp_depth = 0, tmp_time = 0;
-        int nPlayoutsBeforeStartingLastTime = 0, nPlayoutsUSedLastTime = 0;
-        nPlayouts = 0;
-        for (int depth = 1; ; depth++) {
-            //        for(int depth = 6;depth<7;depth++) {
-            Pair<MethodDecomposition, MethodDecomposition> best = null;
-            long currentTime = System.currentTimeMillis();
-            if (DEBUG >= 1) {
-                System.out.println(
-                    "Iterative Deepening depth: " + depth + " (total time so far: " + (currentTime
-                        - start) + "/" + timeout + ")" + " (total playouts so far: " + nPlayouts
-                        + "/" + maxPlayouts + ")");
-            }
-            AdversarialBoundedDepthPlannerAlphaBeta planner = new AdversarialBoundedDepthPlannerAlphaBeta(
-                goalPlayerMax, goalPlayerMin, a_maxPlayer, depth, a_playoutLookahead, a_gs, a_dd,
-                a_f, a_playoutAI);
-            nPlayoutsBeforeStartingLastTime = nPlayouts;
-            if (depth <= MAX_TREE_DEPTH) {
-                int nPlayoutsleft = maxPlayouts - nPlayouts;
-                if (maxPlayouts < 0 || nPlayoutsleft > nPlayoutsUSedLastTime) {
-                    if (DEBUG >= 1) {
-                        System.out.println(
-                            "last time we used " + nPlayoutsUSedLastTime + ", and there are "
-                                + nPlayoutsleft + " left, trying one more depth!");
-                    }
-                    best = planner.getBestPlan(timeLimit, maxPlayouts, (bestLastDepth == null));
-                } else {
-                    if (DEBUG >= 1) {
-                        System.out.println(
-                            "last time we used " + nPlayoutsUSedLastTime + ", and there are only "
-                                + nPlayoutsleft + " left..., canceling search");
-                    }
-                }
-            }
-            nPlayoutsUSedLastTime = nPlayouts - nPlayoutsBeforeStartingLastTime;
-            if (DEBUG >= 1) {
-                System.out.println("    time taken: " + (System.currentTimeMillis() - currentTime));
-            }
-
-            // print best plan:
-            if (DEBUG >= 1) {
-                if (best != null) {
-                    //                    if (best.m_a!=null) best.m_a.printDetailed();
-                    System.out.println("Max plan:");
-                    if (best.m_a != null) {
-                        List<Pair<Integer, List<Term>>> l = best.m_a.convertToOperatorList();
-                        for (Pair<Integer, List<Term>> a : l) {
-                            System.out.println("  " + a.m_a + ": " + a.m_b);
-                        }
-                    }
-                    if (best.m_b != null) {
-                        System.out.println("Min plan:");
-                        List<Pair<Integer, List<Term>>> l2 = best.m_b.convertToOperatorList();
-                        for (Pair<Integer, List<Term>> a : l2) {
-                            System.out.println("  " + a.m_a + ": " + a.m_b);
-                        }
-                    }
-                }
-            }
-
-            if (best != null) {
-                bestLastDepth = best;
-                tmp_leaves = last_tree_leaves;
-                tmp_nodes = last_tree_nodes;
-                //                System.out.println("nodes: " + tmp_nodes + ", leaves: " + tmp_leaves);
-                tmp_depth = last_tree_depth;
-                tmp_time = last_time_depth;
-                if (planner.lastRunSolvedTheProblem) {
-                    // statistics:
-                    n_trees++;
-                    if (tmp_leaves > max_tree_leaves) {
-                        max_tree_leaves = tmp_leaves;
-                    }
-                    average_tree_leaves += tmp_leaves;
-                    if (tmp_nodes > max_tree_nodes) {
-                        max_tree_nodes = tmp_nodes;
-                    }
-                    average_tree_nodes += tmp_nodes;
-                    average_tree_depth += tmp_depth;
-                    if (tmp_depth >= max_tree_depth) {
-                        max_tree_depth = tmp_depth;
-                    }
-                    average_time_depth += tmp_time;
-                    if (tmp_time >= max_time_depth) {
-                        max_time_depth = tmp_time;
-                    }
-
-                    n_iterative_deepening_runs++;
-                    average_iterative_deepening_depth += depth;
-                    if (depth > max_iterative_deepening_depth) {
-                        max_iterative_deepening_depth = depth;
-                    }
-                    return bestLastDepth;
-                }
-            } else {
-                // statistics:
-                n_trees++;
-                if (tmp_leaves > max_tree_leaves) {
-                    max_tree_leaves = tmp_leaves;
-                }
-                average_tree_leaves += tmp_leaves;
-                if (tmp_nodes > max_tree_nodes) {
-                    max_tree_nodes = tmp_nodes;
-                }
-                average_tree_nodes += tmp_nodes;
-                average_tree_depth += tmp_depth;
-                if (tmp_depth >= max_tree_depth) {
-                    max_tree_depth = tmp_depth;
-                }
-                average_time_depth += tmp_time;
-                if (tmp_time >= max_time_depth) {
-                    max_time_depth = tmp_time;
-                }
-
-                n_iterative_deepening_runs++;
-                average_iterative_deepening_depth +=
-                    depth - 1; // the last one couldn't finish, so we have to add "depth-1"
-                if ((depth - 1) > max_iterative_deepening_depth) {
-                    max_iterative_deepening_depth = depth - 1;
-                }
-                return bestLastDepth;
-            }
-        }
-        //        return bestLastDepth;
     }
 
     /*
@@ -755,21 +745,6 @@ public class AdversarialBoundedDepthPlannerAlphaBeta {
         }
     }
 
-    public void stackPop() {
-        AdversarialChoicePoint cp = stack.remove(0);
-        cp.restoreAfterPop();
-        int tmp = trail.remove(0);
-        if (DEBUG >= 2) {
-            System.out.println("StackPop! removing " + tmp + " bindings.");
-        }
-        if (tmp > 0) {
-            bindings.subList(0, tmp).clear();
-        }
-        if (!stack.isEmpty()) {
-            stack.get(0).restoreExecutionState();
-        }
-    }
-
     public float playout(int player, GameState gs) throws Exception {
         nPlayouts++;
         GameState gs2 = gs;
@@ -800,5 +775,20 @@ public class AdversarialBoundedDepthPlannerAlphaBeta {
         float e = f.evaluate(player, 1 - player, gs2);
         //        if (DEBUG>=1) System.out.println("  done: " + e);
         return e;
+    }
+
+    public void stackPop() {
+        AdversarialChoicePoint cp = stack.remove(0);
+        cp.restoreAfterPop();
+        int tmp = trail.remove(0);
+        if (DEBUG >= 2) {
+            System.out.println("StackPop! removing " + tmp + " bindings.");
+        }
+        if (tmp > 0) {
+            bindings.subList(0, tmp).clear();
+        }
+        if (!stack.isEmpty()) {
+            stack.get(0).restoreExecutionState();
+        }
     }
 }

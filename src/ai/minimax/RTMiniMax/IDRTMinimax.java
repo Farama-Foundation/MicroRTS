@@ -35,11 +35,8 @@ public class IDRTMinimax extends AIWithComputationBudget implements Interruptibl
 
     public long max_branching_so_far = 0;
     public long max_leaves_so_far = 0;
-
-    int LOOKAHEAD = 40;
-
     protected int defaultNONEduration = 8;
-
+    int LOOKAHEAD = 40;
     EvaluationFunction ef = null;
 
     int max_depth_so_far = 0;
@@ -76,11 +73,6 @@ public class IDRTMinimax extends AIWithComputationBudget implements Interruptibl
         bestMove = null;
     }
 
-    @Override
-    public AI clone() {
-        return new IDRTMinimax(TIME_BUDGET, ef);
-    }
-
     public final PlayerAction getAction(int player, GameState gs) throws Exception {
         if (gs.canExecuteAnyAction(player)) {
             startNewComputation(player, gs.clone());
@@ -89,6 +81,35 @@ public class IDRTMinimax extends AIWithComputationBudget implements Interruptibl
         } else {
             return new PlayerAction();
         }
+    }
+
+    @Override
+    public AI clone() {
+        return new IDRTMinimax(TIME_BUDGET, ef);
+    }
+
+    public String toString() {
+        return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", " + ef
+            + ")";
+    }
+
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+
+        parameters.add(new ParameterSpecification("TimeBudget", int.class, 100));
+        parameters.add(new ParameterSpecification("IterationsBudget", int.class, -1));
+        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class,
+            new SimpleSqrtEvaluationFunction3()));
+
+        return parameters;
+    }
+
+    public String statisticsString() {
+        return "max depth: " + max_depth_so_far + " , max branching factor (potential): "
+            + max_branching_so_far + "(" + max_potential_branching_so_far + ")" + " , max leaves: "
+            + max_leaves_so_far + " , max consecutive frames: "
+            + max_consecutive_frames_searching_so_far;
     }
 
     @Override
@@ -166,6 +187,32 @@ public class IDRTMinimax extends AIWithComputationBudget implements Interruptibl
 
     public PlayerAction getBestActionSoFar() throws Exception {
         return bestMove;
+    }
+
+    public PlayerAction greedyActionScan(GameState gs, int player, long cutOffTime)
+        throws Exception {
+        PlayerAction best = null;
+        float bestScore = 0;
+        PlayerActionGenerator pag = new PlayerActionGenerator(gs, player);
+        PlayerAction pa = null;
+
+        //        System.out.println(gs.getUnitActions());
+        //        System.out.println(pag);
+        do {
+            pa = pag.getNextAction(cutOffTime);
+            if (pa != null) {
+                GameState gs2 = gs.cloneIssue(pa);
+                float score = ef.evaluate(player, 1 - player, gs2);
+                if (best == null || score > bestScore) {
+                    best = pa;
+                    bestScore = score;
+                }
+            }
+            if (System.currentTimeMillis() > cutOffTime) {
+                return best;
+            }
+        } while (pa != null);
+        return best;
     }
 
     public PlayerAction timeBoundedRealTimeMinimaxABOutsideStack(GameState initial_gs,
@@ -311,56 +358,6 @@ public class IDRTMinimax extends AIWithComputationBudget implements Interruptibl
             return head.actions.getRandom();
         }
         return null;
-    }
-
-    public PlayerAction greedyActionScan(GameState gs, int player, long cutOffTime)
-        throws Exception {
-        PlayerAction best = null;
-        float bestScore = 0;
-        PlayerActionGenerator pag = new PlayerActionGenerator(gs, player);
-        PlayerAction pa = null;
-
-        //        System.out.println(gs.getUnitActions());
-        //        System.out.println(pag);
-        do {
-            pa = pag.getNextAction(cutOffTime);
-            if (pa != null) {
-                GameState gs2 = gs.cloneIssue(pa);
-                float score = ef.evaluate(player, 1 - player, gs2);
-                if (best == null || score > bestScore) {
-                    best = pa;
-                    bestScore = score;
-                }
-            }
-            if (System.currentTimeMillis() > cutOffTime) {
-                return best;
-            }
-        } while (pa != null);
-        return best;
-    }
-
-    public String statisticsString() {
-        return "max depth: " + max_depth_so_far + " , max branching factor (potential): "
-            + max_branching_so_far + "(" + max_potential_branching_so_far + ")" + " , max leaves: "
-            + max_leaves_so_far + " , max consecutive frames: "
-            + max_consecutive_frames_searching_so_far;
-    }
-
-    public String toString() {
-        return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", " + ef
-            + ")";
-    }
-
-    @Override
-    public List<ParameterSpecification> getParameters() {
-        List<ParameterSpecification> parameters = new ArrayList<>();
-
-        parameters.add(new ParameterSpecification("TimeBudget", int.class, 100));
-        parameters.add(new ParameterSpecification("IterationsBudget", int.class, -1));
-        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class,
-            new SimpleSqrtEvaluationFunction3()));
-
-        return parameters;
     }
 
     public EvaluationFunction getEvaluationFunction() {

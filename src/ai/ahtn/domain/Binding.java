@@ -19,15 +19,15 @@ public class Binding {
         p = a_p;
     }
 
-    public String toString() {
-        return "(" + v + " -> " + p + ")";
-    }
-
     public boolean equals(Object o) {
         if (o instanceof Binding) {
             Binding b = (Binding) o;
             return v.equals(b.v) && p.equals(b.p);
         }
         return false;
+    }
+
+    public String toString() {
+        return "(" + v + " -> " + p + ")";
     }
 }

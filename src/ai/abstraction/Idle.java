@@ -24,10 +24,6 @@ public class Idle extends AbstractAction {
         return false;
     }
 
-    public boolean equals(Object o) {
-        return o instanceof Idle;
-    }
-
     public void toxml(XMLWriter w) {
         w.tagWithAttributes("Idle", "unitID=\"" + unit.getID() + "\"");
         w.tag("/Idle");
@@ -50,5 +46,9 @@ public class Idle extends AbstractAction {
             }
         }
         return null;
+    }
+
+    public boolean equals(Object o) {
+        return o instanceof Idle;
     }
 }

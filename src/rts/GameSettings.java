@@ -7,30 +7,21 @@ import java.util.Properties;
 
 public class GameSettings {
 
-    public enum LaunchMode {
-        STANDALONE, GUI, SERVER, CLIENT
-    }
-
     // Networking
     private String serverAddress = "";
     private int serverPort = 9898;
     private LaunchMode launchMode;
-
     private int serializationType = 1; // Default is JSON
-
     // Maps
     private String mapLocation = "";
-
     // Game settings
     private int maxCycles = 5000;
     private boolean partiallyObservable = false;
     private int uttVersion = 1;
     private int conflictPolicy = 1;
-
     // Opponents:
     private String AI1 = "";
     private String AI2 = "";
-
     public GameSettings(LaunchMode launchMode, String serverAddress, int serverPort,
         int serializationType, String mapLocation, int maxCycles, boolean partiallyObservable,
         int uttVersion, int confictPolicy, String AI1, String AI2) {
@@ -45,50 +36,6 @@ public class GameSettings {
         this.conflictPolicy = confictPolicy;
         this.AI1 = AI1;
         this.AI2 = AI2;
-    }
-
-    public String getServerAddress() {
-        return serverAddress;
-    }
-
-    public int getServerPort() {
-        return serverPort;
-    }
-
-    public int getSerializationType() {
-        return serializationType;
-    }
-
-    public String getMapLocation() {
-        return mapLocation;
-    }
-
-    public int getMaxCycles() {
-        return maxCycles;
-    }
-
-    public boolean isPartiallyObservable() {
-        return partiallyObservable;
-    }
-
-    public int getUTTVersion() {
-        return uttVersion;
-    }
-
-    public int getConflictPolicy() {
-        return conflictPolicy;
-    }
-
-    public LaunchMode getLaunchMode() {
-        return launchMode;
-    }
-
-    public String getAI1() {
-        return AI1;
-    }
-
-    public String getAI2() {
-        return AI2;
     }
 
     /**
@@ -160,5 +107,53 @@ public class GameSettings {
             + getUTTVersion() + "\n" + "Conflict Policy: " + getConflictPolicy() + "\n" + "AI1: "
             + getAI1() + "\n" + "AI2: " + getAI2() + "\n"
             + "------------------------------------------------";
+    }
+
+    public LaunchMode getLaunchMode() {
+        return launchMode;
+    }
+
+    public String getServerAddress() {
+        return serverAddress;
+    }
+
+    public int getServerPort() {
+        return serverPort;
+    }
+
+    public int getSerializationType() {
+        return serializationType;
+    }
+
+    public String getMapLocation() {
+        return mapLocation;
+    }
+
+    public int getMaxCycles() {
+        return maxCycles;
+    }
+
+    public boolean isPartiallyObservable() {
+        return partiallyObservable;
+    }
+
+    public int getUTTVersion() {
+        return uttVersion;
+    }
+
+    public int getConflictPolicy() {
+        return conflictPolicy;
+    }
+
+    public String getAI1() {
+        return AI1;
+    }
+
+    public String getAI2() {
+        return AI2;
+    }
+
+    public enum LaunchMode {
+        STANDALONE, GUI, SERVER, CLIENT
     }
 }

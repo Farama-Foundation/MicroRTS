@@ -29,11 +29,6 @@ public class RandomAI extends AI {
     }
 
     @Override
-    public AI clone() {
-        return new RandomAI();
-    }
-
-    @Override
     public PlayerAction getAction(int player, GameState gs) {
         try {
             if (!gs.canExecuteAnyAction(player)) {
@@ -47,6 +42,11 @@ public class RandomAI extends AI {
             // However, this should never happen, since we are checking for this at the beginning
             return new PlayerAction();
         }
+    }
+
+    @Override
+    public AI clone() {
+        return new RandomAI();
     }
 
     @Override

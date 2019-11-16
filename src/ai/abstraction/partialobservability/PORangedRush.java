@@ -29,10 +29,6 @@ public class PORangedRush extends RangedRush {
         super(a_utt, a_pf);
     }
 
-    public void reset() {
-        super.reset();
-    }
-
     public AI clone() {
         return new PORangedRush(utt, pf);
     }
@@ -74,5 +70,9 @@ public class PORangedRush extends RangedRush {
                 move(u, closest_x, closest_y);
             }
         }
+    }
+
+    public void reset() {
+        super.reset();
     }
 }

@@ -16,88 +16,71 @@ import util.XMLWriter;
  */
 public class UnitAction {
 
-    public static Random r = new Random();  // only used for non-deterministic events    
-
     /**
      * The 'no-op' action
      */
     public static final int TYPE_NONE = 0;
-
     /**
      * Action of moving
      */
     public static final int TYPE_MOVE = 1;
-
     /**
      * Action of harvesting
      */
     public static final int TYPE_HARVEST = 2;
-
     /**
      * Action of return to base with resource
      */
     public static final int TYPE_RETURN = 3;
-
     /**
      * Action of produce a unit
      */
     public static final int TYPE_PRODUCE = 4;
-
     /**
      * Action of attacking a location
      */
     public static final int TYPE_ATTACK_LOCATION = 5;
-
     /**
      * Total number of action types
      */
     public static final int NUMBER_OF_ACTION_TYPES = 6;
-
-    public static String[] actionName = {"wait", "move", "harvest", "return", "produce",
-        "attack_location"};
-
     /**
      * Direction of 'standing still'
      */
     public static final int DIRECTION_NONE = -1;
-
     /**
      * Alias for up
      */
     public static final int DIRECTION_UP = 0;
-
     /**
      * Alias for right
      */
     public static final int DIRECTION_RIGHT = 1;
-
     /**
      * Alias for down
      */
     public static final int DIRECTION_DOWN = 2;
-
     /**
      * Alias for left
      */
     public static final int DIRECTION_LEFT = 3;
-
     /**
      * The offset caused by each direction of movement in X Indexes correspond to the constants used
      * in this class
      */
     public static final int[] DIRECTION_OFFSET_X = {0, 1, 0, -1};
-
     /**
      * The offset caused by each direction of movement in y Indexes correspond to the constants used
      * in this class
      */
     public static final int[] DIRECTION_OFFSET_Y = {-1, 0, 1, 0};
-
     /**
      * Direction names. Indexes correspond to the constants used in this class
      */
     public static final String[] DIRECTION_NAMES = {"up", "right", "down", "left"};
-
+    public static Random r = new Random();  // only used for non-deterministic events
+    public static String[] actionName = {"wait", "move", "harvest", "return", "produce",
+        "attack_location"};
     /**
      * Type of this UnitAction
      */
@@ -182,6 +165,87 @@ public class UnitAction {
         unitType = other.unitType;
     }
 
+    /**
+     * Creates a UnitAction from a XML element
+     *
+     * @param e
+     * @param utt
+     */
+    public UnitAction(Element e, UnitTypeTable utt) {
+        String typeStr = e.getAttributeValue("type");
+        String parameterStr = e.getAttributeValue("parameter");
+        String xStr = e.getAttributeValue("x");
+        String yStr = e.getAttributeValue("y");
+        String unitTypeStr = e.getAttributeValue("unitType");
+
+        type = Integer.parseInt(typeStr);
+        if (parameterStr != null) {
+            parameter = Integer.parseInt(parameterStr);
+        }
+        if (xStr != null) {
+            x = Integer.parseInt(xStr);
+        }
+        if (yStr != null) {
+            y = Integer.parseInt(yStr);
+        }
+        if (unitTypeStr != null) {
+            unitType = utt.getUnitType(unitTypeStr);
+        }
+    }
+
+    /**
+     * Creates a UnitAction from a XML element (calls the corresponding constructor)
+     *
+     * @param e
+     * @param utt
+     * @return
+     */
+    public static UnitAction fromXML(Element e, UnitTypeTable utt) {
+        return new UnitAction(e, utt);
+    }
+
+    /**
+     * Creates a UnitAction from a JSON string
+     *
+     * @param JSON
+     * @param utt
+     * @return
+     */
+    public static UnitAction fromJSON(String JSON, UnitTypeTable utt) {
+        JsonObject o = Json.parse(JSON).asObject();
+        return fromJSON(o, utt);
+    }
+
+    /**
+     * Creates a UnitAction from a JSON object
+     *
+     * @param o
+     * @param utt
+     * @return
+     */
+    public static UnitAction fromJSON(JsonObject o, UnitTypeTable utt) {
+        UnitAction ua = new UnitAction(o.getInt("type", TYPE_NONE));
+        ua.parameter = o.getInt("parameter", DIRECTION_NONE);
+        ua.x = o.getInt("x", DIRECTION_NONE);
+        ua.y = o.getInt("y", DIRECTION_NONE);
+        String ut = o.getString("unitType", null);
+        if (ut != null) {
+            ua.unitType = utt.getUnitType(ut);
+        }
+
+        return ua;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = this.type;
+        hash = 19 * hash + this.parameter;
+        hash = 19 * hash + this.x;
+        hash = 19 * hash + this.y;
+        hash = 19 * hash + Objects.hashCode(this.unitType);
+        return hash;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof UnitAction)) {
@@ -201,14 +265,38 @@ public class UnitAction {
         }
     }
 
-    @Override
-    public int hashCode() {
-        int hash = this.type;
-        hash = 19 * hash + this.parameter;
-        hash = 19 * hash + this.x;
-        hash = 19 * hash + this.y;
-        hash = 19 * hash + Objects.hashCode(this.unitType);
-        return hash;
+    public String toString() {
+        String tmp = actionName[type] + "(";
+
+        if (type == TYPE_ATTACK_LOCATION) {
+            tmp += x + "," + y;
+        } else if (type == TYPE_NONE) {
+            tmp += parameter;
+        } else {
+            if (parameter != DIRECTION_NONE) {
+                if (parameter == DIRECTION_UP) {
+                    tmp += "up";
+                }
+                if (parameter == DIRECTION_RIGHT) {
+                    tmp += "right";
+                }
+                if (parameter == DIRECTION_DOWN) {
+                    tmp += "down";
+                }
+                if (parameter == DIRECTION_LEFT) {
+                    tmp += "left";
+                }
+            }
+            if (parameter != DIRECTION_NONE && unitType != null) {
+                tmp += ",";
+            }
+
+            if (unitType != null) {
+                tmp += unitType.name;
+            }
+        }
+
+        return tmp + ")";
     }
 
     /**
@@ -460,40 +548,6 @@ public class UnitAction {
         }
     }
 
-    public String toString() {
-        String tmp = actionName[type] + "(";
-
-        if (type == TYPE_ATTACK_LOCATION) {
-            tmp += x + "," + y;
-        } else if (type == TYPE_NONE) {
-            tmp += parameter;
-        } else {
-            if (parameter != DIRECTION_NONE) {
-                if (parameter == DIRECTION_UP) {
-                    tmp += "up";
-                }
-                if (parameter == DIRECTION_RIGHT) {
-                    tmp += "right";
-                }
-                if (parameter == DIRECTION_DOWN) {
-                    tmp += "down";
-                }
-                if (parameter == DIRECTION_LEFT) {
-                    tmp += "left";
-                }
-            }
-            if (parameter != DIRECTION_NONE && unitType != null) {
-                tmp += ",";
-            }
-
-            if (unitType != null) {
-                tmp += unitType.name;
-            }
-        }
-
-        return tmp + ")";
-    }
-
     /**
      * Returns the name of this action
      *
@@ -575,78 +629,7 @@ public class UnitAction {
         w.write("{" + attributes + "}");
     }
 
-    /**
-     * Creates a UnitAction from a XML element
-     *
-     * @param e
-     * @param utt
-     */
-    public UnitAction(Element e, UnitTypeTable utt) {
-        String typeStr = e.getAttributeValue("type");
-        String parameterStr = e.getAttributeValue("parameter");
-        String xStr = e.getAttributeValue("x");
-        String yStr = e.getAttributeValue("y");
-        String unitTypeStr = e.getAttributeValue("unitType");
-
-        type = Integer.parseInt(typeStr);
-        if (parameterStr != null) {
-            parameter = Integer.parseInt(parameterStr);
-        }
-        if (xStr != null) {
-            x = Integer.parseInt(xStr);
-        }
-        if (yStr != null) {
-            y = Integer.parseInt(yStr);
-        }
-        if (unitTypeStr != null) {
-            unitType = utt.getUnitType(unitTypeStr);
-        }
-    }
-
     public void clearResourceUSageCache() {
         r_cache = null;
-    }
-
-    /**
-     * Creates a UnitAction from a XML element (calls the corresponding constructor)
-     *
-     * @param e
-     * @param utt
-     * @return
-     */
-    public static UnitAction fromXML(Element e, UnitTypeTable utt) {
-        return new UnitAction(e, utt);
-    }
-
-    /**
-     * Creates a UnitAction from a JSON string
-     *
-     * @param JSON
-     * @param utt
-     * @return
-     */
-    public static UnitAction fromJSON(String JSON, UnitTypeTable utt) {
-        JsonObject o = Json.parse(JSON).asObject();
-        return fromJSON(o, utt);
-    }
-
-    /**
-     * Creates a UnitAction from a JSON object
-     *
-     * @param o
-     * @param utt
-     * @return
-     */
-    public static UnitAction fromJSON(JsonObject o, UnitTypeTable utt) {
-        UnitAction ua = new UnitAction(o.getInt("type", TYPE_NONE));
-        ua.parameter = o.getInt("parameter", DIRECTION_NONE);
-        ua.x = o.getInt("x", DIRECTION_NONE);
-        ua.y = o.getInt("y", DIRECTION_NONE);
-        String ut = o.getString("unitType", null);
-        if (ut != null) {
-            ua.unitType = utt.getUnitType(ut);
-        }
-
-        return ua;
     }
 }

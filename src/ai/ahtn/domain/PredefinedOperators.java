@@ -22,21 +22,10 @@ import util.Pair;
  */
 public class PredefinedOperators {
 
+    static final HashMap<Symbol, OperatorExecutor> operators = new HashMap<>();
     public static int DEBUG = 0;
-
-    public interface OperatorExecutor {
-
-        // return true, when the action is over, and false when it's not over yet
-        // if pa == null, the actions are issued directly to the game state
-        // if pa != null, they are added to pa
-        boolean execute(Term t, MethodDecomposition state, GameState gs, PlayerAction pa)
-            throws Exception;
-    }
-
     //    static PathFinding pf = new GreedyPathFinding();
     static PathFinding pf = new AStarPathFinding();
-
-    static final HashMap<Symbol, OperatorExecutor> operators = new HashMap<>();
 
     static {
         try {
@@ -551,5 +540,14 @@ public class PredefinedOperators {
             throw new Exception("PredefinedFunctions.evaluate: undefined operator " + t);
         }
         return oe.execute(t, state, gs, pa);
+    }
+
+    public interface OperatorExecutor {
+
+        // return true, when the action is over, and false when it's not over yet
+        // if pa == null, the actions are issued directly to the game state
+        // if pa != null, they are added to pa
+        boolean execute(Term t, MethodDecomposition state, GameState gs, PlayerAction pa)
+            throws Exception;
     }
 }

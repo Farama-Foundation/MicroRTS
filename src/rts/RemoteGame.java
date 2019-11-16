@@ -10,14 +10,13 @@ import rts.units.UnitTypeTable;
 
 class RemoteGame extends Thread {
 
+    private static int PERIOD = 20;
     private Socket socket;
     private UnitTypeTable unitTypeTable;
     private PhysicalGameState pgs;
     private GameState gameState;
     private GameSettings gameSettings;
     private boolean gameOver = false;
-
-    private static int PERIOD = 20;
 
     RemoteGame(Socket socket, GameSettings gameSettings) {
         this.socket = socket;

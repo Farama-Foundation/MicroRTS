@@ -36,16 +36,6 @@ public class TraceVisualizer extends JPanel implements ListSelectionListener {
     JList Selector = null;
     List<GameState> states = new LinkedList<GameState>();
 
-    public static JFrame newWindow(String name, int dx, int dy, Trace t, int subjectID)
-        throws Exception {
-        TraceVisualizer ad = new TraceVisualizer(t, dx, dy, subjectID);
-        JFrame frame = new JFrame(name);
-        frame.getContentPane().add(ad);
-        frame.pack();
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        return frame;
-    }
-
     public TraceVisualizer(Trace t, int dx, int dy, int subject) throws Exception {
         current_step = 0;
         trace = t;
@@ -99,6 +89,16 @@ public class TraceVisualizer extends JPanel implements ListSelectionListener {
         //        ListScrollPane.setPreferredSize(new Dimension(100,dy*2));
 
         add(ListScrollPane);
+    }
+
+    public static JFrame newWindow(String name, int dx, int dy, Trace t, int subjectID)
+        throws Exception {
+        TraceVisualizer ad = new TraceVisualizer(t, dx, dy, subjectID);
+        JFrame frame = new JFrame(name);
+        frame.getContentPane().add(ad);
+        frame.pack();
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        return frame;
     }
 
     public void valueChanged(ListSelectionEvent e) {

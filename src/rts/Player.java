@@ -34,6 +34,29 @@ public class Player {
     }
 
     /**
+     * Constructs a player from a XML player element
+     *
+     * @param e
+     * @return
+     */
+    public static Player fromXML(Element e) {
+        Player p = new Player(Integer.parseInt(e.getAttributeValue("ID")),
+            Integer.parseInt(e.getAttributeValue("resources")));
+        return p;
+    }
+
+    /**
+     * Constructs a Player from a JSON object
+     *
+     * @param o
+     * @return
+     */
+    public static Player fromJSON(JsonObject o) {
+        Player p = new Player(o.getInt("ID", -1), o.getInt("resources", 0));
+        return p;
+    }
+
+    /**
      * Returns the player ID
      *
      * @return
@@ -61,17 +84,17 @@ public class Player {
     }
 
     /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    public String toString() {
-        return "player " + ID + "(" + resources + ")";
-    }
-
-    /* (non-Javadoc)
      * @see java.lang.Object#clone()
      */
     public Player clone() {
         return new Player(ID, resources);
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    public String toString() {
+        return "player " + ID + "(" + resources + ")";
     }
 
     /**
@@ -93,28 +116,5 @@ public class Player {
      */
     public void toJSON(Writer w) throws Exception {
         w.write("{\"ID\":" + ID + ", \"resources\":" + resources + "}");
-    }
-
-    /**
-     * Constructs a player from a XML player element
-     *
-     * @param e
-     * @return
-     */
-    public static Player fromXML(Element e) {
-        Player p = new Player(Integer.parseInt(e.getAttributeValue("ID")),
-            Integer.parseInt(e.getAttributeValue("resources")));
-        return p;
-    }
-
-    /**
-     * Constructs a Player from a JSON object
-     *
-     * @param o
-     * @return
-     */
-    public static Player fromJSON(JsonObject o) {
-        Player p = new Player(o.getInt("ID", -1), o.getInt("resources", 0));
-        return p;
     }
 }

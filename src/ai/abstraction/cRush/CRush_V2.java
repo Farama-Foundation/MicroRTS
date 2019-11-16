@@ -28,8 +28,8 @@ import rts.units.UnitTypeTable;
  */
 public class CRush_V2 extends AbstractionLayerAI {
 
-    Random r = new Random();
     protected UnitTypeTable utt;
+    Random r = new Random();
     UnitType workerType;
     UnitType baseType;
     UnitType barracksType;
@@ -49,10 +49,6 @@ public class CRush_V2 extends AbstractionLayerAI {
         reset(a_utt);
     }
 
-    public void reset() {
-        super.reset();
-    }
-
     public void reset(UnitTypeTable a_utt) {
         utt = a_utt;
         workerType = utt.getUnitType("Worker");
@@ -60,10 +56,6 @@ public class CRush_V2 extends AbstractionLayerAI {
         barracksType = utt.getUnitType("Barracks");
         rangedType = utt.getUnitType("Ranged");
         lightType = utt.getUnitType("Light");
-    }
-
-    public AI clone() {
-        return new CRush_V2(utt, pf);
     }
 
     public PlayerAction getAction(int player, GameState gs) {
@@ -120,6 +112,24 @@ public class CRush_V2 extends AbstractionLayerAI {
         }
 
         return translateActions(player, gs);
+    }
+
+    public AI clone() {
+        return new CRush_V2(utt, pf);
+    }
+
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+
+        parameters.add(
+            new ParameterSpecification("PathFinding", PathFinding.class, new AStarPathFinding()));
+
+        return parameters;
+    }
+
+    public void reset() {
+        super.reset();
     }
 
     public void baseBehavior(Unit u, Player p, PhysicalGameState pgs, GameState gs) {
@@ -476,15 +486,5 @@ public class CRush_V2 extends AbstractionLayerAI {
         int dy = b.getY() - a.getY();
         double toReturn = Math.sqrt(dx * dx + dy * dy);
         return toReturn;
-    }
-
-    @Override
-    public List<ParameterSpecification> getParameters() {
-        List<ParameterSpecification> parameters = new ArrayList<>();
-
-        parameters.add(
-            new ParameterSpecification("PathFinding", PathFinding.class, new AStarPathFinding()));
-
-        return parameters;
     }
 }

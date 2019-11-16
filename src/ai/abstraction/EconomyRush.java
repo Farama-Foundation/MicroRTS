@@ -29,8 +29,8 @@ import rts.units.UnitTypeTable;
  */
 public class EconomyRush extends AbstractionLayerAI {
 
-    Random r = new Random();
     protected UnitTypeTable utt;
+    Random r = new Random();
     UnitType workerType;
     UnitType baseType;
     UnitType barracksType;
@@ -51,10 +51,6 @@ public class EconomyRush extends AbstractionLayerAI {
     public EconomyRush(UnitTypeTable a_utt, PathFinding a_pf) {
         super(a_pf);
         reset(a_utt);
-    }
-
-    public void reset() {
-        super.reset();
     }
 
     public void reset(UnitTypeTable a_utt) {
@@ -198,24 +194,6 @@ public class EconomyRush extends AbstractionLayerAI {
         }
     }
 
-    public void meleeUnitBehavior(Unit u, Player p, GameState gs) {
-        PhysicalGameState pgs = gs.getPhysicalGameState();
-        Unit closestEnemy = null;
-        int closestDistance = 0;
-        for (Unit u2 : pgs.getUnits()) {
-            if (u2.getPlayer() >= 0 && u2.getPlayer() != p.getID()) {
-                int d = Math.abs(u2.getX() - u.getX()) + Math.abs(u2.getY() - u.getY());
-                if (closestEnemy == null || d < closestDistance) {
-                    closestEnemy = u2;
-                    closestDistance = d;
-                }
-            }
-        }
-        if (closestEnemy != null) {
-            attack(u, closestEnemy);
-        }
-    }
-
     public void workersBehavior(List<Unit> workers, Player p, PhysicalGameState pgs) {
         int nbases = 0;
         int nbarracks = 0;
@@ -271,6 +249,24 @@ public class EconomyRush extends AbstractionLayerAI {
         harvestWorkers(freeWorkers, p, pgs);
     }
 
+    public void meleeUnitBehavior(Unit u, Player p, GameState gs) {
+        PhysicalGameState pgs = gs.getPhysicalGameState();
+        Unit closestEnemy = null;
+        int closestDistance = 0;
+        for (Unit u2 : pgs.getUnits()) {
+            if (u2.getPlayer() >= 0 && u2.getPlayer() != p.getID()) {
+                int d = Math.abs(u2.getX() - u.getX()) + Math.abs(u2.getY() - u.getY());
+                if (closestEnemy == null || d < closestDistance) {
+                    closestEnemy = u2;
+                    closestDistance = d;
+                }
+            }
+        }
+        if (closestEnemy != null) {
+            attack(u, closestEnemy);
+        }
+    }
+
     protected List<Unit> otherResourcePoint(Player p, PhysicalGameState pgs) {
 
         List<Unit> bases = getMyBases(p, pgs);
@@ -299,42 +295,6 @@ public class EconomyRush extends AbstractionLayerAI {
         } else {
             return new ArrayList<>(otherResources);
         }
-    }
-
-    protected List<Unit> getOrderedResources(List<Unit> resources, Unit base) {
-        List<Unit> resReturn = new ArrayList<Unit>();
-
-        HashMap<Integer, ArrayList<Unit>> map = new HashMap<>();
-        for (Unit res : resources) {
-            int d = Math.abs(res.getX() - base.getX()) + Math.abs(res.getY() - base.getY());
-            if (map.containsKey(d)) {
-                ArrayList<Unit> nResourc = map.get(d);
-                nResourc.add(res);
-            } else {
-                ArrayList<Unit> nResourc = new ArrayList<>();
-                nResourc.add(res);
-                map.put(d, nResourc);
-            }
-        }
-        ArrayList<Integer> keysOrdered = new ArrayList<>(map.keySet());
-        Collections.sort(keysOrdered);
-
-        for (Integer key : keysOrdered) {
-            resReturn.addAll(map.get(key));
-        }
-
-        return resReturn;
-    }
-
-    protected List<Unit> getMyBases(Player p, PhysicalGameState pgs) {
-
-        List<Unit> bases = new ArrayList<>();
-        for (Unit u2 : pgs.getUnits()) {
-            if (u2.getType() == baseType && u2.getPlayer() == p.getID()) {
-                bases.add(u2);
-            }
-        }
-        return bases;
     }
 
     protected void harvestWorkers(List<Unit> freeWorkers, Player p, PhysicalGameState pgs) {
@@ -373,5 +333,45 @@ public class EconomyRush extends AbstractionLayerAI {
                 }
             }
         }
+    }
+
+    protected List<Unit> getMyBases(Player p, PhysicalGameState pgs) {
+
+        List<Unit> bases = new ArrayList<>();
+        for (Unit u2 : pgs.getUnits()) {
+            if (u2.getType() == baseType && u2.getPlayer() == p.getID()) {
+                bases.add(u2);
+            }
+        }
+        return bases;
+    }
+
+    protected List<Unit> getOrderedResources(List<Unit> resources, Unit base) {
+        List<Unit> resReturn = new ArrayList<Unit>();
+
+        HashMap<Integer, ArrayList<Unit>> map = new HashMap<>();
+        for (Unit res : resources) {
+            int d = Math.abs(res.getX() - base.getX()) + Math.abs(res.getY() - base.getY());
+            if (map.containsKey(d)) {
+                ArrayList<Unit> nResourc = map.get(d);
+                nResourc.add(res);
+            } else {
+                ArrayList<Unit> nResourc = new ArrayList<>();
+                nResourc.add(res);
+                map.put(d, nResourc);
+            }
+        }
+        ArrayList<Integer> keysOrdered = new ArrayList<>(map.keySet());
+        Collections.sort(keysOrdered);
+
+        for (Integer key : keysOrdered) {
+            resReturn.addAll(map.get(key));
+        }
+
+        return resReturn;
+    }
+
+    public void reset() {
+        super.reset();
     }
 }

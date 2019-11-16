@@ -29,6 +29,13 @@ public class BayesianModelByUnitTypeWithDefaultModel extends BayesianModel {
         templateModel = tm;
     }
 
+    public BayesianModelByUnitTypeWithDefaultModel(Element e, UnitTypeTable utt, BayesianModel tm,
+        String a_name) throws Exception {
+        super(utt, tm.featureGenerator, a_name);
+        templateModel = tm;
+        load(e);
+    }
+
     public Object clone() {
         return new BayesianModelByUnitTypeWithDefaultModel(utt, templateModel, name);
     }
@@ -118,23 +125,6 @@ public class BayesianModelByUnitTypeWithDefaultModel extends BayesianModel {
         defaultModel.calibrateProbabilities(x_l, y_l, i_l);
     }
 
-    public void featureSelectionByGainRatio(List<int[]> x_l, List<Integer> y_l,
-        double fractionOfFeaturesToKeep) {
-        for (UnitType ut : unitModels.keySet()) {
-            BayesianModel model_ut = unitModels.get(ut);
-            if (model_ut == null) {
-                model_ut = (BayesianModel) templateModel.clone();
-                unitModels.put(ut, model_ut);
-            }
-            model_ut.featureSelectionByGainRatio(x_l, y_l, fractionOfFeaturesToKeep);
-        }
-
-        if (defaultModel == null) {
-            defaultModel = (BayesianModel) templateModel.clone();
-        }
-        defaultModel.featureSelectionByGainRatio(x_l, y_l, fractionOfFeaturesToKeep);
-    }
-
     public void featureSelectionByCrossValidation(List<int[]> x_l, List<Integer> y_l,
         List<TrainingInstance> i_l) throws Exception {
         HashMap<UnitType, List<int[]>> x_l_ut_l = new HashMap<>();
@@ -174,6 +164,23 @@ public class BayesianModelByUnitTypeWithDefaultModel extends BayesianModel {
         defaultModel.featureSelectionByCrossValidation(x_l, y_l, i_l);
     }
 
+    public void featureSelectionByGainRatio(List<int[]> x_l, List<Integer> y_l,
+        double fractionOfFeaturesToKeep) {
+        for (UnitType ut : unitModels.keySet()) {
+            BayesianModel model_ut = unitModels.get(ut);
+            if (model_ut == null) {
+                model_ut = (BayesianModel) templateModel.clone();
+                unitModels.put(ut, model_ut);
+            }
+            model_ut.featureSelectionByGainRatio(x_l, y_l, fractionOfFeaturesToKeep);
+        }
+
+        if (defaultModel == null) {
+            defaultModel = (BayesianModel) templateModel.clone();
+        }
+        defaultModel.featureSelectionByGainRatio(x_l, y_l, fractionOfFeaturesToKeep);
+    }
+
     public double[] predictDistribution(int[] x, TrainingInstance ti) {
         BayesianModel model_ut = unitModels.get(ti.u.getType());
         if (model_ut != null) {
@@ -195,13 +202,6 @@ public class BayesianModelByUnitTypeWithDefaultModel extends BayesianModel {
         w.tag("/defaultModel");
         w.tag("/" + this.getClass().getSimpleName());
         w.flush();
-    }
-
-    public BayesianModelByUnitTypeWithDefaultModel(Element e, UnitTypeTable utt, BayesianModel tm,
-        String a_name) throws Exception {
-        super(utt, tm.featureGenerator, a_name);
-        templateModel = tm;
-        load(e);
     }
 
     public void load(Element e) throws Exception {

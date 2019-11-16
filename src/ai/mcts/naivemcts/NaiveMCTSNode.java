@@ -31,15 +31,14 @@ public class NaiveMCTSNode extends MCTSNode {
     static public int DEBUG = 0;
 
     public static float C = 0.05f;   // exploration constant for UCB1
-
-    boolean forceExplorationOfNonSampledActions = true;
-    boolean hasMoreActions = true;
     public PlayerActionGenerator moveGenerator = null;
-    HashMap<BigInteger, NaiveMCTSNode> childrenMap = new LinkedHashMap<BigInteger, NaiveMCTSNode>();    // associates action codes with children
     // Decomposition of the player actions in unit actions, and their contributions:
     public List<UnitActionTableEntry> unitActionTable = null;
-    double evaluation_bound;    // this is the maximum positive value that the evaluation function can return
     public BigInteger[] multipliers;
+    boolean forceExplorationOfNonSampledActions = true;
+    boolean hasMoreActions = true;
+    HashMap<BigInteger, NaiveMCTSNode> childrenMap = new LinkedHashMap<BigInteger, NaiveMCTSNode>();    // associates action codes with children
+    double evaluation_bound;    // this is the maximum positive value that the evaluation function can return
 
     public NaiveMCTSNode(int maxplayer, int minplayer, GameState a_gs, NaiveMCTSNode a_parent,
         double a_evaluation_bound, int a_creation_ID, boolean fensa) throws Exception {

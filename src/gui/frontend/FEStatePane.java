@@ -109,17 +109,6 @@ import util.XMLWriter;
  */
 public class FEStatePane extends JPanel {
 
-    PhysicalGameStatePanel statePanel = null;
-    JTextArea textArea = null;
-    UnitTypeTable currentUtt = null;
-
-    JFileChooser fileChooser = new JFileChooser();
-
-    EvaluationFunction[] efs = {new SimpleEvaluationFunction(), new SimpleSqrtEvaluationFunction(),
-        new SimpleSqrtEvaluationFunction2(), new SimpleSqrtEvaluationFunction3(),
-        new EvaluationFunctionForwarding(new SimpleEvaluationFunction()),
-        new SimpleOptEvaluationFunction()};
-
     public static Class[] AIs = {PassiveAI.class, MouseController.class, RandomAI.class,
         RandomBiasedAI.class, WorkerRush.class, LightRush.class, HeavyRush.class, RangedRush.class,
         WorkerDefense.class, LightDefense.class, HeavyDefense.class, RangedDefense.class,
@@ -129,13 +118,6 @@ public class FEStatePane extends JPanel {
         UCT.class, UCTUnitActions.class, UCTFirstPlayUrgency.class, DownsamplingUCT.class,
         NaiveMCTS.class, BS3_NaiveMCTS.class, MLPSMCTS.class, AHTNAI.class, InformedNaiveMCTS.class,
         PuppetSearchMCTS.class, SCV.class};
-
-    Class[] PlayoutAIs = {RandomAI.class, RandomBiasedAI.class, WorkerRush.class, LightRush.class,
-        HeavyRush.class, RangedRush.class,};
-
-    PathFinding[] pathFinders = {new AStarPathFinding(), new BFSPathFinding(),
-        new GreedyPathFinding(), new FloodFillPathFinding()};
-
     public static UnitTypeTable[] unitTypeTables = {
         new UnitTypeTable(UnitTypeTable.VERSION_ORIGINAL,
             UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH),
@@ -158,7 +140,18 @@ public class FEStatePane extends JPanel {
     public static String[] unitTypeTableNames = {"Original-Both", "Original-Alternating",
         "Original-Random", "Finetuned-Both", "Finetuned-Alternating", "Finetuned-Random",
         "Nondeterministic-Both", "Nondeterministic-Alternating", "Nondeterministic-Random"};
-
+    PhysicalGameStatePanel statePanel = null;
+    JTextArea textArea = null;
+    UnitTypeTable currentUtt = null;
+    JFileChooser fileChooser = new JFileChooser();
+    EvaluationFunction[] efs = {new SimpleEvaluationFunction(), new SimpleSqrtEvaluationFunction(),
+        new SimpleSqrtEvaluationFunction2(), new SimpleSqrtEvaluationFunction3(),
+        new EvaluationFunctionForwarding(new SimpleEvaluationFunction()),
+        new SimpleOptEvaluationFunction()};
+    Class[] PlayoutAIs = {RandomAI.class, RandomBiasedAI.class, WorkerRush.class, LightRush.class,
+        HeavyRush.class, RangedRush.class,};
+    PathFinding[] pathFinders = {new AStarPathFinding(), new BFSPathFinding(),
+        new GreedyPathFinding(), new FloodFillPathFinding()};
     JFormattedTextField mapWidthField = null;
     JFormattedTextField mapHeightField = null;
     JFormattedTextField maxCyclesField = null;
@@ -798,25 +791,6 @@ public class FEStatePane extends JPanel {
         statePanel.addMouseListener(mouseListener);
     }
 
-    public void setState(GameState gs) {
-        statePanel.setStateDirect(gs);
-        statePanel.repaint();
-        mapWidthField.setText(gs.getPhysicalGameState().getWidth() + "");
-        mapHeightField.setText(gs.getPhysicalGameState().getHeight() + "");
-    }
-
-    private static String nextTraceName() {
-        int idx = 1;
-        do {
-            String name = "trace" + idx + ".xml";
-            File f = new File(name);
-            if (!f.exists()) {
-                return name;
-            }
-            idx++;
-        } while (true);
-    }
-
     public static JFormattedTextField addTextField(JPanel p, String name, String defaultValue,
         int columns) {
         JPanel ptmp = new JPanel();
@@ -895,16 +869,16 @@ public class FEStatePane extends JPanel {
         }
     }
 
-    public AI createAIInternal(int idx, int player, UnitTypeTable utt) throws Exception {
-
-        if (AIs[idx] == MouseController.class) {
-            return new MouseController(null);
-        } else {
-            Constructor cons = AIs[idx].getConstructor(UnitTypeTable.class);
-            AI AI_instance = (AI) cons.newInstance(utt);
-
-            return AI_instance;
-        }
+    private static String nextTraceName() {
+        int idx = 1;
+        do {
+            String name = "trace" + idx + ".xml";
+            File f = new File(name);
+            if (!f.exists()) {
+                return name;
+            }
+            idx++;
+        } while (true);
     }
 
     private void updateAIOptions(JPanel jPanel, int player) throws Exception {
@@ -1059,5 +1033,24 @@ public class FEStatePane extends JPanel {
         }
 
         jPanel.revalidate();
+    }
+
+    public AI createAIInternal(int idx, int player, UnitTypeTable utt) throws Exception {
+
+        if (AIs[idx] == MouseController.class) {
+            return new MouseController(null);
+        } else {
+            Constructor cons = AIs[idx].getConstructor(UnitTypeTable.class);
+            AI AI_instance = (AI) cons.newInstance(utt);
+
+            return AI_instance;
+        }
+    }
+
+    public void setState(GameState gs) {
+        statePanel.setStateDirect(gs);
+        statePanel.repaint();
+        mapWidthField.setText(gs.getPhysicalGameState().getWidth() + "");
+        mapHeightField.setText(gs.getPhysicalGameState().getHeight() + "");
     }
 }

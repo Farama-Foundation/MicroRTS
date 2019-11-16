@@ -43,33 +43,6 @@ public class MicroRTS {
     }
 
     /**
-     * Starts microRTS as a server instance.
-     *
-     * @param gameSettings The game settings.
-     */
-    private static void startServer(GameSettings gameSettings) throws Exception {
-        try (ServerSocket serverSocket = new ServerSocket(gameSettings.getServerPort())) {
-            while (true) {
-                try (Socket socket = serverSocket.accept()) {
-                    new RemoteGame(socket, gameSettings).run();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    /**
-     * Starts microRTS as a client instance.
-     *
-     * @param gameSettings The game settings.
-     */
-    private static void startClient(GameSettings gameSettings) throws Exception {
-        Socket socket = new Socket(gameSettings.getServerAddress(), gameSettings.getServerPort());
-        new RemoteGame(socket, gameSettings).run();
-    }
-
-    /**
      * Starts a standalone game of microRTS with the specified opponents, and game setting
      *
      * @param gameSettings
@@ -124,5 +97,32 @@ public class MicroRTS {
         } while (!gameover && gs.getTime() < gameSettings.getMaxCycles());
         ai1.gameOver(gs.winner());
         ai2.gameOver(gs.winner());
+    }
+
+    /**
+     * Starts microRTS as a server instance.
+     *
+     * @param gameSettings The game settings.
+     */
+    private static void startServer(GameSettings gameSettings) throws Exception {
+        try (ServerSocket serverSocket = new ServerSocket(gameSettings.getServerPort())) {
+            while (true) {
+                try (Socket socket = serverSocket.accept()) {
+                    new RemoteGame(socket, gameSettings).run();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * Starts microRTS as a client instance.
+     *
+     * @param gameSettings The game settings.
+     */
+    private static void startClient(GameSettings gameSettings) throws Exception {
+        Socket socket = new Socket(gameSettings.getServerAddress(), gameSettings.getServerPort());
+        new RemoteGame(socket, gameSettings).run();
     }
 }

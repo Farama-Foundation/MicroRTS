@@ -41,39 +41,6 @@ public class Sampling {
         this.simulationAi = simulationAi;
     }
 
-    public double evaluatePlayerAction(int player, GameState gs, PlayerAction playerAction,
-        int numEval) throws Exception {
-        double evalMean = 0;
-
-        for (int step = 0; step < numEval; step++) {
-            GameState gs2 = gs.cloneIssue(playerAction);
-            GameState gs3 = gs2.clone();
-            simulate(gs3, gs3.getTime() + lookAhead);
-            int time = gs3.getTime() - gs2.getTime();
-            double eval =
-                evalFunction.evaluate(player, 1 - player, gs3) * Math.pow(0.99, time / 10.0);
-
-            evalMean = (step * evalMean + eval) / (step + 1);
-        }
-
-        return evalMean;
-    }
-
-    private void simulate(GameState gs, int lookaheadTime) throws Exception {
-        simulationCount++;
-
-        boolean gameover = false;
-
-        do {
-            if (gs.isComplete()) {
-                gameover = gs.cycle();
-            } else {
-                gs.issue(simulationAi.getAction(0, gs));
-                gs.issue(simulationAi.getAction(1, gs));
-            }
-        } while (!gameover && gs.getTime() < lookaheadTime);
-    }
-
     public PlayerAction generatePlayerActionGivenDist(List<UnitActionTableEntry> unitActionTable,
         int player, GameState gameState, List<double[]> distributions,
         List<Integer> forcedAgentOrder) throws Exception {
@@ -165,6 +132,26 @@ public class Sampling {
         pa = orderedPA;
 
         return pa;
+    }
+
+    public double entropy(double[] distribution) {
+        double sum = 0;
+        for (double prob : distribution) {
+            sum += prob;
+        }
+
+        double ent = 0;
+        for (double prob : distribution) {
+            if (prob == 0) {
+                continue;
+            }
+            ent += (-1) * (prob / sum) * log((prob / sum), 2);
+        }
+        return ent;
+    }
+
+    public static double log(double x, double base) {
+        return Math.log(x) / Math.log(base);
     }
 
     public PlayerAction generatePlayerActionOneDist(List<UnitActionTableEntry> unitActionTable,
@@ -340,6 +327,39 @@ public class Sampling {
         return actionList.subList(0, actionList.size() / 2 + 1);
     }
 
+    public double evaluatePlayerAction(int player, GameState gs, PlayerAction playerAction,
+        int numEval) throws Exception {
+        double evalMean = 0;
+
+        for (int step = 0; step < numEval; step++) {
+            GameState gs2 = gs.cloneIssue(playerAction);
+            GameState gs3 = gs2.clone();
+            simulate(gs3, gs3.getTime() + lookAhead);
+            int time = gs3.getTime() - gs2.getTime();
+            double eval =
+                evalFunction.evaluate(player, 1 - player, gs3) * Math.pow(0.99, time / 10.0);
+
+            evalMean = (step * evalMean + eval) / (step + 1);
+        }
+
+        return evalMean;
+    }
+
+    private void simulate(GameState gs, int lookaheadTime) throws Exception {
+        simulationCount++;
+
+        boolean gameover = false;
+
+        do {
+            if (gs.isComplete()) {
+                gameover = gs.cycle();
+            } else {
+                gs.issue(simulationAi.getAction(0, gs));
+                gs.issue(simulationAi.getAction(1, gs));
+            }
+        } while (!gameover && gs.getTime() < lookaheadTime);
+    }
+
     public List<Pair<PlayerAction, Double>> halvedOriginalSampling(
         List<Pair<PlayerAction, Double>> actionList, GameState gameState, int player, int numEval,
         int numEvalPrevious) throws Exception {
@@ -378,22 +398,6 @@ public class Sampling {
         return actionList.subList(0, actionList.size() / 2);
     }
 
-    public double entropy(double[] distribution) {
-        double sum = 0;
-        for (double prob : distribution) {
-            sum += prob;
-        }
-
-        double ent = 0;
-        for (double prob : distribution) {
-            if (prob == 0) {
-                continue;
-            }
-            ent += (-1) * (prob / sum) * log((prob / sum), 2);
-        }
-        return ent;
-    }
-
     public double difference(List<UnitActionTableEntry> unitActionTable,
         List<double[]> distributions, PlayerAction playerAction, int agentIndex) {
         Pair<Unit, UnitAction> ute = playerAction.getActions().get(agentIndex);
@@ -416,8 +420,12 @@ public class Sampling {
         return simulationCount;
     }
 
-    public static double log(double x, double base) {
-        return Math.log(x) / Math.log(base);
+    public void increaseSimulationCount(double d) {
+        simulationCount += d;
+    }
+
+    public enum AgentOrderingType {
+        RANDOM, ENTROPY
     }
 
     public static class UnitActionTableEntry {
@@ -428,13 +436,5 @@ public class Sampling {
         public List<UnitAction> actions = null;
         public double[] accum_evaluation = null;
         public int[] visit_count = null;
-    }
-
-    public enum AgentOrderingType {
-        RANDOM, ENTROPY
-    }
-
-    public void increaseSimulationCount(double d) {
-        simulationCount += d;
     }
 }

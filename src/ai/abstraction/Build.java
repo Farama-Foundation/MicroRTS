@@ -36,14 +36,6 @@ public class Build extends AbstractAction {
         return u != null;
     }
 
-    public boolean equals(Object o) {
-        if (!(o instanceof Build)) {
-            return false;
-        }
-        Build a = (Build) o;
-        return type == a.type && x == a.x && y == a.y && pf.getClass() == a.pf.getClass();
-    }
-
     public void toxml(XMLWriter w) {
         w.tagWithAttributes("Build",
             "unitID=\"" + unit.getID() + "\" type=\"" + type.name + "\" x=\"" + x + "\" y=\"" + y
@@ -83,5 +75,13 @@ public class Build extends AbstractAction {
 
         //        System.err.println("Build.execute: something weird just happened " + unit + " builds at " + x + "," + y);
         return null;
+    }
+
+    public boolean equals(Object o) {
+        if (!(o instanceof Build)) {
+            return false;
+        }
+        Build a = (Build) o;
+        return type == a.type && x == a.x && y == a.y && pf.getClass() == a.pf.getClass();
     }
 }

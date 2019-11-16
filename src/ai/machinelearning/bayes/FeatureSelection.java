@@ -39,93 +39,6 @@ public class FeatureSelection {
         return accuracy;
     }
 
-    public static double featureGainRatio(List<int[]> X_l, List<Integer> Y_l, int feature) {
-        int n_x_values = 0;
-        int n_y_values = 0;
-
-        for (int i = 0; i < X_l.size(); i++) {
-            if (X_l.get(i)[feature] >= n_x_values) {
-                n_x_values = X_l.get(i)[feature] + 1;
-            }
-            if (Y_l.get(i) >= n_y_values) {
-                n_y_values = Y_l.get(i) + 1;
-            }
-        }
-
-        //        System.out.println("n values: " + n_x_values + " / " + n_y_values);
-
-        int[] x_distribution = new int[n_x_values];
-        List<Integer>[] y_x_distributions = new List[n_x_values];
-        for (int i = 0; i < n_x_values; i++) {
-            y_x_distributions[i] = new ArrayList<>();
-        }
-        for (int i = 0; i < X_l.size(); i++) {
-            int x = X_l.get(i)[feature];
-            x_distribution[x]++;
-            y_x_distributions[x].add(Y_l.get(i));
-        }
-
-        double H = entropy(Y_l, n_y_values);
-        double[] H_x = new double[n_x_values];
-        for (int i = 0; i < n_x_values; i++) {
-            if (x_distribution[i] > 0) {
-                H_x[i] = entropy(y_x_distributions[i], n_y_values);
-            } else {
-                H_x[i] = 0;
-            }
-        }
-
-        double information_gain = H;
-        double intrinsic_value = 0;
-        for (int i = 0; i < n_x_values; i++) {
-            double x_ratio = x_distribution[i] / (double) X_l.size();
-            information_gain -= x_ratio * H_x[i];
-
-            if (x_distribution[i] > 0) {
-                intrinsic_value -= x_ratio * Math.log(x_ratio) / Math.log(2);
-            }
-        }
-
-        double information_gain_ratio = (intrinsic_value > 0 ? information_gain / intrinsic_value
-            : 0);
-
-        //        System.out.println("H = " + H);
-        //        System.out.println("IG(" + feature + ") = " + information_gain);
-        //        System.out.println("IV(" + feature + ") = " + intrinsic_value);
-        //        System.out.println("IGR(" + feature + ") = " + information_gain_ratio);
-    
-        /*
-        if (information_gain_ratio>0.5) {
-            System.out.println("information_gain_ratio = " + information_gain_ratio + " -----------");
-            System.out.println("  H was: " + H);
-            System.out.println("  information_gain was: " + information_gain);
-            System.out.println("  x_distribution was: " + Arrays.toString(x_distribution));
-            System.out.println("  H_x was: " + Arrays.toString(H_x));
-        }
-        */
-
-        return information_gain_ratio;
-    }
-
-    public static double entropy(List<Integer> l, int nValues) {
-        int[] histogram = new int[nValues];
-        double total = 0;
-        for (int v : l) {
-            histogram[v]++;
-            total++;
-        }
-
-        double h = 0;
-        for (int i = 0; i < nValues; i++) {
-            double p = histogram[i] / total;
-            if (histogram[i] > 0) {
-                h += -p * Math.log(p) / Math.log(2);
-            }
-        }
-
-        return h;
-    }
-
     public static Pair<Double, Double> crossValidation(BayesianModel model, List<int[]> X_l,
         List<Integer> Y_l, List<TrainingInstance> instances, List<UnitAction> allPossibleActions,
         int nfolds) throws Exception {
@@ -198,8 +111,8 @@ public class FeatureSelection {
             // train the model:
             model.clearTraining();
             model.train(X_training, Y_training, i_training);
-            
-  /*          
+
+  /*
             model.save(new XMLWriter(new FileWriter(model.getClass().getSimpleName() + ".xml")));
             Element e = new SAXBuilder().build(model.getClass().getSimpleName() + ".xml").getRootElement();
 //            model = new OldNaiveBayes(e);
@@ -367,5 +280,92 @@ public class FeatureSelection {
         }
         //        return accuracy;
         return new Pair<Double, Double>(accuracy, loglikelihood / total);
+    }
+
+    public static double featureGainRatio(List<int[]> X_l, List<Integer> Y_l, int feature) {
+        int n_x_values = 0;
+        int n_y_values = 0;
+
+        for (int i = 0; i < X_l.size(); i++) {
+            if (X_l.get(i)[feature] >= n_x_values) {
+                n_x_values = X_l.get(i)[feature] + 1;
+            }
+            if (Y_l.get(i) >= n_y_values) {
+                n_y_values = Y_l.get(i) + 1;
+            }
+        }
+
+        //        System.out.println("n values: " + n_x_values + " / " + n_y_values);
+
+        int[] x_distribution = new int[n_x_values];
+        List<Integer>[] y_x_distributions = new List[n_x_values];
+        for (int i = 0; i < n_x_values; i++) {
+            y_x_distributions[i] = new ArrayList<>();
+        }
+        for (int i = 0; i < X_l.size(); i++) {
+            int x = X_l.get(i)[feature];
+            x_distribution[x]++;
+            y_x_distributions[x].add(Y_l.get(i));
+        }
+
+        double H = entropy(Y_l, n_y_values);
+        double[] H_x = new double[n_x_values];
+        for (int i = 0; i < n_x_values; i++) {
+            if (x_distribution[i] > 0) {
+                H_x[i] = entropy(y_x_distributions[i], n_y_values);
+            } else {
+                H_x[i] = 0;
+            }
+        }
+
+        double information_gain = H;
+        double intrinsic_value = 0;
+        for (int i = 0; i < n_x_values; i++) {
+            double x_ratio = x_distribution[i] / (double) X_l.size();
+            information_gain -= x_ratio * H_x[i];
+
+            if (x_distribution[i] > 0) {
+                intrinsic_value -= x_ratio * Math.log(x_ratio) / Math.log(2);
+            }
+        }
+
+        double information_gain_ratio = (intrinsic_value > 0 ? information_gain / intrinsic_value
+            : 0);
+
+        //        System.out.println("H = " + H);
+        //        System.out.println("IG(" + feature + ") = " + information_gain);
+        //        System.out.println("IV(" + feature + ") = " + intrinsic_value);
+        //        System.out.println("IGR(" + feature + ") = " + information_gain_ratio);
+
+        /*
+        if (information_gain_ratio>0.5) {
+            System.out.println("information_gain_ratio = " + information_gain_ratio + " -----------");
+            System.out.println("  H was: " + H);
+            System.out.println("  information_gain was: " + information_gain);
+            System.out.println("  x_distribution was: " + Arrays.toString(x_distribution));
+            System.out.println("  H_x was: " + Arrays.toString(H_x));
+        }
+        */
+
+        return information_gain_ratio;
+    }
+
+    public static double entropy(List<Integer> l, int nValues) {
+        int[] histogram = new int[nValues];
+        double total = 0;
+        for (int v : l) {
+            histogram[v]++;
+            total++;
+        }
+
+        double h = 0;
+        for (int i = 0; i < nValues; i++) {
+            double p = histogram[i] / total;
+            if (histogram[i] > 0) {
+                h += -p * Math.log(p) / Math.log(2);
+            }
+        }
+
+        return h;
     }
 }

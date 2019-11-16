@@ -31,14 +31,6 @@ public class Attack extends AbstractAction {
         return !pgs.getUnits().contains(target);
     }
 
-    public boolean equals(Object o) {
-        if (!(o instanceof Attack)) {
-            return false;
-        }
-        Attack a = (Attack) o;
-        return target.getID() == a.target.getID() && pf.getClass() == a.pf.getClass();
-    }
-
     public void toxml(XMLWriter w) {
         w.tagWithAttributes("Attack",
             "unitID=\"" + unit.getID() + "\" target=\"" + target.getID() + "\" pathfinding=\"" + pf
@@ -64,5 +56,13 @@ public class Attack extends AbstractAction {
             }
             return null;
         }
+    }
+
+    public boolean equals(Object o) {
+        if (!(o instanceof Attack)) {
+            return false;
+        }
+        Attack a = (Attack) o;
+        return target.getID() == a.target.getID() && pf.getClass() == a.pf.getClass();
     }
 }

@@ -25,22 +25,9 @@ public class TwoPhaseNaiveMCTS extends AIWithComputationBudget implements Interr
 
     public static int DEBUG = 0;
     public EvaluationFunction ef = null;
-
-    Random r = new Random();
     public AI randomAI = new RandomBiasedAI();
-    long max_actions_so_far = 0;
-
-    GameState gs_to_start_from = null;
-    NaiveMCTSNode tree = null;
-    int node_creation_ID = 0;
-    int n_phase1_iterations_left = -1;      // this is set in the first cycle of execution for each action
-    int n_phase1_milliseconds_left = -1;      // this is set in the first cycle of execution for each action
-
     public int MAXSIMULATIONTIME = 1024;
     public int MAX_TREE_DEPTH = 10;
-
-    int playerForThisComputation;
-
     public float phase1_epsilon_l = 0.3f;
     public float phase1_epsilon_g = 0.0f;
     public float phase1_epsilon_0 = 1.0f;
@@ -48,17 +35,22 @@ public class TwoPhaseNaiveMCTS extends AIWithComputationBudget implements Interr
     public float phase2_epsilon_g = 0.0f;
     public float phase2_epsilon_0 = 0.0f;
     public float phase1_ratio = 0.5f;
-
     public int phase1_global_strategy = NaiveMCTSNode.E_GREEDY;
     public int phase2_global_strategy = NaiveMCTSNode.E_GREEDY;
-
-    boolean forceExplorationOfNonSampledActions = true;
-
     // statistics:
     public long total_runs = 0;
     public long total_cycles_executed = 0;
     public long total_actions_issued = 0;
     public long total_time = 0;
+    Random r = new Random();
+    long max_actions_so_far = 0;
+    GameState gs_to_start_from = null;
+    NaiveMCTSNode tree = null;
+    int node_creation_ID = 0;
+    int n_phase1_iterations_left = -1;      // this is set in the first cycle of execution for each action
+    int n_phase1_milliseconds_left = -1;      // this is set in the first cycle of execution for each action
+    int playerForThisComputation;
+    boolean forceExplorationOfNonSampledActions = true;
 
     public TwoPhaseNaiveMCTS(UnitTypeTable utt) {
         this(100, -1, 100, 10, 0.3f, 0.0f, 1.0f, 0.3f, 0.0f, 0.0f, 0.5f, new RandomBiasedAI(),
@@ -117,13 +109,6 @@ public class TwoPhaseNaiveMCTS extends AIWithComputationBudget implements Interr
         n_phase1_milliseconds_left = -1;
     }
 
-    public AI clone() {
-        return new TwoPhaseNaiveMCTS(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME,
-            MAX_TREE_DEPTH, phase1_epsilon_l, phase1_epsilon_g, phase1_epsilon_0, phase2_epsilon_l,
-            phase2_epsilon_g, phase2_epsilon_0, phase1_ratio, randomAI, ef,
-            forceExplorationOfNonSampledActions);
-    }
-
     public final PlayerAction getAction(int player, GameState gs) throws Exception {
         if (gs.canExecuteAnyAction(player)) {
             startNewComputation(player, gs.clone());
@@ -132,6 +117,60 @@ public class TwoPhaseNaiveMCTS extends AIWithComputationBudget implements Interr
         } else {
             return new PlayerAction();
         }
+    }
+
+    public AI clone() {
+        return new TwoPhaseNaiveMCTS(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME,
+            MAX_TREE_DEPTH, phase1_epsilon_l, phase1_epsilon_g, phase1_epsilon_0, phase2_epsilon_l,
+            phase2_epsilon_g, phase2_epsilon_0, phase1_ratio, randomAI, ef,
+            forceExplorationOfNonSampledActions);
+    }
+
+    public String toString() {
+        return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", "
+            + MAXSIMULATIONTIME + "," + MAX_TREE_DEPTH + "," + phase1_epsilon_l + ", "
+            + phase1_epsilon_g + ", " + phase1_epsilon_0 + ", " + phase2_epsilon_l + ", "
+            + phase2_epsilon_g + ", " + phase2_epsilon_0 + ", " + phase1_ratio + ", " + randomAI
+            + ", " + ef + ")";
+    }
+
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+
+        parameters.add(new ParameterSpecification("TimeBudget", int.class, 100));
+        parameters.add(new ParameterSpecification("IterationsBudget", int.class, -1));
+        parameters.add(new ParameterSpecification("PlayoutLookahead", int.class, 100));
+        parameters.add(new ParameterSpecification("MaxTreeDepth", int.class, 10));
+
+        parameters.add(new ParameterSpecification("E1_l", float.class, 0.3));
+        parameters.add(new ParameterSpecification("E1_g", float.class, 0.0));
+        parameters.add(new ParameterSpecification("E1_0", float.class, 1.0));
+
+        parameters.add(new ParameterSpecification("E2_l", float.class, 0.3));
+        parameters.add(new ParameterSpecification("E2_g", float.class, 0.0));
+        parameters.add(new ParameterSpecification("E2_0", float.class, 0.0));
+
+        ParameterSpecification ps_ratio = new ParameterSpecification("Phase1_Ratio", float.class,
+            0.5);
+        ps_ratio.setRange(0.0, 1.0);
+        parameters.add(ps_ratio);
+
+        parameters.add(new ParameterSpecification("DefaultPolicy", AI.class, randomAI));
+        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class,
+            new SimpleSqrtEvaluationFunction3()));
+
+        parameters.add(
+            new ParameterSpecification("ForceExplorationOfNonSampledActions", boolean.class, true));
+
+        return parameters;
+    }
+
+    public String statisticsString() {
+        return "Total runs: " + total_runs + ", runs per action: " + (total_runs
+            / (float) total_actions_issued) + ", runs per cycle: " + (total_runs
+            / (float) total_cycles_executed) + ", averate time per cycle: " + (total_time
+            / (float) total_cycles_executed) + ", max branching factor: " + max_actions_so_far;
     }
 
     public void startNewComputation(int a_player, GameState gs) throws Exception {
@@ -151,16 +190,6 @@ public class TwoPhaseNaiveMCTS extends AIWithComputationBudget implements Interr
         if (TIME_BUDGET > 0) {
             n_phase1_milliseconds_left = (int) (phase1_ratio * TIME_BUDGET);
         }
-    }
-
-    public void resetSearch() {
-        if (DEBUG >= 2) {
-            System.out.println("Resetting search...");
-        }
-        tree = null;
-        gs_to_start_from = null;
-        n_phase1_iterations_left = -1;
-        n_phase1_milliseconds_left = -1;
     }
 
     public void computeDuringOneGameFrame() throws Exception {
@@ -194,6 +223,28 @@ public class TwoPhaseNaiveMCTS extends AIWithComputationBudget implements Interr
         //        System.out.println("HL: " + count + " time: " + (System.currentTimeMillis() - start) + " (" + available_time + "," + max_playouts + ")");
         total_time += (end - start);
         total_cycles_executed++;
+    }
+
+    public PlayerAction getBestActionSoFar() {
+        int idx = getMostVisitedActionIdx();
+        if (idx == -1) {
+            if (DEBUG >= 1) {
+                System.out
+                    .println("TwoPhaseNaiveMCTS no children selected. Returning an empty asction");
+            }
+            return new PlayerAction();
+        }
+        if (DEBUG >= 2) {
+            tree.showNode(0, 1, ef);
+        }
+        if (DEBUG >= 1) {
+            NaiveMCTSNode best = (NaiveMCTSNode) tree.children.get(idx);
+            System.out.println(
+                "TwoPhaseNaiveMCTS selected children " + tree.actions.get(idx) + " explored "
+                    + best.visit_count + " Avg evaluation: " + (best.accum_evaluation
+                    / ((double) best.visit_count)));
+        }
+        return tree.actions.get(idx);
     }
 
     public boolean iteration(int player) throws Exception {
@@ -230,28 +281,6 @@ public class TwoPhaseNaiveMCTS extends AIWithComputationBudget implements Interr
         return true;
     }
 
-    public PlayerAction getBestActionSoFar() {
-        int idx = getMostVisitedActionIdx();
-        if (idx == -1) {
-            if (DEBUG >= 1) {
-                System.out
-                    .println("TwoPhaseNaiveMCTS no children selected. Returning an empty asction");
-            }
-            return new PlayerAction();
-        }
-        if (DEBUG >= 2) {
-            tree.showNode(0, 1, ef);
-        }
-        if (DEBUG >= 1) {
-            NaiveMCTSNode best = (NaiveMCTSNode) tree.children.get(idx);
-            System.out.println(
-                "TwoPhaseNaiveMCTS selected children " + tree.actions.get(idx) + " explored "
-                    + best.visit_count + " Avg evaluation: " + (best.accum_evaluation
-                    / ((double) best.visit_count)));
-        }
-        return tree.actions.get(idx);
-    }
-
     public int getMostVisitedActionIdx() {
         total_actions_issued++;
 
@@ -279,6 +308,29 @@ public class TwoPhaseNaiveMCTS extends AIWithComputationBudget implements Interr
         }
 
         return bestIdx;
+    }
+
+    public void simulate(GameState gs, int time) throws Exception {
+        boolean gameover = false;
+
+        do {
+            if (gs.isComplete()) {
+                gameover = gs.cycle();
+            } else {
+                gs.issue(randomAI.getAction(0, gs));
+                gs.issue(randomAI.getAction(1, gs));
+            }
+        } while (!gameover && gs.getTime() < time);
+    }
+
+    public void resetSearch() {
+        if (DEBUG >= 2) {
+            System.out.println("Resetting search...");
+        }
+        tree = null;
+        gs_to_start_from = null;
+        n_phase1_iterations_left = -1;
+        n_phase1_milliseconds_left = -1;
     }
 
     public int getHighestEvaluationActionIdx() {
@@ -311,72 +363,12 @@ public class TwoPhaseNaiveMCTS extends AIWithComputationBudget implements Interr
         return bestIdx;
     }
 
-    public void simulate(GameState gs, int time) throws Exception {
-        boolean gameover = false;
-
-        do {
-            if (gs.isComplete()) {
-                gameover = gs.cycle();
-            } else {
-                gs.issue(randomAI.getAction(0, gs));
-                gs.issue(randomAI.getAction(1, gs));
-            }
-        } while (!gameover && gs.getTime() < time);
-    }
-
     public NaiveMCTSNode getTree() {
         return tree;
     }
 
     public GameState getGameStateToStartFrom() {
         return gs_to_start_from;
-    }
-
-    public String toString() {
-        return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", "
-            + MAXSIMULATIONTIME + "," + MAX_TREE_DEPTH + "," + phase1_epsilon_l + ", "
-            + phase1_epsilon_g + ", " + phase1_epsilon_0 + ", " + phase2_epsilon_l + ", "
-            + phase2_epsilon_g + ", " + phase2_epsilon_0 + ", " + phase1_ratio + ", " + randomAI
-            + ", " + ef + ")";
-    }
-
-    public String statisticsString() {
-        return "Total runs: " + total_runs + ", runs per action: " + (total_runs
-            / (float) total_actions_issued) + ", runs per cycle: " + (total_runs
-            / (float) total_cycles_executed) + ", averate time per cycle: " + (total_time
-            / (float) total_cycles_executed) + ", max branching factor: " + max_actions_so_far;
-    }
-
-    @Override
-    public List<ParameterSpecification> getParameters() {
-        List<ParameterSpecification> parameters = new ArrayList<>();
-
-        parameters.add(new ParameterSpecification("TimeBudget", int.class, 100));
-        parameters.add(new ParameterSpecification("IterationsBudget", int.class, -1));
-        parameters.add(new ParameterSpecification("PlayoutLookahead", int.class, 100));
-        parameters.add(new ParameterSpecification("MaxTreeDepth", int.class, 10));
-
-        parameters.add(new ParameterSpecification("E1_l", float.class, 0.3));
-        parameters.add(new ParameterSpecification("E1_g", float.class, 0.0));
-        parameters.add(new ParameterSpecification("E1_0", float.class, 1.0));
-
-        parameters.add(new ParameterSpecification("E2_l", float.class, 0.3));
-        parameters.add(new ParameterSpecification("E2_g", float.class, 0.0));
-        parameters.add(new ParameterSpecification("E2_0", float.class, 0.0));
-
-        ParameterSpecification ps_ratio = new ParameterSpecification("Phase1_Ratio", float.class,
-            0.5);
-        ps_ratio.setRange(0.0, 1.0);
-        parameters.add(ps_ratio);
-
-        parameters.add(new ParameterSpecification("DefaultPolicy", AI.class, randomAI));
-        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class,
-            new SimpleSqrtEvaluationFunction3()));
-
-        parameters.add(
-            new ParameterSpecification("ForceExplorationOfNonSampledActions", boolean.class, true));
-
-        return parameters;
     }
 
     public int getPlayoutLookahead() {

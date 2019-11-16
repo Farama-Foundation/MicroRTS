@@ -28,6 +28,10 @@ public class Trace {
 
     UnitTypeTable utt = null;
     List<TraceEntry> entries = new LinkedList<TraceEntry>();
+    /**
+     * this accelerates the function below if traversing a trace sequentially
+     */
+    GameState getGameStateAtCycle_cache = null;
 
     /**
      * Constructs from a UnitTypeTable
@@ -39,12 +43,41 @@ public class Trace {
     }
 
     /**
-     * Returns the list of entries, where each entry corresponds to actions executed in a frame
+     * Constructs the Trace from a XML element
      *
-     * @return
+     * @param e
      */
-    public List<TraceEntry> getEntries() {
-        return entries;
+    public Trace(Element e) throws Exception {
+        utt = UnitTypeTable.fromXML(e.getChild(UnitTypeTable.class.getName()));
+        Element entries_e = e.getChild("entries");
+
+        for (Object o : entries_e.getChildren()) {
+            Element entry_e = (Element) o;
+            entries.add(new TraceEntry(entry_e, utt));
+        }
+    }
+
+    /**
+     * Constructs the Trace from a XML element, overriding the UnitTypeTable of that element with
+     * one provided
+     *
+     * @param e
+     * @param a_utt
+     */
+    public Trace(Element e, UnitTypeTable a_utt) throws Exception {
+        utt = a_utt;
+        Element entries_e = e.getChild("entries");
+
+        for (Object o : entries_e.getChildren()) {
+            Element entry_e = (Element) o;
+            entries.add(new TraceEntry(entry_e, utt));
+        }
+    }
+
+    public static Trace fromZip(String path) throws Exception {
+        ZipInputStream zis = new ZipInputStream(new FileInputStream(path));
+        zis.getNextEntry();
+        return new Trace(new SAXBuilder().build(zis).getRootElement());
     }
 
     public UnitTypeTable getUnitTypeTable() {
@@ -84,22 +117,6 @@ public class Trace {
     }
 
     /**
-     * Writes a XML representation
-     *
-     * @param w
-     */
-    public void toxml(XMLWriter w) {
-        w.tag(this.getClass().getName());
-        utt.toxml(w);
-        w.tag("entries");
-        for (TraceEntry te : entries) {
-            te.toxml(w);
-        }
-        w.tag("/entries");
-        w.tag("/" + this.getClass().getName());
-    }
-
-    /**
      * Dumps this trace to the XML file specified on path It can be reconstructed later (e.g. with
      * {@link #fromXML(String, UnitTypeTable)}
      *
@@ -114,6 +131,22 @@ public class Trace {
             System.err.println("Error while writing trace to: " + path);
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Writes a XML representation
+     *
+     * @param w
+     */
+    public void toxml(XMLWriter w) {
+        w.tag(this.getClass().getName());
+        utt.toxml(w);
+        w.tag("entries");
+        for (TraceEntry te : entries) {
+            te.toxml(w);
+        }
+        w.tag("/entries");
+        w.tag("/" + this.getClass().getName());
     }
 
     public void toZip(String path) {
@@ -145,49 +178,6 @@ public class Trace {
             e1.printStackTrace();
         }
     }
-
-    public static Trace fromZip(String path) throws Exception {
-        ZipInputStream zis = new ZipInputStream(new FileInputStream(path));
-        zis.getNextEntry();
-        return new Trace(new SAXBuilder().build(zis).getRootElement());
-    }
-
-    /**
-     * Constructs the Trace from a XML element
-     *
-     * @param e
-     */
-    public Trace(Element e) throws Exception {
-        utt = UnitTypeTable.fromXML(e.getChild(UnitTypeTable.class.getName()));
-        Element entries_e = e.getChild("entries");
-
-        for (Object o : entries_e.getChildren()) {
-            Element entry_e = (Element) o;
-            entries.add(new TraceEntry(entry_e, utt));
-        }
-    }
-
-    /**
-     * Constructs the Trace from a XML element, overriding the UnitTypeTable of that element with
-     * one provided
-     *
-     * @param e
-     * @param a_utt
-     */
-    public Trace(Element e, UnitTypeTable a_utt) throws Exception {
-        utt = a_utt;
-        Element entries_e = e.getChild("entries");
-
-        for (Object o : entries_e.getChildren()) {
-            Element entry_e = (Element) o;
-            entries.add(new TraceEntry(entry_e, utt));
-        }
-    }
-
-    /**
-     * this accelerates the function below if traversing a trace sequentially
-     */
-    GameState getGameStateAtCycle_cache = null;
 
     /**
      * Simulates the game from the from the last cached cycle (initialized as null) to get the
@@ -261,5 +251,14 @@ public class Trace {
 
         getGameStateAtCycle_cache = gs;
         return gs;
+    }
+
+    /**
+     * Returns the list of entries, where each entry corresponds to actions executed in a frame
+     *
+     * @return
+     */
+    public List<TraceEntry> getEntries() {
+        return entries;
     }
 }

@@ -24,20 +24,16 @@ import rts.units.UnitTypeTable;
 public class UCT extends AIWithComputationBudget implements InterruptibleAI {
 
     public static int DEBUG = 0;
-    EvaluationFunction ef = null;
-
-    Random r = new Random();
-    AI randomAI = new RandomBiasedAI();
-    long max_actions_so_far = 0;
-
-    GameState gs_to_start_from = null;
     public UCTNode tree = null;
-
     // statistics:
     public long total_runs = 0;
     public long total_cycles_executed = 0;
     public long total_actions_issued = 0;
-
+    EvaluationFunction ef = null;
+    Random r = new Random();
+    AI randomAI = new RandomBiasedAI();
+    long max_actions_so_far = 0;
+    GameState gs_to_start_from = null;
     long total_runs_this_move = 0;
 
     int MAXSIMULATIONTIME = 1024;
@@ -58,29 +54,10 @@ public class UCT extends AIWithComputationBudget implements InterruptibleAI {
         ef = a_ef;
     }
 
-    public String statisticsString() {
-        return "Average runs per cycle: " + ((double) total_runs) / total_cycles_executed
-            + ", Average runs per action: " + ((double) total_runs) / total_actions_issued;
-    }
-
-    public void printStats() {
-        if (total_cycles_executed > 0 && total_actions_issued > 0) {
-            System.out.println(
-                "Average runs per cycle: " + ((double) total_runs) / total_cycles_executed);
-            System.out.println(
-                "Average runs per action: " + ((double) total_runs) / total_actions_issued);
-        }
-    }
-
     public void reset() {
         gs_to_start_from = null;
         tree = null;
         total_runs_this_move = 0;
-    }
-
-    public AI clone() {
-        return new UCT(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME, MAX_TREE_DEPTH, randomAI,
-            ef);
     }
 
     public PlayerAction getAction(int player, GameState gs) throws Exception {
@@ -93,6 +70,47 @@ public class UCT extends AIWithComputationBudget implements InterruptibleAI {
         }
     }
 
+    public AI clone() {
+        return new UCT(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME, MAX_TREE_DEPTH, randomAI,
+            ef);
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", "
+            + MAXSIMULATIONTIME + ", " + MAX_TREE_DEPTH + ", " + randomAI + ", " + ef + ")";
+    }
+
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+
+        parameters.add(new ParameterSpecification("TimeBudget", int.class, 100));
+        parameters.add(new ParameterSpecification("IterationsBudget", int.class, -1));
+        parameters.add(new ParameterSpecification("PlayoutLookahead", int.class, 100));
+        parameters.add(new ParameterSpecification("MaxTreeDepth", int.class, 10));
+
+        parameters.add(new ParameterSpecification("DefaultPolicy", AI.class, randomAI));
+        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class,
+            new SimpleSqrtEvaluationFunction3()));
+
+        return parameters;
+    }
+
+    public void printStats() {
+        if (total_cycles_executed > 0 && total_actions_issued > 0) {
+            System.out.println(
+                "Average runs per cycle: " + ((double) total_runs) / total_cycles_executed);
+            System.out.println(
+                "Average runs per action: " + ((double) total_runs) / total_actions_issued);
+        }
+    }
+
+    public String statisticsString() {
+        return "Average runs per cycle: " + ((double) total_runs) / total_cycles_executed
+            + ", Average runs per action: " + ((double) total_runs) / total_actions_issued;
+    }
+
     public void startNewComputation(int a_player, GameState gs) throws Exception {
         float evaluation_bound = ef.upperBound(gs);
         playerForThisComputation = a_player;
@@ -101,15 +119,6 @@ public class UCT extends AIWithComputationBudget implements InterruptibleAI {
         gs_to_start_from = gs;
         total_runs_this_move = 0;
         //        System.out.println(evaluation_bound);
-    }
-
-    public void resetSearch() {
-        if (DEBUG >= 2) {
-            System.out.println("Resetting search...");
-        }
-        tree = null;
-        gs_to_start_from = null;
-        total_runs_this_move = 0;
     }
 
     public void computeDuringOneGameFrame() throws Exception {
@@ -137,34 +146,6 @@ public class UCT extends AIWithComputationBudget implements InterruptibleAI {
         }
 
         total_cycles_executed++;
-    }
-
-    public double monteCarloRun(int player, long cutOffTime) throws Exception {
-        UCTNode leaf = tree.UCTSelectLeaf(player, 1 - player, cutOffTime, MAX_TREE_DEPTH);
-
-        if (leaf != null) {
-            GameState gs2 = leaf.gs.clone();
-            simulate(gs2, gs2.getTime() + MAXSIMULATIONTIME);
-
-            int time = gs2.getTime() - gs_to_start_from.getTime();
-            double evaluation = ef.evaluate(player, 1 - player, gs2) * Math.pow(0.99, time / 10.0);
-
-            //                System.out.println(evaluation_bound + " -> " + evaluation + " -> " + (evaluation+evaluation_bound)/(evaluation_bound*2));
-
-            while (leaf != null) {
-                leaf.accum_evaluation += evaluation;
-                leaf.visit_count++;
-                leaf = leaf.parent;
-            }
-            total_runs++;
-            total_runs_this_move++;
-            return evaluation;
-        } else {
-            // no actions to choose from :)
-            System.err.println(
-                this.getClass().getSimpleName() + ": claims there are no more leafs to explore...");
-            return 0;
-        }
     }
 
     public PlayerAction getBestActionSoFar() {
@@ -216,6 +197,56 @@ public class UCT extends AIWithComputationBudget implements InterruptibleAI {
         return tree.actions.get(mostVisitedIdx);
     }
 
+    public double monteCarloRun(int player, long cutOffTime) throws Exception {
+        UCTNode leaf = tree.UCTSelectLeaf(player, 1 - player, cutOffTime, MAX_TREE_DEPTH);
+
+        if (leaf != null) {
+            GameState gs2 = leaf.gs.clone();
+            simulate(gs2, gs2.getTime() + MAXSIMULATIONTIME);
+
+            int time = gs2.getTime() - gs_to_start_from.getTime();
+            double evaluation = ef.evaluate(player, 1 - player, gs2) * Math.pow(0.99, time / 10.0);
+
+            //                System.out.println(evaluation_bound + " -> " + evaluation + " -> " + (evaluation+evaluation_bound)/(evaluation_bound*2));
+
+            while (leaf != null) {
+                leaf.accum_evaluation += evaluation;
+                leaf.visit_count++;
+                leaf = leaf.parent;
+            }
+            total_runs++;
+            total_runs_this_move++;
+            return evaluation;
+        } else {
+            // no actions to choose from :)
+            System.err.println(
+                this.getClass().getSimpleName() + ": claims there are no more leafs to explore...");
+            return 0;
+        }
+    }
+
+    public void simulate(GameState gs, int time) throws Exception {
+        boolean gameover = false;
+
+        do {
+            if (gs.isComplete()) {
+                gameover = gs.cycle();
+            } else {
+                gs.issue(randomAI.getAction(0, gs));
+                gs.issue(randomAI.getAction(1, gs));
+            }
+        } while (!gameover && gs.getTime() < time);
+    }
+
+    public void resetSearch() {
+        if (DEBUG >= 2) {
+            System.out.println("Resetting search...");
+        }
+        tree = null;
+        gs_to_start_from = null;
+        total_runs_this_move = 0;
+    }
+
     // gets the best action, evaluates it for 'N' times using a simulation, and returns the average obtained value:
     public float getBestActionEvaluation(GameState gs, int player, int N) throws Exception {
         PlayerAction pa = getBestActionSoFar();
@@ -235,41 +266,6 @@ public class UCT extends AIWithComputationBudget implements InterruptibleAI {
         }
 
         return accum / N;
-    }
-
-    public void simulate(GameState gs, int time) throws Exception {
-        boolean gameover = false;
-
-        do {
-            if (gs.isComplete()) {
-                gameover = gs.cycle();
-            } else {
-                gs.issue(randomAI.getAction(0, gs));
-                gs.issue(randomAI.getAction(1, gs));
-            }
-        } while (!gameover && gs.getTime() < time);
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", "
-            + MAXSIMULATIONTIME + ", " + MAX_TREE_DEPTH + ", " + randomAI + ", " + ef + ")";
-    }
-
-    @Override
-    public List<ParameterSpecification> getParameters() {
-        List<ParameterSpecification> parameters = new ArrayList<>();
-
-        parameters.add(new ParameterSpecification("TimeBudget", int.class, 100));
-        parameters.add(new ParameterSpecification("IterationsBudget", int.class, -1));
-        parameters.add(new ParameterSpecification("PlayoutLookahead", int.class, 100));
-        parameters.add(new ParameterSpecification("MaxTreeDepth", int.class, 10));
-
-        parameters.add(new ParameterSpecification("DefaultPolicy", AI.class, randomAI));
-        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class,
-            new SimpleSqrtEvaluationFunction3()));
-
-        return parameters;
     }
 
     public int getPlayoutLookahead() {

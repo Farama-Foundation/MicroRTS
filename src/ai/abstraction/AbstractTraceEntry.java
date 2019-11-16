@@ -27,8 +27,21 @@ public class AbstractTraceEntry {
         time = a_time;
     }
 
-    public void addAbstractAction(Unit u, AbstractAction a) {
-        actions.add(new Pair<>(u, a));
+    public AbstractTraceEntry(Element e, UnitTypeTable utt) throws Exception {
+        Element actions_e = e.getChild("abstractactions");
+        time = Integer.parseInt(e.getAttributeValue("time"));
+
+        Element pgs_e = e.getChild(PhysicalGameState.class.getName());
+        pgs = PhysicalGameState.fromXML(pgs_e, utt);
+
+        for (Object o : actions_e.getChildren()) {
+            Element action_e = (Element) o;
+            long ID = Long.parseLong(action_e.getAttributeValue("unitID"));
+            AbstractAction a = AbstractAction
+                .fromXML(action_e.getChild("abstractaction"), pgs, utt);
+            Unit u = pgs.getUnit(ID);
+            actions.add(new Pair<>(u, a));
+        }
     }
 
     public void addAbstractActionIfNew(Unit u, AbstractAction a, AbstractTrace trace) {
@@ -40,6 +53,10 @@ public class AbstractTraceEntry {
             addAbstractAction(u, a);
             trace.setCurrentAbstractAction(u, a);
         }
+    }
+
+    public void addAbstractAction(Unit u, AbstractAction a) {
+        actions.add(new Pair<>(u, a));
     }
 
     public PhysicalGameState getPhysicalGameState() {
@@ -65,22 +82,5 @@ public class AbstractTraceEntry {
         }
         w.tag("/abstractactions");
         w.tag("/" + this.getClass().getName());
-    }
-
-    public AbstractTraceEntry(Element e, UnitTypeTable utt) throws Exception {
-        Element actions_e = e.getChild("abstractactions");
-        time = Integer.parseInt(e.getAttributeValue("time"));
-
-        Element pgs_e = e.getChild(PhysicalGameState.class.getName());
-        pgs = PhysicalGameState.fromXML(pgs_e, utt);
-
-        for (Object o : actions_e.getChildren()) {
-            Element action_e = (Element) o;
-            long ID = Long.parseLong(action_e.getAttributeValue("unitID"));
-            AbstractAction a = AbstractAction
-                .fromXML(action_e.getChild("abstractaction"), pgs, utt);
-            Unit u = pgs.getUnit(ID);
-            actions.add(new Pair<>(u, a));
-        }
     }
 }

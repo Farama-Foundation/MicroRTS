@@ -25,8 +25,8 @@ import rts.units.UnitTypeTable;
  */
 public class HeavyDefense extends AbstractionLayerAI {
 
-    Random r = new Random();
     protected UnitTypeTable utt;
+    Random r = new Random();
     UnitType workerType;
     UnitType baseType;
     UnitType barracksType;
@@ -45,20 +45,12 @@ public class HeavyDefense extends AbstractionLayerAI {
         reset(a_utt);
     }
 
-    public void reset() {
-        super.reset();
-    }
-
     public void reset(UnitTypeTable a_utt) {
         utt = a_utt;
         workerType = utt.getUnitType("Worker");
         baseType = utt.getUnitType("Base");
         barracksType = utt.getUnitType("Barracks");
         heavyType = utt.getUnitType("Heavy");
-    }
-
-    public AI clone() {
-        return new HeavyDefense(utt, pf);
     }
 
     /*
@@ -110,6 +102,20 @@ public class HeavyDefense extends AbstractionLayerAI {
 
         // This method simply takes all the unit actions executed so far, and packages them into a PlayerAction
         return translateActions(player, gs);
+    }
+
+    public AI clone() {
+        return new HeavyDefense(utt, pf);
+    }
+
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+
+        parameters.add(
+            new ParameterSpecification("PathFinding", PathFinding.class, new AStarPathFinding()));
+
+        return parameters;
     }
 
     public void baseBehavior(Unit u, Player p, PhysicalGameState pgs) {
@@ -233,13 +239,7 @@ public class HeavyDefense extends AbstractionLayerAI {
         }
     }
 
-    @Override
-    public List<ParameterSpecification> getParameters() {
-        List<ParameterSpecification> parameters = new ArrayList<>();
-
-        parameters.add(
-            new ParameterSpecification("PathFinding", PathFinding.class, new AStarPathFinding()));
-
-        return parameters;
+    public void reset() {
+        super.reset();
     }
 }

@@ -38,6 +38,20 @@ public class IDRTMinimaxRandomized extends IDRTMinimax {
         return new IDRTMinimaxRandomized(TIME_BUDGET, m_repeats, ef);
     }
 
+    public String toString() {
+        return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", "
+            + m_repeats + ", " + ef + ")";
+    }
+
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = super.getParameters();
+
+        parameters.add(new ParameterSpecification("Repeats", int.class, 10));
+
+        return parameters;
+    }
+
     public PlayerAction timeBoundedRealTimeMinimaxRandomizedABOutsideStack(GameState initial_gs,
         int maxplayer, int minplayer, int lookAhead, long cutOffTime, boolean needAResult)
         throws Exception {
@@ -82,7 +96,7 @@ public class IDRTMinimaxRandomized extends IDRTMinimax {
                             current.type = 0;
                         } else {
                             // randomize which player we will consider next!
-                            // this is the ONLY difference between this method and the starndard alpha-beta:                                    
+                            // this is the ONLY difference between this method and the starndard alpha-beta:
                             current.type = r.nextInt(2) + 1;
                             //                                    System.out.println(current.type);
                         }
@@ -275,20 +289,6 @@ public class IDRTMinimaxRandomized extends IDRTMinimax {
             return head.actions.getRandom();
         }
         return null;
-    }
-
-    public String toString() {
-        return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", "
-            + m_repeats + ", " + ef + ")";
-    }
-
-    @Override
-    public List<ParameterSpecification> getParameters() {
-        List<ParameterSpecification> parameters = super.getParameters();
-
-        parameters.add(new ParameterSpecification("Repeats", int.class, 10));
-
-        return parameters;
     }
 
     public int getRepeats() {

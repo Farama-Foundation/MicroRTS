@@ -27,6 +27,18 @@ import javax.imageio.ImageIO;
  */
 public class HTNDomainVisualizerVertical {
 
+    int hpadding = 8;
+    int vpadding = 4;
+    int hMethodPadding = 32;
+    int vMethodPadding = 8;
+    Font font = null;
+    FontMetrics fm = null;
+    public HTNDomainVisualizerVertical() {
+        font = new Font("Arial", Font.PLAIN, 16);
+        Canvas c = new Canvas();
+        fm = c.getFontMetrics(font);
+    }
+
     public static void main(String[] args) throws Exception {
         {
             DomainDefinition dd = DomainDefinition
@@ -63,19 +75,6 @@ public class HTNDomainVisualizerVertical {
             BufferedImage img = v.visualizeHTNDomain(dd, new Symbol("destroy-player"));
             ImageIO.write(img, "png", new File("HTN-domain-flexible-single-target-portfolio.png"));
         }
-    }
-
-    int hpadding = 8;
-    int vpadding = 4;
-    int hMethodPadding = 32;
-    int vMethodPadding = 8;
-    Font font = null;
-    FontMetrics fm = null;
-
-    public HTNDomainVisualizerVertical() {
-        font = new Font("Arial", Font.PLAIN, 16);
-        Canvas c = new Canvas();
-        fm = c.getFontMetrics(font);
     }
 
     public BufferedImage visualizeHTNDomain(DomainDefinition d, Symbol root) throws Exception {

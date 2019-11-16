@@ -31,6 +31,32 @@ public class TraceEntry {
     }
 
     /**
+     * Constructs the TraceEntry from a XML element and a UnitTypeTable
+     *
+     * @param e
+     * @param utt
+     */
+    public TraceEntry(Element e, UnitTypeTable utt) throws Exception {
+        Element actions_e = e.getChild("actions");
+        time = Integer.parseInt(e.getAttributeValue("time"));
+
+        Element pgs_e = e.getChild(PhysicalGameState.class.getName());
+        pgs = PhysicalGameState.fromXML(pgs_e, utt);
+
+        for (Object o : actions_e.getChildren()) {
+            Element action_e = (Element) o;
+            long ID = Long.parseLong(action_e.getAttributeValue("unitID"));
+            UnitAction a = new UnitAction(action_e.getChild("UnitAction"), utt);
+            Unit u = pgs.getUnit(ID);
+            if (u == null) {
+                System.err
+                    .println("Undefined unit ID " + ID + " in action " + a + " at time " + time);
+            }
+            actions.add(new Pair<Unit, UnitAction>(u, a));
+        }
+    }
+
+    /**
      * Adds a UnitAction to a Unit
      *
      * @param u
@@ -110,31 +136,5 @@ public class TraceEntry {
         }
         w.tag("/actions");
         w.tag("/" + this.getClass().getName());
-    }
-
-    /**
-     * Constructs the TraceEntry from a XML element and a UnitTypeTable
-     *
-     * @param e
-     * @param utt
-     */
-    public TraceEntry(Element e, UnitTypeTable utt) throws Exception {
-        Element actions_e = e.getChild("actions");
-        time = Integer.parseInt(e.getAttributeValue("time"));
-
-        Element pgs_e = e.getChild(PhysicalGameState.class.getName());
-        pgs = PhysicalGameState.fromXML(pgs_e, utt);
-
-        for (Object o : actions_e.getChildren()) {
-            Element action_e = (Element) o;
-            long ID = Long.parseLong(action_e.getAttributeValue("unitID"));
-            UnitAction a = new UnitAction(action_e.getChild("UnitAction"), utt);
-            Unit u = pgs.getUnit(ID);
-            if (u == null) {
-                System.err
-                    .println("Undefined unit ID " + ID + " in action " + a + " at time " + time);
-            }
-            actions.add(new Pair<Unit, UnitAction>(u, a));
-        }
     }
 }

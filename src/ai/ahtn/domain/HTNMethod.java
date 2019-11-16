@@ -28,6 +28,18 @@ public class HTNMethod {
         method = m;
     }
 
+    public static HTNMethod fromLispElement(LispElement e) throws Exception {
+        LispElement name_e = e.children.get(1);
+        LispElement head_e = e.children.get(2);
+        LispElement method_e = e.children.get(3);
+
+        String name = name_e.element;
+        Term head = Term.fromLispElement(head_e);
+        MethodDecomposition m = MethodDecomposition.fromLispElement(method_e);
+
+        return new HTNMethod(name, head, m);
+    }
+
     public String getName() {
         return name;
     }
@@ -44,13 +56,6 @@ public class HTNMethod {
         HTNMethod c = new HTNMethod(name, head.clone(), method.clone());
         return c;
     }
-
-    public HTNMethod cloneTrackingDescendants(MethodDecomposition[] descendantsToTrack,
-        MethodDecomposition[] newDescendants) {
-        HTNMethod c = new HTNMethod(name, head.clone(),
-            method.cloneTrackingDescendants(descendantsToTrack, newDescendants));
-        return c;
-    }
         
     /*
     public HTNMethod clone(int renamingIndex) {
@@ -60,6 +65,17 @@ public class HTNMethod {
     }
     */
 
+    public String toString() {
+        return "method(" + name + "): " + head + ", decomposition: " + method;
+    }
+
+    public HTNMethod cloneTrackingDescendants(MethodDecomposition[] descendantsToTrack,
+        MethodDecomposition[] newDescendants) {
+        HTNMethod c = new HTNMethod(name, head.clone(),
+            method.cloneTrackingDescendants(descendantsToTrack, newDescendants));
+        return c;
+    }
+
     public void renameVariables(int renamingIndex) {
         head.renameVariables(renamingIndex);
         method.renameVariables(renamingIndex);
@@ -68,18 +84,6 @@ public class HTNMethod {
     public void applyBindings(List<Binding> l) throws Exception {
         head.applyBindings(l);
         method.applyBindings(l);
-    }
-
-    public static HTNMethod fromLispElement(LispElement e) throws Exception {
-        LispElement name_e = e.children.get(1);
-        LispElement head_e = e.children.get(2);
-        LispElement method_e = e.children.get(3);
-
-        String name = name_e.element;
-        Term head = Term.fromLispElement(head_e);
-        MethodDecomposition m = MethodDecomposition.fromLispElement(method_e);
-
-        return new HTNMethod(name, head, m);
     }
 
     public void replaceSingletonsByWildcards() throws Exception {
@@ -104,10 +108,6 @@ public class HTNMethod {
     public void countVariableAppearances(HashMap<Symbol, Integer> appearances) throws Exception {
         head.countVariableAppearances(appearances);
         method.countVariableAppearances(appearances);
-    }
-
-    public String toString() {
-        return "method(" + name + "): " + head + ", decomposition: " + method;
     }
 
     public int executionCycle(GameState gs, List<MethodDecomposition> actions,

@@ -103,33 +103,6 @@ public class UnitType {
     public ArrayList<UnitType> producedBy = new ArrayList<UnitType>();
 
     /**
-     * Returns the hash code of the name // assume that all unit types have different names:
-     */
-    public int hashCode() {
-        return name.hashCode();
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    public boolean equals(Object o) {
-        if (!(o instanceof UnitType)) {
-            return false;
-        }
-        return name.equals(((UnitType) o).name);
-    }
-
-    /**
-     * Adds a unit type that a unit of this type can produce
-     *
-     * @param ut
-     */
-    public void produces(UnitType ut) {
-        produces.add(ut);
-        ut.producedBy.add(this);
-    }
-
-    /**
      * Creates a temporary instance with just the name and ID from a XML element
      *
      * @param unittype_e
@@ -152,6 +125,19 @@ public class UnitType {
         UnitType ut = new UnitType();
         ut.ID = o.getInt("ID", -1);
         ut.name = o.getString("name", null);
+        return ut;
+    }
+
+    /**
+     * Creates a unit type from XML
+     *
+     * @param e
+     * @param utt
+     * @return
+     */
+    public static UnitType fromXML(Element e, UnitTypeTable utt) {
+        UnitType ut = new UnitType();
+        ut.updateFromXML(e, utt);
         return ut;
     }
 
@@ -192,6 +178,19 @@ public class UnitType {
             Element producedby_e = (Element) o;
             producedBy.add(utt.getUnitType(producedby_e.getAttributeValue("type")));
         }
+    }
+
+    /**
+     * Creates a unit type from a JSON string
+     *
+     * @param JSON
+     * @param utt
+     * @return
+     */
+    public static UnitType fromJSON(String JSON, UnitTypeTable utt) {
+        UnitType ut = new UnitType();
+        ut.updateFromJSON(JSON, utt);
+        return ut;
     }
 
     /**
@@ -242,6 +241,46 @@ public class UnitType {
         for (JsonValue v : producedBy_a.values()) {
             producedBy.add(utt.getUnitType(v.asString()));
         }
+    }
+
+    /**
+     * Creates a unit type from a JSON object
+     *
+     * @param o
+     * @param utt
+     * @return
+     */
+    public static UnitType fromJSON(JsonObject o, UnitTypeTable utt) {
+        UnitType ut = new UnitType();
+        ut.updateFromJSON(o, utt);
+        return ut;
+    }
+
+    /**
+     * Returns the hash code of the name // assume that all unit types have different names:
+     */
+    public int hashCode() {
+        return name.hashCode();
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    public boolean equals(Object o) {
+        if (!(o instanceof UnitType)) {
+            return false;
+        }
+        return name.equals(((UnitType) o).name);
+    }
+
+    /**
+     * Adds a unit type that a unit of this type can produce
+     *
+     * @param ut
+     */
+    public void produces(UnitType ut) {
+        produces.add(ut);
+        ut.producedBy.add(this);
     }
 
     /**
@@ -319,44 +358,5 @@ public class UnitType {
             first = false;
         }
         w.write("]}");
-    }
-
-    /**
-     * Creates a unit type from XML
-     *
-     * @param e
-     * @param utt
-     * @return
-     */
-    public static UnitType fromXML(Element e, UnitTypeTable utt) {
-        UnitType ut = new UnitType();
-        ut.updateFromXML(e, utt);
-        return ut;
-    }
-
-    /**
-     * Creates a unit type from a JSON string
-     *
-     * @param JSON
-     * @param utt
-     * @return
-     */
-    public static UnitType fromJSON(String JSON, UnitTypeTable utt) {
-        UnitType ut = new UnitType();
-        ut.updateFromJSON(JSON, utt);
-        return ut;
-    }
-
-    /**
-     * Creates a unit type from a JSON object
-     *
-     * @param o
-     * @param utt
-     * @return
-     */
-    public static UnitType fromJSON(JsonObject o, UnitTypeTable utt) {
-        UnitType ut = new UnitType();
-        ut.updateFromJSON(o, utt);
-        return ut;
     }
 }

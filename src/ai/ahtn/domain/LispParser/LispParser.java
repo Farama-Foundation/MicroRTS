@@ -24,11 +24,6 @@ public class LispParser {
         return parseLisp(br);
     }
 
-    public static List<LispElement> parseLispFile(String fileName) throws Exception {
-        BufferedReader br = new BufferedReader(new FileReader(fileName));
-        return parseLisp(br);
-    }
-
     public static List<LispElement> parseLisp(BufferedReader br) throws Exception {
         List<LispElement> l = new LinkedList<>();
         List<LispElement> stack = new LinkedList<>();
@@ -60,5 +55,10 @@ public class LispParser {
         }
 
         return l;
+    }
+
+    public static List<LispElement> parseLispFile(String fileName) throws Exception {
+        BufferedReader br = new BufferedReader(new FileReader(fileName));
+        return parseLisp(br);
     }
 }

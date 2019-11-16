@@ -24,20 +24,16 @@ import rts.units.UnitTypeTable;
 public class DownsamplingUCT extends AIWithComputationBudget implements InterruptibleAI {
 
     public static final int DEBUG = 0;
-    EvaluationFunction ef = null;
-
-    Random r = new Random();
-    AI randomAI = new RandomBiasedAI();
-    long max_actions_so_far = 0;
-
-    GameState gs_to_start_from = null;
-    DownsamplingUCTNode tree = null;
-
     // statistics:
     public long total_runs = 0;
     public long total_cycles_executed = 0;
     public long total_actions_issued = 0;
-
+    EvaluationFunction ef = null;
+    Random r = new Random();
+    AI randomAI = new RandomBiasedAI();
+    long max_actions_so_far = 0;
+    GameState gs_to_start_from = null;
+    DownsamplingUCTNode tree = null;
     long MAXACTIONS = 100;
     int MAXSIMULATIONTIME = 1024;
     int MAX_TREE_DEPTH = 10;
@@ -58,23 +54,9 @@ public class DownsamplingUCT extends AIWithComputationBudget implements Interrup
         ef = a_ef;
     }
 
-    public void printStats() {
-        if (total_cycles_executed > 0 && total_actions_issued > 0) {
-            System.out.println(
-                "Average runs per cycle: " + ((double) total_runs) / total_cycles_executed);
-            System.out.println(
-                "Average runs per action: " + ((double) total_runs) / total_actions_issued);
-        }
-    }
-
     public void reset() {
         gs_to_start_from = null;
         tree = null;
-    }
-
-    public AI clone() {
-        return new DownsamplingUCT(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME, MAXACTIONS,
-            MAX_TREE_DEPTH, randomAI, ef);
     }
 
     public final PlayerAction getAction(int player, GameState gs) throws Exception {
@@ -87,20 +69,50 @@ public class DownsamplingUCT extends AIWithComputationBudget implements Interrup
         }
     }
 
+    public AI clone() {
+        return new DownsamplingUCT(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME, MAXACTIONS,
+            MAX_TREE_DEPTH, randomAI, ef);
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", "
+            + MAXSIMULATIONTIME + ", " + MAXACTIONS + ", " + MAX_TREE_DEPTH + ", " + randomAI + ", "
+            + ef + ")";
+    }
+
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+
+        parameters.add(new ParameterSpecification("TimeBudget", int.class, 100));
+        parameters.add(new ParameterSpecification("IterationsBudget", int.class, -1));
+        parameters.add(new ParameterSpecification("PlayoutLookahead", int.class, 100));
+        parameters.add(new ParameterSpecification("MaxActions", long.class, 100));
+        parameters.add(new ParameterSpecification("MaxTreeDepth", int.class, 10));
+
+        parameters.add(new ParameterSpecification("DefaultPolicy", AI.class, randomAI));
+        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class,
+            new SimpleSqrtEvaluationFunction3()));
+
+        return parameters;
+    }
+
+    public void printStats() {
+        if (total_cycles_executed > 0 && total_actions_issued > 0) {
+            System.out.println(
+                "Average runs per cycle: " + ((double) total_runs) / total_cycles_executed);
+            System.out.println(
+                "Average runs per action: " + ((double) total_runs) / total_actions_issued);
+        }
+    }
+
     public void startNewComputation(int a_player, GameState gs) throws Exception {
         playerForThisComputation = a_player;
         float evaluation_bound = ef.upperBound(gs);
         tree = new DownsamplingUCTNode(playerForThisComputation, 1 - playerForThisComputation, gs,
             null, MAXACTIONS, evaluation_bound);
         gs_to_start_from = gs;
-    }
-
-    public void resetSearch() {
-        if (DEBUG >= 2) {
-            System.out.println("Resetting search...");
-        }
-        tree = null;
-        gs_to_start_from = null;
     }
 
     public void computeDuringOneGameFrame() throws Exception {
@@ -200,28 +212,12 @@ public class DownsamplingUCT extends AIWithComputationBudget implements Interrup
         } while (!gameover && gs.getTime() < time);
     }
 
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", "
-            + MAXSIMULATIONTIME + ", " + MAXACTIONS + ", " + MAX_TREE_DEPTH + ", " + randomAI + ", "
-            + ef + ")";
-    }
-
-    @Override
-    public List<ParameterSpecification> getParameters() {
-        List<ParameterSpecification> parameters = new ArrayList<>();
-
-        parameters.add(new ParameterSpecification("TimeBudget", int.class, 100));
-        parameters.add(new ParameterSpecification("IterationsBudget", int.class, -1));
-        parameters.add(new ParameterSpecification("PlayoutLookahead", int.class, 100));
-        parameters.add(new ParameterSpecification("MaxActions", long.class, 100));
-        parameters.add(new ParameterSpecification("MaxTreeDepth", int.class, 10));
-
-        parameters.add(new ParameterSpecification("DefaultPolicy", AI.class, randomAI));
-        parameters.add(new ParameterSpecification("EvaluationFunction", EvaluationFunction.class,
-            new SimpleSqrtEvaluationFunction3()));
-
-        return parameters;
+    public void resetSearch() {
+        if (DEBUG >= 2) {
+            System.out.println("Resetting search...");
+        }
+        tree = null;
+        gs_to_start_from = null;
     }
 
     public int getPlayoutLookahead() {

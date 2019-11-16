@@ -38,20 +38,6 @@ public class RangedAttack extends AbstractAction {
         return !pgs.getUnits().contains(target);
     }
 
-    public boolean equals(Object o) {
-        if (!(o instanceof RangedAttack)) {
-            return false;
-        }
-        RangedAttack a = (RangedAttack) o;
-        if (target.getID() != a.target.getID()) {
-            return false;
-        }
-        if (pf.getClass() != a.pf.getClass()) {
-            return false;
-        }
-        return racks.getID() == a.racks.getID();
-    }
-
     public void toxml(XMLWriter w) {
         w.tagWithAttributes("RangedAttack",
             "unitID=\"" + getUnit().getID() + "\" target=\"" + target.getID() + "\" pathfinding=\""
@@ -96,5 +82,19 @@ public class RangedAttack extends AbstractAction {
             }
             return null;
         }
+    }
+
+    public boolean equals(Object o) {
+        if (!(o instanceof RangedAttack)) {
+            return false;
+        }
+        RangedAttack a = (RangedAttack) o;
+        if (target.getID() != a.target.getID()) {
+            return false;
+        }
+        if (pf.getClass() != a.pf.getClass()) {
+            return false;
+        }
+        return racks.getID() == a.racks.getID();
     }
 }

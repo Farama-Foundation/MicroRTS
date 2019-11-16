@@ -13,8 +13,6 @@ import rts.units.UnitTypeTable;
  */
 public abstract class AI {
 
-    public abstract void reset();
-
     /*
      * Indicates to the AI that the new game will
      * be played with a new {@link UnitTypeTable}
@@ -23,6 +21,8 @@ public abstract class AI {
     public void reset(UnitTypeTable utt) {
         reset();
     }
+
+    public abstract void reset();
 
     /**
      * Main "thinking" method of a microRTS controller. Receives the current {@link GameState} and
@@ -42,22 +42,17 @@ public abstract class AI {
      *  just a copy of the AI with the same configuration.
      */ public abstract AI clone();
 
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
+
     /**
      * Returns a list of {@link ParameterSpecification} with this controller's parameters
      *
      * @return
      */
     public abstract List<ParameterSpecification> getParameters();
-
-    /**
-     * This method can be used to report any meaningful statistics once the game is over (for
-     * example, average nodes explored per move, etc.)
-     *
-     * @return
-     */
-    public String statisticsString() {
-        return null;
-    }
 
     /**
      * Just prints the String returned by {@link #statisticsString()} to the standard output
@@ -69,25 +64,14 @@ public abstract class AI {
         }
     }
 
-    @Override
-    public String toString() {
-        return this.getClass().getSimpleName();
-    }
-
     /**
-     * In this function you can implement some pre-game reasoning, as the function receives the
-     * initial game state and a time limit to execute.
-     * <p>
-     * Whether or not this function is called depends on the tournament configuration.
+     * This method can be used to report any meaningful statistics once the game is over (for
+     * example, average nodes explored per move, etc.)
      *
-     * @param gs           the initial state of the game about to be played. Even if the game is
-     *                     partially observable, the game state received by this function might be
-     *                     fully observable
-     * @param milliseconds time limit to perform the analysis. If zero, you can take as long as you
-     *                     need
-     * @throws Exception
+     * @return
      */
-    public void preGameAnalysis(GameState gs, long milliseconds) throws Exception {
+    public String statisticsString() {
+        return null;
     }
 
     /**
@@ -105,6 +89,22 @@ public abstract class AI {
     public void preGameAnalysis(GameState gs, long milliseconds, String readWriteFolder)
         throws Exception {
         preGameAnalysis(gs, milliseconds);
+    }
+
+    /**
+     * In this function you can implement some pre-game reasoning, as the function receives the
+     * initial game state and a time limit to execute.
+     * <p>
+     * Whether or not this function is called depends on the tournament configuration.
+     *
+     * @param gs           the initial state of the game about to be played. Even if the game is
+     *                     partially observable, the game state received by this function might be
+     *                     fully observable
+     * @param milliseconds time limit to perform the analysis. If zero, you can take as long as you
+     *                     need
+     * @throws Exception
+     */
+    public void preGameAnalysis(GameState gs, long milliseconds) throws Exception {
     }
 
     /**

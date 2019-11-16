@@ -53,11 +53,8 @@ public class BS2_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
             policy, a_ef, fensa);
     }
 
-    @Override
-    public AI clone() {
-        return new BS2_NaiveMCTS(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME, MAX_TREE_DEPTH,
-            epsilon_l, discount_l, epsilon_g, discount_g, epsilon_0, discount_0, playoutPolicy, ef,
-            forceExplorationOfNonSampledActions);
+    public void reset() {
+        initialGameState = null;
     }
 
     @Override
@@ -69,6 +66,13 @@ public class BS2_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
         } else {
             return new PlayerAction();
         }
+    }
+
+    @Override
+    public AI clone() {
+        return new BS2_NaiveMCTS(TIME_BUDGET, ITERATIONS_BUDGET, MAXSIMULATIONTIME, MAX_TREE_DEPTH,
+            epsilon_l, discount_l, epsilon_g, discount_g, epsilon_0, discount_0, playoutPolicy, ef,
+            forceExplorationOfNonSampledActions);
     }
 
     @Override
@@ -101,14 +105,6 @@ public class BS2_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
         epsilon_0 = initial_epsilon_0;
     }
 
-    public void reset() {
-        initialGameState = null;
-    }
-
-    public void preGameAnalysis(GameState gs, long milliseconds) throws Exception {
-        initialGameState = gs.clone();
-    }
-
     @Override
     public void setInitialBelieveState(int player, GameState gs,
         PartiallyObservableGameState pogs) {
@@ -127,23 +123,6 @@ public class BS2_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
     public List<Unit> getBelieveUnits() {
         List<Unit> l = new LinkedList<Unit>(lastKnownPosition);
         return l;
-    }
-
-    public GameState sampleWorld(int player, PartiallyObservableGameState gs) {
-        GameState newWorld = gs.clone();
-
-        List<Unit> toDelete = new ArrayList<>();
-        for (Unit u : lastKnownPosition) {
-            // remove unit if location is visible or not valid
-            if (gs.observable(u.getX(), u.getY())) {
-                toDelete.add(u);
-            } else {
-                newWorld.getPhysicalGameState().addUnit(u);
-            }
-        }
-        lastKnownPosition.removeAll(toDelete);
-
-        return newWorld;
     }
 
     public void updateBelieveState(int player, PartiallyObservableGameState gs) {
@@ -231,6 +210,23 @@ public class BS2_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
         lastObservedGame = gs.clone();
     }
 
+    public GameState sampleWorld(int player, PartiallyObservableGameState gs) {
+        GameState newWorld = gs.clone();
+
+        List<Unit> toDelete = new ArrayList<>();
+        for (Unit u : lastKnownPosition) {
+            // remove unit if location is visible or not valid
+            if (gs.observable(u.getX(), u.getY())) {
+                toDelete.add(u);
+            } else {
+                newWorld.getPhysicalGameState().addUnit(u);
+            }
+        }
+        lastKnownPosition.removeAll(toDelete);
+
+        return newWorld;
+    }
+
     public boolean wasUnderAttack(Unit u) {
 
         for (UnitActionAssignment ua : lastObservedGame.getUnitActions().values()) {
@@ -241,5 +237,9 @@ public class BS2_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
         }
 
         return false;
+    }
+
+    public void preGameAnalysis(GameState gs, long milliseconds) throws Exception {
+        initialGameState = gs.clone();
     }
 }

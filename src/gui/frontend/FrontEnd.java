@@ -40,6 +40,14 @@ public class FrontEnd extends JPanel {
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
     }
 
+    public static void main(String[] args) throws Exception {
+        JFrame frame = new JFrame("microRTS Front End");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.add(new FrontEnd(), BorderLayout.CENTER);
+        frame.pack();
+        frame.setVisible(true);
+    }
+
     protected JComponent makeTextPanel(String text) {
         JPanel panel = new JPanel(false);
         JLabel filler = new JLabel(text);
@@ -47,13 +55,5 @@ public class FrontEnd extends JPanel {
         panel.setLayout(new GridLayout(1, 1));
         panel.add(filler);
         return panel;
-    }
-
-    public static void main(String[] args) throws Exception {
-        JFrame frame = new JFrame("microRTS Front End");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.add(new FrontEnd(), BorderLayout.CENTER);
-        frame.pack();
-        frame.setVisible(true);
     }
 }

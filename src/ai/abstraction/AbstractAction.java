@@ -29,22 +29,6 @@ public abstract class AbstractAction {
         unit = a_unit;
     }
 
-    public Unit getUnit() {
-        return unit;
-    }
-
-    public void setUnit(Unit u) {
-        unit = u;
-    }
-
-    public abstract boolean completed(GameState pgs);
-
-    public UnitAction execute(GameState pgs) {
-        return execute(pgs, null);
-    }
-
-    public abstract void toxml(XMLWriter w);
-
     public static AbstractAction fromXML(Element e, PhysicalGameState gs, UnitTypeTable utt) {
         PathFinding pf = null;
         String pfString = e.getAttributeValue("pathfinding");
@@ -89,5 +73,21 @@ public abstract class AbstractAction {
         }
     }
 
+    public Unit getUnit() {
+        return unit;
+    }
+
+    public void setUnit(Unit u) {
+        unit = u;
+    }
+
+    public abstract boolean completed(GameState pgs);
+
+    public UnitAction execute(GameState pgs) {
+        return execute(pgs, null);
+    }
+
     public abstract UnitAction execute(GameState pgs, ResourceUsage ru);
+
+    public abstract void toxml(XMLWriter w);
 }

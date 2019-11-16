@@ -52,12 +52,96 @@ public class GameState {
     }
 
     /**
-     * Current game timestep (frames since beginning)
+     * Returns the GameState previously dumped (e.g. with {@link #toxml(String)} from the specified
+     * file.
      *
+     * @param utt
+     * @param path
      * @return
      */
-    public int getTime() {
-        return time;
+    public static GameState fromXML(String path, UnitTypeTable utt) {
+        SAXBuilder builder = new SAXBuilder();
+        File xmlFile = new File(path);
+        Document document = null;
+        GameState reconstructed = null;
+        try {
+            document = builder.build(xmlFile);
+        } catch (JDOMException | IOException e) {
+            System.err.println("Error while opening file: '" + path + "'. Returning null.");
+            e.printStackTrace();
+        }
+        try {
+            reconstructed = GameState.fromXML(document.getRootElement(), utt);
+        } catch (Exception e) {
+            System.err.println(
+                "ERror while reconstructing the state from the XML element. Returning null.");
+            e.printStackTrace();
+        }
+
+        return reconstructed;
+    }
+
+    /**
+     * Constructs a GameState from a XML Element
+     *
+     * @param e
+     * @param utt
+     * @return
+     */
+    public static GameState fromXML(Element e, UnitTypeTable utt) throws Exception {
+        PhysicalGameState pgs = PhysicalGameState
+            .fromXML(e.getChild(PhysicalGameState.class.getName()), utt);
+        GameState gs = new GameState(pgs, utt);
+        gs.time = Integer.parseInt(e.getAttributeValue("time"));
+
+        Element actions_e = e.getChild("actions");
+        for (Object o : actions_e.getChildren()) {
+            Element action_e = (Element) o;
+            long ID = Long.parseLong(action_e.getAttributeValue("ID"));
+            Unit u = gs.getUnit(ID);
+            int time = Integer.parseInt(action_e.getAttributeValue("time"));
+            UnitAction ua = UnitAction.fromXML(action_e.getChild("UnitAction"), utt);
+            UnitActionAssignment uaa = new UnitActionAssignment(u, ua, time);
+            gs.unitActions.put(u, uaa);
+        }
+
+        return gs;
+    }
+
+    /**
+     * @param ID
+     * @return
+     * @see PhysicalGameState#getUnit(long)
+     */
+    public Unit getUnit(long ID) {
+        return pgs.getUnit(ID);
+    }
+
+    /**
+     * Constructs a GameState from JSON
+     *
+     * @param JSON
+     * @param utt
+     * @return
+     */
+    public static GameState fromJSON(String JSON, UnitTypeTable utt) {
+        JsonObject o = Json.parse(JSON).asObject();
+        PhysicalGameState pgs = PhysicalGameState.fromJSON(o.get("pgs").asObject(), utt);
+        GameState gs = new GameState(pgs, utt);
+        gs.time = o.getInt("time", 0);
+
+        JsonArray actions_a = o.get("actions").asArray();
+        for (JsonValue v : actions_a.values()) {
+            JsonObject uaa_o = v.asObject();
+            long ID = uaa_o.getLong("ID", -1);
+            Unit u = gs.getUnit(ID);
+            int time = uaa_o.getInt("time", 0);
+            UnitAction ua = UnitAction.fromJSON(uaa_o.get("action").asObject(), utt);
+            UnitActionAssignment uaa = new UnitActionAssignment(u, ua, time);
+            gs.unitActions.put(u, uaa);
+        }
+
+        return gs;
     }
 
     /**
@@ -77,23 +161,6 @@ public class GameState {
      */
     public Player getPlayer(int ID) {
         return pgs.getPlayer(ID);
-    }
-
-    /**
-     * @param ID
-     * @return
-     * @see PhysicalGameState#getUnit(long)
-     */
-    public Unit getUnit(long ID) {
-        return pgs.getUnit(ID);
-    }
-
-    /**
-     * @return
-     * @see PhysicalGameState#getUnits()
-     */
-    public List<Unit> getUnits() {
-        return pgs.getUnits();
     }
 
     /**
@@ -159,23 +226,6 @@ public class GameState {
      */
     public int winner() {
         return pgs.winner();
-    }
-
-    /**
-     * @return
-     * @see PhysicalGameState#gameover()
-     */
-    public boolean gameover() {
-        return pgs.gameover();
-    }
-
-    /**
-     * Returns the {@link PhysicalGameState} associated with this state
-     *
-     * @return
-     */
-    public PhysicalGameState getPhysicalGameState() {
-        return pgs;
     }
 
     /**
@@ -260,6 +310,118 @@ public class GameState {
      */
     public boolean observable(int x, int y) {
         return true;
+    }
+
+    /**
+     * Issues a player action, with additional checks for validity. This function is slower than
+     * "issue", and should not be used internally by any AI. It is used externally in the main loop
+     * to verify that the actions proposed by an AI are valid, before sending them to the game.
+     *
+     * @param pa
+     * @return "true" is any action different from NONE was issued
+     */
+    public boolean issueSafe(PlayerAction pa) {
+        if (!pa.integrityCheck()) {
+            throw new Error("PlayerAction inconsistent before 'issueSafe'");
+        }
+        if (!integrityCheck()) {
+            throw new Error("GameState inconsistent before 'issueSafe'");
+        }
+        for (Pair<Unit, UnitAction> p : pa.actions) {
+            if (p.m_a == null) {
+                System.err.println("Issuing an action to a null unit!!!");
+                System.exit(1);
+            }
+
+            if (!p.m_a.canExecuteAction(p.m_b, this)) {
+                if (REPORT_ILLEGAL_ACTIONS) {
+                    System.err.println(
+                        "Issuing a non legal action to unit " + p.m_a + "!! Ignoring it...");
+                }
+                // replace the action by a NONE action of the same duration:
+                int l = p.m_b.ETA(p.m_a);
+                p.m_b = new UnitAction(UnitAction.TYPE_NONE, l);
+            }
+
+            // get the unit that corresponds to that action (since the state might have been cloned):
+            if (pgs.units.indexOf(p.m_a) == -1) {
+                boolean found = false;
+                for (Unit u : pgs.units) {
+                    if (u.getClass() == p.m_a.getClass() &&
+                        //                        u.getID() == p.m_a.getID()) {
+                        u.getX() == p.m_a.getX() && u.getY() == p.m_a.getY()) {
+                        p.m_a = u;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    System.err.println("Inconsistent order: " + pa);
+                    System.err.println(this);
+                    System.err.println("The problem was with unit " + p.m_a);
+                }
+            }
+
+            {
+                // check to see if the action is legal!
+                ResourceUsage r = p.m_b.resourceUsage(p.m_a, pgs);
+                for (int position : r.getPositionsUsed()) {
+                    int y = position / pgs.getWidth();
+                    int x = position % pgs.getWidth();
+                    if (pgs.getTerrain(x, y) != PhysicalGameState.TERRAIN_NONE
+                        || pgs.getUnitAt(x, y) != null) {
+                        UnitAction new_ua = new UnitAction(UnitAction.TYPE_NONE, p.m_b.ETA(p.m_a));
+                        System.err.println(
+                            "Player " + p.m_a.getPlayer() + " issued an illegal move action (to "
+                                + x + "," + y + ") to unit " + p.m_a.getID() + " at time "
+                                + getTime() + ", cancelling and replacing by " + new_ua);
+                        System.err.println("    Action: " + p.m_b);
+                        System.err.println("    Resources used by the action: " + r);
+                        System.err.println("    Unit at that coordinate " + pgs.getUnitAt(x, y));
+                        p.m_b = new_ua;
+                    }
+                }
+            }
+        }
+
+        boolean returnValue = issue(pa);
+        if (!integrityCheck()) {
+            throw new Error("GameState inconsistent after 'issueSafe': " + pa);
+        }
+        return returnValue;
+    }
+
+    /**
+     * Verifies integrity: if an action was assigned to non-existing unit or two actions were
+     * assigned to the same unit, integrity is violated
+     *
+     * @return
+     */
+    public boolean integrityCheck() {
+        List<Unit> alreadyUsed = new LinkedList<Unit>();
+        for (UnitActionAssignment uaa : unitActions.values()) {
+            Unit u = uaa.unit;
+            int idx = pgs.getUnits().indexOf(u);
+            if (idx == -1) {
+                System.err.println("integrityCheck: unit does not exist!");
+                return false;
+            }
+            if (alreadyUsed.contains(u)) {
+                System.err.println("integrityCheck: two actions to the same unit!");
+                return false;
+            }
+            alreadyUsed.add(u);
+        }
+        return true;
+    }
+
+    /**
+     * Current game timestep (frames since beginning)
+     *
+     * @return
+     */
+    public int getTime() {
+        return time;
     }
 
     /**
@@ -369,102 +531,6 @@ public class GameState {
     }
 
     /**
-     * Issues a player action, with additional checks for validity. This function is slower than
-     * "issue", and should not be used internally by any AI. It is used externally in the main loop
-     * to verify that the actions proposed by an AI are valid, before sending them to the game.
-     *
-     * @param pa
-     * @return "true" is any action different from NONE was issued
-     */
-    public boolean issueSafe(PlayerAction pa) {
-        if (!pa.integrityCheck()) {
-            throw new Error("PlayerAction inconsistent before 'issueSafe'");
-        }
-        if (!integrityCheck()) {
-            throw new Error("GameState inconsistent before 'issueSafe'");
-        }
-        for (Pair<Unit, UnitAction> p : pa.actions) {
-            if (p.m_a == null) {
-                System.err.println("Issuing an action to a null unit!!!");
-                System.exit(1);
-            }
-
-            if (!p.m_a.canExecuteAction(p.m_b, this)) {
-                if (REPORT_ILLEGAL_ACTIONS) {
-                    System.err.println(
-                        "Issuing a non legal action to unit " + p.m_a + "!! Ignoring it...");
-                }
-                // replace the action by a NONE action of the same duration:
-                int l = p.m_b.ETA(p.m_a);
-                p.m_b = new UnitAction(UnitAction.TYPE_NONE, l);
-            }
-
-            // get the unit that corresponds to that action (since the state might have been cloned):
-            if (pgs.units.indexOf(p.m_a) == -1) {
-                boolean found = false;
-                for (Unit u : pgs.units) {
-                    if (u.getClass() == p.m_a.getClass() &&
-                        //                        u.getID() == p.m_a.getID()) {
-                        u.getX() == p.m_a.getX() && u.getY() == p.m_a.getY()) {
-                        p.m_a = u;
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    System.err.println("Inconsistent order: " + pa);
-                    System.err.println(this);
-                    System.err.println("The problem was with unit " + p.m_a);
-                }
-            }
-
-            {
-                // check to see if the action is legal!
-                ResourceUsage r = p.m_b.resourceUsage(p.m_a, pgs);
-                for (int position : r.getPositionsUsed()) {
-                    int y = position / pgs.getWidth();
-                    int x = position % pgs.getWidth();
-                    if (pgs.getTerrain(x, y) != PhysicalGameState.TERRAIN_NONE
-                        || pgs.getUnitAt(x, y) != null) {
-                        UnitAction new_ua = new UnitAction(UnitAction.TYPE_NONE, p.m_b.ETA(p.m_a));
-                        System.err.println(
-                            "Player " + p.m_a.getPlayer() + " issued an illegal move action (to "
-                                + x + "," + y + ") to unit " + p.m_a.getID() + " at time "
-                                + getTime() + ", cancelling and replacing by " + new_ua);
-                        System.err.println("    Action: " + p.m_b);
-                        System.err.println("    Resources used by the action: " + r);
-                        System.err.println("    Unit at that coordinate " + pgs.getUnitAt(x, y));
-                        p.m_b = new_ua;
-                    }
-                }
-            }
-        }
-
-        boolean returnValue = issue(pa);
-        if (!integrityCheck()) {
-            throw new Error("GameState inconsistent after 'issueSafe': " + pa);
-        }
-        return returnValue;
-    }
-
-    /**
-     * Indicates whether a player can issue an action in this state
-     *
-     * @param pID the player ID
-     * @return true if the player can execute any action
-     */
-    public boolean canExecuteAnyAction(int pID) {
-        for (Unit u : pgs.getUnits()) {
-            if (u.getPlayer() == pID) {
-                if (unitActions.get(u) == null) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
      * This function checks whether the intended unit action  has any conflicts with some other
      * action. It assumes that the UnitAction ua is valid (i.e. one of the actions that the unit can
      * potentially execute)
@@ -497,6 +563,15 @@ public class GameState {
         }
 
         return ua.resourceUsage(u, pgs).consistentWith(empty.getResourceUsage(), this);
+    }
+
+    /**
+     * Returns the {@link PhysicalGameState} associated with this state
+     *
+     * @return
+     */
+    public PhysicalGameState getPhysicalGameState() {
+        return pgs;
     }
 
     /**
@@ -592,6 +667,23 @@ public class GameState {
     }
 
     /**
+     * Indicates whether a player can issue an action in this state
+     *
+     * @param pID the player ID
+     * @return true if the player can execute any action
+     */
+    public boolean canExecuteAnyAction(int pID) {
+        for (Unit u : pgs.getUnits()) {
+            if (u.getPlayer() == pID) {
+                if (unitActions.get(u) == null) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Runs a game cycle, execution all assigned actions
      *
      * @return whether the game was over
@@ -619,6 +711,14 @@ public class GameState {
     }
 
     /**
+     * @return
+     * @see PhysicalGameState#gameover()
+     */
+    public boolean gameover() {
+        return pgs.gameover();
+    }
+
+    /**
      * Forces the execution of all assigned actions
      */
     public void forceExecuteAllActions() {
@@ -629,30 +729,6 @@ public class GameState {
             unitActions.remove(uaa.unit);
             uaa.action.execute(uaa.unit, this);
         }
-    }
-
-    /*
-     * @see java.lang.Object#clone()
-     */
-    public GameState clone() {
-        GameState gs = new GameState(pgs.clone(), utt);
-        gs.time = time;
-        gs.unitCancelationCounter = unitCancelationCounter;
-        for (UnitActionAssignment uaa : unitActions.values()) {
-            Unit u = uaa.unit;
-            int idx = pgs.getUnits().indexOf(u);
-            if (idx == -1) {
-                System.out.println("Problematic game state:");
-                System.out.println(this);
-                System.out.println("Problematic action:");
-                System.out.println(uaa);
-                throw new Error("Inconsistent game state during cloning...");
-            } else {
-                Unit u2 = gs.pgs.getUnits().get(idx);
-                gs.unitActions.put(u2, new UnitActionAssignment(u2, uaa.action, uaa.time));
-            }
-        }
-        return gs;
     }
 
     /**
@@ -690,6 +766,14 @@ public class GameState {
             u.setType(new_type);
         }
         return gs;
+    }
+
+    /**
+     * @return
+     * @see PhysicalGameState#getUnits()
+     */
+    public List<Unit> getUnits() {
+        return pgs.getUnits();
     }
 
     /**
@@ -754,44 +838,28 @@ public class GameState {
         return true;
     }
 
-    /**
-     * Verifies integrity: if an action was assigned to non-existing unit or two actions were
-     * assigned to the same unit, integrity is violated
-     *
-     * @return
+    /*
+     * @see java.lang.Object#clone()
      */
-    public boolean integrityCheck() {
-        List<Unit> alreadyUsed = new LinkedList<Unit>();
+    public GameState clone() {
+        GameState gs = new GameState(pgs.clone(), utt);
+        gs.time = time;
+        gs.unitCancelationCounter = unitCancelationCounter;
         for (UnitActionAssignment uaa : unitActions.values()) {
             Unit u = uaa.unit;
             int idx = pgs.getUnits().indexOf(u);
             if (idx == -1) {
-                System.err.println("integrityCheck: unit does not exist!");
-                return false;
-            }
-            if (alreadyUsed.contains(u)) {
-                System.err.println("integrityCheck: two actions to the same unit!");
-                return false;
-            }
-            alreadyUsed.add(u);
-        }
-        return true;
-    }
-
-    /**
-     * Shows {@link UnitActionAssignment}s on the terminal
-     */
-    public void dumpActionAssignments() {
-        for (Unit u : pgs.getUnits()) {
-            if (u.getPlayer() >= 0) {
-                UnitActionAssignment uaa = unitActions.get(u);
-                if (uaa == null) {
-                    System.out.println(u + " : -");
-                } else {
-                    System.out.println(u + " : " + uaa.action + " at " + uaa.time);
-                }
+                System.out.println("Problematic game state:");
+                System.out.println(this);
+                System.out.println("Problematic action:");
+                System.out.println(uaa);
+                throw new Error("Inconsistent game state during cloning...");
+            } else {
+                Unit u2 = gs.pgs.getUnits().get(idx);
+                gs.unitActions.put(u2, new UnitActionAssignment(u2, uaa.action, uaa.time));
             }
         }
+        return gs;
     }
 
     /*
@@ -816,23 +884,19 @@ public class GameState {
     }
 
     /**
-     * Writes a XML representation of this state into a XMLWriter
-     *
-     * @param w
+     * Shows {@link UnitActionAssignment}s on the terminal
      */
-    public void toxml(XMLWriter w) {
-        w.tagWithAttributes(this.getClass().getName(), "time=\"" + time + "\"");
-        pgs.toxml(w);
-        w.tag("actions");
-        for (Unit u : unitActions.keySet()) {
-            UnitActionAssignment uaa = unitActions.get(u);
-            w.tagWithAttributes("unitAction",
-                "ID=\"" + uaa.unit.getID() + "\" time=\"" + uaa.time + "\"");
-            uaa.action.toxml(w);
-            w.tag("/unitAction");
+    public void dumpActionAssignments() {
+        for (Unit u : pgs.getUnits()) {
+            if (u.getPlayer() >= 0) {
+                UnitActionAssignment uaa = unitActions.get(u);
+                if (uaa == null) {
+                    System.out.println(u + " : -");
+                } else {
+                    System.out.println(u + " : " + uaa.action + " at " + uaa.time);
+                }
+            }
         }
-        w.tag("/actions");
-        w.tag("/" + this.getClass().getName());
     }
 
     /**
@@ -850,6 +914,26 @@ public class GameState {
             System.err.println("Error while writing state to: " + path);
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Writes a XML representation of this state into a XMLWriter
+     *
+     * @param w
+     */
+    public void toxml(XMLWriter w) {
+        w.tagWithAttributes(this.getClass().getName(), "time=\"" + time + "\"");
+        pgs.toxml(w);
+        w.tag("actions");
+        for (Unit u : unitActions.keySet()) {
+            UnitActionAssignment uaa = unitActions.get(u);
+            w.tagWithAttributes("unitAction",
+                "ID=\"" + uaa.unit.getID() + "\" time=\"" + uaa.time + "\"");
+            uaa.action.toxml(w);
+            w.tag("/unitAction");
+        }
+        w.tag("/actions");
+        w.tag("/" + this.getClass().getName());
     }
 
     /**
@@ -876,89 +960,5 @@ public class GameState {
         }
         w.write("]");
         w.write("}");
-    }
-
-    /**
-     * Constructs a GameState from a XML Element
-     *
-     * @param e
-     * @param utt
-     * @return
-     */
-    public static GameState fromXML(Element e, UnitTypeTable utt) throws Exception {
-        PhysicalGameState pgs = PhysicalGameState
-            .fromXML(e.getChild(PhysicalGameState.class.getName()), utt);
-        GameState gs = new GameState(pgs, utt);
-        gs.time = Integer.parseInt(e.getAttributeValue("time"));
-
-        Element actions_e = e.getChild("actions");
-        for (Object o : actions_e.getChildren()) {
-            Element action_e = (Element) o;
-            long ID = Long.parseLong(action_e.getAttributeValue("ID"));
-            Unit u = gs.getUnit(ID);
-            int time = Integer.parseInt(action_e.getAttributeValue("time"));
-            UnitAction ua = UnitAction.fromXML(action_e.getChild("UnitAction"), utt);
-            UnitActionAssignment uaa = new UnitActionAssignment(u, ua, time);
-            gs.unitActions.put(u, uaa);
-        }
-
-        return gs;
-    }
-
-    /**
-     * Returns the GameState previously dumped (e.g. with {@link #toxml(String)} from the specified
-     * file.
-     *
-     * @param utt
-     * @param path
-     * @return
-     */
-    public static GameState fromXML(String path, UnitTypeTable utt) {
-        SAXBuilder builder = new SAXBuilder();
-        File xmlFile = new File(path);
-        Document document = null;
-        GameState reconstructed = null;
-        try {
-            document = builder.build(xmlFile);
-        } catch (JDOMException | IOException e) {
-            System.err.println("Error while opening file: '" + path + "'. Returning null.");
-            e.printStackTrace();
-        }
-        try {
-            reconstructed = GameState.fromXML(document.getRootElement(), utt);
-        } catch (Exception e) {
-            System.err.println(
-                "ERror while reconstructing the state from the XML element. Returning null.");
-            e.printStackTrace();
-        }
-
-        return reconstructed;
-    }
-
-    /**
-     * Constructs a GameState from JSON
-     *
-     * @param JSON
-     * @param utt
-     * @return
-     */
-    public static GameState fromJSON(String JSON, UnitTypeTable utt) {
-        JsonObject o = Json.parse(JSON).asObject();
-        PhysicalGameState pgs = PhysicalGameState.fromJSON(o.get("pgs").asObject(), utt);
-        GameState gs = new GameState(pgs, utt);
-        gs.time = o.getInt("time", 0);
-
-        JsonArray actions_a = o.get("actions").asArray();
-        for (JsonValue v : actions_a.values()) {
-            JsonObject uaa_o = v.asObject();
-            long ID = uaa_o.getLong("ID", -1);
-            Unit u = gs.getUnit(ID);
-            int time = uaa_o.getInt("time", 0);
-            UnitAction ua = UnitAction.fromJSON(uaa_o.get("action").asObject(), utt);
-            UnitActionAssignment uaa = new UnitActionAssignment(u, ua, time);
-            gs.unitActions.put(u, uaa);
-        }
-
-        return gs;
     }
 }

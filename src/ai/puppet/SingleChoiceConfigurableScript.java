@@ -36,11 +36,6 @@ public class SingleChoiceConfigurableScript extends ConfigurableScript<SingleCho
     }
 
     @Override
-    public Collection<Options> getApplicableChoicePoints(int player, GameState gs) {
-        return getAllChoicePoints();
-    }
-
-    @Override
     public void initializeChoices() {
         int[] opts = new int[scripts.length];
         for (int i = 0; i < scripts.length; i++) {
@@ -51,6 +46,11 @@ public class SingleChoiceConfigurableScript extends ConfigurableScript<SingleCho
                 choicePoints.put(c, new Options(c.ordinal(), opts));
             }
         }
+    }
+
+    @Override
+    public Collection<Options> getApplicableChoicePoints(int player, GameState gs) {
+        return getAllChoicePoints();
     }
 
     @Override
@@ -71,14 +71,6 @@ public class SingleChoiceConfigurableScript extends ConfigurableScript<SingleCho
         return scripts[choices.get(SingleChoice.SINGLE)].getAction(player, gs);
     }
 
-    public String toString() {
-        StringBuilder str = new StringBuilder("SingleChoicePoint(");
-        for (AI ai : scripts) {
-            str.append(ai.toString()).append(",");
-        }
-        return str + ")";
-    }
-
     @Override
     public List<ParameterSpecification> getParameters() {
         List<ParameterSpecification> parameters = new ArrayList<>();
@@ -88,5 +80,13 @@ public class SingleChoiceConfigurableScript extends ConfigurableScript<SingleCho
         parameters.add(new ParameterSpecification("Scripts", AI[].class, scripts));
 
         return parameters;
+    }
+
+    public String toString() {
+        StringBuilder str = new StringBuilder("SingleChoicePoint(");
+        for (AI ai : scripts) {
+            str.append(ai.toString()).append(",");
+        }
+        return str + ")";
     }
 }

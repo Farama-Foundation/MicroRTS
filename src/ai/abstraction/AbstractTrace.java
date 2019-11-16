@@ -18,13 +18,33 @@ import util.XMLWriter;
  */
 public class AbstractTrace {
 
+    protected HashMap<Unit, AbstractAction> currentActions = new LinkedHashMap<>();
     UnitTypeTable utt;
     List<AbstractTraceEntry> entries = new LinkedList<>();
 
-    protected HashMap<Unit, AbstractAction> currentActions = new LinkedHashMap<>();
-
     public AbstractTrace(UnitTypeTable a_utt) {
         utt = a_utt;
+    }
+
+    public AbstractTrace(Element e) throws Exception {
+        utt = UnitTypeTable.fromXML(e.getChild(UnitTypeTable.class.getName()));
+        Element entries_e = e.getChild("entries");
+
+        for (Object o : entries_e.getChildren()) {
+            Element entry_e = (Element) o;
+            entries.add(new AbstractTraceEntry(entry_e, utt));
+        }
+    }
+
+    // this loads a trace ignoring the UTT specified in the trace:
+    public AbstractTrace(Element e, UnitTypeTable a_utt) throws Exception {
+        utt = a_utt;
+        Element entries_e = e.getChild("entries");
+
+        for (Object o : entries_e.getChildren()) {
+            Element entry_e = (Element) o;
+            entries.add(new AbstractTraceEntry(entry_e, utt));
+        }
     }
 
     public List<AbstractTraceEntry> getEntries() {
@@ -60,26 +80,5 @@ public class AbstractTrace {
         }
         w.tag("/entries");
         w.tag("/" + this.getClass().getName());
-    }
-
-    public AbstractTrace(Element e) throws Exception {
-        utt = UnitTypeTable.fromXML(e.getChild(UnitTypeTable.class.getName()));
-        Element entries_e = e.getChild("entries");
-
-        for (Object o : entries_e.getChildren()) {
-            Element entry_e = (Element) o;
-            entries.add(new AbstractTraceEntry(entry_e, utt));
-        }
-    }
-
-    // this loads a trace ignoring the UTT specified in the trace:
-    public AbstractTrace(Element e, UnitTypeTable a_utt) throws Exception {
-        utt = a_utt;
-        Element entries_e = e.getChild("entries");
-
-        for (Object o : entries_e.getChildren()) {
-            Element entry_e = (Element) o;
-            entries.add(new AbstractTraceEntry(entry_e, utt));
-        }
     }
 }

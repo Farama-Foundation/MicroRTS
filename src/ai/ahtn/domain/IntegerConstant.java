@@ -21,10 +21,6 @@ public class IntegerConstant implements Parameter {
         value = v;
     }
 
-    public String toString() {
-        return "" + value;
-    }
-
     public List<Binding> match(int v) {
         if (value == v) {
             return new ArrayList<>();
@@ -41,15 +37,19 @@ public class IntegerConstant implements Parameter {
         return this;
     }
 
-    public Parameter resolveParameter(List<Binding> l, GameState gs) {
+    public Parameter applyBindingsParameter(List<Binding> l) {
         return this;
     }
 
-    public Parameter applyBindingsParameter(List<Binding> l) {
+    public Parameter resolveParameter(List<Binding> l, GameState gs) {
         return this;
     }
 
     public boolean equals(Object o) {
         return o instanceof IntegerConstant && ((IntegerConstant) o).value == value;
+    }
+
+    public String toString() {
+        return "" + value;
     }
 }

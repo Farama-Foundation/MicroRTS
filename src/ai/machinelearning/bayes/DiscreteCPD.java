@@ -25,18 +25,27 @@ public class DiscreteCPD {
         counts = new int[nX][nY];
     }
 
-    public void addObservation(int X, int Y) {
-        counts[X][Y]++;
-    }
-
-    public int[] marginalizedCounts() {
-        int[] marginalizedCounts = new int[Yvalues];
-        for (int i = 0; i < Xvalues; i++) {
-            for (int j = 0; j < Yvalues; j++) {
-                marginalizedCounts[j] += counts[i][j];
+    public DiscreteCPD(Element e) throws Exception {
+        if (!e.getName().equals("DiscreteCPD")) {
+            throw new Exception("Head tag is not 'DiscreteCPD'!");
+        }
+        Xvalues = Integer.parseInt(e.getAttributeValue("Xvalues"));
+        Yvalues = Integer.parseInt(e.getAttributeValue("Yvalues"));
+        counts = new int[Xvalues][Yvalues];
+        String text = e.getTextTrim();
+        String[] tokens = text.split(" |\n");
+        for (int k = 0, i = 0; i < Xvalues; i++) {
+            for (int j = 0; j < Yvalues; j++, k++) {
+                while (tokens[k].equals("")) {
+                    k++;
+                }
+                counts[i][j] = Integer.parseInt(tokens[k]);
             }
         }
-        return marginalizedCounts;
+    }
+
+    public void addObservation(int X, int Y) {
+        counts[X][Y]++;
     }
 
     public double[] marginalizedDistribution() {
@@ -52,6 +61,16 @@ public class DiscreteCPD {
         }
 
         return distribution;
+    }
+
+    public int[] marginalizedCounts() {
+        int[] marginalizedCounts = new int[Yvalues];
+        for (int i = 0; i < Xvalues; i++) {
+            for (int j = 0; j < Yvalues; j++) {
+                marginalizedCounts[j] += counts[i][j];
+            }
+        }
+        return marginalizedCounts;
     }
 
     public double[] marginalizedDistributionLaplace(double beta) {
@@ -121,24 +140,5 @@ public class DiscreteCPD {
             w.rawXML("\n");
         }
         w.tag("/DiscreteCPD");
-    }
-
-    public DiscreteCPD(Element e) throws Exception {
-        if (!e.getName().equals("DiscreteCPD")) {
-            throw new Exception("Head tag is not 'DiscreteCPD'!");
-        }
-        Xvalues = Integer.parseInt(e.getAttributeValue("Xvalues"));
-        Yvalues = Integer.parseInt(e.getAttributeValue("Yvalues"));
-        counts = new int[Xvalues][Yvalues];
-        String text = e.getTextTrim();
-        String[] tokens = text.split(" |\n");
-        for (int k = 0, i = 0; i < Xvalues; i++) {
-            for (int j = 0; j < Yvalues; j++, k++) {
-                while (tokens[k].equals("")) {
-                    k++;
-                }
-                counts[i][j] = Integer.parseInt(tokens[k]);
-            }
-        }
     }
 }

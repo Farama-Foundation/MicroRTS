@@ -28,15 +28,15 @@ public class PassiveAI extends AI {
     }
 
     @Override
-    public AI clone() {
-        return new PassiveAI();
-    }
-
-    @Override
     public PlayerAction getAction(int player, GameState gs) {
         PlayerAction pa = new PlayerAction();
         pa.fillWithNones(gs, player, 10);
         return pa;
+    }
+
+    @Override
+    public AI clone() {
+        return new PassiveAI();
     }
 
     @Override

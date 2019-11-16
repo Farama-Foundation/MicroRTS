@@ -33,6 +33,20 @@ public class AStarPathFinding extends PathFinding {
     int[] inOpenOrClosed = null;
     int openinsert = 0;
 
+    public boolean pathExists(Unit start, int targetpos, GameState gs, ResourceUsage ru) {
+        return start.getPosition(gs.getPhysicalGameState()) == targetpos
+            || findPath(start, targetpos, gs, ru) != null;
+    }
+
+    public boolean pathToPositionInRangeExists(Unit start, int targetpos, int range, GameState gs,
+        ResourceUsage ru) {
+        int x = targetpos % gs.getPhysicalGameState().getWidth();
+        int y = targetpos / gs.getPhysicalGameState().getWidth();
+        int d = (x - start.getX()) * (x - start.getX()) + (y - start.getY()) * (y - start.getY());
+        return d <= range * range
+            || findPathToPositionInRange(start, targetpos, range, gs, ru) != null;
+    }
+
     // This fucntion finds the shortest path from 'start' to 'targetpos' and then returns
     // a UnitAction of the type 'actionType' with the direction of the first step in the shorteet path
     public UnitAction findPath(Unit start, int targetpos, GameState gs, ResourceUsage ru) {
@@ -109,7 +123,7 @@ public class AStarPathFinding extends PathFinding {
                     } else if (!free[j][i]) {
                         System.out.print("X");
                     } else {
-                        if (inOpenOrClosed[j+i*w]==0) { 
+                        if (inOpenOrClosed[j+i*w]==0) {
                             System.out.print(".");
                         } else {
                             System.out.print("o");
@@ -209,18 +223,8 @@ public class AStarPathFinding extends PathFinding {
         return findPathToPositionInRange(start, targetpos, 1, gs, ru);
     }
 
-    public boolean pathExists(Unit start, int targetpos, GameState gs, ResourceUsage ru) {
-        return start.getPosition(gs.getPhysicalGameState()) == targetpos
-            || findPath(start, targetpos, gs, ru) != null;
-    }
-
-    public boolean pathToPositionInRangeExists(Unit start, int targetpos, int range, GameState gs,
-        ResourceUsage ru) {
-        int x = targetpos % gs.getPhysicalGameState().getWidth();
-        int y = targetpos / gs.getPhysicalGameState().getWidth();
-        int d = (x - start.getX()) * (x - start.getX()) + (y - start.getY()) * (y - start.getY());
-        return d <= range * range
-            || findPathToPositionInRange(start, targetpos, range, gs, ru) != null;
+    int manhattanDistance(int x, int y, int x2, int y2) {
+        return Math.abs(x - x2) + Math.abs(y - y2);
     }
 
     // and keep the "open" list sorted:
@@ -262,10 +266,6 @@ public class AStarPathFinding extends PathFinding {
         parents[0] = oldPos;
         openinsert++;
         inOpenOrClosed[newPos] = 1;
-    }
-
-    int manhattanDistance(int x, int y, int x2, int y2) {
-        return Math.abs(x - x2) + Math.abs(y - y2);
     }
 
     public int findDistToPositionInRange(Unit start, int targetpos, int range, GameState gs,

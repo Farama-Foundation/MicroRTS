@@ -19,21 +19,18 @@ import rts.PlayerActionGenerator;
 public class UCTNodeFirstPlayUrgency {
 
     public static int DEBUG = 0;
-
-    static Random r = new Random();
     public static float C = 0.05f;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
+    static Random r = new Random();
     //    static float C = 1;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
-
     public int type;    // 0 : max, 1 : min, -1: Game-over
-    UCTNodeFirstPlayUrgency parent = null;
     public GameState gs;
+    public List<PlayerAction> actions = null;
+    public List<UCTNodeFirstPlayUrgency> children = null;
+    UCTNodeFirstPlayUrgency parent = null;
     int depth = 0;  // the depth in the tree
-
     boolean hasMoreActions = true;
     PlayerActionGenerator moveGenerator = null;
-    public List<PlayerAction> actions = null;
     HashMap<Long, UCTNodeFirstPlayUrgency> childrenMap = new LinkedHashMap<Long, UCTNodeFirstPlayUrgency>();    // associates action codes with children
-    public List<UCTNodeFirstPlayUrgency> children = null;
     float evaluation_bound = 0;
     float accum_evaluation = 0;
     int visit_count = 0;

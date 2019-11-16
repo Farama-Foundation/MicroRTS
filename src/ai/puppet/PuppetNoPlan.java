@@ -27,24 +27,14 @@ public class PuppetNoPlan extends AIWithComputationBudget implements Interruptib
         this.puppet = puppet;
     }
 
-    public final PlayerAction getAction(int player, GameState gs) throws Exception {
-        if (gs.canExecuteAnyAction(player)) {
-            startNewComputation(player, gs.clone());
-            computeDuringOneGameFrame();
-            return getBestActionSoFar();
-        } else {
-            return new PlayerAction();
-        }
+    @Override
+    public int getTimeBudget() {
+        return puppet.getTimeBudget();
     }
 
     @Override
     public void setTimeBudget(int a_tb) {
         puppet.setTimeBudget(a_tb);
-    }
-
-    @Override
-    public int getTimeBudget() {
-        return puppet.getTimeBudget();
     }
 
     @Override
@@ -55,6 +45,21 @@ public class PuppetNoPlan extends AIWithComputationBudget implements Interruptib
     @Override
     public void setIterationsBudget(int a_ib) {
         puppet.setIterationsBudget(a_ib);
+    }
+
+    @Override
+    public void reset() {
+        puppet.reset();
+    }
+
+    public final PlayerAction getAction(int player, GameState gs) throws Exception {
+        if (gs.canExecuteAnyAction(player)) {
+            startNewComputation(player, gs.clone());
+            computeDuringOneGameFrame();
+            return getBestActionSoFar();
+        } else {
+            return new PlayerAction();
+        }
     }
 
     @Override
@@ -73,11 +78,6 @@ public class PuppetNoPlan extends AIWithComputationBudget implements Interruptib
     }
 
     @Override
-    public void reset() {
-        puppet.reset();
-    }
-
-    @Override
     public AI clone() {
         PuppetNoPlan clone = new PuppetNoPlan((PuppetBase) puppet.clone());
         return clone;
@@ -88,12 +88,12 @@ public class PuppetNoPlan extends AIWithComputationBudget implements Interruptib
     }
 
     @Override
-    public String statisticsString() {
-        return puppet.statisticsString();
+    public List<ParameterSpecification> getParameters() {
+        return puppet.getParameters();
     }
 
     @Override
-    public List<ParameterSpecification> getParameters() {
-        return puppet.getParameters();
+    public String statisticsString() {
+        return puppet.statisticsString();
     }
 }

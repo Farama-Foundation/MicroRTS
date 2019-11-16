@@ -60,14 +60,6 @@ public class CRanged_Tactic extends AbstractAction {
         return !pgs.getUnits().contains(target);
     }
 
-    public boolean equals(Object o) {
-        if (!(o instanceof Attack)) {
-            return false;
-        }
-        CRanged_Tactic a = (CRanged_Tactic) o;
-        return target.getID() == a.target.getID() && pf.getClass() == a.pf.getClass();
-    }
-
     public void toxml(XMLWriter w) {
         w.tagWithAttributes("Attack",
             "unitID=\"" + getUnit().getID() + "\" target=\"" + target.getID() + "\" pathfinding=\""
@@ -296,6 +288,30 @@ public class CRanged_Tactic extends AbstractAction {
         return toReturn;
     }
 
+    //Finds nearest ranged unit from starting point
+    public Unit nearestRangedAlly(Unit start, List<Unit> unites, GameState gs) {
+        PhysicalGameState pgs = gs.getPhysicalGameState();
+        Unit nearestUnit = null;
+        double nearestDistance = -1;
+
+        if (start != null) {
+            for (Unit u2 : unites) {
+                if (u2 != null && u2.getPlayer() == p.getID() && u2.getType() == rangedType) {
+
+                    int dx = start.getX() - u2.getX();
+                    int dy = start.getY() - u2.getY();
+                    double d = Math.sqrt(dx * dx + dy * dy);
+
+                    if (d < nearestDistance || nearestDistance == -1) {
+                        nearestDistance = d;
+                        nearestUnit = u2;
+                    }
+                }
+            }
+        }
+        return nearestUnit;
+    }
+
     //Calculates distance bewteen positions a and b using x,y coordinates
     public double distanceWithoutUnits(int xa, int ya, int xb, int yb) {
         int dx = xb - xa;
@@ -369,6 +385,14 @@ public class CRanged_Tactic extends AbstractAction {
         }
     }
 
+    public boolean equals(Object o) {
+        if (!(o instanceof Attack)) {
+            return false;
+        }
+        CRanged_Tactic a = (CRanged_Tactic) o;
+        return target.getID() == a.target.getID() && pf.getClass() == a.pf.getClass();
+    }
+
     //Finds farthest ranged unit from starting point
     public Unit farthestRangedAlly(Unit start, List<Unit> unites, GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
@@ -389,29 +413,5 @@ public class CRanged_Tactic extends AbstractAction {
             }
         }
         return farthestUnit;
-    }
-
-    //Finds nearest ranged unit from starting point
-    public Unit nearestRangedAlly(Unit start, List<Unit> unites, GameState gs) {
-        PhysicalGameState pgs = gs.getPhysicalGameState();
-        Unit nearestUnit = null;
-        double nearestDistance = -1;
-
-        if (start != null) {
-            for (Unit u2 : unites) {
-                if (u2 != null && u2.getPlayer() == p.getID() && u2.getType() == rangedType) {
-
-                    int dx = start.getX() - u2.getX();
-                    int dy = start.getY() - u2.getY();
-                    double d = Math.sqrt(dx * dx + dy * dy);
-
-                    if (d < nearestDistance || nearestDistance == -1) {
-                        nearestDistance = d;
-                        nearestUnit = u2;
-                    }
-                }
-            }
-        }
-        return nearestUnit;
     }
 }

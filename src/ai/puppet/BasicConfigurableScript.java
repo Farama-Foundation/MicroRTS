@@ -22,6 +22,7 @@ enum BasicChoicePoint {UNITTYPE, EXPAND}
 
 public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint> {
 
+    private static final int BASE_RESOURCE_RADIUS = 8;
     Random r = new Random();
     UnitTypeTable utt;
     UnitType workerType;
@@ -39,7 +40,6 @@ public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint
     int abandonedbases;
     int freeresources;
     int nworkers;
-    private static final int BASE_RESOURCE_RADIUS = 8;
 
     public BasicConfigurableScript(UnitTypeTable a_utt) {
         this(a_utt, new FloodFillPathFinding());
@@ -60,14 +60,6 @@ public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint
         choices = new EnumMap<BasicChoicePoint, Integer>(BasicChoicePoint.class);
         choicePointValues = BasicChoicePoint.values();
         reset();
-    }
-
-    public ConfigurableScript<BasicChoicePoint> clone() {
-        BasicConfigurableScript sc = new BasicConfigurableScript(utt, pf);
-        sc.choices = choices.clone();
-        sc.choicePoints = choicePoints.clone();
-        sc.choicePointValues = choicePointValues.clone();
-        return sc;
     }
 
     /*
@@ -169,20 +161,6 @@ public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint
         }
     }
 
-    public void barracksBehavior(Unit u, Player p, PhysicalGameState pgs) {
-        UnitType toBuild = utt.getUnitType(choices.get(BasicChoicePoint.UNITTYPE));
-        if (!toBuild.canHarvest) {
-            if (p.getResources() >= toBuild.cost + resourcesUsed) {
-                train(u, toBuild);
-                resourcesUsed += toBuild.cost;
-            }
-        }
-    }
-
-    public int manDist(Unit u1, Unit u2) {
-        return Math.abs(u2.getX() - u1.getX()) + Math.abs(u2.getY() - u1.getY());
-    }
-
     public void meleeUnitBehavior(Unit u, Player p, GameState gs) {
         Unit closestEnemy = null;
         int closestDistance = 0;
@@ -226,12 +204,6 @@ public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint
                 attack(u, closestEnemy);
             }
         }
-    }
-
-    public int sqDist(Unit u1, Unit u2) {
-        int xDiff = Math.abs(u1.getX() - u2.getX());
-        int yDiff = Math.abs(u1.getY() - u2.getY());
-        return xDiff * xDiff + yDiff * yDiff;
     }
 
     public void workersBehavior(List<Unit> workers, Player p, GameState gs) {
@@ -331,6 +303,26 @@ public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint
         }
     }
 
+    public void barracksBehavior(Unit u, Player p, PhysicalGameState pgs) {
+        UnitType toBuild = utt.getUnitType(choices.get(BasicChoicePoint.UNITTYPE));
+        if (!toBuild.canHarvest) {
+            if (p.getResources() >= toBuild.cost + resourcesUsed) {
+                train(u, toBuild);
+                resourcesUsed += toBuild.cost;
+            }
+        }
+    }
+
+    public int manDist(Unit u1, Unit u2) {
+        return Math.abs(u2.getX() - u1.getX()) + Math.abs(u2.getY() - u1.getY());
+    }
+
+    public int sqDist(Unit u1, Unit u2) {
+        int xDiff = Math.abs(u1.getX() - u2.getX());
+        int yDiff = Math.abs(u1.getY() - u2.getY());
+        return xDiff * xDiff + yDiff * yDiff;
+    }
+
     public Unit findClosest(Unit from, Predicate<Unit> predicate, PhysicalGameState pgs) {
         Unit closestUnit = null;
         int closestDistance = 0;
@@ -346,19 +338,14 @@ public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint
         return closestUnit;
     }
 
-    public Unit findClosest(Unit from, UnitType targetType, PhysicalGameState pgs) {
-        Unit closestUnit = null;
-        int closestDistance = 0;
-        for (Unit u2 : pgs.getUnits()) {
-            if (u2.getType() == targetType) {
-                int d = Math.abs(u2.getX() - from.getX()) + Math.abs(u2.getY() - from.getY());
-                if (closestUnit == null || d < closestDistance) {
-                    closestUnit = u2;
-                    closestDistance = d;
-                }
-            }
-        }
-        return closestUnit;
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+
+        parameters.add(new ParameterSpecification("PathFinding", PathFinding.class,
+            new FloodFillPathFinding()));
+
+        return parameters;
     }
 
     public Unit findSecondClosest(Unit from, UnitType targetType, PhysicalGameState pgs) {
@@ -370,6 +357,21 @@ public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint
         int closestDistance = 0;
         for (Unit u2 : pgs.getUnits()) {
             if (u2.getType() == targetType && u2.getID() != except.getID()) {
+                int d = Math.abs(u2.getX() - from.getX()) + Math.abs(u2.getY() - from.getY());
+                if (closestUnit == null || d < closestDistance) {
+                    closestUnit = u2;
+                    closestDistance = d;
+                }
+            }
+        }
+        return closestUnit;
+    }
+
+    public Unit findClosest(Unit from, UnitType targetType, PhysicalGameState pgs) {
+        Unit closestUnit = null;
+        int closestDistance = 0;
+        for (Unit u2 : pgs.getUnits()) {
+            if (u2.getType() == targetType) {
                 int d = Math.abs(u2.getX() - from.getX()) + Math.abs(u2.getY() - from.getY());
                 if (closestUnit == null || d < closestDistance) {
                     closestUnit = u2;
@@ -409,6 +411,21 @@ public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint
             }
         }
         return closestUnit;
+    }
+
+    @Override
+    public void initializeChoices() {
+        for (BasicChoicePoint c : choicePointValues) {
+            switch (c) {
+                case UNITTYPE:
+                    choicePoints.put(c, new Options(c.ordinal(),
+                        new int[]{lightType.ID, workerType.ID, rangedType.ID, heavyType.ID}));
+                    break;
+                case EXPAND:
+                    choicePoints.put(c, new Options(c.ordinal(), new int[]{0, 1}));
+                    break;
+            }
+        }
     }
 
     @Override
@@ -474,19 +491,12 @@ public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint
         return choices;
     }
 
-    @Override
-    public void initializeChoices() {
-        for (BasicChoicePoint c : choicePointValues) {
-            switch (c) {
-                case UNITTYPE:
-                    choicePoints.put(c, new Options(c.ordinal(),
-                        new int[]{lightType.ID, workerType.ID, rangedType.ID, heavyType.ID}));
-                    break;
-                case EXPAND:
-                    choicePoints.put(c, new Options(c.ordinal(), new int[]{0, 1}));
-                    break;
-            }
-        }
+    public ConfigurableScript<BasicChoicePoint> clone() {
+        BasicConfigurableScript sc = new BasicConfigurableScript(utt, pf);
+        sc.choices = choices.clone();
+        sc.choicePoints = choicePoints.clone();
+        sc.choicePointValues = choicePointValues.clone();
+        return sc;
     }
 
     public String toString() {
@@ -495,15 +505,5 @@ public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint
             str.append(c.toString()).append(",");
         }
         return str + ")";
-    }
-
-    @Override
-    public List<ParameterSpecification> getParameters() {
-        List<ParameterSpecification> parameters = new ArrayList<>();
-
-        parameters.add(new ParameterSpecification("PathFinding", PathFinding.class,
-            new FloodFillPathFinding()));
-
-        return parameters;
     }
 }

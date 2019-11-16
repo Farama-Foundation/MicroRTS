@@ -31,14 +31,6 @@ public class Move extends AbstractAction {
         return unit.getX() == x && unit.getY() == y;
     }
 
-    public boolean equals(Object o) {
-        if (!(o instanceof Move)) {
-            return false;
-        }
-        Move a = (Move) o;
-        return x == a.x && y == a.y && pf.getClass() == a.pf.getClass();
-    }
-
     public void toxml(XMLWriter w) {
         w.tagWithAttributes("Move",
             "unitID=\"" + unit.getID() + "\" x=\"" + x + "\" y=\"" + y + "\" pathfinding=\"" + pf
@@ -54,5 +46,13 @@ public class Move extends AbstractAction {
             return move;
         }
         return null;
+    }
+
+    public boolean equals(Object o) {
+        if (!(o instanceof Move)) {
+            return false;
+        }
+        Move a = (Move) o;
+        return x == a.x && y == a.y && pf.getClass() == a.pf.getClass();
     }
 }

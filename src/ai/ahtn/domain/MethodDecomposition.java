@@ -21,22 +21,19 @@ import util.Pair;
  */
 public class MethodDecomposition {
 
-    public static int DEBUG = 0;
-
     public static final int METHOD_CONDITION = 0;
     public static final int METHOD_OPERATOR = 1;
     public static final int METHOD_METHOD = 2;
     public static final int METHOD_SEQUENCE = 3;
     public static final int METHOD_PARALLEL = 4;
     public static final int METHOD_NON_BRANCHING_CONDITION = 5; // a condition only to verify, the first binding found will be taken
-    // and won't result in a choicepoint
-
     public static final int EXECUTION_SUCCESS = 0;
+    // and won't result in a choicepoint
     public static final int EXECUTION_FAILURE = 1;
     public static final int EXECUTION_ACTION_ISSUE = 2;
     public static final int EXECUTION_WAITING_FOR_ACTION = 3;
     public static final int EXECUTION_CHOICE_POINT = 4;
-
+    public static int DEBUG = 0;
     protected int type = METHOD_CONDITION;
     protected Clause clause = null;
     protected Term term = null;
@@ -69,78 +66,6 @@ public class MethodDecomposition {
     public MethodDecomposition(Term t) {
         type = METHOD_OPERATOR;
         term = t;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int a_type) {
-        type = a_type;
-    }
-
-    public Clause getClause() {
-        return clause;
-    }
-
-    public Term getTerm() {
-        return term;
-    }
-
-    public Term getUpdatedTerm() {
-        return updatedTerm;
-    }
-
-    public void setUpdatedTerm(Term ut) {
-        updatedTerm = ut;
-    }
-
-    public int getUpdatedTermCycle() {
-        return updatedTermCycle;
-    }
-
-    public void setUpdatedTermCycle(int utc) {
-        updatedTermCycle = utc;
-    }
-
-    public HTNMethod getMethod() {
-        return method;
-    }
-
-    public MethodDecomposition[] getSubparts() {
-        return subelements;
-    }
-
-    public void setSubparts(MethodDecomposition[] se) {
-        subelements = se;
-    }
-
-    public int getExecutionState() {
-        return executionState;
-    }
-
-    public int getOperatorExecutingState() {
-        return operatorExecutingState;
-    }
-
-    public List<MethodDecomposition> getOperatorsBeingExecuted() {
-        return operatorsBeingExecuted;
-    }
-
-    public void setOperatorsBeingExecuted(List<MethodDecomposition> l) {
-        operatorsBeingExecuted = l;
-    }
-
-    public void setOperatorExecutingState(int s) {
-        operatorExecutingState = s;
-    }
-
-    public void setMethod(HTNMethod m) {
-        method = m;
-    }
-
-    public void setExecutionState(int es) {
-        executionState = es;
     }
 
     public static MethodDecomposition fromLispElement(LispElement e) throws Exception {
@@ -186,47 +111,76 @@ public class MethodDecomposition {
         }
     }
 
-    public String toString() {
-        switch (type) {
-            case METHOD_CONDITION:
-                return "(:condition " + clause + ")";
-            case METHOD_NON_BRANCHING_CONDITION:
-                return "(:!condition " + clause + ")";
-            case METHOD_OPERATOR:
-                if (updatedTerm != null) {
-                    return "(:operator " + updatedTerm + ")";
-                } else {
-                    return "(:operator " + term + ")";
-                }
-            case METHOD_METHOD:
-                if (method == null) {
-                    return "(:method " + term + ")";
-                } else {
-                    return "(" + method + ")";
-                }
+    public int getType() {
+        return type;
+    }
 
-            case METHOD_SEQUENCE: {
-                StringBuilder sb = new StringBuilder();
-                sb.append("(:sequence");
-                for (int i = 0; i < subelements.length; i++) {
-                    sb.append(" ");
-                    sb.append(subelements[i]);
-                }
-                sb.append(")");
-                return sb.toString();
-            }
-            case METHOD_PARALLEL: {
-                StringBuilder sb = new StringBuilder();
-                sb.append("(:parallel");
-                for (int i = 0; i < subelements.length; i++) {
-                    sb.append(" ");
-                    sb.append(subelements[i]);
-                }
-                sb.append(")");
-                return sb.toString();
-            }
-        }
-        return null;
+    public void setType(int a_type) {
+        type = a_type;
+    }
+
+    public Clause getClause() {
+        return clause;
+    }
+
+    public Term getTerm() {
+        return term;
+    }
+
+    public Term getUpdatedTerm() {
+        return updatedTerm;
+    }
+
+    public void setUpdatedTerm(Term ut) {
+        updatedTerm = ut;
+    }
+
+    public int getUpdatedTermCycle() {
+        return updatedTermCycle;
+    }
+
+    public void setUpdatedTermCycle(int utc) {
+        updatedTermCycle = utc;
+    }
+
+    public HTNMethod getMethod() {
+        return method;
+    }
+
+    public void setMethod(HTNMethod m) {
+        method = m;
+    }
+
+    public MethodDecomposition[] getSubparts() {
+        return subelements;
+    }
+
+    public void setSubparts(MethodDecomposition[] se) {
+        subelements = se;
+    }
+
+    public int getExecutionState() {
+        return executionState;
+    }
+
+    public void setExecutionState(int es) {
+        executionState = es;
+    }
+
+    public int getOperatorExecutingState() {
+        return operatorExecutingState;
+    }
+
+    public void setOperatorExecutingState(int s) {
+        operatorExecutingState = s;
+    }
+
+    public List<MethodDecomposition> getOperatorsBeingExecuted() {
+        return operatorsBeingExecuted;
+    }
+
+    public void setOperatorsBeingExecuted(List<MethodDecomposition> l) {
+        operatorsBeingExecuted = l;
     }
 
     public void printDetailed() {
@@ -339,6 +293,49 @@ public class MethodDecomposition {
         }
 
         return c;
+    }
+
+    public String toString() {
+        switch (type) {
+            case METHOD_CONDITION:
+                return "(:condition " + clause + ")";
+            case METHOD_NON_BRANCHING_CONDITION:
+                return "(:!condition " + clause + ")";
+            case METHOD_OPERATOR:
+                if (updatedTerm != null) {
+                    return "(:operator " + updatedTerm + ")";
+                } else {
+                    return "(:operator " + term + ")";
+                }
+            case METHOD_METHOD:
+                if (method == null) {
+                    return "(:method " + term + ")";
+                } else {
+                    return "(" + method + ")";
+                }
+
+            case METHOD_SEQUENCE: {
+                StringBuilder sb = new StringBuilder();
+                sb.append("(:sequence");
+                for (int i = 0; i < subelements.length; i++) {
+                    sb.append(" ");
+                    sb.append(subelements[i]);
+                }
+                sb.append(")");
+                return sb.toString();
+            }
+            case METHOD_PARALLEL: {
+                StringBuilder sb = new StringBuilder();
+                sb.append("(:parallel");
+                for (int i = 0; i < subelements.length; i++) {
+                    sb.append(" ");
+                    sb.append(subelements[i]);
+                }
+                sb.append(")");
+                return sb.toString();
+            }
+        }
+        return null;
     }
 
     public MethodDecomposition cloneTrackingDescendants(MethodDecomposition[] descendantsToTrack,

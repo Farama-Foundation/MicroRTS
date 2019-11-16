@@ -37,6 +37,48 @@ public class PlayerAction {
 
     }
 
+    /**
+     * Creates a PlayerAction from a XML element
+     *
+     * @param e
+     * @param gs
+     * @param utt
+     * @return
+     */
+    public static PlayerAction fromXML(Element e, GameState gs, UnitTypeTable utt) {
+        PlayerAction pa = new PlayerAction();
+        List<?> l = e.getChildren("action");
+        for (Object o : l) {
+            Element action_e = (Element) o;
+            int id = Integer.parseInt(action_e.getAttributeValue("unitID"));
+            Unit u = gs.getUnit(id);
+            UnitAction ua = UnitAction.fromXML(action_e.getChild("UnitAction"), utt);
+            pa.addUnitAction(u, ua);
+        }
+        return pa;
+    }
+
+    /**
+     * Creates a PlayerAction from a JSON object
+     *
+     * @param JSON
+     * @param gs
+     * @param utt
+     * @return
+     */
+    public static PlayerAction fromJSON(String JSON, GameState gs, UnitTypeTable utt) {
+        PlayerAction pa = new PlayerAction();
+        JsonArray a = Json.parse(JSON).asArray();
+        for (JsonValue v : a.values()) {
+            JsonObject o = v.asObject();
+            int id = o.getInt("unitID", -1);
+            Unit u = gs.getUnit(id);
+            UnitAction ua = UnitAction.fromJSON(o.get("unitAction").asObject(), utt);
+            pa.addUnitAction(u, ua);
+        }
+        return pa;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
@@ -54,6 +96,30 @@ public class PlayerAction {
             }
         }
         return true;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    public PlayerAction clone() {
+        PlayerAction clone = new PlayerAction();
+        clone.actions = new LinkedList<>();
+        for (Pair<Unit, UnitAction> tmp : actions) {
+            clone.actions.add(new Pair<Unit, UnitAction>(tmp.m_a, tmp.m_b));
+        }
+        clone.r = r.clone();
+        return clone;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    public String toString() {
+        StringBuilder tmp = new StringBuilder("{ ");
+        for (Pair<Unit, UnitAction> ua : actions) {
+            tmp.append("(").append(ua.m_a).append(",").append(ua.m_b).append(")");
+        }
+        return tmp + " }";
     }
 
     /**
@@ -111,16 +177,6 @@ public class PlayerAction {
      */
     public void setResourceUsage(ResourceUsage a_r) {
         r = a_r;
-    }
-
-    /**
-     * Adds a new {@link UnitAction} to a given {@link Unit}
-     *
-     * @param u
-     * @param a
-     */
-    public void addUnitAction(Unit u, UnitAction a) {
-        actions.add(new Pair<Unit, UnitAction>(u, a));
     }
 
     /**
@@ -205,6 +261,16 @@ public class PlayerAction {
     }
 
     /**
+     * Adds a new {@link UnitAction} to a given {@link Unit}
+     *
+     * @param u
+     * @param a
+     */
+    public void addUnitAction(Unit u, UnitAction a) {
+        actions.add(new Pair<Unit, UnitAction>(u, a));
+    }
+
+    /**
      * Returns whether this PlayerAction is consistent with a given {@link ResourceUsage} and a
      * {@link GameState}
      *
@@ -268,36 +334,12 @@ public class PlayerAction {
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#clone()
-     */
-    public PlayerAction clone() {
-        PlayerAction clone = new PlayerAction();
-        clone.actions = new LinkedList<>();
-        for (Pair<Unit, UnitAction> tmp : actions) {
-            clone.actions.add(new Pair<Unit, UnitAction>(tmp.m_a, tmp.m_b));
-        }
-        clone.r = r.clone();
-        return clone;
-    }
-
     /**
      * Resets the PlayerAction
      */
     public void clear() {
         actions.clear();
         r = new ResourceUsage();
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    public String toString() {
-        StringBuilder tmp = new StringBuilder("{ ");
-        for (Pair<Unit, UnitAction> ua : actions) {
-            tmp.append("(").append(ua.m_a).append(",").append(ua.m_b).append(")");
-        }
-        return tmp + " }";
     }
 
     /**
@@ -334,47 +376,5 @@ public class PlayerAction {
             first = false;
         }
         w.write("]");
-    }
-
-    /**
-     * Creates a PlayerAction from a XML element
-     *
-     * @param e
-     * @param gs
-     * @param utt
-     * @return
-     */
-    public static PlayerAction fromXML(Element e, GameState gs, UnitTypeTable utt) {
-        PlayerAction pa = new PlayerAction();
-        List<?> l = e.getChildren("action");
-        for (Object o : l) {
-            Element action_e = (Element) o;
-            int id = Integer.parseInt(action_e.getAttributeValue("unitID"));
-            Unit u = gs.getUnit(id);
-            UnitAction ua = UnitAction.fromXML(action_e.getChild("UnitAction"), utt);
-            pa.addUnitAction(u, ua);
-        }
-        return pa;
-    }
-
-    /**
-     * Creates a PlayerAction from a JSON object
-     *
-     * @param JSON
-     * @param gs
-     * @param utt
-     * @return
-     */
-    public static PlayerAction fromJSON(String JSON, GameState gs, UnitTypeTable utt) {
-        PlayerAction pa = new PlayerAction();
-        JsonArray a = Json.parse(JSON).asArray();
-        for (JsonValue v : a.values()) {
-            JsonObject o = v.asObject();
-            int id = o.getInt("unitID", -1);
-            Unit u = gs.getUnit(id);
-            UnitAction ua = UnitAction.fromJSON(o.get("unitAction").asObject(), utt);
-            pa.addUnitAction(u, ua);
-        }
-        return pa;
     }
 }

@@ -25,8 +25,8 @@ import rts.units.UnitTypeTable;
  */
 public class RangedDefense extends AbstractionLayerAI {
 
-    Random r = new Random();
     protected UnitTypeTable utt;
+    Random r = new Random();
     UnitType workerType;
     UnitType baseType;
     UnitType barracksType;
@@ -47,20 +47,12 @@ public class RangedDefense extends AbstractionLayerAI {
         reset(a_utt);
     }
 
-    public void reset() {
-        super.reset();
-    }
-
     public void reset(UnitTypeTable a_utt) {
         utt = a_utt;
         workerType = utt.getUnitType("Worker");
         baseType = utt.getUnitType("Base");
         barracksType = utt.getUnitType("Barracks");
         rangedType = utt.getUnitType("Ranged");
-    }
-
-    public AI clone() {
-        return new RangedDefense(utt, pf);
     }
 
     public PlayerAction getAction(int player, GameState gs) {
@@ -102,6 +94,20 @@ public class RangedDefense extends AbstractionLayerAI {
         workersBehavior(workers, p, pgs);
 
         return translateActions(player, gs);
+    }
+
+    public AI clone() {
+        return new RangedDefense(utt, pf);
+    }
+
+    @Override
+    public List<ParameterSpecification> getParameters() {
+        List<ParameterSpecification> parameters = new ArrayList<>();
+
+        parameters.add(
+            new ParameterSpecification("PathFinding", PathFinding.class, new AStarPathFinding()));
+
+        return parameters;
     }
 
     public void baseBehavior(Unit u, Player p, PhysicalGameState pgs) {
@@ -225,13 +231,7 @@ public class RangedDefense extends AbstractionLayerAI {
         }
     }
 
-    @Override
-    public List<ParameterSpecification> getParameters() {
-        List<ParameterSpecification> parameters = new ArrayList<>();
-
-        parameters.add(
-            new ParameterSpecification("PathFinding", PathFinding.class, new AStarPathFinding()));
-
-        return parameters;
+    public void reset() {
+        super.reset();
     }
 }

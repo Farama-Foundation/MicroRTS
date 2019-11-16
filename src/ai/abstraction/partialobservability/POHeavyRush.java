@@ -29,10 +29,6 @@ public class POHeavyRush extends HeavyRush {
         super(a_utt, a_pf);
     }
 
-    public void reset() {
-        super.reset();
-    }
-
     public AI clone() {
         return new POHeavyRush(utt, pf);
     }
@@ -74,5 +70,9 @@ public class POHeavyRush extends HeavyRush {
                 move(u, closest_x, closest_y);
             }
         }
+    }
+
+    public void reset() {
+        super.reset();
     }
 }

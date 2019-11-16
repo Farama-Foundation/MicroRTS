@@ -20,28 +20,18 @@ public class LispTokenizer {
         br = a_br;
     }
 
-    public int nextCharacter() throws Exception {
-        if (nextCharacter == -1) {
-            return br.read();
-        } else {
-            int tmp = nextCharacter;
-            nextCharacter = -1;
-            return tmp;
-        }
-    }
-
     public String nextToken() throws Exception {
         /*
-        
+
         tokens can be:
             (
             )
             anything else separated by spaces
-        
+
         we ignore anything in a line after ";"
-        
+
         we ignore anything in between "#|" and "|#
-        
+
         */
 
         if (!br.ready()) {
@@ -104,5 +94,15 @@ public class LispTokenizer {
         } while (br.ready());
 
         return currentToken.toString();
+    }
+
+    public int nextCharacter() throws Exception {
+        if (nextCharacter == -1) {
+            return br.read();
+        } else {
+            int tmp = nextCharacter;
+            nextCharacter = -1;
+            return tmp;
+        }
     }
 }

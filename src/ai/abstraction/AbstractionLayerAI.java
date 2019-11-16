@@ -58,6 +58,11 @@ public abstract class AbstractionLayerAI extends AIWithComputationBudget {
         actions.clear();
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + pf + ")";
+    }
+
     public PlayerAction translateActions(int player, GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         PlayerAction pa = new PlayerAction();
@@ -114,20 +119,12 @@ public abstract class AbstractionLayerAI extends AIWithComputationBudget {
         return pa;
     }
 
-    public AbstractAction getAbstractAction(Unit u) {
-        return actions.get(u);
-    }
-
     public void move(Unit u, int x, int y) {
         actions.put(u, new Move(u, x, y, pf));
     }
 
     public void train(Unit u, UnitType unit_type) {
         actions.put(u, new Train(u, unit_type));
-    }
-
-    public void build(Unit u, UnitType unit_type, int x, int y) {
-        actions.put(u, new Build(u, unit_type, x, y, pf));
     }
 
     public void harvest(Unit u, Unit target, Unit base) {
@@ -140,6 +137,27 @@ public abstract class AbstractionLayerAI extends AIWithComputationBudget {
 
     public void idle(Unit u) {
         actions.put(u, new Idle(u));
+    }
+
+    public boolean buildIfNotAlreadyBuilding(Unit u, UnitType type, int desiredX, int desiredY,
+        List<Integer> reservedPositions, Player p, PhysicalGameState pgs) {
+        AbstractAction action = getAbstractAction(u);
+        //        System.out.println("buildIfNotAlreadyBuilding: action = " + action);
+        if (!(action instanceof Build) || ((Build) action).type != type) {
+            int pos = findBuildingPosition(reservedPositions, desiredX, desiredY, p, pgs);
+
+            //            System.out.println("pos = " + (pos % pgs.getWidth()) + "," + (pos / pgs.getWidth()));
+
+            build(u, type, pos % pgs.getWidth(), pos / pgs.getWidth());
+            reservedPositions.add(pos);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public AbstractAction getAbstractAction(Unit u) {
+        return actions.get(u);
     }
 
     public int findBuildingPosition(List<Integer> reserved, int desiredX, int desiredY, Player p,
@@ -231,26 +249,8 @@ public abstract class AbstractionLayerAI extends AIWithComputationBudget {
         return -1;
     }
 
-    public boolean buildIfNotAlreadyBuilding(Unit u, UnitType type, int desiredX, int desiredY,
-        List<Integer> reservedPositions, Player p, PhysicalGameState pgs) {
-        AbstractAction action = getAbstractAction(u);
-        //        System.out.println("buildIfNotAlreadyBuilding: action = " + action);
-        if (!(action instanceof Build) || ((Build) action).type != type) {
-            int pos = findBuildingPosition(reservedPositions, desiredX, desiredY, p, pgs);
-
-            //            System.out.println("pos = " + (pos % pgs.getWidth()) + "," + (pos / pgs.getWidth()));
-
-            build(u, type, pos % pgs.getWidth(), pos / pgs.getWidth());
-            reservedPositions.add(pos);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "(" + pf + ")";
+    public void build(Unit u, UnitType unit_type, int x, int y) {
+        actions.put(u, new Build(u, unit_type, x, y, pf));
     }
 
     public PathFinding getPathFinding() {
