@@ -6,17 +6,20 @@
 
 package gui;
 
-import ai.core.AI;
 import ai.abstraction.AbstractAction;
 import ai.abstraction.AbstractionLayerAI;
 import ai.abstraction.pathfinding.BFSPathFinding;
+import ai.core.AI;
 import ai.core.ParameterSpecification;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
-import rts.*;
+import rts.GameState;
+import rts.PhysicalGameState;
+import rts.PlayerAction;
+import rts.ResourceUsage;
+import rts.UnitAction;
 import rts.units.Unit;
 
 /**

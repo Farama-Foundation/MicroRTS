@@ -6,12 +6,11 @@
 
 package ai.ahtn.domain;
 
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.List;
-
-import rts.GameState;
 import ai.ahtn.domain.LispParser.LispElement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import rts.GameState;
 
 /**
  *

@@ -4,17 +4,16 @@
  */
 package tests;
 
-import ai.core.AI;
-import ai.*;
-import ai.abstraction.WorkerRush;
-import ai.abstraction.pathfinding.BFSPathFinding;
-import gui.PhysicalGameStatePanel;
-
-import javax.swing.JFrame;
-import rts.GameState;
-import rts.PhysicalGameState;
-import rts.PlayerAction;
-import rts.units.UnitTypeTable;
+ import ai.RandomBiasedAI;
+ import ai.abstraction.WorkerRush;
+ import ai.abstraction.pathfinding.BFSPathFinding;
+ import ai.core.AI;
+ import gui.PhysicalGameStatePanel;
+ import javax.swing.JFrame;
+ import rts.GameState;
+ import rts.PhysicalGameState;
+ import rts.PlayerAction;
+ import rts.units.UnitTypeTable;
 
  /**
  *

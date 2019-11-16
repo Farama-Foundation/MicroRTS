@@ -7,14 +7,6 @@
 package ai.ahtn;
 
 import ai.abstraction.WorkerRush;
-import java.util.LinkedList;
-import java.util.List;
-
-import rts.GameState;
-import rts.PlayerAction;
-import rts.UnitAction;
-import rts.units.Unit;
-import util.Pair;
 import ai.ahtn.domain.DomainDefinition;
 import ai.ahtn.domain.MethodDecomposition;
 import ai.ahtn.domain.PredefinedOperators;
@@ -26,7 +18,14 @@ import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import rts.GameState;
+import rts.PlayerAction;
+import rts.UnitAction;
+import rts.units.Unit;
 import rts.units.UnitTypeTable;
+import util.Pair;
 
 /**
  *

@@ -5,9 +5,10 @@ import com.eclipsesource.json.JsonObject;
 import java.io.Writer;
 import java.util.Objects;
 import java.util.Random;
-
 import org.jdom.Element;
-import rts.units.*;
+import rts.units.Unit;
+import rts.units.UnitType;
+import rts.units.UnitTypeTable;
 import util.XMLWriter;
 
 /**

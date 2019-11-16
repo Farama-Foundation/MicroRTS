@@ -7,7 +7,6 @@ package tests;
 import ai.BranchingFactorCalculatorDouble;
 import ai.core.AI;
 import gui.PhysicalGameStatePanel;
-
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.OutputStreamWriter;

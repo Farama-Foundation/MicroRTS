@@ -8,7 +8,9 @@ import ai.core.AI;
 import ai.core.ParameterSpecification;
 import java.util.ArrayList;
 import java.util.List;
-import rts.*;
+import rts.GameState;
+import rts.PlayerAction;
+import rts.PlayerActionGenerator;
 import rts.units.UnitTypeTable;
 
 /**

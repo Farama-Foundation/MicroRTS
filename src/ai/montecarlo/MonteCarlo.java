@@ -4,9 +4,10 @@
  */
 package ai.montecarlo;
 
-import ai.core.AI;
 import ai.RandomBiasedAI;
+import ai.core.AI;
 import ai.core.AIWithComputationBudget;
+import ai.core.InterruptibleAI;
 import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
@@ -17,7 +18,6 @@ import rts.GameState;
 import rts.PlayerAction;
 import rts.PlayerActionGenerator;
 import rts.units.UnitTypeTable;
-import ai.core.InterruptibleAI;
 
 /**
  *

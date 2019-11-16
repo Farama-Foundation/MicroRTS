@@ -4,12 +4,15 @@
  */
 package tests.trace;
 
-import ai.core.AI;
+import ai.RandomBiasedAI;
 import ai.abstraction.WorkerRush;
-import ai.*;
 import ai.abstraction.pathfinding.BFSPathFinding;
-
-import rts.*;
+import ai.core.AI;
+import rts.GameState;
+import rts.PhysicalGameState;
+import rts.PlayerAction;
+import rts.Trace;
+import rts.TraceEntry;
 import rts.units.UnitTypeTable;
 import tests.MapGenerator;
 

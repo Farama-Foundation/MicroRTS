@@ -8,6 +8,7 @@ import ai.abstraction.WorkerRush;
 import ai.abstraction.pathfinding.AStarPathFinding;
 import ai.core.AI;
 import ai.core.AIWithComputationBudget;
+import ai.core.InterruptibleAI;
 import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
@@ -19,7 +20,6 @@ import rts.PlayerAction;
 import rts.PlayerActionGenerator;
 import rts.units.UnitTypeTable;
 import util.Pair;
-import ai.core.InterruptibleAI;
 
 /**
  *

@@ -6,11 +6,15 @@ package ai.stochastic;
 
 import ai.core.AI;
 import ai.core.ParameterSpecification;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import ai.stochastic.UnitActionProbabilityDistribution;
-import java.util.ArrayList;
-import rts.*;
+import rts.GameState;
+import rts.PhysicalGameState;
+import rts.PlayerAction;
+import rts.ResourceUsage;
+import rts.UnitAction;
+import rts.UnitActionAssignment;
 import rts.units.Unit;
 import rts.units.UnitTypeTable;
 import util.Sampler;

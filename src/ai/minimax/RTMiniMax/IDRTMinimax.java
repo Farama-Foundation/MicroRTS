@@ -4,11 +4,12 @@
  */
 package ai.minimax.RTMiniMax;
 
-import ai.evaluation.EvaluationFunctionForwarding;
 import ai.core.AI;
 import ai.core.AIWithComputationBudget;
+import ai.core.InterruptibleAI;
 import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
+import ai.evaluation.EvaluationFunctionForwarding;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -19,7 +20,6 @@ import rts.PlayerAction;
 import rts.PlayerActionGenerator;
 import rts.units.UnitTypeTable;
 import util.Pair;
-import ai.core.InterruptibleAI;
 
 /**
  *

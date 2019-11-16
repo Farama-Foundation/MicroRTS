@@ -5,14 +5,11 @@
 package tests.trace;
 
 import gui.TraceVisualizer;
-
 import java.io.FileInputStream;
 import java.util.zip.ZipInputStream;
-
-import javax.swing.*;
-
+import javax.swing.JFrame;
 import org.jdom.input.SAXBuilder;
-import rts.*;
+import rts.Trace;
 
 /**
  *

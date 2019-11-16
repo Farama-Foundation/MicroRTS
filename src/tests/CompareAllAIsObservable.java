@@ -4,17 +4,18 @@
  */
 package tests;
 
-import ai.core.AI;
-import ai.core.AIWithComputationBudget;
-import ai.core.ContinuingAI;
-import ai.core.PseudoContinuingAI;
-import ai.*;
-import ai.portfolio.PortfolioAI;
+import ai.RandomAI;
+import ai.RandomBiasedAI;
 import ai.abstraction.LightRush;
 import ai.abstraction.RangedRush;
 import ai.abstraction.WorkerRush;
 import ai.abstraction.pathfinding.BFSPathFinding;
 import ai.abstraction.pathfinding.GreedyPathFinding;
+import ai.core.AI;
+import ai.core.AIWithComputationBudget;
+import ai.core.ContinuingAI;
+import ai.core.InterruptibleAI;
+import ai.core.PseudoContinuingAI;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import ai.mcts.naivemcts.NaiveMCTS;
 import ai.mcts.uct.DownsamplingUCT;
@@ -23,16 +24,14 @@ import ai.mcts.uct.UCTUnitActions;
 import ai.minimax.ABCD.IDABCD;
 import ai.minimax.RTMiniMax.IDRTMinimax;
 import ai.minimax.RTMiniMax.IDRTMinimaxRandomized;
-import ai.montecarlo.*;
-
+import ai.montecarlo.MonteCarlo;
+import ai.portfolio.PortfolioAI;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.List;
-
 import rts.PhysicalGameState;
 import rts.units.UnitTypeTable;
-import ai.core.InterruptibleAI;
 
 /**
  *
@@ -81,23 +80,21 @@ public class CompareAllAIsObservable {
         bots.add(new NaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3(), true));
         bots.add(new NaiveMCTS(TIME, MAX_PLAYOUTS, PLAYOUT_TIME, MAX_DEPTH, 1.00f, 0.0f, 0.25f, new RandomBiasedAI(), new SimpleSqrtEvaluationFunction3(), true));
 
-        if (CONTINUING) {
-        	// Find out which of the bots can be used in "continuing" mode:
-        	List<AI> bots2 = new LinkedList<>();
-        	for(AI bot:bots) {
-        		if (bot instanceof AIWithComputationBudget) {
-        			if (bot instanceof InterruptibleAI) {
-        				bots2.add(new ContinuingAI(bot));
-        			} else {
-        				bots2.add(new PseudoContinuingAI((AIWithComputationBudget)bot));        				
-        			}
-        		} else {
-        			bots2.add(bot);
-        		}
-        	}
-        	bots = bots2;
+        // Find out which of the bots can be used in "continuing" mode:
+        List<AI> bots2 = new LinkedList<>();
+        for(AI bot:bots) {
+            if (bot instanceof AIWithComputationBudget) {
+                if (bot instanceof InterruptibleAI) {
+                    bots2.add(new ContinuingAI(bot));
+                } else {
+                    bots2.add(new PseudoContinuingAI((AIWithComputationBudget)bot));
+                }
+            } else {
+                bots2.add(bot);
+            }
         }
-        
+        bots = bots2;
+
         PrintStream out = new PrintStream(new File("results.txt"));
         
         // Separate the matchs by map:

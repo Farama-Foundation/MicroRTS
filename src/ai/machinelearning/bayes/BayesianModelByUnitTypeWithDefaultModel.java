@@ -5,7 +5,6 @@
  */
 package ai.machinelearning.bayes;
 
-import ai.machinelearning.bayes.TrainingInstance;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

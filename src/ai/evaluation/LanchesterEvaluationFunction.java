@@ -6,7 +6,8 @@ package ai.evaluation;
 
 import rts.GameState;
 import rts.PhysicalGameState;
-import rts.units.*;
+import rts.units.Unit;
+import rts.units.UnitTypeTable;
 
 /**
  *

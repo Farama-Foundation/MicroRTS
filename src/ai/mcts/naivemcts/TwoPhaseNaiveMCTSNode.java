@@ -4,13 +4,14 @@
  */
 package ai.mcts.naivemcts;
 
-import static ai.mcts.MCTSNode.r;
-import static ai.mcts.naivemcts.NaiveMCTSNode.DEBUG;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import rts.*;
+import rts.GameState;
+import rts.PlayerAction;
+import rts.ResourceUsage;
+import rts.UnitAction;
 import rts.units.Unit;
 import util.Sampler;
 

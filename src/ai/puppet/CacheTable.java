@@ -1,7 +1,6 @@
 package ai.puppet;
 
 import java.util.Random;
-
 import rts.GameState;
 import util.Pair;
 

@@ -7,7 +7,6 @@ package tests;
 import ai.core.AI;
 import gui.PhysicalGameStateJFrame;
 import gui.PhysicalGameStatePanel;
-
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.OutputStreamWriter;
@@ -16,7 +15,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
 import rts.GameState;
 import rts.PartiallyObservableGameState;
 import rts.PhysicalGameState;

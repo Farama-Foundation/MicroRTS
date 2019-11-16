@@ -6,7 +6,6 @@ import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 import java.io.Writer;
 import java.util.ArrayList;
-
 import org.jdom.Element;
 import util.XMLWriter;
 

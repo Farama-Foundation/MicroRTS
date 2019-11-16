@@ -4,16 +4,17 @@
  */
 package tests;
 
-import ai.abstraction.WorkerRush;
 import ai.abstraction.AbstractAction;
 import ai.abstraction.AbstractTrace;
 import ai.abstraction.AbstractTraceEntry;
 import ai.abstraction.AbstractionLayerAI;
 import ai.abstraction.LightRush;
+import ai.abstraction.WorkerRush;
 import ai.abstraction.pathfinding.BFSPathFinding;
 import java.io.FileWriter;
-
-import rts.*;
+import rts.GameState;
+import rts.PhysicalGameState;
+import rts.PlayerAction;
 import rts.units.Unit;
 import rts.units.UnitTypeTable;
 import util.XMLWriter;

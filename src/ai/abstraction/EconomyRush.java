@@ -5,9 +5,6 @@
  */
 package ai.abstraction;
 
-import ai.abstraction.AbstractAction;
-import ai.abstraction.AbstractionLayerAI;
-import ai.abstraction.Harvest;
 import ai.abstraction.pathfinding.AStarPathFinding;
 import ai.abstraction.pathfinding.PathFinding;
 import ai.core.AI;
@@ -28,7 +25,6 @@ import rts.units.UnitType;
 import rts.units.UnitTypeTable;
 
 /**
- *
  * @author rubensolv
  */
 public class EconomyRush extends AbstractionLayerAI {

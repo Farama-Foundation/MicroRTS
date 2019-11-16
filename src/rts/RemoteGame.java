@@ -4,9 +4,9 @@ import ai.RandomBiasedAI;
 import ai.core.AI;
 import ai.socket.SocketAI;
 import gui.PhysicalGameStatePanel;
-import rts.units.UnitTypeTable;
-import javax.swing.*;
 import java.net.Socket;
+import javax.swing.JFrame;
+import rts.units.UnitTypeTable;
 
 class RemoteGame extends Thread {
 

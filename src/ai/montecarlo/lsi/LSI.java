@@ -5,6 +5,13 @@
 package ai.montecarlo.lsi;
 
 import ai.RandomBiasedAI;
+import ai.core.AI;
+import ai.core.AIWithComputationBudget;
+import ai.core.ParameterSpecification;
+import ai.evaluation.EvaluationFunction;
+import ai.evaluation.SimpleSqrtEvaluationFunction3;
+import ai.montecarlo.lsi.Sampling.AgentOrderingType;
+import ai.montecarlo.lsi.Sampling.UnitActionTableEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -19,7 +26,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
-
 import rts.GameState;
 import rts.PhysicalGameState;
 import rts.PlayerAction;
@@ -28,15 +34,8 @@ import rts.ResourceUsage;
 import rts.UnitAction;
 import rts.UnitActionAssignment;
 import rts.units.Unit;
-import util.Pair;
-import ai.core.AI;
-import ai.core.AIWithComputationBudget;
-import ai.core.ParameterSpecification;
-import ai.montecarlo.lsi.Sampling.AgentOrderingType;
-import ai.montecarlo.lsi.Sampling.UnitActionTableEntry;
-import ai.evaluation.EvaluationFunction;
-import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import rts.units.UnitTypeTable;
+import util.Pair;
 
 public class LSI extends AIWithComputationBudget {
     public static final int DEBUG = 0;

@@ -1,11 +1,10 @@
 package ai.puppet;
 
+import ai.abstraction.AbstractionLayerAI;
+import ai.abstraction.pathfinding.PathFinding;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
-
-import ai.abstraction.AbstractionLayerAI;
-import ai.abstraction.pathfinding.PathFinding;
 import rts.GameState;
 import util.Pair;
 

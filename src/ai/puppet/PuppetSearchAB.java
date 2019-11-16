@@ -4,16 +4,15 @@
 package ai.puppet;
 
 import ai.abstraction.pathfinding.FloodFillPathFinding;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Stack;
-
 import ai.core.AI;
 import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Stack;
 import rts.GameState;
 import rts.PlayerAction;
 import rts.units.UnitTypeTable;

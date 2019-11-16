@@ -1,11 +1,10 @@
 package ai.puppet;
 
-import java.util.ArrayList;
-import java.util.stream.Collectors;
-
 import ai.core.AI;
 import ai.core.AIWithComputationBudget;
 import ai.evaluation.EvaluationFunction;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 import rts.GameState;
 import rts.PlayerAction;
 import util.Pair;

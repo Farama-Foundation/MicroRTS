@@ -4,9 +4,8 @@
  */
 package tests.trace;
 
-import javax.swing.JFrame;
-
 import gui.TraceVisualizer;
+import javax.swing.JFrame;
 import rts.Trace;
 
 /**

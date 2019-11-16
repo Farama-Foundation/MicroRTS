@@ -1,16 +1,5 @@
 package tests;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Stream;
-
 import ai.RandomAI;
 import ai.RandomBiasedAI;
 import ai.abstraction.HeavyRush;
@@ -23,6 +12,7 @@ import ai.ahtn.AHTNAI;
 import ai.core.AI;
 import ai.core.AIWithComputationBudget;
 import ai.core.ContinuingAI;
+import ai.core.InterruptibleAI;
 import ai.core.PseudoContinuingAI;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleEvaluationFunction;
@@ -41,9 +31,18 @@ import ai.puppet.PuppetNoPlan;
 import ai.puppet.PuppetSearchAB;
 import ai.puppet.PuppetSearchMCTS;
 import ai.puppet.SingleChoiceConfigurableScript;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Stream;
 import rts.PhysicalGameState;
 import rts.units.UnitTypeTable;
-import ai.core.InterruptibleAI;
 
 public class RunConfigurableExperiments {
 

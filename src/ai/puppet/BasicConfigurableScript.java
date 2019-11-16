@@ -1,17 +1,15 @@
 package ai.puppet;
 
 import ai.abstraction.pathfinding.FloodFillPathFinding;
+import ai.abstraction.pathfinding.PathFinding;
+import ai.core.ParameterSpecification;
 import java.util.ArrayList;
 import java.util.Collection;
-
 import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
-
-import ai.abstraction.pathfinding.PathFinding;
-import ai.core.ParameterSpecification;
 import rts.GameState;
 import rts.PhysicalGameState;
 import rts.Player;

@@ -7,7 +7,9 @@ package ai.mcts.uct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import rts.*;
+import rts.GameState;
+import rts.PhysicalGameState;
+import rts.PlayerAction;
 import rts.units.Unit;
 
 /**

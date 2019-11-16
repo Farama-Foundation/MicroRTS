@@ -8,17 +8,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Arrays;
-
-import rts.units.Unit;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import util.XMLWriter;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import rts.units.Unit;
 import rts.units.UnitTypeTable;
+import util.XMLWriter;
 
 /**
  * The physical game state (the actual 'map') of a microRTS game

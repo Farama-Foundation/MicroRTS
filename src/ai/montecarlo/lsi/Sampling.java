@@ -4,7 +4,6 @@
 
 package ai.montecarlo.lsi;
 
-import util.CartesianProduct;
 import ai.core.AI;
 import ai.evaluation.EvaluationFunction;
 import java.util.ArrayList;
@@ -21,6 +20,7 @@ import rts.ResourceUsage;
 import rts.UnitAction;
 import rts.UnitActionAssignment;
 import rts.units.Unit;
+import util.CartesianProduct;
 import util.Pair;
 import util.Sampler;
 

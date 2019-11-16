@@ -8,7 +8,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import rts.PhysicalGameState;
 import rts.Player;
-import rts.units.*;
+import rts.units.Unit;
+import rts.units.UnitType;
+import rts.units.UnitTypeTable;
 import util.XMLWriter;
 
 /**

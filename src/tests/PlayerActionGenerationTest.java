@@ -5,7 +5,10 @@
 package tests;
 
 import java.util.List;
-import rts.*;
+import rts.GameState;
+import rts.PhysicalGameState;
+import rts.Player;
+import rts.PlayerAction;
 import rts.units.UnitTypeTable;
 
 /**

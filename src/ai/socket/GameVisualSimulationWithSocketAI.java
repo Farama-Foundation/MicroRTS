@@ -4,14 +4,14 @@
  */
 package ai.socket;
 
-import ai.core.AI;
-import ai.*;
-import gui.PhysicalGameStatePanel;
-import javax.swing.JFrame;
-import rts.GameState;
-import rts.PhysicalGameState;
-import rts.PlayerAction;
-import rts.units.UnitTypeTable;
+ import ai.RandomBiasedAI;
+ import ai.core.AI;
+ import gui.PhysicalGameStatePanel;
+ import javax.swing.JFrame;
+ import rts.GameState;
+ import rts.PhysicalGameState;
+ import rts.PlayerAction;
+ import rts.units.UnitTypeTable;
 
 /**
  *

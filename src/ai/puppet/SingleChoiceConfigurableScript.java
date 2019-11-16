@@ -1,13 +1,12 @@
 package ai.puppet;
 
 import ai.abstraction.pathfinding.FloodFillPathFinding;
-import java.util.Collection;
-import java.util.EnumMap;
-
 import ai.abstraction.pathfinding.PathFinding;
 import ai.core.AI;
 import ai.core.ParameterSpecification;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumMap;
 import java.util.List;
 import rts.GameState;
 import rts.PlayerAction;

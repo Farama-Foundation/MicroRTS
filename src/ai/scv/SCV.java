@@ -1,15 +1,14 @@
 package ai.scv;
 
-
+import ai.RandomBiasedAI;
 import ai.abstraction.EconomyMilitaryRush;
 import ai.abstraction.EconomyRush;
 import ai.abstraction.HeavyDefense;
 import ai.abstraction.LightDefense;
-import ai.abstraction.RangedDefense;
-import ai.abstraction.WorkerDefense;
-import ai.RandomBiasedAI;
 import ai.abstraction.LightRush;
+import ai.abstraction.RangedDefense;
 import ai.abstraction.RangedRush;
+import ai.abstraction.WorkerDefense;
 import ai.abstraction.WorkerRush;
 import ai.abstraction.WorkerRushPlusPlus;
 import ai.abstraction.partialobservability.POHeavyRush;
@@ -41,13 +40,14 @@ import rts.UnitAction;
 import rts.units.Unit;
 import rts.units.UnitTypeTable;
 import util.Pair;
-//weka itens
-import weka.core.Instance;
-import weka.core.Instances;
 import weka.classifiers.functions.SimpleLogistic;
 import weka.core.DenseInstance;
+import weka.core.Instance;
+import weka.core.Instances;
 import weka.core.SerializationHelper;
 import weka.core.converters.ConverterUtils;
+
+//weka itens
 
 
 /* Strategy Generation for Multi-Unit Real-Time Games via Voting.

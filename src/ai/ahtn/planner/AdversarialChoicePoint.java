@@ -11,8 +11,8 @@ import ai.ahtn.domain.Clause;
 import ai.ahtn.domain.DomainDefinition;
 import ai.ahtn.domain.HTNMethod;
 import ai.ahtn.domain.MethodDecomposition;
-import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import rts.GameState;
 

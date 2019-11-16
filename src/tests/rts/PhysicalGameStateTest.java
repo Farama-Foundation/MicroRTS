@@ -8,9 +8,9 @@ package tests.rts;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import rts.PhysicalGameState;
 import rts.units.Unit;
 import rts.units.UnitTypeTable;
-import rts.PhysicalGameState;
 
 /**
  *

@@ -4,8 +4,8 @@
 
 package tests;
 
-import ai.core.AI;
 import ai.RandomBiasedAI;
+import ai.core.AI;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import ai.mcts.naivemcts.NaiveMCTS;

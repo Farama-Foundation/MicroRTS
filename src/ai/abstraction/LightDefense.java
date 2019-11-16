@@ -5,8 +5,8 @@
 package ai.abstraction;
 
 import ai.abstraction.pathfinding.AStarPathFinding;
-import ai.core.AI;
 import ai.abstraction.pathfinding.PathFinding;
+import ai.core.AI;
 import ai.core.ParameterSpecification;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -16,10 +16,11 @@ import rts.GameState;
 import rts.PhysicalGameState;
 import rts.Player;
 import rts.PlayerAction;
-import rts.units.*;
+import rts.units.Unit;
+import rts.units.UnitType;
+import rts.units.UnitTypeTable;
 
 /**
- *
  * @author Cleyton
  */
 public class LightDefense extends AbstractionLayerAI {

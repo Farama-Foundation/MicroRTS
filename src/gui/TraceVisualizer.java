@@ -4,16 +4,23 @@
  */
 package gui;
 
-import gui.PhysicalGameStatePanel;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.util.LinkedList;
 import java.util.List;
-import javax.swing.*;
+import javax.swing.BoxLayout;
+import javax.swing.JFrame;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import rts.*;
+import rts.GameState;
+import rts.Trace;
+import rts.TraceEntry;
+import rts.UnitAction;
 import rts.units.Unit;
 import util.Pair;
 

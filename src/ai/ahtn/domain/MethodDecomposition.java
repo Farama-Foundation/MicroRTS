@@ -8,10 +8,10 @@ package ai.ahtn.domain;
 
 import ai.ahtn.domain.LispParser.LispElement;
 import ai.ahtn.planner.AdversarialChoicePoint;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.ArrayList;
 import java.util.List;
 import rts.GameState;
 import util.Pair;

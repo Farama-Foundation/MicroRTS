@@ -4,18 +4,18 @@
  */
 package tests;
 
-import ai.core.AI;
-import ai.*;
-import ai.core.ContinuingAI;
-import ai.evaluation.SimpleEvaluationFunction;
-import ai.mcts.naivemcts.NaiveMCTS;
-import gui.MouseController;
-import gui.PhysicalGameStateMouseJFrame;
-import gui.PhysicalGameStatePanel;
-import rts.GameState;
-import rts.PhysicalGameState;
-import rts.PlayerAction;
-import rts.units.UnitTypeTable;
+ import ai.RandomBiasedAI;
+ import ai.core.AI;
+ import ai.core.ContinuingAI;
+ import ai.evaluation.SimpleEvaluationFunction;
+ import ai.mcts.naivemcts.NaiveMCTS;
+ import gui.MouseController;
+ import gui.PhysicalGameStateMouseJFrame;
+ import gui.PhysicalGameStatePanel;
+ import rts.GameState;
+ import rts.PhysicalGameState;
+ import rts.PlayerAction;
+ import rts.units.UnitTypeTable;
 
 /**
  *

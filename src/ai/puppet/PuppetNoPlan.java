@@ -3,14 +3,13 @@ package ai.puppet;
 import ai.abstraction.pathfinding.FloodFillPathFinding;
 import ai.core.AI;
 import ai.core.AIWithComputationBudget;
+import ai.core.InterruptibleAI;
 import ai.core.ParameterSpecification;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
-
 import java.util.List;
 import rts.GameState;
 import rts.PlayerAction;
 import rts.units.UnitTypeTable;
-import ai.core.InterruptibleAI;
 
 public class PuppetNoPlan extends AIWithComputationBudget implements InterruptibleAI {
 

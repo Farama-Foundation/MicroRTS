@@ -2,7 +2,6 @@ package ai.puppet;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import rts.GameState;
 
 public class PuppetMCTSNode {

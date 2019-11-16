@@ -236,7 +236,7 @@ public class PhysicalGameStatePanel extends JPanel {
 
     public static void draw(Graphics2D g2d,
                             PhysicalGameStatePanel panel,
-                            int dx,int dy,
+                            int dx, int dy,
                             GameState gs,
                             PartiallyObservableGameState[] pogs,
                             int colorScheme,

@@ -1,8 +1,9 @@
 package ai.mcts.believestatemcts;
 
+import static ai.mcts.MCTSNode.r;
+
 import ai.core.AI;
 import ai.evaluation.EvaluationFunction;
-import static ai.mcts.MCTSNode.r;
 import ai.mcts.naivemcts.NaiveMCTS;
 import ai.mcts.naivemcts.NaiveMCTSNode;
 import java.util.ArrayList;

@@ -7,8 +7,8 @@
 package ai.portfolio.portfoliogreedysearch;
 
 import ai.abstraction.pathfinding.AStarPathFinding;
-import ai.core.AI;
 import ai.abstraction.pathfinding.PathFinding;
+import ai.core.AI;
 import ai.core.AIWithComputationBudget;
 import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;

@@ -12,6 +12,7 @@ import ai.abstraction.RangedRush;
 import ai.abstraction.WorkerRush;
 import ai.core.AI;
 import ai.core.AIWithComputationBudget;
+import ai.core.InterruptibleAI;
 import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
@@ -20,7 +21,6 @@ import java.util.List;
 import rts.GameState;
 import rts.PlayerAction;
 import rts.units.UnitTypeTable;
-import ai.core.InterruptibleAI;
 
 /**
  *

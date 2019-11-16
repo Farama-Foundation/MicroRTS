@@ -4,7 +4,6 @@
  */
 package ai.abstraction;
 
-import ai.abstraction.AbstractAction;
 import java.util.LinkedList;
 import java.util.List;
 import org.jdom.Element;

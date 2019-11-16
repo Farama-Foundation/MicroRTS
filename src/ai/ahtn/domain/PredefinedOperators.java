@@ -9,7 +9,6 @@ package ai.ahtn.domain;
 import ai.abstraction.pathfinding.AStarPathFinding;
 import ai.abstraction.pathfinding.PathFinding;
 import java.util.HashMap;
-
 import rts.GameState;
 import rts.PlayerAction;
 import rts.ResourceUsage;

@@ -1,12 +1,12 @@
 package tests.bayesianmodels;
 
-import ai.core.AI;
-import ai.*;
+import ai.RandomBiasedAI;
 import ai.abstraction.HeavyRush;
 import ai.abstraction.LightRush;
 import ai.abstraction.RangedRush;
 import ai.abstraction.WorkerRush;
 import ai.abstraction.pathfinding.AStarPathFinding;
+import ai.core.AI;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import ai.mcts.naivemcts.NaiveMCTS;

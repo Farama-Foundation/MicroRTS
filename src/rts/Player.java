@@ -2,7 +2,6 @@ package rts;
 
 import com.eclipsesource.json.JsonObject;
 import java.io.Writer;
-
 import org.jdom.Element;
 import util.XMLWriter;
 

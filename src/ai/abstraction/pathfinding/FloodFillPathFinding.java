@@ -3,7 +3,6 @@ package ai.abstraction.pathfinding;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-
 import rts.GameState;
 import rts.PhysicalGameState;
 import rts.ResourceUsage;

@@ -59,7 +59,7 @@ public class PhysicalGameStateMouseJFrame extends JFrame {
         Rectangle r = panel.getBounds();
         if (x>=r.x && x<r.x+r.width &&
             y>=r.y && y<r.y+r.height) {
-            Pair<Integer,Integer> cell = panel.getContentAtCoordinates(x - r.x, y - r.y);            
+            Pair<Integer,Integer> cell = panel.getContentAtCoordinates(x - r.x, y - r.y);
             return cell;
         }
         

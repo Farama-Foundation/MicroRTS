@@ -7,10 +7,6 @@
 package gui.frontend;
 
 import ai.BranchingFactorCalculatorBigInteger;
-import ai.core.AI;
-import ai.core.AIWithComputationBudget;
-import ai.core.ContinuingAI;
-import ai.core.PseudoContinuingAI;
 import ai.PassiveAI;
 import ai.RandomAI;
 import ai.RandomBiasedAI;
@@ -35,16 +31,24 @@ import ai.abstraction.pathfinding.FloodFillPathFinding;
 import ai.abstraction.pathfinding.GreedyPathFinding;
 import ai.abstraction.pathfinding.PathFinding;
 import ai.ahtn.AHTNAI;
+import ai.core.AI;
+import ai.core.AIWithComputationBudget;
+import ai.core.ContinuingAI;
+import ai.core.InterruptibleAI;
 import ai.core.ParameterSpecification;
+import ai.core.PseudoContinuingAI;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.EvaluationFunctionForwarding;
 import ai.evaluation.SimpleEvaluationFunction;
+import ai.evaluation.SimpleOptEvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction2;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
+import ai.mcts.believestatemcts.BS3_NaiveMCTS;
 import ai.mcts.informedmcts.InformedNaiveMCTS;
 import ai.mcts.mlps.MLPSMCTS;
 import ai.mcts.naivemcts.NaiveMCTS;
+import ai.mcts.uct.DownsamplingUCT;
 import ai.mcts.uct.UCT;
 import ai.mcts.uct.UCTFirstPlayUrgency;
 import ai.mcts.uct.UCTUnitActions;
@@ -56,11 +60,11 @@ import ai.montecarlo.lsi.LSI;
 import ai.portfolio.PortfolioAI;
 import ai.portfolio.portfoliogreedysearch.PGSAI;
 import ai.puppet.PuppetSearchMCTS;
+import ai.scv.SCV;
 import ai.stochastic.UnitActionProbabilityDistribution;
 import gui.MouseController;
 import gui.PhysicalGameStateMouseJFrame;
 import gui.PhysicalGameStatePanel;
-
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -72,7 +76,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
-
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -87,7 +90,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
-
 import rts.GameState;
 import rts.PartiallyObservableGameState;
 import rts.PhysicalGameState;
@@ -101,11 +103,6 @@ import rts.units.UnitTypeTable;
 import tests.MapGenerator;
 import util.Pair;
 import util.XMLWriter;
-import ai.core.InterruptibleAI;
-import ai.evaluation.SimpleOptEvaluationFunction;
-import ai.mcts.believestatemcts.BS3_NaiveMCTS;
-import ai.mcts.uct.DownsamplingUCT;
-import ai.scv.SCV;
 
 /**
  *
