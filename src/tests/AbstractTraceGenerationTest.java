@@ -30,8 +30,8 @@ public class AbstractTraceGenerationTest {
         int MAXCYCLES = 5000;
         boolean gameover;
         
-        AI ai1 = new LightRush(utt, new BFSPathFinding());
-        AI ai2 = new WorkerRush(utt, new BFSPathFinding());
+        AbstractionLayerAI ai1 = new LightRush(utt, new BFSPathFinding());
+        AbstractionLayerAI ai2 = new WorkerRush(utt, new BFSPathFinding());
         
         AbstractTrace trace = new AbstractTrace(utt);
         AbstractTraceEntry te = new AbstractTraceEntry(gs.getPhysicalGameState().clone(),gs.getTime());

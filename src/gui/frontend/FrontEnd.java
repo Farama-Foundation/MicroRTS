@@ -25,10 +25,10 @@ public class FrontEnd extends JPanel {
          
         JTabbedPane tabbedPane = new JTabbedPane();
          
-        JComponent panel1 = new FEStatePane();
+        FEStatePane panel1 = new FEStatePane();
         tabbedPane.addTab("States", null, panel1, "Load/save states and play games.");
          
-        JComponent panel2 = new FETracePane((FEStatePane)panel1);
+        JComponent panel2 = new FETracePane(panel1);
         tabbedPane.addTab("Traces", null, panel2, "Load/save and view replays.");
         
         JComponent panel3 = new FETournamentPane();
