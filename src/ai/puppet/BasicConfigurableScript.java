@@ -509,9 +509,9 @@ public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint
 	}
 
 	public String toString(){
-		String str = getClass().getSimpleName() + "(";
+		StringBuilder str = new StringBuilder(getClass().getSimpleName() + "(");
 		for(BasicChoicePoint c:BasicChoicePoint.values()){
-			str+=c.toString()+",";
+			str.append(c.toString()).append(",");
 		}
 		return str+")";
 	}

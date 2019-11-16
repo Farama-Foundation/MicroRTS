@@ -715,18 +715,18 @@ public class GameState {
      * @see java.lang.Object#toString()
      */
     public String toString() {
-        String tmp = "ObservableGameState: " + time + "\n";
-        for(Player p:pgs.getPlayers()) tmp += "player " + p.ID + ": " + p.getResources() + "\n";
+        StringBuilder tmp = new StringBuilder("ObservableGameState: " + time + "\n");
+        for(Player p:pgs.getPlayers()) tmp.append("player ").append(p.ID).append(": ").append(p.getResources()).append("\n");
         for(Unit u:unitActions.keySet()) {
             UnitActionAssignment ua = unitActions.get(u);
             if (ua==null) {
-                tmp += "    " + u + " -> null (ERROR!)\n";
+                tmp.append("    ").append(u).append(" -> null (ERROR!)\n");
             } else {
-                tmp += "    " + u + " -> " + ua.time + " " + ua.action + "\n";
+                tmp.append("    ").append(u).append(" -> ").append(ua.time).append(" ").append(ua.action).append("\n");
             }
         }
-        tmp += pgs;
-        return tmp;
+        tmp.append(pgs);
+        return tmp.toString();
     }
 
     
