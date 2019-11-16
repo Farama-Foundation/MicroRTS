@@ -28,8 +28,8 @@ public class PredefinedPredicates {
     public static int DEBUG = 0;
     
     public interface PredicateTester {
-        public abstract List<Binding> firstMatch(Term term, GameState gs) throws Exception;
-        public abstract List<List<Binding>> allMatches(Term term, GameState gs) throws Exception;
+        List<Binding> firstMatch(Term term, GameState gs) throws Exception;
+        List<List<Binding>> allMatches(Term term, GameState gs) throws Exception;
     }
     
 //    static PathFinding pf = new GreedyPathFinding();

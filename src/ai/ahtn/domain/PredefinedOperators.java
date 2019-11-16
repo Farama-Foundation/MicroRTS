@@ -29,7 +29,7 @@ public class PredefinedOperators {
         // return true, when the action is over, and false when it's not over yet
         // if pa == null, the actions are issued directly to the game state
         // if pa != null, they are added to pa
-        public abstract boolean execute(Term t, MethodDecomposition state, GameState gs, PlayerAction pa) throws Exception;
+        boolean execute(Term t, MethodDecomposition state, GameState gs, PlayerAction pa) throws Exception;
     }
     
 //    static PathFinding pf = new GreedyPathFinding();

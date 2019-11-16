@@ -25,7 +25,7 @@ public interface InterruptibleAI {
 	 * @param gs the game state where the action will be taken
 	 * @throws Exception
 	 */
-    public void startNewComputation(int player, GameState gs) throws Exception;
+	void startNewComputation(int player, GameState gs) throws Exception;
     
     /**
      * Resumes the computation of the best action calculated so far.
@@ -33,14 +33,14 @@ public interface InterruptibleAI {
      * to be taken in the {@link GameState} received in {@link #startNewComputation} 
      * @throws Exception
      */
-    public void computeDuringOneGameFrame() throws Exception;
+	void computeDuringOneGameFrame() throws Exception;
     
     /**
      * Returns the best action calculated so far
      * @return
      * @throws Exception
      */
-    public PlayerAction getBestActionSoFar() throws Exception;   
+	PlayerAction getBestActionSoFar() throws Exception;
 }
 
 /*
