@@ -28,6 +28,7 @@ public class FeatureSelection {
     public static double featureSetCrossValidationAccuracy(BayesianModel model, List<int []> X_l, List<Integer> Y_l, 
                                                            List<TrainingInstance> instances, List<UnitAction> allPossibleActions,
                                                            List<Integer> features) throws Exception {
+        // TODO this list is populated, but never used
         List<int []> X_reduced_l = new ArrayList<>();
         for(int []x:X_l) {
             int []x_reduced = new int[features.size()];
