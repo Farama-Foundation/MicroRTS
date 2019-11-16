@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 
 import ai.core.AI;
 import ai.core.AIWithComputationBudget;
-import ai.core.InterruptibleAI;
 import ai.evaluation.EvaluationFunction;
 import rts.GameState;
 import rts.PlayerAction;

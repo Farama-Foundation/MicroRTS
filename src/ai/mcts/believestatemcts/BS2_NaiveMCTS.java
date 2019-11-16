@@ -13,7 +13,6 @@ import rts.PlayerAction;
 import rts.UnitAction;
 import rts.UnitActionAssignment;
 import rts.units.Unit;
-import rts.units.UnitType;
 import rts.units.UnitTypeTable;
 
 /**

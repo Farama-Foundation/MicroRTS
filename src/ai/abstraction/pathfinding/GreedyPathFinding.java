@@ -4,8 +4,6 @@
  */
 package ai.abstraction.pathfinding;
 
-import java.util.LinkedList;
-import java.util.List;
 import rts.GameState;
 import rts.PhysicalGameState;
 import rts.ResourceUsage;

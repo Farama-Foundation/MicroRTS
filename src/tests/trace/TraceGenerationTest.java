@@ -9,7 +9,7 @@ import ai.abstraction.WorkerRush;
 import ai.*;
 import ai.abstraction.pathfinding.BFSPathFinding;
 import java.io.FileWriter;
-import java.io.IOException;
+
 import rts.*;
 import rts.units.UnitTypeTable;
 import tests.MapGenerator;

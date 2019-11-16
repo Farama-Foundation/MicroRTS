@@ -5,7 +5,6 @@
  */
 package ai.machinelearning.bayes;
 
-import java.io.Writer;
 import org.jdom.Element;
 import util.XMLWriter;
 

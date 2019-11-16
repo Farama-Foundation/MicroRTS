@@ -5,7 +5,6 @@
 package gui;
 
 import java.awt.*;
-import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 import java.util.List;
