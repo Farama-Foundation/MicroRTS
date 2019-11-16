@@ -5,6 +5,7 @@
  */
 package tests.rts;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import rts.units.Unit;
@@ -25,7 +26,7 @@ public class PhysicalGameStateTest {
         System.out.println("ResetAllUnitsHP");
         
         byte[] encoded = Files.readAllBytes(Paths.get("utts/TestUnitTypeTable.json"));
-        String jsonString = new String(encoded, "UTF-8");
+        String jsonString = new String(encoded, StandardCharsets.UTF_8);
         UnitTypeTable utt = UnitTypeTable.fromJSON(jsonString);
         
         PhysicalGameState pgs = PhysicalGameState.load("maps/8x8/basesWorkers8x8.xml", utt);
