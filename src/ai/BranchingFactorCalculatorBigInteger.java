@@ -153,6 +153,9 @@ public class BranchingFactorCalculatorBigInteger {
         List<BigInteger []> branchingOfSeparatedAreas = new LinkedList<BigInteger []>();
         for(int area:areas) {
             PlayerAction pa = new PlayerAction();
+
+            // TODO the these two lists are filled but they are never used for anything
+            // this also happens in the other BranchingFactorCalculator classes
             List<Unit> unitsInArea = new LinkedList<Unit>();
             List<Unit> unitsNotInArea = new LinkedList<Unit>();
             for(Unit u:gs2.getUnits()) {

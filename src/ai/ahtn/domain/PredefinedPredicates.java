@@ -500,6 +500,7 @@ public class PredefinedPredicates {
                                     return new LinkedList<>();
                                 }
                             } else {
+                                // TODO this list is populated, but never used
                                 List<Binding> l = new LinkedList<>();
                                 if (!((Variable)p).ignore()) {
                                     l.add(new Binding((Variable)p,new IntegerConstant(UnitAction.DIRECTION_UP)));
