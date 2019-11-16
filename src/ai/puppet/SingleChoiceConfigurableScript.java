@@ -12,7 +12,7 @@ import java.util.List;
 import rts.GameState;
 import rts.PlayerAction;
 
-enum SingleChoice{SINGLE};
+enum SingleChoice{SINGLE}
 
 public class SingleChoiceConfigurableScript extends ConfigurableScript<SingleChoice> {
 	AI scripts[];

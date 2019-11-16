@@ -20,7 +20,7 @@ import rts.units.Unit;
 import rts.units.UnitType;
 import rts.units.UnitTypeTable;
 
-enum BasicChoicePoint{UNITTYPE, EXPAND};
+enum BasicChoicePoint{UNITTYPE, EXPAND}
 
 
 public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint> {

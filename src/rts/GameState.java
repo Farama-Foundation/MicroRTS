@@ -856,7 +856,7 @@ public class GameState {
             JsonObject uaa_o = v.asObject();
             long ID = uaa_o.getLong("ID", -1);
             Unit u = gs.getUnit(ID);
-            int time = uaa_o.getInt("time", 0);;
+            int time = uaa_o.getInt("time", 0);
             UnitAction ua = UnitAction.fromJSON(uaa_o.get("action").asObject(), utt);
             UnitActionAssignment uaa = new UnitActionAssignment(u, ua, time);
             gs.unitActions.put(u, uaa);
