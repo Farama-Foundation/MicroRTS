@@ -69,8 +69,8 @@ public class DownsamplingUCTNode {
 
         // Downsample the number of actions:
         if (moveGenerator!=null && actions==null) {
-            actions = new ArrayList<PlayerAction>();
-            children = new ArrayList<DownsamplingUCTNode>();
+            actions = new ArrayList<>();
+            children = new ArrayList<>();
             if (moveGenerator.getSize()>2*MAXACTIONS) {
                 for(int i = 0;i<MAXACTIONS;i++) {
                     actions.add(moveGenerator.getRandom());
@@ -106,18 +106,17 @@ public class DownsamplingUCTNode {
         // Bandit policy:
         double best_score = 0;
         DownsamplingUCTNode best = null;
-        for(int i = 0;i<children.size();i++) {
-            DownsamplingUCTNode child = children.get(i);
-            double exploitation = ((double)child.accum_evaluation) / child.visit_count;
-            double exploration = Math.sqrt(Math.log((double)visit_count)/child.visit_count);
-            if (type==0) {
+        for (DownsamplingUCTNode child : children) {
+            double exploitation = ((double) child.accum_evaluation) / child.visit_count;
+            double exploration = Math.sqrt(Math.log((double) visit_count) / child.visit_count);
+            if (type == 0) {
                 // max node:
-                exploitation = (exploitation + evaluation_bound)/(2*evaluation_bound);
+                exploitation = (exploitation + evaluation_bound) / (2 * evaluation_bound);
             } else {
-                exploitation = - (exploitation - evaluation_bound)/(2*evaluation_bound);                
+                exploitation = -(exploitation - evaluation_bound) / (2 * evaluation_bound);
             }
-            double tmp = C*exploitation + exploration;
-            if (best==null || tmp>best_score) {
+            double tmp = C * exploitation + exploration;
+            if (best == null || tmp > best_score) {
                 best = child;
                 best_score = tmp;
             }

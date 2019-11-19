@@ -31,7 +31,7 @@ public class PGSMouseListener implements MouseListener, MouseMotionListener, Key
     List<Unit> selectedUnits = new ArrayList<>();
     String selectedButton = null;
 
-    HashMap<Character,String> unitTypeQuickKeys = new HashMap<Character,String>();
+    HashMap<Character,String> unitTypeQuickKeys = new HashMap<>();
     
     public PGSMouseListener(MouseController a_AI, PhysicalGameStateMouseJFrame a_frame, GameState a_gs, int a_playerID) {
         AI = a_AI;

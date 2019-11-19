@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class CartesianProduct<E> {
 
-    private final List<List<E>> domains = new ArrayList<List<E>>();
+    private final List<List<E>> domains = new ArrayList<>();
 
     /**
      * Constructs a Cartesian product generator.
@@ -24,7 +24,7 @@ public class CartesianProduct<E> {
         }
 
         for (Set<E> set : definitionsOfDomains) {
-            domains.add(new ArrayList<E>(set));
+            domains.add(new ArrayList<>(set));
         }
     }
 
@@ -37,7 +37,7 @@ public class CartesianProduct<E> {
      * @return i-th particular element of the Cartesian product
      */
     public List<E> element(int i) {
-        LinkedList<E> result = new LinkedList<E>();
+        LinkedList<E> result = new LinkedList<>();
 
         for (List<E> currentDomain : domains) {
             int currentSize = currentDomain.size();

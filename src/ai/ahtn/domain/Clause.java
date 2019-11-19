@@ -88,9 +88,9 @@ public class Clause {
                 {
                     StringBuilder sb = new StringBuilder();
                     sb.append("(and");
-                    for(int i = 0;i<clauses.length;i++) {
+                    for (Clause clause : clauses) {
                         sb.append(" ");
-                        sb.append(clauses[i]);
+                        sb.append(clause);
                     }
                     sb.append(")");
                     return sb.toString();
@@ -99,9 +99,9 @@ public class Clause {
                 {
                     StringBuilder sb = new StringBuilder();
                     sb.append("(or");
-                    for(int i = 0;i<clauses.length;i++) {
+                    for (Clause clause : clauses) {
                         sb.append(" ");
-                        sb.append(clauses[i]);
+                        sb.append(clause);
                     }
                     sb.append(")");
                     return sb.toString();
@@ -110,9 +110,9 @@ public class Clause {
                 {
                     StringBuilder sb = new StringBuilder();
                     sb.append("(not");
-                    for(int i = 0;i<clauses.length;i++) {
+                    for (Clause clause : clauses) {
                         sb.append(" ");
-                        sb.append(clauses[i]);
+                        sb.append(clause);
                     }
                     sb.append(")");
                     return sb.toString();
@@ -164,8 +164,8 @@ public class Clause {
     public void renameVariables(int renamingIndex) {
         if (term!=null) term.renameVariables(renamingIndex);
         if (clauses!=null) {
-            for(int i = 0;i<clauses.length;i++) {
-                clauses[i].renameVariables(renamingIndex);
+            for (Clause clause : clauses) {
+                clause.renameVariables(renamingIndex);
             }
         }
     }
@@ -176,8 +176,8 @@ public class Clause {
         if (l.isEmpty()) return;
         if (term!=null) term.applyBindings(l);
         if (clauses!=null) {
-            for(int i = 0;i<clauses.length;i++) {
-                clauses[i].applyBindings(l);
+            for (Clause clause : clauses) {
+                clause.applyBindings(l);
             }
         }
     }        

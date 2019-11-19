@@ -68,12 +68,12 @@ public class RoundRobinTournament {
 
         out.write("RoundRobinTournament\n");
         out.write("AIs\n");
-        for (int i = 0; i < AIs.size(); i++) {
-            out.write("\t" + AIs.get(i).toString() + "\n");
+        for (AI ai : AIs) {
+            out.write("\t" + ai.toString() + "\n");
         }
         out.write("maps\n");
-        for (int i = 0; i < maps.size(); i++) {
-            out.write("\t" + maps.get(i) + "\n");
+        for (String map : maps) {
+            out.write("\t" + map + "\n");
         }
         out.write("iterations\t" + iterations + "\n");
         out.write("maxGameLength\t" + maxGameLength + "\n");

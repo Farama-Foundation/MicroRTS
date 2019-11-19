@@ -90,7 +90,7 @@ public class SimpleEconomyRush extends AbstractionLayerAI {
         }
 
         // behavior of workers:
-        List<Unit> workers = new ArrayList<Unit>();
+        List<Unit> workers = new ArrayList<>();
         for (Unit u : pgs.getUnits()) {
             if (u.getType().canHarvest
                     && u.getPlayer() == player
@@ -226,7 +226,7 @@ public class SimpleEconomyRush extends AbstractionLayerAI {
         int nbarracks = 0;
 
         int resourcesUsed = 0;
-        List<Unit> freeWorkers = new ArrayList<Unit>();
+        List<Unit> freeWorkers = new ArrayList<>();
         freeWorkers.addAll(workers);
 
         if (workers.isEmpty()) {
@@ -244,7 +244,7 @@ public class SimpleEconomyRush extends AbstractionLayerAI {
             }
         }
 
-        List<Integer> reservedPositions = new ArrayList<Integer>();
+        List<Integer> reservedPositions = new ArrayList<>();
         if (nbases == 0 && !freeWorkers.isEmpty()) {
             // build a base:
             if (p.getResources() >= baseType.cost + resourcesUsed) {

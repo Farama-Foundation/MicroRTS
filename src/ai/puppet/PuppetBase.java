@@ -52,8 +52,8 @@ class Move{
 	}
 	public String toString(ConfigurableScript<?> script){
 		return "choices: "+choices.stream().map(
-				(Pair<Integer,Integer>  p)-> 
-				new Pair<String,Integer>(script.choicePointValues[p.m_a].name(),p.m_b))
+				(Pair<Integer,Integer>  p)->
+                        new Pair<>(script.choicePointValues[p.m_a].name(), p.m_b))
 				.collect(Collectors.toList())+", player: "+player;
 	}
 	

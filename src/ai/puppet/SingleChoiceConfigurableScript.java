@@ -21,8 +21,8 @@ public class SingleChoiceConfigurableScript extends ConfigurableScript<SingleCho
 		super(a_pf);
 		this.scripts=scripts;
 		
-		choicePoints = new EnumMap<SingleChoice,Options>(SingleChoice.class);
-        choices = new EnumMap<SingleChoice,Integer>(SingleChoice.class);
+		choicePoints = new EnumMap<>(SingleChoice.class);
+        choices = new EnumMap<>(SingleChoice.class);
         choicePointValues = SingleChoice.values();
         reset();
 	}

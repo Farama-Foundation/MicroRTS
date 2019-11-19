@@ -439,7 +439,7 @@ public class GameState {
      * @return
      */
     public List<PlayerAction> getPlayerActionsSingleUnit(Unit unit) {
-        List<PlayerAction> l = new LinkedList<PlayerAction>();
+        List<PlayerAction> l = new LinkedList<>();
         
         PlayerAction empty = new PlayerAction();
         l.add(empty);
@@ -467,7 +467,7 @@ public class GameState {
      * @return
      */
     public List<PlayerAction> getPlayerActions(int playerID) {
-        List<PlayerAction> l = new LinkedList<PlayerAction>();
+        List<PlayerAction> l = new LinkedList<>();
         
         PlayerAction empty = new PlayerAction();
         l.add(empty);
@@ -486,7 +486,7 @@ public class GameState {
         for(Unit u:pgs.getUnits()) {
             if (u.getPlayer()==playerID) {
                 if (unitActions.get(u)==null) {
-                    List<PlayerAction> l2 = new LinkedList<PlayerAction>();
+                    List<PlayerAction> l2 = new LinkedList<>();
 
                     for(PlayerAction pa:l) {
                         l2.addAll(pa.cartesianProduct(u.getUnitActions(this), u, this));
@@ -529,7 +529,7 @@ public class GameState {
     public boolean cycle() {
         time++;
         
-        List<UnitActionAssignment> readyToExecute = new LinkedList<UnitActionAssignment>();
+        List<UnitActionAssignment> readyToExecute = new LinkedList<>();
         for(UnitActionAssignment uaa:unitActions.values()) {
             if (uaa.action.ETA(uaa.unit)+uaa.time<=time) readyToExecute.add(uaa);
         }
@@ -551,7 +551,7 @@ public class GameState {
      * Forces the execution of all assigned actions
      */
     public void forceExecuteAllActions() {
-        List<UnitActionAssignment> readyToExecute = new LinkedList<UnitActionAssignment>();
+        List<UnitActionAssignment> readyToExecute = new LinkedList<>();
         for(UnitActionAssignment uaa:unitActions.values()) readyToExecute.add(uaa);
                 
         // execute all the actions:
@@ -676,7 +676,7 @@ public class GameState {
      * @return
      */
     public boolean integrityCheck() {
-        List<Unit> alreadyUsed = new LinkedList<Unit>();
+        List<Unit> alreadyUsed = new LinkedList<>();
         for(UnitActionAssignment uaa:unitActions.values()) {
             Unit u = uaa.unit;
             int idx = pgs.getUnits().indexOf(u);

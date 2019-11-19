@@ -59,8 +59,8 @@ public class TwoPhaseNaiveMCTSNode extends NaiveMCTSNode {
         float epsilon_l = (visit_count<phase1_budget ? el1 : el2);      
 
         // For each unit, rank the unitActions according to preference:
-        List<double []> distributions = new LinkedList<double []>();
-        List<Integer> notSampledYet = new LinkedList<Integer>();
+        List<double []> distributions = new LinkedList<>();
+        List<Integer> notSampledYet = new LinkedList<>();
         for(UnitActionTableEntry ate:unitActionTable) {
             double []dist = new double[ate.nactions];
             int bestIdx = -1;
@@ -102,7 +102,7 @@ public class TwoPhaseNaiveMCTSNode extends NaiveMCTSNode {
                 for(int i = 0;i<ate.nactions;i++) System.out.print("(" + ate.visit_count[i] + "," + ate.accum_evaluation[i]/ate.visit_count[i] + ")");
                 System.out.println("]");
                 System.out.print("[ ");
-                for(int i = 0;i<dist.length;i++) System.out.print(dist[i] + " ");
+                for (double v : dist) System.out.print(v + " ");
                 System.out.println("]");
             }
 
@@ -139,8 +139,8 @@ public class TwoPhaseNaiveMCTSNode extends NaiveMCTSNode {
                 r2 = ua.resourceUsage(ate.u, gs.getPhysicalGameState());
                 if (!pa2.getResourceUsage().consistentWith(r2, gs)) {
                     // sample at random, eliminating the ones that have not worked so far:
-                    List<Double> dist_l = new ArrayList<Double>();
-                    List<Integer> dist_outputs = new ArrayList<Integer>();
+                    List<Double> dist_l = new ArrayList<>();
+                    List<Integer> dist_outputs = new ArrayList<>();
 
                     for(int j = 0;j<distribution.length;j++) {
                         dist_l.add(distribution[j]);

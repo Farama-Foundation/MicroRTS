@@ -26,7 +26,7 @@ public class BS2_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
     GameState initialGameState = null;
     
     // list of units we "believe" exist (for now it's just "last seen" position)
-    List<Unit> lastKnownPosition = new LinkedList<Unit>();
+    List<Unit> lastKnownPosition = new LinkedList<>();
     PartiallyObservableGameState lastObservedGame = null;
 
     public BS2_NaiveMCTS(UnitTypeTable utt) {
@@ -121,7 +121,7 @@ public class BS2_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
 
     @Override
     public List<Unit> getBelieveUnits() {
-        List<Unit> l = new LinkedList<Unit>();
+        List<Unit> l = new LinkedList<>();
         l.addAll(lastKnownPosition);
         return l;
     }

@@ -206,10 +206,10 @@ public class ActionInterdependenceModel extends BayesianModel {
         }
         
         // sort features:
-        Collections.sort(featureIndexes, new Comparator<Integer>() {
+        featureIndexes.sort(new Comparator<>() {
             public int compare(Integer o1, Integer o2) {
                 return Double.compare(featureGR.get(o2), featureGR.get(o1));
-            }            
+            }
         });
         
 //        System.out.println("FS:");
@@ -375,8 +375,8 @@ public class ActionInterdependenceModel extends BayesianModel {
         }
         w.tag("/selected_allowed_actiontype_prior");
 
-        for(int i = 0;i<distributions.length;i++) {
-            distributions[i].save(w);
+        for (DiscreteCPD distribution : distributions) {
+            distribution.save(w);
         }        
         w.tag("/" + getClass().getSimpleName());
         w.flush();

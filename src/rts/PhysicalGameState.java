@@ -40,8 +40,8 @@ public class PhysicalGameState {
     int width = 8;
     int height = 8;
     int terrain[] = null;
-    List<Player> players = new ArrayList<Player>();
-    List<Unit> units = new LinkedList<Unit>();
+    List<Player> players = new ArrayList<>();
+    List<Unit> units = new LinkedList<>();
 
     /**
      * Constructs the game state map from a XML
@@ -277,7 +277,7 @@ public class PhysicalGameState {
      * @return
      */
     public Collection<Unit> getUnitsAround(int x, int y, int width, int height) {
-        List<Unit> closeUnits = new LinkedList<Unit>();
+        List<Unit> closeUnits = new LinkedList<>();
         for (Unit u : units) {
             if ((Math.abs(u.getX() - x) <= width && Math.abs(u.getY() - y) <= height)) {
                 closeUnits.add(u);
