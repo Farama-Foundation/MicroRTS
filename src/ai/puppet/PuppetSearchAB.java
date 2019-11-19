@@ -135,7 +135,7 @@ public class PuppetSearchAB extends PuppetBase {
 	protected int DEPTH;
 	protected int MAXPLAYER=-1;
 
-	Stack<ABCDNode> stack=new Stack<ABCDNode>();
+	Stack<ABCDNode> stack= new Stack<>();
 	ABCDNode head;
 	ABCDNode lastFinishedHead;
 	Plan currentPlan;

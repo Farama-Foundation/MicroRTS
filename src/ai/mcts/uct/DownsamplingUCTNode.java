@@ -69,8 +69,8 @@ public class DownsamplingUCTNode {
 
         // Downsample the number of actions:
         if (moveGenerator!=null && actions==null) {
-            actions = new ArrayList<PlayerAction>();
-            children = new ArrayList<DownsamplingUCTNode>();
+            actions = new ArrayList<>();
+            children = new ArrayList<>();
             if (moveGenerator.getSize()>2*MAXACTIONS) {
                 for(int i = 0;i<MAXACTIONS;i++) {
                     actions.add(moveGenerator.getRandom());

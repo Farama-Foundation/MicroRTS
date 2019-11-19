@@ -175,7 +175,7 @@ public class IDRTMinimax extends AIWithComputationBudget implements Interruptibl
     public PlayerAction timeBoundedRealTimeMinimaxABOutsideStack(GameState initial_gs, int maxplayer, int minplayer, int lookAhead, long cutOffTime, boolean needAResult) throws Exception {
         RTMiniMaxNode head;
         if (stack==null) {
-            stack = new LinkedList<RTMiniMaxNode>();
+            stack = new LinkedList<>();
             head = new RTMiniMaxNode(0,initial_gs,-EvaluationFunctionForwarding.VICTORY, EvaluationFunctionForwarding.VICTORY);
             stack.add(head);
         } else {
@@ -200,7 +200,7 @@ public class IDRTMinimax extends AIWithComputationBudget implements Interruptibl
                                     if (maxCT==-1 || CT>maxCT) maxCT = CT;
                                 }
                                 nLeaves++;
-                                lastResult = new Pair<PlayerAction,Float>(null,ef.evaluate(maxplayer, minplayer, current.gs));
+                                lastResult = new Pair<>(null, ef.evaluate(maxplayer, minplayer, current.gs));
                                 stack.remove(0);    
                             } else if (current.gs.canExecuteAnyAction(maxplayer)) {
                                 current.type = 0;

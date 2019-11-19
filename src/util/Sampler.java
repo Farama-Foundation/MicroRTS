@@ -36,7 +36,7 @@ public class Sampler {
      * Returns the element with maximum probability (ties are resolved randomly)
      */
     public static int max(double[] distribution) throws Exception {
-        List<Integer> best = new LinkedList<Integer>();
+        List<Integer> best = new LinkedList<>();
         double max = distribution[0];
 
         for (int i = 0; i < distribution.length; i++) {
@@ -64,7 +64,7 @@ public class Sampler {
      * Returns the element with maximum probability (ties are resolved randomly)
      */
     public static int max(List<Double> distribution) throws Exception {
-        List<Integer> best = new LinkedList<Integer>();
+        List<Integer> best = new LinkedList<>();
         double max = distribution.get(0);
 
         for (int i = 0; i < distribution.size(); i++) {
@@ -92,7 +92,7 @@ public class Sampler {
      * Returns the score with maximum probability (ties are resolved randomly)
      */
     public static Double maxScore(double[] distribution) {
-        List<Integer> best = new LinkedList<Integer>();
+        List<Integer> best = new LinkedList<>();
         double max = distribution[0];
 
         for (int i = 0; i < distribution.length; i++) {

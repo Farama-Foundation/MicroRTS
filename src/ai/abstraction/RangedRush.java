@@ -94,7 +94,7 @@ public class RangedRush extends AbstractionLayerAI {
         }
 
         // behavior of workers:
-        List<Unit> workers = new LinkedList<Unit>();
+        List<Unit> workers = new LinkedList<>();
         for (Unit u : pgs.getUnits()) {
             if (u.getType().canHarvest
                     && u.getPlayer() == player) {
@@ -150,7 +150,7 @@ public class RangedRush extends AbstractionLayerAI {
         int nbarracks = 0;
 
         int resourcesUsed = 0;
-        List<Unit> freeWorkers = new LinkedList<Unit>();
+        List<Unit> freeWorkers = new LinkedList<>();
         freeWorkers.addAll(workers);
 
         if (workers.isEmpty()) {
@@ -168,7 +168,7 @@ public class RangedRush extends AbstractionLayerAI {
             }
         }
 
-        List<Integer> reservedPositions = new LinkedList<Integer>();
+        List<Integer> reservedPositions = new LinkedList<>();
         if (nbases == 0 && !freeWorkers.isEmpty()) {
             // build a base:
             if (p.getResources() >= baseType.cost + resourcesUsed) {

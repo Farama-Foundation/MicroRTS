@@ -62,8 +62,8 @@ public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint
         rangedType = utt.getUnitType("Ranged");
         resourceType = utt.getUnitType("Resource");
         
-        choicePoints = new EnumMap<BasicChoicePoint,Options>(BasicChoicePoint.class);
-        choices = new EnumMap<BasicChoicePoint,Integer>(BasicChoicePoint.class);
+        choicePoints = new EnumMap<>(BasicChoicePoint.class);
+        choices = new EnumMap<>(BasicChoicePoint.class);
         choicePointValues = BasicChoicePoint.values();
         reset();
     }
@@ -153,7 +153,7 @@ public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint
         }
 
         // behavior of workers:
-        List<Unit> workers = new LinkedList<Unit>();
+        List<Unit> workers = new LinkedList<>();
         for (Unit u : pgs.getUnits()) {
             if (u.getType().canHarvest
                     && u.getPlayer() == player) {
@@ -245,7 +245,7 @@ public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint
     	
         if(workers.isEmpty())return;
         
-        List<Unit> bases = new LinkedList<Unit>();
+        List<Unit> bases = new LinkedList<>();
         for (Unit u2 : pgs.getUnits()) {
             if (u2.getType() == baseType
                     && u2.getPlayer() == p.getID()) {
@@ -253,9 +253,9 @@ public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint
             }
         }
         
-        List<Unit> freeWorkers = new LinkedList<Unit>();
+        List<Unit> freeWorkers = new LinkedList<>();
         freeWorkers.addAll(workers);
-        List<Integer> reservedPositions = new LinkedList<Integer>();
+        List<Integer> reservedPositions = new LinkedList<>();
         if (nbases == 0 && !freeWorkers.isEmpty()) {
             // build a base:
             if (p.getResources() >= baseType.cost + resourcesUsed) {
@@ -458,7 +458,7 @@ public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint
 				}
 			}
 		}
-		List<Options> choices=new ArrayList<Options>();
+		List<Options> choices= new ArrayList<>();
 
 		if(nbarracks>0){//already have a barracks, build combat units
 			choices.add(new Options(BasicChoicePoint.UNITTYPE.ordinal(),new int[]{

@@ -66,8 +66,8 @@ public class LSI extends AIWithComputationBudget {
 
     private Sampling sampling;
 
-    private LinkedHashMap<PlayerAction, Pair<Double, Integer>> elitePlayerActions = new LinkedHashMap<PlayerAction, Pair<Double, Integer>>();
-    private Set<Unit> nextEpochUnits = new HashSet<Unit>();
+    private LinkedHashMap<PlayerAction, Pair<Double, Integer>> elitePlayerActions = new LinkedHashMap<>();
+    private Set<Unit> nextEpochUnits = new HashSet<>();
     private Set<Unit> epochUnits = null;
 
     private int actionCount;
@@ -126,7 +126,7 @@ public class LSI extends AIWithComputationBudget {
         sampling.resetSimulationCount();
         elitePlayerActions.clear();
         List<UnitActionTableEntry> unitActionTable = prepareUnitActionTable(gameState, player);
-        Set<Unit> units = new HashSet<Unit>();
+        Set<Unit> units = new HashSet<>();
         for (UnitActionTableEntry unitActionTableEntry : unitActionTable) {
             units.add(unitActionTableEntry.u);
         }
@@ -135,7 +135,7 @@ public class LSI extends AIWithComputationBudget {
         if (epochal) {
             // init epochs
             if (epochUnits == null) {
-                epochUnits = new HashSet<Unit>(units);
+                epochUnits = new HashSet<>(units);
             }
 
             // add units with finished actions for next (or current if empty) epoch
@@ -248,7 +248,7 @@ public class LSI extends AIWithComputationBudget {
                         int noToRemove = unitActionTable.size() - relaxationLimit;
 
                         // get evaluations per units
-                        List<Pair<Integer, Double>> evaluatedIndices = new ArrayList<Pair<Integer, Double>>();
+                        List<Pair<Integer, Double>> evaluatedIndices = new ArrayList<>();
                         for (int i = 0; i < unitActionTable.size(); i++) {
                             double evaluator = 0;
 
@@ -276,7 +276,7 @@ public class LSI extends AIWithComputationBudget {
                                     throw new RuntimeException("Unknown relaxationType!");
                             }
 
-                            evaluatedIndices.add(new Pair<Integer, Double>(i, evaluator));
+                            evaluatedIndices.add(new Pair<>(i, evaluator));
                         }
 
                         // sort the units by their evaluations
@@ -284,7 +284,7 @@ public class LSI extends AIWithComputationBudget {
                             case POST_ENTROPY_MAX:
                             case POST_MAX_DIFF:
                             case POST_MAX_TIME_NORMALIZE:
-                                Collections.sort(evaluatedIndices, new Comparator<Pair<Integer, Double>>() {
+                                Collections.sort(evaluatedIndices, new Comparator<>() {
 
                                     @Override
                                     public int compare(Pair<Integer, Double> p1, Pair<Integer, Double> p2) {
@@ -294,7 +294,7 @@ public class LSI extends AIWithComputationBudget {
                                 });
                                 break;
                             case POST_ENTROPY_MIN:
-                                Collections.sort(evaluatedIndices, new Comparator<Pair<Integer, Double>>() {
+                                Collections.sort(evaluatedIndices, new Comparator<>() {
 
                                     @Override
                                     public int compare(Pair<Integer, Double> p1, Pair<Integer, Double> p2) {
@@ -309,7 +309,7 @@ public class LSI extends AIWithComputationBudget {
 
                         // remove the single-actions of the weakest
                         evaluatedIndices = evaluatedIndices.subList(0, noToRemove);
-                        Collections.sort(evaluatedIndices, new Comparator<Pair<Integer, Double>>() {
+                        Collections.sort(evaluatedIndices, new Comparator<>() {
 
                             @Override
                             public int compare(Pair<Integer, Double> p1, Pair<Integer, Double> p2) {
@@ -333,7 +333,7 @@ public class LSI extends AIWithComputationBudget {
             }
             // if there are no more units in this epoch use the next one
             if (epochUnits.isEmpty()) {
-                epochUnits = new HashSet<Unit>(nextEpochUnits);
+                epochUnits = new HashSet<>(nextEpochUnits);
                 nextEpochUnits.clear();
             }
         }
@@ -357,7 +357,7 @@ public class LSI extends AIWithComputationBudget {
         for (UnitActionTableEntry entry : unitActionTable) {
             for (UnitAction action : entry.actions) {
                 PlayerAction neighbourPA = currentPA.clone();
-                neighbourPA.getActions().set(i, new Pair<Unit, UnitAction>(entry.u, action));
+                neighbourPA.getActions().set(i, new Pair<>(entry.u, action));
                 if (!isPlayerActionValid(gameState, neighbourPA)) {
                     reducedActionCount--;
                 }
@@ -366,7 +366,7 @@ public class LSI extends AIWithComputationBudget {
         }
 
         // init --> sample (noop, ..., noop)'s neighbours
-        List<double[]> distributions = new ArrayList<double[]>();
+        List<double[]> distributions = new ArrayList<>();
         i = 0;
         for (UnitActionTableEntry entry : unitActionTable) {
             double[] distribution = new double[entry.nactions];
@@ -374,7 +374,7 @@ public class LSI extends AIWithComputationBudget {
             double min = Double.POSITIVE_INFINITY;
             for (UnitAction action : entry.actions) {
                 PlayerAction neighbourPA = currentPA.clone();
-                neighbourPA.getActions().set(i, new Pair<Unit, UnitAction>(entry.u, action));
+                neighbourPA.getActions().set(i, new Pair<>(entry.u, action));
 
                 if (isPlayerActionValid(gameState, neighbourPA)) {
                     double eval = sampling.evaluatePlayerAction(player, gameState, neighbourPA,
@@ -417,9 +417,9 @@ public class LSI extends AIWithComputationBudget {
 
     private List<double[]> stageGenerateRandomTail(int player, GameState gameState, List<UnitActionTableEntry> unitActionTable)
             throws Exception {
-        List<double[]> distributions = new ArrayList<double[]>();
+        List<double[]> distributions = new ArrayList<>();
 
-        List<double[]> actionDist = new ArrayList<double[]>();
+        List<double[]> actionDist = new ArrayList<>();
         for (UnitActionTableEntry entry : unitActionTable) {
             double[] armsDist = new double[entry.nactions];
             actionDist.add(armsDist);
@@ -444,7 +444,7 @@ public class LSI extends AIWithComputationBudget {
                     // TODO: simplify down here
 
                     // generate random order of the agents with the current one as first
-                    List<Integer> agentOrder = new LinkedList<Integer>();
+                    List<Integer> agentOrder = new LinkedList<>();
                     for (int i = 0; i < unitActionTable.size(); i++) {
                         if (i != agentIndex) {
                             agentOrder.add(i);
@@ -538,7 +538,7 @@ public class LSI extends AIWithComputationBudget {
 
     private List<double[]> stageGenerateRandom(int player, GameState gameState, List<UnitActionTableEntry> unitActionTable)
             throws Exception {
-        List<double[]> distributions = new ArrayList<double[]>();
+        List<double[]> distributions = new ArrayList<>();
 
         for (UnitActionTableEntry entry : unitActionTable) {
             distributions.add(new double[entry.nactions]);
@@ -549,7 +549,7 @@ public class LSI extends AIWithComputationBudget {
 
     private List<double[]> stageGenerateRandomTailElite(int player, GameState gameState, List<UnitActionTableEntry> unitActionTable)
             throws Exception {
-        List<double[]> distributions = new ArrayList<double[]>();
+        List<double[]> distributions = new ArrayList<>();
 
         int sample = 0;
         // round-robin
@@ -563,7 +563,7 @@ public class LSI extends AIWithComputationBudget {
                     for (UnitActionTableEntry rndEntry : unitActionTable) {
                         neighbourPA.addUnitAction(rndEntry.u, rndEntry.actions.get(rnd.nextInt(rndEntry.nactions)));
                     }
-                    neighbourPA.getActions().set(agentIndex, new Pair<Unit, UnitAction>(entry.u, action));
+                    neighbourPA.getActions().set(agentIndex, new Pair<>(entry.u, action));
 
                     if (isPlayerActionValid(gameState, neighbourPA)) {
                         sample++;
@@ -574,9 +574,9 @@ public class LSI extends AIWithComputationBudget {
                             if (elitePlayerActions.containsKey(neighbourPA)) {
                                 Pair<Double, Integer> evalPair = elitePlayerActions.get(neighbourPA);
                                 double newEval = (evalPair.m_a * evalPair.m_b + eval) / (evalPair.m_b + 1);
-                                elitePlayerActions.put(neighbourPA, new Pair<Double, Integer>(newEval, evalPair.m_b + 1));
+                                elitePlayerActions.put(neighbourPA, new Pair<>(newEval, evalPair.m_b + 1));
                             } else {
-                                elitePlayerActions.put(neighbourPA, new Pair<Double, Integer>(eval, 1));
+                                elitePlayerActions.put(neighbourPA, new Pair<>(eval, 1));
                             }
                         }
 
@@ -651,7 +651,7 @@ public class LSI extends AIWithComputationBudget {
     private Set<PlayerAction> stageChoosePlayerActionsAllRelaxation(List<double[]> distributions, int player, GameState gameState,
                                                                     List<UnitActionTableEntry> unitActionTable) throws Exception {
         if (relaxationLimit > 0 && unitActionTable.size() - relaxationLimit >= 1) {
-            List<Pair<Integer, Double>> choseActList = new LinkedList<Pair<Integer, Double>>();
+            List<Pair<Integer, Double>> choseActList = new LinkedList<>();
 
             for(int j = 0; j < distributions.size(); j++) {
                 double [] distribution = distributions.get(j);
@@ -693,9 +693,9 @@ public class LSI extends AIWithComputationBudget {
                     throw new RuntimeException("Unknown RelaxationType!");
                 }
 
-                choseActList.add(new Pair<Integer, Double>(j, value));
+                choseActList.add(new Pair<>(j, value));
             }
-            Collections.sort(choseActList, new Comparator<Pair<Integer, Double>>() {
+            Collections.sort(choseActList, new Comparator<>() {
 
                 @Override
                 public int compare(Pair<Integer, Double> p1, Pair<Integer, Double> p2) {
@@ -707,7 +707,7 @@ public class LSI extends AIWithComputationBudget {
             });
 
             choseActList = choseActList.subList(0, choseActList.size() - relaxationLimit);
-            Collections.sort(choseActList, new Comparator<Pair<Integer, Double>>() {
+            Collections.sort(choseActList, new Comparator<>() {
 
                 @Override
                 public int compare(Pair<Integer, Double> p1, Pair<Integer, Double> p2) {
@@ -761,9 +761,9 @@ public class LSI extends AIWithComputationBudget {
     private PlayerAction stageEvaluateHalving(Set<PlayerAction> actionSet, int player, GameState gameState) throws Exception {
         int budget = (int) (ITERATIONS_BUDGET * (1 - split));
 
-        List<Pair<PlayerAction, Double>> actionList = new LinkedList<Pair<PlayerAction, Double>>();
+        List<Pair<PlayerAction, Double>> actionList = new LinkedList<>();
         for (PlayerAction playerAction : actionSet) {
-            actionList.add(new Pair<PlayerAction, Double>(playerAction, 0.0));
+            actionList.add(new Pair<>(playerAction, 0.0));
         }
 
         actionCount = actionList.size();
@@ -797,9 +797,9 @@ public class LSI extends AIWithComputationBudget {
     private PlayerAction stageEvaluateHalvingFill(Set<PlayerAction> actionSet, int player, GameState gameState) throws Exception {
         int budget = (int) (ITERATIONS_BUDGET * (1 - split));
 
-        List<Pair<PlayerAction, Double>> actionList = new LinkedList<Pair<PlayerAction, Double>>();
+        List<Pair<PlayerAction, Double>> actionList = new LinkedList<>();
         for (PlayerAction playerAction : actionSet) {
-            actionList.add(new Pair<PlayerAction, Double>(playerAction, 0.0));
+            actionList.add(new Pair<>(playerAction, 0.0));
         }
 
         actionCount = actionList.size();
@@ -830,16 +830,16 @@ public class LSI extends AIWithComputationBudget {
         // generate combinations
         int budget = (int) (ITERATIONS_BUDGET * (1 - split));
 
-        List<Pair<PlayerAction, Pair<Double, Integer>>> actionList = new LinkedList<Pair<PlayerAction, Pair<Double, Integer>>>();
+        List<Pair<PlayerAction, Pair<Double, Integer>>> actionList = new LinkedList<>();
         for (PlayerAction playerAction : actionSet) {
-            actionList.add(new Pair<PlayerAction, Pair<Double, Integer>>(playerAction, new Pair<Double, Integer>(0.0, 0)));
+            actionList.add(new Pair<>(playerAction, new Pair<>(0.0, 0)));
         }
 
         if (eliteReuse) {
             // include elite combinations from estimation phase
             List<Entry<PlayerAction, Pair<Double, Integer>>> eliteEntries =
-                    new ArrayList<Map.Entry<PlayerAction, Pair<Double, Integer>>>(elitePlayerActions.entrySet());
-            Collections.sort(eliteEntries, new Comparator<Entry<PlayerAction, Pair<Double, Integer>>>() {
+                    new ArrayList<>(elitePlayerActions.entrySet());
+            Collections.sort(eliteEntries, new Comparator<>() {
 
                 @Override
                 public int compare(Entry<PlayerAction, Pair<Double, Integer>> e1,
@@ -865,7 +865,7 @@ public class LSI extends AIWithComputationBudget {
                 } else {
                     actionSet.add(eliteEntry.getKey());
                 }
-                actionList.add(new Pair<PlayerAction, Pair<Double,Integer>>(eliteEntry.getKey(), eliteEntry.getValue()));
+                actionList.add(new Pair<>(eliteEntry.getKey(), eliteEntry.getValue()));
 
                 if (actionList.size() >= actionCount) {
                     break;
@@ -903,9 +903,9 @@ public class LSI extends AIWithComputationBudget {
     private PlayerAction stageEvaluateBest(Set<PlayerAction> actionSet, int player, GameState gameState) throws Exception {
         int budget = (int) (ITERATIONS_BUDGET * (1 - split));
 
-        List<Pair<PlayerAction, Pair<Double, Integer>>> actionList = new LinkedList<Pair<PlayerAction, Pair<Double, Integer>>>();
+        List<Pair<PlayerAction, Pair<Double, Integer>>> actionList = new LinkedList<>();
         for (PlayerAction playerAction : actionSet) {
-            actionList.add(new Pair<PlayerAction, Pair<Double, Integer>>(playerAction, new Pair<Double, Integer>(0.0, 0)));
+            actionList.add(new Pair<>(playerAction, new Pair<>(0.0, 0)));
         }
 
         actionCount = actionList.size();
@@ -916,7 +916,7 @@ public class LSI extends AIWithComputationBudget {
         }
 
         for (int i = 0; i <= budget - actionCount; i++) {
-            Collections.sort(actionList, new Comparator<Pair<PlayerAction, Pair<Double, Integer>>>() {
+            Collections.sort(actionList, new Comparator<>() {
 
                 @Override
                 public int compare(Pair<PlayerAction, Pair<Double, Integer>> p1, Pair<PlayerAction, Pair<Double, Integer>> p2) {
@@ -977,7 +977,7 @@ public class LSI extends AIWithComputationBudget {
     }
 
     private List<UnitActionTableEntry> prepareUnitActionTable(GameState gameState, int player) throws Exception {
-        List<UnitActionTableEntry> unitActionTable = new ArrayList<UnitActionTableEntry>();
+        List<UnitActionTableEntry> unitActionTable = new ArrayList<>();
 
         actionCount = 0;
         PlayerActionGenerator moveGenerator = new PlayerActionGenerator(gameState, player);
@@ -1004,7 +1004,7 @@ public class LSI extends AIWithComputationBudget {
     }
 
     private List<Integer> getRelaxedAgentIndicesRandom(List<UnitActionTableEntry> unitActionTable) {
-        List<Integer> indices = new ArrayList<Integer>();
+        List<Integer> indices = new ArrayList<>();
 
         int noToRemove = unitActionTable.size() - relaxationLimit ;
         if (noToRemove > 0) {

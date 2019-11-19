@@ -29,7 +29,7 @@ import util.XMLWriter;
 public class Trace {
 
     UnitTypeTable utt = null;
-    List<TraceEntry> entries = new LinkedList<TraceEntry>();
+    List<TraceEntry> entries = new LinkedList<>();
 
     /**
      * Constructs from a UnitTypeTable

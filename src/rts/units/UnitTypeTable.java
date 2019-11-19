@@ -56,7 +56,7 @@ public class UnitTypeTable  {
     /**
      * The list of unit types allowed in the game
      */
-    List<UnitType> unitTypes = new ArrayList<UnitType>();
+    List<UnitType> unitTypes = new ArrayList<>();
     
     /**
      * Which move conflict resolution is being adopted

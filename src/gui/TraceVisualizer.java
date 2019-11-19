@@ -27,7 +27,7 @@ public class TraceVisualizer extends JPanel implements ListSelectionListener {
 
     JPanel statePanel = null;
     JList Selector = null;
-    List<GameState> states = new LinkedList<GameState>();
+    List<GameState> states = new LinkedList<>();
 
     public static JFrame newWindow(String name,int dx,int dy,Trace t, int subjectID) throws Exception {
         TraceVisualizer ad = new TraceVisualizer(t, dx, dy, subjectID);

@@ -102,12 +102,12 @@ public class UnitType {
     /**
      * Units that this type of unit can produce
      */
-    public ArrayList<UnitType> produces = new ArrayList<UnitType>();
+    public ArrayList<UnitType> produces = new ArrayList<>();
     
     /**
      * Which unit types produce a unit of this type
      */
-    public ArrayList<UnitType> producedBy = new ArrayList<UnitType>(); 
+    public ArrayList<UnitType> producedBy = new ArrayList<>();
     
     /**
      * Returns the hash code of the name

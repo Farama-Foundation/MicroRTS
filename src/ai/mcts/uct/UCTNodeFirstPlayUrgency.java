@@ -32,7 +32,7 @@ public class UCTNodeFirstPlayUrgency {
     boolean hasMoreActions = true;
     PlayerActionGenerator moveGenerator = null;
     public List<PlayerAction> actions = null;
-    HashMap<Long,UCTNodeFirstPlayUrgency> childrenMap = new LinkedHashMap<Long,UCTNodeFirstPlayUrgency>();    // associates action codes with children
+    HashMap<Long,UCTNodeFirstPlayUrgency> childrenMap = new LinkedHashMap<>();    // associates action codes with children
     public List<UCTNodeFirstPlayUrgency> children = null;
     float evaluation_bound = 0;
     float accum_evaluation = 0;
@@ -59,15 +59,15 @@ public class UCTNodeFirstPlayUrgency {
 //            actions = gs.getPlayerActions(maxplayer);
             moveGenerator = new PlayerActionGenerator(a_gs, maxplayer);
             moveGenerator.randomizeOrder();
-            actions = new ArrayList<PlayerAction>();
-            children = new ArrayList<UCTNodeFirstPlayUrgency>();
+            actions = new ArrayList<>();
+            children = new ArrayList<>();
         } else if (gs.canExecuteAnyAction(minplayer)) {
             type = 1;
 //            actions = gs.getPlayerActions(minplayer);
             moveGenerator = new PlayerActionGenerator(a_gs, minplayer);
             moveGenerator.randomizeOrder();
-            actions = new ArrayList<PlayerAction>();
-            children = new ArrayList<UCTNodeFirstPlayUrgency>();
+            actions = new ArrayList<>();
+            children = new ArrayList<>();
         } else {
             type = -1;
             System.err.println("RTMCTSNode: This should not have happened...");

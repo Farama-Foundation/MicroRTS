@@ -316,7 +316,7 @@ public class FeatureSelection {
         if (DEBUG>=1) System.out.println("Final accuracy: " + accuracy);
         if (DEBUG>=1) System.out.println("Final loglikelihood: " + loglikelihood + " (average " + (loglikelihood/total) + ")");
 //        return accuracy;
-        return new Pair<Double,Double>(accuracy, loglikelihood/total);
+        return new Pair<>(accuracy, loglikelihood / total);
     }    
         
     

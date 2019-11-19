@@ -61,7 +61,7 @@ public class UCTUnitActionsNode {
                 }
             }            
             if (actions==null) System.err.println("UCTUnitActionNode: error when generating maxplayer node!");
-            children = new ArrayList<UCTUnitActionsNode>();
+            children = new ArrayList<>();
         } else if (gs.canExecuteAnyAction(minplayer)) {
             type = 1;
             actions = null;
@@ -74,7 +74,7 @@ public class UCTUnitActionsNode {
                 }
             }            
             if (actions==null) System.err.println("UCTUnitActionNode: error when generating minplayer node!");
-            children = new ArrayList<UCTUnitActionsNode>();
+            children = new ArrayList<>();
         } else {
             type = -1;
             System.err.println("RTMCTSNode: This should not have happened...");

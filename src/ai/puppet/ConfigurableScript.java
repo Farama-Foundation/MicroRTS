@@ -78,11 +78,11 @@ public abstract class ConfigurableScript<T extends Enum<T>> extends AbstractionL
 			count*=o.numOptions();
 		}
 		
-		ArrayList<ArrayList<Pair<Integer, Integer>>> combinations = 
-				new ArrayList<ArrayList<Pair<Integer,Integer>>>(count);
+		ArrayList<ArrayList<Pair<Integer, Integer>>> combinations =
+                new ArrayList<>(count);
 
 		for(int i=0;i<count;i++){
-			combinations.add(new ArrayList<Pair<Integer,Integer>>(options.size()));
+			combinations.add(new ArrayList<>(options.size()));
 		}
 		int opt=0;
 		for (Options o:options) {
@@ -90,7 +90,7 @@ public abstract class ConfigurableScript<T extends Enum<T>> extends AbstractionL
 				for(int k=0;k<reps[opt+1];k++){
 					int cycles=count/reps[opt];
 					for(int it=0;it<cycles;it++){
-						combinations.get(it*reps[opt]+choi*reps[opt+1]+k).add(new Pair<Integer,Integer>(opt,o.getOption(choi)));
+						combinations.get(it*reps[opt]+choi*reps[opt+1]+k).add(new Pair<>(opt, o.getOption(choi)));
 					}
 				}
 			}

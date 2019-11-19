@@ -13,7 +13,7 @@ public class PuppetMCTSNode {
 	ConfigurableScript<?> script;
 	float evaluation_bound;
 	
-	List<PuppetMCTSNode> children=new ArrayList<PuppetMCTSNode>();
+	List<PuppetMCTSNode> children= new ArrayList<>();
 	Move prevMove;//move that generated this state
 	int nextPlayerInSimultaneousNode;
 	

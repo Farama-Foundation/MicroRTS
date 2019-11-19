@@ -197,7 +197,7 @@ public class PlayerActionGenerator {
 		PlayerAction pa = new PlayerAction();
 		pa.setResourceUsage(base_ru.clone());
 		for (Pair<Unit, List<UnitAction>> unitChoices : choices) {
-			List<UnitAction> l = new LinkedList<UnitAction>();
+			List<UnitAction> l = new LinkedList<>();
 			l.addAll(unitChoices.m_b);
 			Unit u = unitChoices.m_a;
 
