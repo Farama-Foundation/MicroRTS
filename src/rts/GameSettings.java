@@ -97,7 +97,76 @@ public class GameSettings {
     }
 
     /**
-     * Fetches the default configuration file which will be located in the root direction called "config.properties".
+     * Create a GameSettings object from a list of command-line arguments
+     * @param args a String array containing command-line arguments
+     */
+    public GameSettings(String[] args) {
+        overrideFromArgs(args);
+    }
+
+    /**
+     * Use a list of command-line arguments to replace the attribute values of the current
+     * GameSettings
+     *
+     * -s: server IP address
+     * -p: server port
+     * -l: launch mode (see @launchMode)
+     * --serialization: serialization type (1 for XML, 2 for JSON)
+     * -m: path for the map file
+     * -c: max cycles
+     * --partially_observable: 1 or true, 0 or false
+     * --ai1: name of the class to be instantiated for player 1
+     * --ai2: name of the class to be instantiated for player 2
+     *
+     * @param args a String array containing command-line arguments
+     * @return
+     */
+    public GameSettings overrideFromArgs(String[] args) {
+        for (int i = args.length; i > 0; i--) {
+            switch (args[i - 1]) {
+                case "-s":
+                    serverAddress = args[i];
+                    break;
+                case "-p":
+                    serverPort = Integer.parseInt(args[i]);
+                    break;
+                case "-l":
+                    launchMode = LaunchMode.valueOf(args[i]);
+                    break;
+                case "--serialization":
+                    serializationType = Integer.parseInt(args[i]);
+                    break;
+                case "-m":
+                    mapLocation = args[i];
+                    break;
+                case "-c":
+                    maxCycles = Integer.parseInt(args[i]);
+                    break;
+                case "--partially_observable":
+                    partiallyObservable = Boolean.parseBoolean(args[i]);
+                    break;
+                case "-u":
+                    uttVersion = Integer.parseInt(args[i]);
+                    break;
+                case "-conflict_policy":
+                    conflictPolicy = Integer.parseInt(args[i]);
+                    break;
+                case "--ai1":
+                    AI1 = args[i];
+                    break;
+                case "--ai2":
+                    AI2 = args[i];
+                    break;
+                default:
+                    break;
+            }
+        }
+        return this;
+    }
+
+    /**
+     * Fetches the default configuration file which will be located in the root direction called
+     * "config.properties".
      */
     public static Properties fetchDefaultConfig() throws IOException {
         Properties prop = new Properties();
