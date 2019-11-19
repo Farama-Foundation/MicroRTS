@@ -34,8 +34,12 @@ public class LispElement {
     
     public String toString(int tabs) {
         StringBuilder tabstr = new StringBuilder();
-        tabstr.append("  ".repeat(Math.max(0, tabs)));
-        if (children==null) {
+
+        for (int i = 0; i < tabs; i++) {
+            tabstr.append("  ");
+        }
+
+        if (children == null) {
             return tabstr + element;
         } else {
             StringBuilder tmp = new StringBuilder(tabstr + "(\n");
