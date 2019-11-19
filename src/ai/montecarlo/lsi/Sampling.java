@@ -98,7 +98,7 @@ public class Sampling {
                 Collections.shuffle(ent_list);
                 break;
             case ENTROPY:
-                Collections.sort(ent_list, new Comparator<>() {
+                ent_list.sort(new Comparator<>() {
                     @Override
                     public int compare(Pair<Integer, Double> p1, Pair<Integer, Double> p2) {
                         return p1.m_b > p2.m_b ? 1 : (p1.m_b < p2.m_b ? -1 : 0);
@@ -318,7 +318,7 @@ public class Sampling {
             pair.m_b.m_b = oldNum + num;
         }
 
-        Collections.sort(actionList, new Comparator<>() {
+        actionList.sort(new Comparator<>() {
 
             @Override
             public int compare(Pair<PlayerAction, Pair<Double, Integer>> p1, Pair<PlayerAction, Pair<Double, Integer>> p2) {
@@ -340,7 +340,7 @@ public class Sampling {
             pair.m_b = (pair.m_b*numEvalPrevious + eval*numEval)/(numEvalPrevious + numEval);
         }
 
-        Collections.sort(actionList, new Comparator<>() {
+        actionList.sort(new Comparator<>() {
 
             @Override
             public int compare(Pair<PlayerAction, Double> p1, Pair<PlayerAction, Double> p2) {
@@ -359,7 +359,7 @@ public class Sampling {
             pair.m_b = (pair.m_b*numEvalPrevious + eval*numEval)/(numEvalPrevious + numEval);
         }
 
-        Collections.sort(actionList, new Comparator<>() {
+        actionList.sort(new Comparator<>() {
 
             @Override
             public int compare(Pair<PlayerAction, Double> p1, Pair<PlayerAction, Double> p2) {
