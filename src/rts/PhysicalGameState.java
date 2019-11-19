@@ -522,6 +522,29 @@ public class PhysicalGameState {
         w.tag("/" + this.getClass().getName());
     }
 
+    String compressTerrain(int[] terrain, int size){
+        StringBuilder strTerrain = new StringBuilder();
+
+        int occurrences = 1;
+        for (int i = 1; i < size; i++) {
+            if(terrain[i]==terrain[i-1])
+                occurrences++;
+            else {
+                strTerrain.append(terrain[i - 1]==0?'A':'B');
+
+                if(occurrences>1)
+                    strTerrain.append(occurrences);
+
+                occurrences=1;
+            }
+        }
+
+        if(occurrences>1)
+            strTerrain.append(terrain[terrain.length-1]==0?'A':'B').append(occurrences);
+
+        return strTerrain.toString();
+    }
+
     /**
      * Writes a JSON representation of this map
      *
@@ -531,10 +554,11 @@ public class PhysicalGameState {
     public void toJSON(Writer w) throws Exception {
         w.write("{");
         w.write("\"width\":" + width + ",\"height\":" + height + ",");
-        w.write("\"terrain\":\"");
-        for (int i = 0; i < height * width; i++) {
-            w.write("" + terrain[i]);
-        }
+        w.write("\"terrain\":\""+compressTerrain(terrain,width*height));
+
+//        for (int i = 0; i < height * width; i++) {
+//            w.write("" + terrain[i]);
+//        }
         w.write("\",");
         w.write("\"players\":[");
         for (int i = 0; i < players.size(); i++) {
