@@ -325,7 +325,7 @@ public class CalibratedNaiveBayes extends BayesianModel {
             for(int i = 0;i<nfeatures;i++) {
                 if (!bestSelection[i]) {
                     boolean currentSelection[] = new boolean[nfeatures];
-                    for(int j = 0;j<nfeatures;j++) currentSelection[j] = bestSelection[j];
+                    System.arraycopy(bestSelection, 0, currentSelection, 0, nfeatures);
                     currentSelection[i] = true;
 
                     selectedFeatures = currentSelection;

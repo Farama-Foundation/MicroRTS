@@ -386,9 +386,7 @@ public class PhysicalGameState {
      */
     public PhysicalGameState cloneIncludingTerrain() {
         int new_terrain[] = new int[terrain.length];
-        for (int i = 0; i < terrain.length; i++) {
-            new_terrain[i] = terrain[i];
-        }
+        System.arraycopy(terrain, 0, new_terrain, 0, terrain.length);
         PhysicalGameState pgs = new PhysicalGameState(width, height, new_terrain);
         for (Player p : players) {
             pgs.players.add(p.clone());
