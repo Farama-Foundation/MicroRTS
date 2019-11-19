@@ -154,7 +154,7 @@ public class SCV extends AIWithComputationBudget {
                 infBattles bat = new infBattles();
                 String[] itens = linha.split(";");
                 
-                bat.ltd3 = Double.valueOf(itens[0]);
+                bat.ltd3 = Double.parseDouble(itens[0]);
                 bat.tMapa = Integer.decode(itens[1]);
                 bat.enemy = itens[2];
                 bat.strategy = itens[3];
