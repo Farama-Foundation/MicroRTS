@@ -6,7 +6,6 @@ package tests;
 
 import ai.core.AI;
 import ai.abstraction.WorkerRush;
-import ai.*;
 import ai.abstraction.AbstractAction;
 import ai.abstraction.AbstractTrace;
 import ai.abstraction.AbstractTraceEntry;

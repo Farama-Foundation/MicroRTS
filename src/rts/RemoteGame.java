@@ -1,6 +1,5 @@
 package rts;
 
-import ai.RandomBiasedAI;
 import ai.core.AI;
 import ai.socket.SocketAI;
 import gui.PhysicalGameStatePanel;
