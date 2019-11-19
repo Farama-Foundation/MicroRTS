@@ -9,7 +9,7 @@ import ai.abstraction.WorkerRush;
 import ai.*;
 import ai.abstraction.pathfinding.BFSPathFinding;
 import java.io.FileWriter;
-import java.io.IOException;
+
 import rts.*;
 import rts.units.UnitTypeTable;
 import tests.MapGenerator;
@@ -20,7 +20,7 @@ import util.XMLWriter;
  * @author santi
  */
 public class TraceGenerationTest {
-    public static void main(String args[]) throws IOException, Exception {
+    public static void main(String args[]) throws Exception {
         UnitTypeTable utt = new UnitTypeTable();
         MapGenerator mg = new MapGenerator(utt);
         PhysicalGameState pgs = mg.basesWorkers8x8Obstacle();

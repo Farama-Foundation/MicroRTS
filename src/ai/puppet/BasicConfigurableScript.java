@@ -20,7 +20,7 @@ import rts.units.Unit;
 import rts.units.UnitType;
 import rts.units.UnitTypeTable;
 
-enum BasicChoicePoint{UNITTYPE, EXPAND};
+enum BasicChoicePoint{UNITTYPE, EXPAND}
 
 
 public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint> {
@@ -287,12 +287,6 @@ public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint
             if (p.getResources() >= baseType.cost + resourcesUsed ) {
             	//System.out.println("expanding");
                 Unit u = freeWorkers.remove(0);
-                List<Unit> resources=new LinkedList<Unit>();
-                for (Unit u2 : pgs.getUnits()) {
-                    if(u2.getType() == resourceType){
-                    	resources.add(u2);
-                    }
-                }
                 
                 //get closest resource that hasn't got bases around, or enemy units
                 Unit closestFreeResource=findClosest(u, 
@@ -509,9 +503,9 @@ public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint
 	}
 
 	public String toString(){
-		String str = getClass().getSimpleName() + "(";
+		StringBuilder str = new StringBuilder(getClass().getSimpleName() + "(");
 		for(BasicChoicePoint c:BasicChoicePoint.values()){
-			str+=c.toString()+",";
+			str.append(c.toString()).append(",");
 		}
 		return str+")";
 	}

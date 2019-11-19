@@ -210,14 +210,12 @@ public class SCV extends AIWithComputationBudget {
 
     public PlayerAction getBestActionSoFar() throws Exception {
         int slength = strategies.length;
-        AI ai[] = new AI[slength];
-        PlayerAction pa[] = new PlayerAction[slength];
+
+        PlayerAction[] pa = new PlayerAction[slength];
         ArrayList<TreeMap<Long, UnitAction>> s = new ArrayList<>();
 
         for (int i = 0; i < slength; i++) {
-            ai[i] = strategies[i].clone();            
             pa[i] = strategies[i].getAction(playerForThisComputation, gs_to_start_from);
-
         }
 
         PlayerAction pAux = pa[0];
@@ -524,7 +522,7 @@ public class SCV extends AIWithComputationBudget {
                         worker = i.ltd3;
                         break;
                     default:
-                        System.err.println("Erro na seleção");;
+                        System.err.println("Erro na seleção");
                 }
             }
             double pondTemp = (distrib[0]* light + distrib[1]*worker +distrib[2]* ranged + distrib[3]* economy + distrib[4]* heavy )/(distrib[0]+distrib[1]+distrib[2]+distrib[3]+distrib[4]);

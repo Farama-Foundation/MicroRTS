@@ -6,7 +6,6 @@
 package tests;
 
 import ai.abstraction.WorkerRush;
-import ai.ahtn.AHTNAI;
 import ai.core.AI;
 import ai.core.ParameterSpecification;
 import ai.mcts.informedmcts.InformedNaiveMCTS;

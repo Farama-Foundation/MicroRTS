@@ -17,7 +17,6 @@ import rts.GameState;
 import rts.PlayerAction;
 import rts.units.UnitTypeTable;
 import ai.core.InterruptibleAI;
-import static ai.mcts.uct.UCT.DEBUG;
 
 /**
  *

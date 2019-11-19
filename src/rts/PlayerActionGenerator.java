@@ -249,16 +249,16 @@ public class PlayerActionGenerator {
     
     
     public String toString() {
-        String ret = "PlayerActionGenerator:\n";
+        StringBuilder ret = new StringBuilder("PlayerActionGenerator:\n");
         for(Pair<Unit,List<UnitAction>> choice:choices) {
-            ret = ret + "  (" + choice.m_a + "," + choice.m_b.size() + ")\n";
+            ret.append("  (").append(choice.m_a).append(",").append(choice.m_b.size()).append(")\n");
         }
-        ret += "currentChoice: ";
-        for(int i = 0;i<currentChoice.length;i++) {
-            ret += currentChoice[i] + " ";
-        }
-        ret += "\nactions generated so far: " + generated;
-        return ret;
+        ret.append("currentChoice: ");
+		for (int value : currentChoice) {
+			ret.append(value).append(" ");
+		}
+        ret.append("\nactions generated so far: ").append(generated);
+        return ret.toString();
     }
     
 }

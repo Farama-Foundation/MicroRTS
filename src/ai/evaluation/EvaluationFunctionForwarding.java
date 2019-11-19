@@ -5,10 +5,6 @@
 package ai.evaluation;
 
 import rts.GameState;
-import rts.PhysicalGameState;
-import rts.UnitAction;
-import rts.UnitActionAssignment;
-import rts.units.*;
 
 /**
  *

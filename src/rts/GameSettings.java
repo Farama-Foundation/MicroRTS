@@ -223,20 +223,18 @@ public class GameSettings {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("----------Game Settings----------\n");
-        sb.append("Running as Server: ").append( getLaunchMode().toString() ).append("\n");
-        sb.append("Server Address: ").append( getServerAddress() ).append("\n");
-        sb.append("Server Port: ").append( getServerPort() ).append("\n");
-        sb.append("Serialization Type: ").append( getSerializationType()).append("\n");
-        sb.append("Map Location: ").append( getMapLocation() ).append("\n");
-        sb.append("Max Cycles: ").append( getMaxCycles() ).append("\n");
-        sb.append("Partially Observable: ").append( isPartiallyObservable() ).append("\n");
-        sb.append("Rules Version: ").append(getUTTVersion() ).append("\n");
-        sb.append("Conflict Policy: ").append( getConflictPolicy() ).append("\n");
-        sb.append("AI1: ").append( getAI1() ).append("\n");
-        sb.append("AI2: ").append( getAI2() ).append("\n");
-        sb.append("------------------------------------------------");
-        return sb.toString();
+        return "----------Game Settings----------\n" +
+                "Running as Server: " + getLaunchMode().toString() + "\n" +
+                "Server Address: " + getServerAddress() + "\n" +
+                "Server Port: " + getServerPort() + "\n" +
+                "Serialization Type: " + getSerializationType() + "\n" +
+                "Map Location: " + getMapLocation() + "\n" +
+                "Max Cycles: " + getMaxCycles() + "\n" +
+                "Partially Observable: " + isPartiallyObservable() + "\n" +
+                "Rules Version: " + getUTTVersion() + "\n" +
+                "Conflict Policy: " + getConflictPolicy() + "\n" +
+                "AI1: " + getAI1() + "\n" +
+                "AI2: " + getAI2() + "\n" +
+                "------------------------------------------------";
     }
 }

@@ -7,7 +7,6 @@
 package ai.ahtn.domain;
 
 import ai.abstraction.pathfinding.AStarPathFinding;
-import ai.abstraction.pathfinding.BFSPathFinding;
 import ai.abstraction.pathfinding.PathFinding;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,7 +18,6 @@ import rts.ResourceUsage;
 import rts.UnitAction;
 import rts.units.Unit;
 import rts.units.UnitType;
-import rts.units.UnitTypeTable;
 
 /**
  *
@@ -30,8 +28,8 @@ public class PredefinedPredicates {
     public static int DEBUG = 0;
     
     public interface PredicateTester {
-        public abstract List<Binding> firstMatch(Term term, GameState gs) throws Exception;
-        public abstract List<List<Binding>> allMatches(Term term, GameState gs) throws Exception;
+        List<Binding> firstMatch(Term term, GameState gs) throws Exception;
+        List<List<Binding>> allMatches(Term term, GameState gs) throws Exception;
     }
     
 //    static PathFinding pf = new GreedyPathFinding();
@@ -502,6 +500,7 @@ public class PredefinedPredicates {
                                     return new LinkedList<>();
                                 }
                             } else {
+                                // TODO this list is populated, but never used
                                 List<Binding> l = new LinkedList<>();
                                 if (!((Variable)p).ignore()) {
                                     l.add(new Binding((Variable)p,new IntegerConstant(UnitAction.DIRECTION_UP)));

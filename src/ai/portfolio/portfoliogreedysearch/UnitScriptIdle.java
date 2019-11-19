@@ -7,7 +7,6 @@ package ai.portfolio.portfoliogreedysearch;
 
 import ai.abstraction.AbstractAction;
 import ai.abstraction.Idle;
-import ai.abstraction.pathfinding.PathFinding;
 import rts.GameState;
 import rts.UnitAction;
 import rts.units.Unit;

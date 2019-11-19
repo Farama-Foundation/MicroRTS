@@ -14,10 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import rts.GameState;
-import rts.UnitAction;
 import rts.units.Unit;
 import rts.units.UnitType;
-import rts.units.UnitTypeTable;
 import util.Pair;
 
 /**

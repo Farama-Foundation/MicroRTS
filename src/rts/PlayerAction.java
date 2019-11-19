@@ -281,9 +281,9 @@ public class PlayerAction {
      * @see java.lang.Object#toString()
      */
     public String toString() {
-        String tmp = "{ ";
+        StringBuilder tmp = new StringBuilder("{ ");
         for(Pair<Unit,UnitAction> ua:actions) {
-            tmp += "(" + ua.m_a + "," + ua.m_b + ")";
+            tmp.append("(").append(ua.m_a).append(",").append(ua.m_b).append(")");
         }
         return tmp + " }";
     }    

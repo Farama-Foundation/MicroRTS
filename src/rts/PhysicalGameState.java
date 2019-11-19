@@ -52,7 +52,7 @@ public class PhysicalGameState {
      * @throws JDOMException
      * @throws IOException
      */
-    public static PhysicalGameState load(String fileName, UnitTypeTable utt) throws JDOMException, IOException, Exception {
+    public static PhysicalGameState load(String fileName, UnitTypeTable utt) throws Exception {
         try {
             return PhysicalGameState.fromXML(new SAXBuilder().build(fileName).getRootElement(), utt);
         } catch (IllegalArgumentException | FileNotFoundException e) {
@@ -407,14 +407,14 @@ public class PhysicalGameState {
      * @see java.lang.Object#toString()
      */
     public String toString() {
-        String tmp = "PhysicalGameState:\n";
+        StringBuilder tmp = new StringBuilder("PhysicalGameState:\n");
         for (Player p : players) {
-            tmp += "  " + p + "\n";
+            tmp.append("  ").append(p).append("\n");
         }
         for (Unit u : units) {
-            tmp += "  " + u + "\n";
+            tmp.append("  ").append(u).append("\n");
         }
-        return tmp;
+        return tmp.toString();
     }
 
     /**
