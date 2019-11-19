@@ -533,8 +533,9 @@ public class PhysicalGameState {
             }
         }
 
-        if(occurrences>1)
-            strTerrain.append(terrain[terrain.length-1]==0?'A':'B').append(occurrences);
+        if (occurrences > 1) {
+            strTerrain.append(terrain[terrain.length - 1] == 0 ? 'A' : 'B').append(occurrences);
+        }
 
         return strTerrain.toString();
     }
@@ -583,13 +584,23 @@ public class PhysicalGameState {
      * @param w
      */
     public void toxml(XMLWriter w) {
-        w.tagWithAttributes(this.getClass().getName(), "width=\"" + width + "\" height=\"" + height + "\"");
-        StringBuilder tmp = new StringBuilder(height * width);
+        toxml(w, false);
+    }
 
-        for (int i = 0; i < height * width; i++) {
-            tmp.append(terrain[i]);
+    public void toxml(XMLWriter w, boolean compressTerrain) {
+        w.tagWithAttributes(this.getClass().getName(),
+            "width=\"" + width + "\" height=\"" + height + "\"");
+
+        if (compressTerrain) {
+            w.tag("terrain", compressTerrain());
+        } else {
+            StringBuilder tmp = new StringBuilder(height * width);
+            for (int i = 0; i < height * width; i++) {
+                tmp.append(terrain[i]);
+            }
+            w.tag("terrain", tmp.toString());
         }
-        w.tag("terrain", tmp.toString());
+
         w.tag("players");
         for (Player p : players) {
             p.toxml(w);
@@ -610,13 +621,22 @@ public class PhysicalGameState {
      * @throws Exception
      */
     public void toJSON(Writer w) throws Exception {
+        toJSON(w, false);
+    }
+
+    public void toJSON(Writer w, boolean compressTerrain) throws Exception {
         w.write("{");
         w.write("\"width\":" + width + ",\"height\":" + height + ",");
-        w.write("\"terrain\":\""+compressTerrain(terrain,width*height));
 
-//        for (int i = 0; i < height * width; i++) {
-//            w.write("" + terrain[i]);
-//        }
+        if (compressTerrain) {
+            w.write("\"terrain\":\"" + compressTerrain());
+        } else {
+            w.write("\"terrain\":\"");
+            for (int i = 0; i < height * width; i++) {
+                w.write("" + terrain[i]);
+            }
+        }
+
         w.write("\",");
         w.write("\"players\":[");
         for (int i = 0; i < players.size(); i++) {
@@ -651,12 +671,8 @@ public class PhysicalGameState {
 
         int width = Integer.parseInt(e.getAttributeValue("width"));
         int height = Integer.parseInt(e.getAttributeValue("height"));
-        int terrain[] = new int[width * height];
-        String terrainString = terrain_e.getValue();
-        for (int i = 0; i < width * height; i++) {
-            String c = terrainString.substring(i, i + 1);
-            terrain[i] = Integer.parseInt(c);
-        }
+
+        int[] terrain = getTerrainFromUnknownString(terrain_e.getValue(), width * height);
         PhysicalGameState pgs = new PhysicalGameState(width, height, terrain);
 
         for (Object o : players_e.getChildren()) {
@@ -684,18 +700,14 @@ public class PhysicalGameState {
      * @return
      */
     public static PhysicalGameState fromJSON(JsonObject o, UnitTypeTable utt) {
-
         String terrainString = o.getString("terrain", null);
         JsonArray players_o = o.get("players").asArray();
         JsonArray units_o = o.get("units").asArray();
 
         int width = o.getInt("width", 8);
         int height = o.getInt("height", 8);
-        int terrain[] = new int[width * height];
-        for (int i = 0; i < width * height; i++) {
-            String c = terrainString.substring(i, i + 1);
-            terrain[i] = Integer.parseInt(c);
-        }
+
+        int[] terrain = getTerrainFromUnknownString(terrainString, width * height);
         PhysicalGameState pgs = new PhysicalGameState(width, height, terrain);
 
         for (JsonValue v : players_o.values()) {
@@ -711,6 +723,27 @@ public class PhysicalGameState {
     }
 
     /**
+     * Transforms a compressed or uncompressed String representation of the terrain into an integer
+     * array
+     * @param terrainString the compressed or uncompressed String representation of the terrain
+     * @param size size of the resulting integer array
+     * @return the terrain, in its integer representation
+     */
+    private static int[] getTerrainFromUnknownString(String terrainString, int size) {
+        int[] terrain = new int[size];
+        if (terrainString.contains("A") || terrainString.contains("B")) {
+            terrain = uncompressTerrain(terrainString);
+        } else {
+            for (int i = 0; i < size; i++) {
+                String c = terrainString.substring(i, i + 1);
+                terrain[i] = Integer.parseInt(c);
+            }
+        }
+
+        return terrain;
+    }
+
+    /**
      * Reset all units HP to their base value
      */
     public void resetAllUnitsHP() {
@@ -718,5 +751,4 @@ public class PhysicalGameState {
             u.setHitPoints(u.getType().hp);
         }
     }
-
 }
