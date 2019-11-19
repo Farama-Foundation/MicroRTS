@@ -497,6 +497,87 @@ public class PhysicalGameState {
     }
 
     /**
+     * Create a compressed String representation of the terrain vector.
+     * <p>
+     *     The terrain vector is an array of Integers, whose elements only assume 0 and 1 as
+     *     possible values. This method compresses the terrain vector by counting the number of
+     *     consecutive occurrences of a value and appending this to a String.
+     *     Since 0 and 1 may appear in the counter, 0 is replaced by A and 1 is replaced by B.
+     * </p>
+     * <p>
+     *     For example, the String <code>00000011110000000000</code> is transformed into
+     *     <code>A6B4A10</code>.
+     * </p>
+     * <p>
+     *     This method is useful when the terrain composes part of a message, to be shared between
+     *     client and server.
+     * </p>
+     *
+     * @return compressed String representation of the terrain vector
+     */
+    private String compressTerrain() {
+        StringBuilder strTerrain = new StringBuilder();
+
+        int occurrences = 1;
+        for (int i = 1; i < height * width; i++) {
+            if (terrain[i] == terrain[i - 1]) {
+                occurrences++;
+            } else {
+                strTerrain.append(terrain[i - 1] == 0 ? 'A' : 'B');
+
+                if (occurrences > 1) {
+                    strTerrain.append(occurrences);
+                }
+
+                occurrences = 1;
+            }
+        }
+
+        if(occurrences>1)
+            strTerrain.append(terrain[terrain.length-1]==0?'A':'B').append(occurrences);
+
+        return strTerrain.toString();
+    }
+
+    /**
+     * Create an uncompressed int array from a compressed String representation of
+     * the terrain.
+     * @param t a compressed String representation of the terrain
+     * @return int array representation of the terrain
+     */
+    private static int[] uncompressTerrain(String t) {
+        ArrayList<Integer> terrain = new ArrayList<>();
+        StringBuilder counter = new StringBuilder();
+
+        for (char ch : t.toCharArray()) {
+            if (ch == 'A' || ch == 'B') {
+                if (counter.length() > 0) {
+                    for (int i = 0; i < Integer.parseInt(counter.toString()) - 1; i++) {
+                        terrain.add(terrain.get(terrain.size() - 1));
+                    }
+                    counter = new StringBuilder();
+                }
+                terrain.add(ch == 'A' ? 0 : 1);
+            } else {
+                counter.append(ch);
+            }
+        }
+
+        if (counter.length() > 0) {
+            for (int i = 0; i < Integer.parseInt(counter.toString()) - 1; i++) {
+                terrain.add(terrain.get(terrain.size() - 1));
+            }
+        }
+
+        int[] rt = new int[terrain.size()];
+        for (int i = 0; i < terrain.size(); i++) {
+            rt[i] = terrain.get(i);
+        }
+
+        return rt;
+    }
+
+    /**
      * Writes a XML representation of the map
      *
      * @param w
@@ -520,29 +601,6 @@ public class PhysicalGameState {
         }
         w.tag("/units");
         w.tag("/" + this.getClass().getName());
-    }
-
-    String compressTerrain(int[] terrain, int size){
-        StringBuilder strTerrain = new StringBuilder();
-
-        int occurrences = 1;
-        for (int i = 1; i < size; i++) {
-            if(terrain[i]==terrain[i-1])
-                occurrences++;
-            else {
-                strTerrain.append(terrain[i - 1]==0?'A':'B');
-
-                if(occurrences>1)
-                    strTerrain.append(occurrences);
-
-                occurrences=1;
-            }
-        }
-
-        if(occurrences>1)
-            strTerrain.append(terrain[terrain.length-1]==0?'A':'B').append(occurrences);
-
-        return strTerrain.toString();
     }
 
     /**
