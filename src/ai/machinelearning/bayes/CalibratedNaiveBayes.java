@@ -157,7 +157,7 @@ public class CalibratedNaiveBayes extends BayesianModel {
         Collections.sort(featureIndexes, new Comparator<Integer>() {
             public int compare(Integer o1, Integer o2) {
                 return Double.compare(featureGR.get(o2), featureGR.get(o1));
-            }            
+            }
         });
         
 //        System.out.println("FS:");
@@ -248,8 +248,8 @@ public class CalibratedNaiveBayes extends BayesianModel {
             w.rawXML("\n");
             w.tag("/selectedFeatures");        
         }
-        for(int i = 0;i<distributions.length;i++) {
-            distributions[i].save(w);
+        for (DiscreteCPD distribution : distributions) {
+            distribution.save(w);
         }        
         w.tag("/SimpleNaiveBayes");
         w.flush();

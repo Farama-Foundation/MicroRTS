@@ -100,20 +100,19 @@ public class UCTUnitActionsNode {
         // Bandit policy:
         double best_score = 0;
         UCTUnitActionsNode best = null;
-        for(int i = 0;i<children.size();i++) {
-            UCTUnitActionsNode child = children.get(i);
-            double exploitation = ((double)child.accum_evaluation) / child.visit_count;
-            double exploration = Math.sqrt(Math.log(((double)visit_count)/child.visit_count));
-            if (type==0) {
+        for (UCTUnitActionsNode child : children) {
+            double exploitation = ((double) child.accum_evaluation) / child.visit_count;
+            double exploration = Math.sqrt(Math.log(((double) visit_count) / child.visit_count));
+            if (type == 0) {
                 // max node:
-                exploitation = (exploitation + evaluation_bound)/(2*evaluation_bound);
+                exploitation = (exploitation + evaluation_bound) / (2 * evaluation_bound);
             } else {
-                exploitation = - (exploitation - evaluation_bound)/(2*evaluation_bound);
+                exploitation = -(exploitation - evaluation_bound) / (2 * evaluation_bound);
             }
 //            System.out.println(exploitation + " + " + exploration);
 
-            double tmp = C*exploitation + exploration;
-            if (best==null || tmp>best_score) {
+            double tmp = C * exploitation + exploration;
+            if (best == null || tmp > best_score) {
                 best = child;
                 best_score = tmp;
             }

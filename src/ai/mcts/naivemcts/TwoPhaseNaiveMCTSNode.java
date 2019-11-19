@@ -102,7 +102,7 @@ public class TwoPhaseNaiveMCTSNode extends NaiveMCTSNode {
                 for(int i = 0;i<ate.nactions;i++) System.out.print("(" + ate.visit_count[i] + "," + ate.accum_evaluation[i]/ate.visit_count[i] + ")");
                 System.out.println("]");
                 System.out.print("[ ");
-                for(int i = 0;i<dist.length;i++) System.out.print(dist[i] + " ");
+                for (double v : dist) System.out.print(v + " ");
                 System.out.println("]");
             }
 

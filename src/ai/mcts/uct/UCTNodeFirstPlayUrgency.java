@@ -84,11 +84,10 @@ public class UCTNodeFirstPlayUrgency {
         double best_score = 0;
         UCTNodeFirstPlayUrgency best = null;
         if (DEBUG>=1) System.out.println("UCTNodeFirstPlayUrgency.UCTSelectLeaf:");
-        for(int i = 0;i<children.size();i++) {
-            UCTNodeFirstPlayUrgency child = children.get(i);
+        for (UCTNodeFirstPlayUrgency child : children) {
             double tmp = childValue(child);
-            if (DEBUG>=1) System.out.println("  " + tmp);
-            if (best==null || tmp>best_score) {
+            if (DEBUG >= 1) System.out.println("  " + tmp);
+            if (best == null || tmp > best_score) {
                 best = child;
                 best_score = tmp;
             }
