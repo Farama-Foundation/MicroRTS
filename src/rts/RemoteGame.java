@@ -42,10 +42,14 @@ class RemoteGame extends Thread {
     @Override
     public void run() {
         try {
-
             // Generate players
-            AI player_one = SocketAI.createFromExistingSocket(100, 0, unitTypeTable, gameSettings.getSerializationType(), socket);
-            AI player_two = new RandomBiasedAI();
+            // player 1 is created from SocketAI
+            AI player_one = SocketAI.createFromExistingSocket(100, 0, unitTypeTable,
+                gameSettings.getSerializationType(), socket);
+            // player 2 is created using the info from gameSettings
+            java.lang.reflect.Constructor cons2 = Class.forName(gameSettings.getAI2())
+                .getConstructor(UnitTypeTable.class);
+            AI player_two = (AI) cons2.newInstance(unitTypeTable);
 
             // Reset all players
             player_one.reset();
