@@ -20,7 +20,7 @@ import util.XMLWriter;
  * @author santi
  */
 public class TraceGenerationTest {
-    public static void main(String args[]) throws IOException, Exception {
+    public static void main(String args[]) throws Exception {
         UnitTypeTable utt = new UnitTypeTable();
         MapGenerator mg = new MapGenerator(utt);
         PhysicalGameState pgs = mg.basesWorkers8x8Obstacle();

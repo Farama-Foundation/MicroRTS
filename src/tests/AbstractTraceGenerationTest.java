@@ -25,7 +25,7 @@ import util.XMLWriter;
  * @author santi
  */
 public class AbstractTraceGenerationTest {
-    public static void main(String args[]) throws IOException, Exception {
+    public static void main(String args[]) throws Exception {
         UnitTypeTable utt = new UnitTypeTable();
         PhysicalGameState pgs = PhysicalGameState.load("maps/16x16/basesWorkers16x16.xml", utt);
         GameState gs = new GameState(pgs, utt);
