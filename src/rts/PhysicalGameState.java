@@ -374,12 +374,8 @@ public class PhysicalGameState {
      */
     public PhysicalGameState cloneKeepingUnits() {
         PhysicalGameState pgs = new PhysicalGameState(width, height, terrain);  // The terrain is shared amongst all instances, since it never changes
-        for (Player p : players) {
-            pgs.players.add(p);
-        }
-        for (Unit u : units) {
-            pgs.units.add(u);
-        }
+        pgs.players.addAll(players);
+        pgs.units.addAll(units);
         return pgs;
     }
 

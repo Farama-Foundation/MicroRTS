@@ -333,9 +333,7 @@ public class EconomyRush extends AbstractionLayerAI {
         Collections.sort(keysOrdered);
         
         for (Integer key : keysOrdered) {
-            for(Unit uTemp : map.get(key)){
-                resReturn.add(uTemp);
-            }
+            resReturn.addAll(map.get(key));
                 
         }
         
