@@ -186,8 +186,7 @@ public class MLPSNode extends MCTSNode {
             double accumUCBScore = 0;
             double maxExplorationScore = 0;
             pa2.setResourceUsage(base_ru.clone());
-            List<Integer> notSampledYetIDs2 = new LinkedList<>();
-            notSampledYetIDs2.addAll(notSampledYetIDs);
+            List<Integer> notSampledYetIDs2 = new LinkedList<>(notSampledYetIDs);
             while(!notSampledYetIDs2.isEmpty()) {            
                 if (DEBUG>=2) System.out.println("notSampledYet: " + notSampledYetIDs2);
                 int i = r.nextInt(notSampledYetIDs2.size());

@@ -148,8 +148,7 @@ public class WorkerRushPlusPlus extends AbstractionLayerAI {
         int nbases = 0;
         int resourcesUsed = 0;
         Unit harvestWorker = null;
-        List<Unit> freeWorkers = new LinkedList<>();
-        freeWorkers.addAll(workers);
+        List<Unit> freeWorkers = new LinkedList<>(workers);
         
         if (workers.isEmpty()) return;
         

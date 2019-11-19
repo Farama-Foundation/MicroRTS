@@ -226,8 +226,7 @@ public class SimpleEconomyRush extends AbstractionLayerAI {
         int nbarracks = 0;
 
         int resourcesUsed = 0;
-        List<Unit> freeWorkers = new ArrayList<>();
-        freeWorkers.addAll(workers);
+        List<Unit> freeWorkers = new ArrayList<>(workers);
 
         if (workers.isEmpty()) {
             return;

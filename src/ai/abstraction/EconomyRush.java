@@ -233,8 +233,7 @@ public class EconomyRush extends AbstractionLayerAI {
         int nbases = 0;
         int nbarracks = 0;
 
-        List<Unit> freeWorkers = new ArrayList<>();
-        freeWorkers.addAll(workers);
+        List<Unit> freeWorkers = new ArrayList<>(workers);
 
         if (workers.isEmpty()) {
             return;
