@@ -210,14 +210,12 @@ public class SCV extends AIWithComputationBudget {
 
     public PlayerAction getBestActionSoFar() throws Exception {
         int slength = strategies.length;
-        AI ai[] = new AI[slength];
-        PlayerAction pa[] = new PlayerAction[slength];
+
+        PlayerAction[] pa = new PlayerAction[slength];
         ArrayList<TreeMap<Long, UnitAction>> s = new ArrayList<>();
 
         for (int i = 0; i < slength; i++) {
-            ai[i] = strategies[i].clone();            
             pa[i] = strategies[i].getAction(playerForThisComputation, gs_to_start_from);
-
         }
 
         PlayerAction pAux = pa[0];

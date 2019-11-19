@@ -287,12 +287,6 @@ public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint
             if (p.getResources() >= baseType.cost + resourcesUsed ) {
             	//System.out.println("expanding");
                 Unit u = freeWorkers.remove(0);
-                List<Unit> resources=new LinkedList<Unit>();
-                for (Unit u2 : pgs.getUnits()) {
-                    if(u2.getType() == resourceType){
-                    	resources.add(u2);
-                    }
-                }
                 
                 //get closest resource that hasn't got bases around, or enemy units
                 Unit closestFreeResource=findClosest(u, 
