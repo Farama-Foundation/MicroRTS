@@ -38,9 +38,7 @@ public class Attack extends AbstractAction  {
     {
         if (!(o instanceof Attack)) return false;
         Attack a = (Attack)o;
-        if (target.getID() != a.target.getID()) return false;
-        if (pf.getClass() != a.pf.getClass()) return false;
-        
+        if (target.getID() != a.target.getID()||pf.getClass() != a.pf.getClass()) return false;
         return true;
     }
 

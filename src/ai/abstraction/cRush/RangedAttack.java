@@ -44,9 +44,7 @@ public class RangedAttack extends AbstractAction  {
     {
         if (!(o instanceof RangedAttack)) return false;
         RangedAttack a = (RangedAttack)o;
-        if (target.getID() != a.target.getID()) return false;
-        if (pf.getClass() != a.pf.getClass()) return false;
-        if (racks.getID() != a.racks.getID()) return false;
+        if (target.getID() != a.target.getID()||pf.getClass() != a.pf.getClass()||racks.getID() != a.racks.getID()) return false;
         
         return true;
     }

@@ -69,10 +69,7 @@ public class CRanged_Tactic extends AbstractAction {
             return false;
         }
         CRanged_Tactic a = (CRanged_Tactic) o;
-        if (target.getID() != a.target.getID()) {
-            return false;
-        }
-        if (pf.getClass() != a.pf.getClass()) {
+        if (target.getID() != a.target.getID()||pf.getClass() != a.pf.getClass()) {
             return false;
         }
 

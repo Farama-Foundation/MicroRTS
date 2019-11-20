@@ -155,8 +155,7 @@ public class BFSPathFinding extends PathFinding {
     }      
 
     public boolean pathExists(Unit start, int targetpos, GameState gs, ResourceUsage ru) {
-        if (start.getPosition(gs.getPhysicalGameState())==targetpos) return true;
-        if (findPath(start,targetpos,gs,ru)!=null) return true;
+        if (start.getPosition(gs.getPhysicalGameState())==targetpos||findPath(start,targetpos,gs,ru)!=null) return true;
         return false;
     }
     
