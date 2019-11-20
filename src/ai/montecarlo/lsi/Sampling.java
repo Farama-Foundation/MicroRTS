@@ -101,7 +101,7 @@ public class Sampling {
                 ent_list.sort(new Comparator<>() {
                     @Override
                     public int compare(Pair<Integer, Double> p1, Pair<Integer, Double> p2) {
-                        return p1.m_b > p2.m_b ? 1 : (p1.m_b < p2.m_b ? -1 : 0);
+                        return p1.m_b.compareTo(p2.m_b);
                     }
                 });
                 break;
@@ -324,7 +324,7 @@ public class Sampling {
             public int compare(Pair<PlayerAction, Pair<Double, Integer>> p1, Pair<PlayerAction, Pair<Double, Integer>> p2) {
                 double eval1 = p1.m_b.m_a / p1.m_b.m_b;
                 double eval2 = p2.m_b.m_a / p2.m_b.m_b;
-                return eval1 < eval2 ? 1 : (eval1 > eval2 ? -1 : 0);
+                return Double.compare(eval2, eval1);
 
             }
 
@@ -344,7 +344,7 @@ public class Sampling {
 
             @Override
             public int compare(Pair<PlayerAction, Double> p1, Pair<PlayerAction, Double> p2) {
-                return p1.m_b < p2.m_b ? 1 : (p1.m_b > p2.m_b ? -1 : 0);
+                return p2.m_b.compareTo(p1.m_b);
             }
 
         });
@@ -363,7 +363,7 @@ public class Sampling {
 
             @Override
             public int compare(Pair<PlayerAction, Double> p1, Pair<PlayerAction, Double> p2) {
-                return p1.m_b < p2.m_b ? 1 : (p1.m_b > p2.m_b ? -1 : 0);
+                return p2.m_b.compareTo(p1.m_b);
             }
 
         });

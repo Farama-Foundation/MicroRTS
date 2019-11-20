@@ -284,7 +284,7 @@ public class LSI extends AIWithComputationBudget {
 
                                     @Override
                                     public int compare(Pair<Integer, Double> p1, Pair<Integer, Double> p2) {
-                                        return p1.m_b > p2.m_b ? 1 : (p1.m_b < p2.m_b ? -1 : 0);
+                                        return p1.m_b.compareTo(p2.m_b);
                                     }
 
                                 });
@@ -294,7 +294,7 @@ public class LSI extends AIWithComputationBudget {
 
                                     @Override
                                     public int compare(Pair<Integer, Double> p1, Pair<Integer, Double> p2) {
-                                        return p1.m_b < p2.m_b ? 1 : (p1.m_b > p2.m_b ? -1 : 0);
+                                        return p2.m_b.compareTo(p1.m_b);
                                     }
 
                                 });
@@ -309,7 +309,7 @@ public class LSI extends AIWithComputationBudget {
 
                             @Override
                             public int compare(Pair<Integer, Double> p1, Pair<Integer, Double> p2) {
-                                return p1.m_a < p2.m_a ? 1 : (p1.m_a > p2.m_a ? -1 : 0);
+                                return p2.m_a.compareTo(p1.m_a);
                             }
 
                         });
@@ -697,7 +697,7 @@ public class LSI extends AIWithComputationBudget {
                 public int compare(Pair<Integer, Double> p1, Pair<Integer, Double> p2) {
                     double eval1 = p1.m_b;
                     double eval2 = p2.m_b;
-                    return eval1 > eval2 ? 1 : (eval1 < eval2 ? -1 : 0);
+                    return Double.compare(eval1, eval2);
                 }
 
             });
@@ -709,7 +709,7 @@ public class LSI extends AIWithComputationBudget {
                 public int compare(Pair<Integer, Double> p1, Pair<Integer, Double> p2) {
                     double eval1 = p1.m_a;
                     double eval2 = p2.m_a;
-                    return eval1 < eval2 ? 1 : (eval1 > eval2 ? -1 : 0);
+                    return Double.compare(eval2, eval1);
                 }
 
             });
@@ -842,7 +842,7 @@ public class LSI extends AIWithComputationBudget {
                                    Entry<PlayerAction, Pair<Double, Integer>> e2) {
                     double eval1 = e1.getValue().m_a / e1.getValue().m_b;
                     double eval2 = e2.getValue().m_a / e2.getValue().m_b;
-                    return eval1 < eval2 ? 1 : (eval1 > eval2 ? -1 : 0);
+                    return Double.compare(eval2, eval1);
                 }
 
             });
@@ -918,7 +918,7 @@ public class LSI extends AIWithComputationBudget {
                 public int compare(Pair<PlayerAction, Pair<Double, Integer>> p1, Pair<PlayerAction, Pair<Double, Integer>> p2) {
                     double eval1 = p1.m_b.m_a / p1.m_b.m_b;
                     double eval2 = p2.m_b.m_a / p2.m_b.m_b;
-                    return eval1 < eval2 ? 1 : (eval1 > eval2 ? -1 : 0);
+                    return Double.compare(eval2, eval1);
 
                 }
 
