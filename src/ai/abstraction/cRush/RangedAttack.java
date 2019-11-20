@@ -35,8 +35,7 @@ public class RangedAttack extends AbstractAction  {
     
     public boolean completed(GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
-        if (!pgs.getUnits().contains(target)) return true;
-        return false;
+        return !pgs.getUnits().contains(target);
     }
     
     
@@ -44,9 +43,8 @@ public class RangedAttack extends AbstractAction  {
     {
         if (!(o instanceof RangedAttack)) return false;
         RangedAttack a = (RangedAttack)o;
-        if (target.getID() != a.target.getID()||pf.getClass() != a.pf.getClass()||racks.getID() != a.racks.getID()) return false;
-        
-        return true;
+        return target.getID() == a.target.getID() && pf.getClass() == a.pf.getClass()
+            && racks.getID() == a.racks.getID();
     }
 
     

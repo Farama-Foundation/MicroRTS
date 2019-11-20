@@ -24,7 +24,6 @@ public class Binding {
     }
     
     public boolean equals(Object o) {
-        if (o instanceof Binding && v.equals(((Binding)o).v) && p.equals(((Binding)o).p)) return true;
-        return false;
+        return o instanceof Binding && v.equals(((Binding) o).v) && p.equals(((Binding) o).p);
     }
 }

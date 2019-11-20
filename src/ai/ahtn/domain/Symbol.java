@@ -86,10 +86,7 @@ public class Symbol {
     
     public boolean equals(String str) {
         if (mSym == null) {
-            if (str == null) {
-                return true;
-            }
-            return false;
+            return str == null;
         } else {
             if (str == null) {
                 return false;
@@ -101,10 +98,7 @@ public class Symbol {
 
     public boolean equals(StringBuffer str) {
         if (mSym == null) {
-            if (str == null) {
-                return true;
-            }
-            return false;
+            return str == null;
         } else {
             if (str == null) {
                 return false;

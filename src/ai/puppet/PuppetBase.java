@@ -86,11 +86,7 @@ public abstract class PuppetBase extends AIWithComputationBudget {
 		PLAN_PLAYOUTS=max_plan_playouts;
 		STEP_PLAYOUT_TIME=step_playout_time;
 
-		if(max_plan_time>=0||max_plan_playouts>=0){
-			PLAN=true;
-		}else{
-			PLAN=false;
-		}
+        PLAN= max_plan_time >= 0 || max_plan_playouts >= 0;
 		this.script=script;
 		eval=evaluation;
 		lastSearchFrame=-1;

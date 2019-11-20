@@ -358,8 +358,6 @@ public class PGSMouseListener implements MouseListener, MouseMotionListener, Key
                 
         Rectangle r = frame.panel.getBounds();
         // if mouse was outside of playing area, return:
-        if (x<r.x || x>=r.x+r.width ||
-            y<r.y || y>=r.y+r.height) return false;
-        return true;        
+        return x >= r.x && x < r.x + r.width && y >= r.y && y < r.y + r.height;
     }
 }
