@@ -47,12 +47,9 @@ public class SingleChoiceConfigurableScript extends ConfigurableScript<SingleCho
 			opts[i]=i;
 		}
 		for(SingleChoice c:choicePointValues){
-			switch(c){
-			case SINGLE: 
-				choicePoints.put(c, new Options(c.ordinal(),opts));
-				break;
-
-			}
+            if (c == ai.puppet.SingleChoice.SINGLE) {
+                choicePoints.put(c, new ai.puppet.ConfigurableScript.Options(c.ordinal(), opts));
+            }
 		}
 	}
 

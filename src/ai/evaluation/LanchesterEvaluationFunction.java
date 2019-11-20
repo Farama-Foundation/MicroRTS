@@ -35,11 +35,9 @@ public class LanchesterEvaluationFunction extends EvaluationFunction {
     public float base_score(int player, GameState gs) {
     	PhysicalGameState pgs = gs.getPhysicalGameState();
     	int index = 0;
-    	switch(pgs.getWidth()){
-    	case 128:
-    		index = 1;
-    		break;
-    	}
+        if (pgs.getWidth() == 128) {
+            index = 1;
+        }
 
     	float score = 0.0f;
     	float score_buildings = 0.0f;
