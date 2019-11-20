@@ -148,44 +148,53 @@ public class MethodDecomposition {
     
     public static MethodDecomposition fromLispElement(LispElement e) throws Exception {
         LispElement head = e.children.get(0);
-        if (head.element.equals(":condition")) {
-            MethodDecomposition d = new MethodDecomposition();
-            d.type = METHOD_CONDITION;
-            d.clause = Clause.fromLispElement(e.children.get(1));
-            return d;
-        } else if (head.element.equals(":!condition")) {
-            MethodDecomposition d = new MethodDecomposition();
-            d.type = METHOD_NON_BRANCHING_CONDITION;
-            d.clause = Clause.fromLispElement(e.children.get(1));
-            return d;
-        } else if (head.element.equals(":operator")) {
-            MethodDecomposition d = new MethodDecomposition();
-            d.type = METHOD_OPERATOR;
-            d.term = Term.fromLispElement(e.children.get(1));
-            return d;
-        } else if (head.element.equals(":method")) {
-            MethodDecomposition d = new MethodDecomposition();
-            d.type = METHOD_METHOD;
-            d.term = Term.fromLispElement(e.children.get(1));
-            return d;
-        } else if (head.element.equals(":sequence")) {
-            MethodDecomposition d = new MethodDecomposition();
-            d.type = METHOD_SEQUENCE;
-            d.subelements = new MethodDecomposition[e.children.size()-1];
-            for(int i = 0;i<e.children.size()-1;i++) {
-                d.subelements[i] = MethodDecomposition.fromLispElement(e.children.get(i+1));
+        switch (head.element) {
+            case ":condition": {
+                ai.ahtn.domain.MethodDecomposition d = new ai.ahtn.domain.MethodDecomposition();
+                d.type = METHOD_CONDITION;
+                d.clause = ai.ahtn.domain.Clause.fromLispElement(e.children.get(1));
+                return d;
             }
-            return d;
-        } else if (head.element.equals(":parallel")) {
-            MethodDecomposition d = new MethodDecomposition();
-            d.type = METHOD_PARALLEL;
-            d.subelements = new MethodDecomposition[e.children.size()-1];
-            for(int i = 0;i<e.children.size()-1;i++) {
-                d.subelements[i] = MethodDecomposition.fromLispElement(e.children.get(i+1));
+            case ":!condition": {
+                ai.ahtn.domain.MethodDecomposition d = new ai.ahtn.domain.MethodDecomposition();
+                d.type = METHOD_NON_BRANCHING_CONDITION;
+                d.clause = ai.ahtn.domain.Clause.fromLispElement(e.children.get(1));
+                return d;
             }
-            return d;
-        } else {
-            throw new Exception("unrecognized method decomposition!: " + head.element);
+            case ":operator": {
+                ai.ahtn.domain.MethodDecomposition d = new ai.ahtn.domain.MethodDecomposition();
+                d.type = METHOD_OPERATOR;
+                d.term = ai.ahtn.domain.Term.fromLispElement(e.children.get(1));
+                return d;
+            }
+            case ":method": {
+                ai.ahtn.domain.MethodDecomposition d = new ai.ahtn.domain.MethodDecomposition();
+                d.type = METHOD_METHOD;
+                d.term = ai.ahtn.domain.Term.fromLispElement(e.children.get(1));
+                return d;
+            }
+            case ":sequence": {
+                ai.ahtn.domain.MethodDecomposition d = new ai.ahtn.domain.MethodDecomposition();
+                d.type = METHOD_SEQUENCE;
+                d.subelements = new ai.ahtn.domain.MethodDecomposition[e.children.size() - 1];
+                for (int i = 0; i < e.children.size() - 1; i++) {
+                    d.subelements[i] = ai.ahtn.domain.MethodDecomposition
+                        .fromLispElement(e.children.get(i + 1));
+                }
+                return d;
+            }
+            case ":parallel": {
+                ai.ahtn.domain.MethodDecomposition d = new ai.ahtn.domain.MethodDecomposition();
+                d.type = METHOD_PARALLEL;
+                d.subelements = new ai.ahtn.domain.MethodDecomposition[e.children.size() - 1];
+                for (int i = 0; i < e.children.size() - 1; i++) {
+                    d.subelements[i] = ai.ahtn.domain.MethodDecomposition
+                        .fromLispElement(e.children.get(i + 1));
+                }
+                return d;
+            }
+            default:
+                throw new Exception("unrecognized method decomposition!: " + head.element);
         }
     }  
     
