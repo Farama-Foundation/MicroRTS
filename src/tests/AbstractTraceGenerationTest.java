@@ -13,7 +13,7 @@ import ai.abstraction.AbstractionLayerAI;
 import ai.abstraction.LightRush;
 import ai.abstraction.pathfinding.BFSPathFinding;
 import java.io.FileWriter;
-import java.io.IOException;
+
 import rts.*;
 import rts.units.Unit;
 import rts.units.UnitTypeTable;

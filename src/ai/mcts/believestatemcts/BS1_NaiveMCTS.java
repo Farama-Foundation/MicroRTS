@@ -146,8 +146,7 @@ public class BS1_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
 
     @Override
     public List<Unit> getBelieveUnits() {
-        List<Unit> l = new LinkedList<>();
-        l.addAll(lastKnownPosition);
+        List<Unit> l = new LinkedList<>(lastKnownPosition);
         return l;
     }
 

@@ -352,8 +352,7 @@ public class PhysicalGameStatePanel extends JPanel {
 
         // draw the units:
         // this list copy is to prevent a concurrent modification exception
-        List<Unit> l = new LinkedList<>();
-        l.addAll(pgs.getUnits());
+        List<Unit> l = new LinkedList<>(pgs.getUnits());
         for(Unit u:l) {
             int reduction = 0;
 

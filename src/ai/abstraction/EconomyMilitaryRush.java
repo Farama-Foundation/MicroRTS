@@ -234,8 +234,7 @@ public class EconomyMilitaryRush extends AbstractionLayerAI {
         int resourcesUsed = 0;
         int nArmyUnits = 0;
 
-        List<Unit> freeWorkers = new ArrayList<>();
-        freeWorkers.addAll(workers);
+        List<Unit> freeWorkers = new ArrayList<>(workers);
 
         if (workers.isEmpty()) {
             return;

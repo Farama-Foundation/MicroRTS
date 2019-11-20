@@ -551,8 +551,7 @@ public class GameState {
      * Forces the execution of all assigned actions
      */
     public void forceExecuteAllActions() {
-        List<UnitActionAssignment> readyToExecute = new LinkedList<>();
-        for(UnitActionAssignment uaa:unitActions.values()) readyToExecute.add(uaa);
+        List<UnitActionAssignment> readyToExecute = new LinkedList<>(unitActions.values());
                 
         // execute all the actions:
         for(UnitActionAssignment uaa:readyToExecute) {

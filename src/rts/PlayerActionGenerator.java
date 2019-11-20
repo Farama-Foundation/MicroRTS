@@ -109,8 +109,7 @@ public class PlayerActionGenerator {
      */
     public void randomizeOrder() {
 		for (Pair<Unit, List<UnitAction>> choice : choices) {
-			List<UnitAction> tmp = new LinkedList<>();
-			tmp.addAll(choice.m_b);
+            List<UnitAction> tmp = new LinkedList<>(choice.m_b);
 			choice.m_b.clear();
 			while (!tmp.isEmpty())
 				choice.m_b.add(tmp.remove(r.nextInt(tmp.size())));
@@ -197,8 +196,7 @@ public class PlayerActionGenerator {
 		PlayerAction pa = new PlayerAction();
 		pa.setResourceUsage(base_ru.clone());
 		for (Pair<Unit, List<UnitAction>> unitChoices : choices) {
-			List<UnitAction> l = new LinkedList<>();
-			l.addAll(unitChoices.m_b);
+            List<UnitAction> l = new LinkedList<>(unitChoices.m_b);
 			Unit u = unitChoices.m_a;
 
 			boolean consistent = false;

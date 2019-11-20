@@ -162,8 +162,7 @@ public class HeavyRush extends AbstractionLayerAI {
         int nbarracks = 0;
 
         int resourcesUsed = 0;
-        List<Unit> freeWorkers = new LinkedList<>();
-        freeWorkers.addAll(workers);
+        List<Unit> freeWorkers = new LinkedList<>(workers);
 
         if (workers.isEmpty()) {
             return;
