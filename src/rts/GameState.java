@@ -4,18 +4,19 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.*;
-
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
-
 import rts.units.Unit;
 import rts.units.UnitType;
 import rts.units.UnitTypeTable;
@@ -728,25 +729,35 @@ public class GameState {
         return tmp.toString();
     }
 
-    
     /**
      * Writes a XML representation of this state into a XMLWriter
+     *
      * @param w
      */
     public void toxml(XMLWriter w) {
-        w.tagWithAttributes(this.getClass().getName(),"time=\"" + time + "\"");
-        pgs.toxml(w);
+        toxml(w, true, false);
+    }
+
+    /**
+     * Writes a XML representation of this state into a XMLWriter
+     *
+     * @param w
+     */
+    public void toxml(XMLWriter w, boolean includeConstants, boolean compressTerrain) {
+        w.tagWithAttributes(this.getClass().getName(), "time=\"" + time + "\"");
+        pgs.toxml(w, includeConstants, compressTerrain);
         w.tag("actions");
-        for(Unit u:unitActions.keySet()) {
+        for (Unit u : unitActions.keySet()) {
             UnitActionAssignment uaa = unitActions.get(u);
-            w.tagWithAttributes("unitAction","ID=\""+uaa.unit.getID()+"\" time=\""+uaa.time+"\"");
+            w.tagWithAttributes("unitAction",
+                "ID=\"" + uaa.unit.getID() + "\" time=\"" + uaa.time + "\"");
             uaa.action.toxml(w);
             w.tag("/unitAction");
         }
         w.tag("/actions");
         w.tag("/" + this.getClass().getName());
     }
-    
+
     /**
      * Dumps this state to a XML file.
      * It can be reconstructed later (e.g. with {@link #fromXML(String, UnitTypeTable)}
@@ -762,23 +773,36 @@ public class GameState {
 			e.printStackTrace();
 		}
     }
-    
+
     /**
      * Writes a JSON representation of this state
+     *
      * @param w
      * @throws Exception
      */
     public void toJSON(Writer w) throws Exception {
+        toJSON(w, true, false);
+    }
+
+    /**
+     * Writes a JSON representation of this state
+     *
+     * @param w
+     * @throws Exception
+     */
+    public void toJSON(Writer w, boolean includeConstants, boolean compressTerrain) throws Exception {
         w.write("{");
         w.write("\"time\":" + time + ",\"pgs\":");
-        pgs.toJSON(w);
+        pgs.toJSON(w, includeConstants, compressTerrain);
         w.write(",\"actions\":[");
         boolean first = true;
-        for(Unit u:unitActions.keySet()) {
-            if (!first) w.write(",");
+        for (Unit u : unitActions.keySet()) {
+            if (!first) {
+                w.write(",");
+            }
             first = false;
             UnitActionAssignment uaa = unitActions.get(u);
-            w.write("{\"ID\":" + uaa.unit.getID() + ", \"time\":"+uaa.time+", \"action\":");
+            w.write("{\"ID\":" + uaa.unit.getID() + ", \"time\":" + uaa.time + ", \"action\":");
             uaa.action.toJSON(w);
             w.write("}");
         }
