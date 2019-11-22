@@ -33,9 +33,9 @@ public class GameState {
     protected int unitCancelationCounter = 0;  // only used if the action conflict resolution strategy is set to alternating
     
     protected int time = 0;
-    protected PhysicalGameState pgs = null;
+    protected PhysicalGameState pgs;
     protected HashMap<Unit,UnitActionAssignment> unitActions = new LinkedHashMap<>();
-    protected UnitTypeTable utt = null;
+    protected UnitTypeTable utt;
 
     /**
      * Initializes the GameState with a PhysicalGameState and a UnitTypeTable
@@ -439,7 +439,7 @@ public class GameState {
      * @return
      */
     public List<PlayerAction> getPlayerActionsSingleUnit(Unit unit) {
-        List<PlayerAction> l = new LinkedList<PlayerAction>();
+        List<PlayerAction> l = new LinkedList<>();
         
         PlayerAction empty = new PlayerAction();
         l.add(empty);
@@ -467,7 +467,7 @@ public class GameState {
      * @return
      */
     public List<PlayerAction> getPlayerActions(int playerID) {
-        List<PlayerAction> l = new LinkedList<PlayerAction>();
+        List<PlayerAction> l = new LinkedList<>();
         
         PlayerAction empty = new PlayerAction();
         l.add(empty);
@@ -486,7 +486,7 @@ public class GameState {
         for(Unit u:pgs.getUnits()) {
             if (u.getPlayer()==playerID) {
                 if (unitActions.get(u)==null) {
-                    List<PlayerAction> l2 = new LinkedList<PlayerAction>();
+                    List<PlayerAction> l2 = new LinkedList<>();
 
                     for(PlayerAction pa:l) {
                         l2.addAll(pa.cartesianProduct(u.getUnitActions(this), u, this));
@@ -529,7 +529,7 @@ public class GameState {
     public boolean cycle() {
         time++;
         
-        List<UnitActionAssignment> readyToExecute = new LinkedList<UnitActionAssignment>();
+        List<UnitActionAssignment> readyToExecute = new LinkedList<>();
         for(UnitActionAssignment uaa:unitActions.values()) {
             if (uaa.action.ETA(uaa.unit)+uaa.time<=time) readyToExecute.add(uaa);
         }
@@ -551,8 +551,7 @@ public class GameState {
      * Forces the execution of all assigned actions
      */
     public void forceExecuteAllActions() {
-        List<UnitActionAssignment> readyToExecute = new LinkedList<UnitActionAssignment>();
-        for(UnitActionAssignment uaa:unitActions.values()) readyToExecute.add(uaa);
+        List<UnitActionAssignment> readyToExecute = new LinkedList<>(unitActions.values());
                 
         // execute all the actions:
         for(UnitActionAssignment uaa:readyToExecute) {
@@ -676,7 +675,7 @@ public class GameState {
      * @return
      */
     public boolean integrityCheck() {
-        List<Unit> alreadyUsed = new LinkedList<Unit>();
+        List<Unit> alreadyUsed = new LinkedList<>();
         for(UnitActionAssignment uaa:unitActions.values()) {
             Unit u = uaa.unit;
             int idx = pgs.getUnits().indexOf(u);
@@ -715,18 +714,18 @@ public class GameState {
      * @see java.lang.Object#toString()
      */
     public String toString() {
-        String tmp = "ObservableGameState: " + time + "\n";
-        for(Player p:pgs.getPlayers()) tmp += "player " + p.ID + ": " + p.getResources() + "\n";
+        StringBuilder tmp = new StringBuilder("ObservableGameState: " + time + "\n");
+        for(Player p:pgs.getPlayers()) tmp.append("player ").append(p.ID).append(": ").append(p.getResources()).append("\n");
         for(Unit u:unitActions.keySet()) {
             UnitActionAssignment ua = unitActions.get(u);
             if (ua==null) {
-                tmp += "    " + u + " -> null (ERROR!)\n";
+                tmp.append("    ").append(u).append(" -> null (ERROR!)\n");
             } else {
-                tmp += "    " + u + " -> " + ua.time + " " + ua.action + "\n";
+                tmp.append("    ").append(u).append(" -> ").append(ua.time).append(" ").append(ua.action).append("\n");
             }
         }
-        tmp += pgs;
-        return tmp;
+        tmp.append(pgs);
+        return tmp.toString();
     }
 
     
@@ -856,7 +855,7 @@ public class GameState {
             JsonObject uaa_o = v.asObject();
             long ID = uaa_o.getLong("ID", -1);
             Unit u = gs.getUnit(ID);
-            int time = uaa_o.getInt("time", 0);;
+            int time = uaa_o.getInt("time", 0);
             UnitAction ua = UnitAction.fromJSON(uaa_o.get("action").asObject(), utt);
             UnitActionAssignment uaa = new UnitActionAssignment(u, ua, time);
             gs.unitActions.put(u, uaa);

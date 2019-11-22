@@ -5,7 +5,6 @@
 package gui;
 
 import java.awt.*;
-import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,11 +19,11 @@ public class MouseControllerPanel extends JPanel {
     public int offset_y = 16;
     public int separation_x = 16;
     
-    List<String> buttons = new LinkedList<String>();
-    List<Character> buttonQuickKeys = new LinkedList<Character>();
-    List<Rectangle2D> buttonRectangles = new LinkedList<Rectangle2D>();
+    List<String> buttons = new LinkedList<>();
+    List<Character> buttonQuickKeys = new LinkedList<>();
+    List<Rectangle2D> buttonRectangles = new LinkedList<>();
     
-    List<String> toHighlight = new LinkedList<String>();
+    List<String> toHighlight = new LinkedList<>();
     
     public MouseControllerPanel() {
     } 

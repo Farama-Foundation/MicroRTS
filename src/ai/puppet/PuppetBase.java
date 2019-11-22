@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 
 import ai.core.AI;
 import ai.core.AIWithComputationBudget;
-import ai.core.InterruptibleAI;
 import ai.evaluation.EvaluationFunction;
 import rts.GameState;
 import rts.PlayerAction;
@@ -53,8 +52,8 @@ class Move{
 	}
 	public String toString(ConfigurableScript<?> script){
 		return "choices: "+choices.stream().map(
-				(Pair<Integer,Integer>  p)-> 
-				new Pair<String,Integer>(script.choicePointValues[p.m_a].name(),p.m_b))
+				(Pair<Integer,Integer>  p)->
+                        new Pair<>(script.choicePointValues[p.m_a].name(), p.m_b))
 				.collect(Collectors.toList())+", player: "+player;
 	}
 	

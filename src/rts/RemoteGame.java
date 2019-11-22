@@ -1,13 +1,10 @@
 package rts;
 
-import ai.RandomBiasedAI;
 import ai.core.AI;
 import ai.socket.SocketAI;
 import gui.PhysicalGameStatePanel;
-import org.jdom.JDOMException;
 import rts.units.UnitTypeTable;
 import javax.swing.*;
-import java.io.IOException;
 import java.net.Socket;
 
 class RemoteGame extends Thread {

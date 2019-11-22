@@ -6,9 +6,6 @@ package ai.minimax.RTMiniMax;
 
 import ai.evaluation.EvaluationFunction;
 import rts.GameState;
-import rts.PlayerAction;
-import rts.PlayerActionGenerator;
-import util.Pair;
 
 /**
  *

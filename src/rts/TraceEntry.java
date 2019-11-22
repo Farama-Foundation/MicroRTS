@@ -18,7 +18,7 @@ public class TraceEntry {
 
     int time;
     PhysicalGameState pgs = null;
-    List<Pair<Unit, UnitAction>> actions = new LinkedList<Pair<Unit, UnitAction>>();
+    List<Pair<Unit, UnitAction>> actions = new LinkedList<>();
 
     /**
      * Creates from a PhysicalGameState and time
@@ -38,7 +38,7 @@ public class TraceEntry {
      * @param a
      */
     public void addUnitAction(Unit u, UnitAction a) {
-        actions.add(new Pair<Unit, UnitAction>(u, a));
+        actions.add(new Pair<>(u, a));
 
     }
 
@@ -136,7 +136,7 @@ public class TraceEntry {
             if (u == null) {
                 System.err.println("Undefined unit ID " + ID + " in action " + a + " at time " + time);
             }
-            actions.add(new Pair<Unit, UnitAction>(u, a));
+            actions.add(new Pair<>(u, a));
         }
     }
 }

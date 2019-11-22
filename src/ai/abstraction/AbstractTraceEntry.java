@@ -20,7 +20,7 @@ import util.XMLWriter;
  */
 public class AbstractTraceEntry {
     int time;
-    PhysicalGameState pgs = null;
+    PhysicalGameState pgs;
     List<Pair<Unit,AbstractAction>> actions = new LinkedList<>();
     
     public AbstractTraceEntry(PhysicalGameState a_pgs, int a_time) {

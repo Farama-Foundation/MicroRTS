@@ -33,17 +33,21 @@ public class LispElement {
     
     
     public String toString(int tabs) {
-        String tabstr = "";
-        for(int i = 0;i<tabs;i++) tabstr+="  ";
-        if (children==null) {
+        StringBuilder tabstr = new StringBuilder();
+
+        for (int i = 0; i < tabs; i++) {
+            tabstr.append("  ");
+        }
+
+        if (children == null) {
             return tabstr + element;
         } else {
-            String tmp = tabstr + "(\n";
+            StringBuilder tmp = new StringBuilder(tabstr + "(\n");
             for(LispElement e:children) {
-                tmp += e.toString(tabs+1) + "\n";
+                tmp.append(e.toString(tabs + 1)).append("\n");
             }
-            tmp += tabstr + ")";
-            return tmp;
+            tmp.append(tabstr).append(")");
+            return tmp.toString();
         }        
     }
 }

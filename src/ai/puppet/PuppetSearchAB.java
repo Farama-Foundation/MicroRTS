@@ -3,14 +3,12 @@
  */
 package ai.puppet;
 
-import ai.RandomBiasedAI;
 import ai.abstraction.pathfinding.FloodFillPathFinding;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Stack;
 
 import ai.core.AI;
-import ai.core.InterruptibleAI;
 import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
@@ -137,7 +135,7 @@ public class PuppetSearchAB extends PuppetBase {
 	protected int DEPTH;
 	protected int MAXPLAYER=-1;
 
-	Stack<ABCDNode> stack=new Stack<ABCDNode>();
+	Stack<ABCDNode> stack= new Stack<>();
 	ABCDNode head;
 	ABCDNode lastFinishedHead;
 	Plan currentPlan;

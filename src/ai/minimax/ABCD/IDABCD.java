@@ -301,7 +301,7 @@ public class IDABCD extends AIWithComputationBudget implements InterruptibleAI {
 //            System.out.println("searchOutsideStack: stack is null (maxplayer: " + maxplayer + ")");
             nLeaves = 0;
             time_depth = 0;
-            stack = new LinkedList<ABCDNode>();
+            stack = new LinkedList<>();
             head = new ABCDNode(-1, 0, initial_gs, -EvaluationFunction.VICTORY, EvaluationFunction.VICTORY, 0);
             stack.add(head);
             treeIsComplete = true;
@@ -359,7 +359,7 @@ public class IDABCD extends AIWithComputationBudget implements InterruptibleAI {
                                         gs2.issue(playoutAI2.getAction(1, gs2));
                                     }
                                 }
-                                lastResult = new Pair<PlayerAction,Float>(null,ef.evaluate(maxplayer,minplayer, gs2));
+                                lastResult = new Pair<>(null, ef.evaluate(maxplayer, minplayer, gs2));
 //                                System.out.println("last result from -1 node");
                                 stack.remove(0);
                             } else {

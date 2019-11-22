@@ -105,7 +105,7 @@ public class HeavyDefense extends AbstractionLayerAI {
         }
 
         // behavior of workers:
-        List<Unit> workers = new LinkedList<Unit>();
+        List<Unit> workers = new LinkedList<>();
         for (Unit u : pgs.getUnits()) {
             if (u.getType().canHarvest
                     && u.getPlayer() == player) {
@@ -169,8 +169,7 @@ public class HeavyDefense extends AbstractionLayerAI {
         int nbarracks = 0;
 
         int resourcesUsed = 0;
-        List<Unit> freeWorkers = new LinkedList<Unit>();
-        freeWorkers.addAll(workers);
+        List<Unit> freeWorkers = new LinkedList<>(workers);
 
         if (workers.isEmpty()) {
             return;
@@ -187,7 +186,7 @@ public class HeavyDefense extends AbstractionLayerAI {
             }
         }
 
-        List<Integer> reservedPositions = new LinkedList<Integer>();
+        List<Integer> reservedPositions = new LinkedList<>();
         if (nbases == 0 && !freeWorkers.isEmpty()) {
             // build a base:
             if (p.getResources() >= baseType.cost + resourcesUsed) {

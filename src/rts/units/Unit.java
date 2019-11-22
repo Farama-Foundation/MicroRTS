@@ -333,7 +333,7 @@ public class Unit implements Serializable {
      * @return
      */
     public List<UnitAction> getUnitActions(GameState s, int noneDuration) {
-        List<UnitAction> l = new ArrayList<UnitAction>();
+        List<UnitAction> l = new ArrayList<>();
 
         PhysicalGameState pgs = s.getPhysicalGameState();
         Player p = pgs.getPlayer(player);

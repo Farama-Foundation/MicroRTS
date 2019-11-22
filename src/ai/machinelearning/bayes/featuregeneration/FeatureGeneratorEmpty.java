@@ -16,6 +16,6 @@ import java.util.List;
 public class FeatureGeneratorEmpty extends FeatureGenerator {
         
     public List<Object> generateFeatures(TrainingInstance ti) {
-        return new ArrayList<Object>();
+        return new ArrayList<>();
     }    
 }

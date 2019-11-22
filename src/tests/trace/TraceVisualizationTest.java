@@ -7,14 +7,12 @@ package tests.trace;
 import gui.TraceVisualizer;
 
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.zip.ZipInputStream;
 
 import javax.swing.*;
-import org.jdom.JDOMException;
+
 import org.jdom.input.SAXBuilder;
 import rts.*;
-import rts.units.UnitTypeTable;
 
 /**
  *
@@ -22,7 +20,7 @@ import rts.units.UnitTypeTable;
  */
 public class TraceVisualizationTest {
 
-  public static void main(String []args) throws JDOMException, IOException, Exception {
+  public static void main(String []args) throws Exception {
 	  boolean zip = false;
 	  
 	  Trace t;

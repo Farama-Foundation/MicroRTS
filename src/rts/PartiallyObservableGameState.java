@@ -29,7 +29,7 @@ public class PartiallyObservableGameState extends GameState {
 
 		unitActions.putAll(gs.unitActions);
 
-		List<Unit> toDelete = new LinkedList<Unit>();
+		List<Unit> toDelete = new LinkedList<>();
 		for (Unit u : pgs.getUnits()) {
 			if (u.getPlayer() != player) {
 				if (!observable(u.getX(), u.getY())) {

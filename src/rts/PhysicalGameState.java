@@ -40,8 +40,8 @@ public class PhysicalGameState {
     int width = 8;
     int height = 8;
     int terrain[] = null;
-    List<Player> players = new ArrayList<Player>();
-    List<Unit> units = new LinkedList<Unit>();
+    List<Player> players = new ArrayList<>();
+    List<Unit> units = new LinkedList<>();
 
     /**
      * Constructs the game state map from a XML
@@ -52,7 +52,7 @@ public class PhysicalGameState {
      * @throws JDOMException
      * @throws IOException
      */
-    public static PhysicalGameState load(String fileName, UnitTypeTable utt) throws JDOMException, IOException, Exception {
+    public static PhysicalGameState load(String fileName, UnitTypeTable utt) throws Exception {
         try {
             return PhysicalGameState.fromXML(new SAXBuilder().build(fileName).getRootElement(), utt);
         } catch (IllegalArgumentException | FileNotFoundException e) {
@@ -277,7 +277,7 @@ public class PhysicalGameState {
      * @return
      */
     public Collection<Unit> getUnitsAround(int x, int y, int width, int height) {
-        List<Unit> closeUnits = new LinkedList<Unit>();
+        List<Unit> closeUnits = new LinkedList<>();
         for (Unit u : units) {
             if ((Math.abs(u.getX() - x) <= width && Math.abs(u.getY() - y) <= height)) {
                 closeUnits.add(u);
@@ -374,12 +374,8 @@ public class PhysicalGameState {
      */
     public PhysicalGameState cloneKeepingUnits() {
         PhysicalGameState pgs = new PhysicalGameState(width, height, terrain);  // The terrain is shared amongst all instances, since it never changes
-        for (Player p : players) {
-            pgs.players.add(p);
-        }
-        for (Unit u : units) {
-            pgs.units.add(u);
-        }
+        pgs.players.addAll(players);
+        pgs.units.addAll(units);
         return pgs;
     }
 
@@ -390,9 +386,7 @@ public class PhysicalGameState {
      */
     public PhysicalGameState cloneIncludingTerrain() {
         int new_terrain[] = new int[terrain.length];
-        for (int i = 0; i < terrain.length; i++) {
-            new_terrain[i] = terrain[i];
-        }
+        System.arraycopy(terrain, 0, new_terrain, 0, terrain.length);
         PhysicalGameState pgs = new PhysicalGameState(width, height, new_terrain);
         for (Player p : players) {
             pgs.players.add(p.clone());
@@ -407,14 +401,14 @@ public class PhysicalGameState {
      * @see java.lang.Object#toString()
      */
     public String toString() {
-        String tmp = "PhysicalGameState:\n";
+        StringBuilder tmp = new StringBuilder("PhysicalGameState:\n");
         for (Player p : players) {
-            tmp += "  " + p + "\n";
+            tmp.append("  ").append(p).append("\n");
         }
         for (Unit u : units) {
-            tmp += "  " + u + "\n";
+            tmp.append("  ").append(u).append("\n");
         }
-        return tmp;
+        return tmp.toString();
     }
 
     /**

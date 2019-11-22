@@ -281,7 +281,7 @@ public class FEStatePane extends JPanel {
                     {
                         if (statePanel.getGameState()!=null) {
                             int returnVal = fileChooser.showSaveDialog((Component)null);
-                            if (returnVal == fileChooser.APPROVE_OPTION) {
+                            if (returnVal == JFileChooser.APPROVE_OPTION) {
                                 File file = fileChooser.getSelectedFile();
                                 try {
                                     XMLWriter xml = new XMLWriter(new FileWriter(file.getAbsolutePath()));
@@ -564,7 +564,7 @@ public class FEStatePane extends JPanel {
                                     AI ai1 = createAI(aiComboBox[0].getSelectedIndex(), 0, currentUtt);
                                     AI ai2 = createAI(aiComboBox[1].getSelectedIndex(), 1, currentUtt);
                                     int PERIOD1 = Integer.parseInt(defaultDelayField.getText());
-                                    int PERIOD2 = Integer.parseInt(defaultDelayField.getText());;
+                                    int PERIOD2 = Integer.parseInt(defaultDelayField.getText());
                                     JFormattedTextField t1 = (JFormattedTextField)AIOptionsPanelComponents[0].get("TimeBudget");
                                     JFormattedTextField t2 = (JFormattedTextField)AIOptionsPanelComponents[1].get("TimeBudget");
                                     if (t1!=null) PERIOD1 = Integer.parseInt(t1.getText());

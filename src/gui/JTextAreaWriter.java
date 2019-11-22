@@ -22,7 +22,7 @@ public class JTextAreaWriter extends Writer {
     }
             
     public void write(char[] cbuf, int off, int len) throws IOException {
-        StringBuffer tmp = new StringBuffer();
+        StringBuilder tmp = new StringBuilder();
         for(int i = off;i<off+len;i++) {
             tmp.append(cbuf[i]);
         }

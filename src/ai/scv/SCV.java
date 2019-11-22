@@ -115,7 +115,7 @@ public class SCV extends AIWithComputationBudget {
     
     
     protected void loadLtd3Battles() {
-        ArrayList<infBattles> infTemp = new ArrayList<infBattles>();
+        ArrayList<infBattles> infTemp = new ArrayList<>();
         String linha;
         try {
         	BufferedReader learArq;
@@ -154,7 +154,7 @@ public class SCV extends AIWithComputationBudget {
                 infBattles bat = new infBattles();
                 String[] itens = linha.split(";");
                 
-                bat.ltd3 = Double.valueOf(itens[0]);
+                bat.ltd3 = Double.parseDouble(itens[0]);
                 bat.tMapa = Integer.decode(itens[1]);
                 bat.enemy = itens[2];
                 bat.strategy = itens[3];
@@ -184,7 +184,7 @@ public class SCV extends AIWithComputationBudget {
                 batTemp = indice.get(bat.strategy);
                 if(!batTemp.containsKey(bat.tMapa)){
                     //if it does not contain I'll add the map
-                    ArrayList<infBattles> infT = new ArrayList<infBattles>();
+                    ArrayList<infBattles> infT = new ArrayList<>();
                     infT.add(bat);
                     batTemp.put(bat.tMapa, infT);
                 }else{
@@ -193,8 +193,8 @@ public class SCV extends AIWithComputationBudget {
                 }
             }else{
                 //if it does not contain the
-                batTemp = new HashMap<Integer, List<infBattles>>();
-                ArrayList<infBattles> infT = new ArrayList<infBattles>();
+                batTemp = new HashMap<>();
+                ArrayList<infBattles> infT = new ArrayList<>();
                 infT.add(bat);
                 batTemp.put(bat.tMapa, infT);
                 indice.put(bat.strategy, batTemp);
@@ -210,14 +210,12 @@ public class SCV extends AIWithComputationBudget {
 
     public PlayerAction getBestActionSoFar() throws Exception {
         int slength = strategies.length;
-        AI ai[] = new AI[slength];
-        PlayerAction pa[] = new PlayerAction[slength];
+
+        PlayerAction[] pa = new PlayerAction[slength];
         ArrayList<TreeMap<Long, UnitAction>> s = new ArrayList<>();
 
         for (int i = 0; i < slength; i++) {
-            ai[i] = strategies[i].clone();            
             pa[i] = strategies[i].getAction(playerForThisComputation, gs_to_start_from);
-
         }
 
         PlayerAction pAux = pa[0];
@@ -232,7 +230,7 @@ public class SCV extends AIWithComputationBudget {
 
         PlayerAction resultado = new PlayerAction();
         ArrayList<UnitAction> vote = new ArrayList<>();
-        TreeMap<UnitAction, Integer> contagem = new TreeMap<>(new Comparator<UnitAction>() {
+        TreeMap<UnitAction, Integer> contagem = new TreeMap<>(new Comparator<>() {
             @Override
             public int compare(UnitAction u1, UnitAction u2) {
                 if (u1.equals(u2)) {
@@ -524,7 +522,7 @@ public class SCV extends AIWithComputationBudget {
                         worker = i.ltd3;
                         break;
                     default:
-                        System.err.println("Erro na seleção");;
+                        System.err.println("Erro na seleção");
                 }
             }
             double pondTemp = (distrib[0]* light + distrib[1]*worker +distrib[2]* ranged + distrib[3]* economy + distrib[4]* heavy )/(distrib[0]+distrib[1]+distrib[2]+distrib[3]+distrib[4]);

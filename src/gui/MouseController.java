@@ -92,11 +92,11 @@ public class MouseController extends AbstractionLayerAI {
     public PlayerAction translateActions(int player, GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         PlayerAction pa = new PlayerAction();
-        List<Integer> usedCells = new LinkedList<Integer>();
+        List<Integer> usedCells = new LinkedList<>();
 
         // Execute abstract actions:
         ResourceUsage r = gs.getResourceUsage();
-        List<Unit> toDelete = new LinkedList<Unit>();
+        List<Unit> toDelete = new LinkedList<>();
         for(AbstractAction aa:actions.values()) {
 //            Unit u = null;
 //            for(Unit u2:pgs.getUnits()) {

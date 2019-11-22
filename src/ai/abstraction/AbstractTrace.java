@@ -19,8 +19,8 @@ import util.XMLWriter;
  * @author santi
  */
 public class AbstractTrace {
-    UnitTypeTable utt = null;
-    List<AbstractTraceEntry> entries = new LinkedList<AbstractTraceEntry>();
+    UnitTypeTable utt;
+    List<AbstractTraceEntry> entries = new LinkedList<>();
     
     protected HashMap<Unit,AbstractAction> currentActions = new LinkedHashMap<>();
     

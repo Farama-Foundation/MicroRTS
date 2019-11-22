@@ -118,7 +118,7 @@ public class SocketAI extends AIWithComputationBudget {
     public void reset() {
         try {
             // set the game parameters:
-            out_pipe.append("budget " + TIME_BUDGET + " " + ITERATIONS_BUDGET + "\n");
+            out_pipe.append("budget ").append(String.valueOf(TIME_BUDGET)).append(" ").append(String.valueOf(ITERATIONS_BUDGET)).append("\n");
             out_pipe.flush();
 
             if (DEBUG>=1) System.out.println("SocketAI: budgetd sent, waiting for ack");
@@ -162,7 +162,7 @@ public class SocketAI extends AIWithComputationBudget {
     @Override
     public PlayerAction getAction(int player, GameState gs) throws Exception {
         // send the game state:
-        out_pipe.append("getAction " + player + "\n");
+        out_pipe.append("getAction ").append(String.valueOf(player)).append("\n");
         if (communication_language == LANGUAGE_XML) {
             XMLWriter w = new XMLWriter(out_pipe, " ");
             gs.toxml(w);
@@ -206,7 +206,7 @@ public class SocketAI extends AIWithComputationBudget {
     public void preGameAnalysis(GameState gs, long milliseconds) throws Exception 
     {
         // send the game state:
-        out_pipe.append("preGameAnalysis " + milliseconds + "\n");
+        out_pipe.append("preGameAnalysis ").append(String.valueOf(milliseconds)).append("\n");
         switch (communication_language) {
             case LANGUAGE_XML:
                 XMLWriter w = new XMLWriter(out_pipe, " ");
@@ -236,7 +236,7 @@ public class SocketAI extends AIWithComputationBudget {
     public void preGameAnalysis(GameState gs, long milliseconds, String readWriteFolder) throws Exception 
     {
         // send the game state:
-        out_pipe.append("preGameAnalysis " + milliseconds + "  \""+readWriteFolder+"\"\n");
+        out_pipe.append("preGameAnalysis ").append(String.valueOf(milliseconds)).append("  \"").append(readWriteFolder).append("\"\n");
         switch (communication_language) {
             case LANGUAGE_XML:
                 XMLWriter w = new XMLWriter(out_pipe, " ");
@@ -266,7 +266,7 @@ public class SocketAI extends AIWithComputationBudget {
     public void gameOver(int winner) throws Exception
     {
         // send the game state:
-        out_pipe.append("gameOver " + winner + "\n");
+        out_pipe.append("gameOver ").append(String.valueOf(winner)).append("\n");
         out_pipe.flush();
                 
         // wait for ack:

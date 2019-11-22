@@ -84,8 +84,8 @@ public class BranchingFactorCalculatorBigInteger {
 //            System.out.println("FF");
             // propagate this ID with floodfill:
             int ID_to_remove = map[x][y];
-            List<Integer> open_x = new LinkedList<Integer>();
-            List<Integer> open_y = new LinkedList<Integer>();
+            List<Integer> open_x = new LinkedList<>();
+            List<Integer> open_y = new LinkedList<>();
             open_x.add(x);
             open_y.add(y);
             while(!open_x.isEmpty()) {
@@ -139,7 +139,7 @@ public class BranchingFactorCalculatorBigInteger {
             }
         }
         
-        LinkedList<Integer> areas = new LinkedList<Integer>();
+        LinkedList<Integer> areas = new LinkedList<>();
         for(int i = 0;i<pgs2.getHeight();i++) {
             for(int j = 0;j<pgs2.getWidth();j++) {
                 if (separation[j][i]!=0 && !areas.contains(separation[j][i])) areas.add(separation[j][i]);
@@ -150,11 +150,14 @@ public class BranchingFactorCalculatorBigInteger {
         
         // Separate map:
 //        System.out.println(areas);
-        List<BigInteger []> branchingOfSeparatedAreas = new LinkedList<BigInteger []>();
+        List<BigInteger []> branchingOfSeparatedAreas = new LinkedList<>();
         for(int area:areas) {
             PlayerAction pa = new PlayerAction();
-            List<Unit> unitsInArea = new LinkedList<Unit>();
-            List<Unit> unitsNotInArea = new LinkedList<Unit>();
+
+            // TODO the these two lists are filled but they are never used for anything
+            // this also happens in the other BranchingFactorCalculator classes
+            List<Unit> unitsInArea = new LinkedList<>();
+            List<Unit> unitsNotInArea = new LinkedList<>();
             for(Unit u:gs2.getUnits()) {
                 if (u.getPlayer()==player && gs2.getUnitAction(u)==null) {               
                     if (separation[u.getX()][u.getY()]==area) {
@@ -214,16 +217,16 @@ public class BranchingFactorCalculatorBigInteger {
         PhysicalGameState pgs2 = gs2.getPhysicalGameState();
         int playerResources = gs2.getPlayer(player).getResources();
         
-        List<Unit> unitsThatCannotBeSeparated = new LinkedList<Unit>();
-        List<Unit> unitsToSeparate = new LinkedList<Unit>();
-        List<BigInteger []> branchingOfSeparatedUnits = new LinkedList<BigInteger []>();
+        List<Unit> unitsThatCannotBeSeparated = new LinkedList<>();
+        List<Unit> unitsToSeparate = new LinkedList<>();
+        List<BigInteger []> branchingOfSeparatedUnits = new LinkedList<>();
         PlayerAction pa = new PlayerAction();
         
         // Try to identify units that have actions that do not interfere with any other actions:
         for(Unit u:gs2.getUnits()) {
             // only consider those units that do not have actions assigned:
             if (u.getPlayer()==player && gs2.getUnitAction(u)==null) {
-                HashSet<Integer> positionsUsed = new HashSet<Integer>();
+                HashSet<Integer> positionsUsed = new HashSet<>();
                 int resourcesUsed = 0;
                 
                 // Compute the set of positions required by all the other units (plus resources):

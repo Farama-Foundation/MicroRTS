@@ -12,7 +12,7 @@ import java.util.List;
 import rts.GameState;
 import rts.PlayerAction;
 
-enum SingleChoice{SINGLE};
+enum SingleChoice{SINGLE}
 
 public class SingleChoiceConfigurableScript extends ConfigurableScript<SingleChoice> {
 	AI scripts[];
@@ -21,8 +21,8 @@ public class SingleChoiceConfigurableScript extends ConfigurableScript<SingleCho
 		super(a_pf);
 		this.scripts=scripts;
 		
-		choicePoints = new EnumMap<SingleChoice,Options>(SingleChoice.class);
-        choices = new EnumMap<SingleChoice,Integer>(SingleChoice.class);
+		choicePoints = new EnumMap<>(SingleChoice.class);
+        choices = new EnumMap<>(SingleChoice.class);
         choicePointValues = SingleChoice.values();
         reset();
 	}
@@ -74,9 +74,9 @@ public class SingleChoiceConfigurableScript extends ConfigurableScript<SingleCho
 	}
 
 	public String toString(){
-		String str = "SingleChoicePoint(";
+		StringBuilder str = new StringBuilder("SingleChoicePoint(");
 		for(AI ai:scripts){
-			str+=ai.toString()+",";
+			str.append(ai.toString()).append(",");
 		}
 		return str+")";
 	}

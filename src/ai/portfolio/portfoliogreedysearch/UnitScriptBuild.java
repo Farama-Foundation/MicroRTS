@@ -8,14 +8,11 @@ package ai.portfolio.portfoliogreedysearch;
 import ai.abstraction.AbstractAction;
 import ai.abstraction.Build;
 import ai.abstraction.pathfinding.PathFinding;
-import java.util.List;
 import rts.GameState;
 import rts.PhysicalGameState;
-import rts.Player;
 import rts.UnitAction;
 import rts.units.Unit;
 import rts.units.UnitType;
-import rts.units.UnitTypeTable;
 
 /**
  *

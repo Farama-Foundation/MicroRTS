@@ -338,11 +338,9 @@ public class AStarPathFinding extends PathFinding {
 
             if (((x-targetx)*(x-targetx)+(y-targety)*(y-targety))<=sq_range) {
                 // path found, backtrack:
-                int last = pos;
                 //System.out.println("- Path from " + start.getX() + "," + start.getY() + " to " + targetpos%w + "," + targetpos/w + " (range " + range + ") in " + iterations + " iterations");
                 int temp = 0;
                 while(parent!=pos) {
-                    last = pos;
                     pos = parent;
                     parent = closed[pos];
                     accumlength++;

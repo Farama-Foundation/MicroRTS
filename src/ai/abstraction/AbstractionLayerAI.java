@@ -34,7 +34,7 @@ public abstract class AbstractionLayerAI extends AIWithComputationBudget {
     //      - harvest(target)
     //      - attack(target)
     protected HashMap<Unit, AbstractAction> actions = new LinkedHashMap<>();
-    protected PathFinding pf = null;
+    protected PathFinding pf;
     // In case the GameState is cloned, and the Unit pointers in the "actions" map change, this variable
     // saves a pointer to the previous GameState, if it's different than the current one, then we need to find a mapping
     // between the old units and the new ones
