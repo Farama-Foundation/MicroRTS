@@ -372,26 +372,14 @@ public class AdversarialChoicePoint {
                 }
                 break;
         }
-        
-        // alpha-beta prunning:
-        if (minimaxType==0) {
-            // max node:
+
+        // alpha-beta pruning
+        if (minimaxType==0)
             alpha = Math.max(alpha, f);
-//            System.out.println(alpha + " <= " + beta);
-            if (beta<=alpha) {
-                // beta cutoff:
-                return true;
-            }
-        } else if (minimaxType==1) {
-            // min node:
+        else if (minimaxType==1)
             beta = Math.min(beta, f);
-//            System.out.println(alpha + " <= " + beta);
-            if (beta<=alpha) {
-                // alpha cutoff:
-                return true;
-            }
-        }       
-        return false;
+
+        return beta <= alpha;
     }
     
     

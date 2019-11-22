@@ -5,9 +5,10 @@ import com.eclipsesource.json.JsonObject;
 import java.io.Writer;
 import java.util.Objects;
 import java.util.Random;
-
 import org.jdom.Element;
-import rts.units.*;
+import rts.units.Unit;
+import rts.units.UnitType;
+import rts.units.UnitTypeTable;
 import util.XMLWriter;
 
 /**
@@ -192,22 +193,14 @@ public class UnitAction {
 
         if (a.type != type) {
             return false;
-        }
-        if (type == TYPE_NONE || type == TYPE_MOVE || type == TYPE_HARVEST || type == TYPE_RETURN) {
-            if (a.parameter != parameter) {
-                return false;
-            }
+        } else if (type == TYPE_NONE || type == TYPE_MOVE || type == TYPE_HARVEST
+            || type == TYPE_RETURN) {
+            return a.parameter == parameter;
         } else if (type == TYPE_ATTACK_LOCATION) {
-            if (a.x != x || a.y != y) {
-                return false;
-            }
+            return a.x == x && a.y == y;
         } else {
-            if (a.parameter != parameter || a.unitType != unitType) {
-                return false;
-            }
+            return a.parameter == parameter && a.unitType == unitType;
         }
-
-        return true;
     }
 
     @Override

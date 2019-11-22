@@ -346,10 +346,7 @@ public class PhysicalGameState {
             }
         }
 
-        if (winner != -1) {
-            return true;
-        }
-        return false;
+        return winner != -1;
     }
 
     /* (non-Javadoc)
