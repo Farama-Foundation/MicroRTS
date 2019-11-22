@@ -8,17 +8,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Arrays;
-
-import rts.units.Unit;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import util.XMLWriter;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import rts.units.Unit;
 import rts.units.UnitTypeTable;
+import util.XMLWriter;
 
 /**
  * The physical game state (the actual 'map') of a microRTS game
@@ -578,21 +577,24 @@ public class PhysicalGameState {
      * @param w
      */
     public void toxml(XMLWriter w) {
-        toxml(w, false);
+        toxml(w, true, false);
     }
 
-    public void toxml(XMLWriter w, boolean compressTerrain) {
-        w.tagWithAttributes(this.getClass().getName(),
-            "width=\"" + width + "\" height=\"" + height + "\"");
-
-        if (compressTerrain) {
-            w.tag("terrain", compressTerrain());
+    public void toxml(XMLWriter w, boolean includeConstants, boolean compressTerrain) {
+        if (!includeConstants) {
+            w.tag(this.getClass().getName());
         } else {
-            StringBuilder tmp = new StringBuilder(height * width);
-            for (int i = 0; i < height * width; i++) {
-                tmp.append(terrain[i]);
+            w.tagWithAttributes(this.getClass().getName(),
+                "width=\"" + width + "\" height=\"" + height + "\"");
+            if (compressTerrain) {
+                w.tag("terrain", compressTerrain());
+            } else {
+                StringBuilder tmp = new StringBuilder(height * width);
+                for (int i = 0; i < height * width; i++) {
+                    tmp.append(terrain[i]);
+                }
+                w.tag("terrain", tmp.toString());
             }
-            w.tag("terrain", tmp.toString());
         }
 
         w.tag("players");
@@ -615,23 +617,25 @@ public class PhysicalGameState {
      * @throws Exception
      */
     public void toJSON(Writer w) throws Exception {
-        toJSON(w, false);
+        toJSON(w, true, false);
     }
 
-    public void toJSON(Writer w, boolean compressTerrain) throws Exception {
+    public void toJSON(Writer w, boolean includeConstants, boolean compressTerrain) throws Exception {
         w.write("{");
-        w.write("\"width\":" + width + ",\"height\":" + height + ",");
 
-        if (compressTerrain) {
-            w.write("\"terrain\":\"" + compressTerrain());
-        } else {
-            w.write("\"terrain\":\"");
-            for (int i = 0; i < height * width; i++) {
-                w.write("" + terrain[i]);
+        if (includeConstants) {
+            w.write("\"width\":" + width + ",\"height\":" + height+",");
+            if (compressTerrain) {
+                w.write("\"terrain\":\"" + compressTerrain());
+            } else {
+                w.write("\"terrain\":\"");
+                for (int i = 0; i < height * width; i++) {
+                    w.write("" + terrain[i]);
+                }
             }
+            w.write("\",");
         }
 
-        w.write("\",");
         w.write("\"players\":[");
         for (int i = 0; i < players.size(); i++) {
             players.get(i).toJSON(w);
