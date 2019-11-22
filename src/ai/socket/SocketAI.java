@@ -216,43 +216,22 @@ public class SocketAI extends AIWithComputationBudget {
             throw new Exception("Communication language " + communication_language + " not supported!");
         }        
     }
-    
 
     @Override
-    public void preGameAnalysis(GameState gs, long milliseconds) throws Exception 
-    {
-        // send the game state:
-        out_pipe.append("preGameAnalysis ").append(String.valueOf(milliseconds)).append("\n");
-        switch (communication_language) {
-            case LANGUAGE_XML:
-                XMLWriter w = new XMLWriter(out_pipe, " ");
-                gs.toxml(w);
-                w.flush();
-                out_pipe.append("\n");
-                out_pipe.flush();
-                // wait for ack:
-                in_pipe.readLine();
-                break;
-                
-            case LANGUAGE_JSON:
-                gs.toJSON(out_pipe);
-                out_pipe.append("\n");
-                out_pipe.flush();
-                // wait for ack:
-                in_pipe.readLine();
-                break;
-                
-            default:
-                throw new Exception("Communication language " + communication_language + " not supported!");        
-        }
+    public void preGameAnalysis(GameState gs, long milliseconds) throws Exception {
+        preGameAnalysis(gs, milliseconds, null);
     }
 
-    
     @Override
-    public void preGameAnalysis(GameState gs, long milliseconds, String readWriteFolder) throws Exception 
-    {
-        // send the game state:
-        out_pipe.append("preGameAnalysis ").append(String.valueOf(milliseconds)).append("  \"").append(readWriteFolder).append("\"\n");
+    public void preGameAnalysis(GameState gs, long milliseconds, String readWriteFolder)
+        throws Exception {
+        out_pipe.append("preGameAnalysis ").append(String.valueOf(milliseconds));
+        if (readWriteFolder != null) {
+            out_pipe.append("  \"").append(readWriteFolder).append("\"");
+        }
+
+        out_pipe.append("\n");
+
         switch (communication_language) {
             case LANGUAGE_XML:
                 XMLWriter w = new XMLWriter(out_pipe, " ");
