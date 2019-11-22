@@ -31,8 +31,10 @@ public class SocketAI extends AIWithComputationBudget {
     
     public static final int LANGUAGE_XML = 1;
     public static final int LANGUAGE_JSON = 2;
+
+    private boolean includeConstants = true, compressTerrain = false;
     
-    UnitTypeTable utt = null;
+    UnitTypeTable utt;
             
     int communication_language = LANGUAGE_XML;
     String serverAddress = "127.0.0.1";
@@ -60,15 +62,18 @@ public class SocketAI extends AIWithComputationBudget {
         utt = a_utt;
         try {
             connectToServer();
-        }catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private SocketAI(int mt, int mi, UnitTypeTable a_utt, int a_language, Socket socket) {
+    private SocketAI(int mt, int mi, UnitTypeTable a_utt, int a_language,
+        boolean includeConstantsInState, boolean compressTerrain, Socket socket) {
         super(mt, mi);
         communication_language = a_language;
         utt = a_utt;
+        this.includeConstants = includeConstantsInState;
+        this.compressTerrain = compressTerrain;
         try {
             this.socket = socket;
             in_pipe = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -78,23 +83,31 @@ public class SocketAI extends AIWithComputationBudget {
             while(!in_pipe.ready());
             while(in_pipe.ready()) in_pipe.readLine();
 
-            if (DEBUG>=1) System.out.println("SocketAI: welcome message received");
+            if (DEBUG >= 1) {
+                System.out.println("SocketAI: welcome message received");
+            }
             reset();
-        }catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     /**
      * Creates a SocketAI from an existing socket.
-     * @param mt The time budget in milliseconds.
-     * @param mi The iterations budget in milliseconds
-     * @param a_utt The unit type table.
-     * @param a_language The communication layer to use.
-     * @param socket The socket the ai will communicate over.
+     *
+     * @param mt                      The time budget in milliseconds.
+     * @param mi                      The iterations budget in milliseconds
+     * @param a_utt                   The unit type table.
+     * @param a_language              The communication layer to use.
+     * @param includeConstantsInState
+     * @param compressTerrain
+     * @param socket                  The socket the ai will communicate over.
      */
-    public static SocketAI createFromExistingSocket(int mt, int mi, UnitTypeTable a_utt, int a_language, Socket socket) {
-        return new SocketAI(mt, mi, a_utt, a_language, socket);
+    public static SocketAI createFromExistingSocket(int mt, int mi, rts.units.UnitTypeTable a_utt,
+        int a_language, boolean includeConstantsInState, boolean compressTerrain,
+        java.net.Socket socket) {
+        return new SocketAI(mt, mi, a_utt, a_language, includeConstantsInState, compressTerrain,
+            socket);
     }
     
     

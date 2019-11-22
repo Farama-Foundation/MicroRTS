@@ -42,7 +42,8 @@ class RemoteGame extends Thread {
             // Generate players
             // player 1 is created from SocketAI
             AI player_one = SocketAI.createFromExistingSocket(100, 0, unitTypeTable,
-                gameSettings.getSerializationType(), socket);
+                gameSettings.getSerializationType(), gameSettings.isIncludeConstantsInState(),
+                gameSettings.isCompressTerrain(), socket);
             // player 2 is created using the info from gameSettings
             java.lang.reflect.Constructor cons2 = Class.forName(gameSettings.getAI2())
                 .getConstructor(UnitTypeTable.class);
