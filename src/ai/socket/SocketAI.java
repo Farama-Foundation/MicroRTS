@@ -178,7 +178,7 @@ public class SocketAI extends AIWithComputationBudget {
         out_pipe.append("getAction ").append(String.valueOf(player)).append("\n");
         if (communication_language == LANGUAGE_XML) {
             XMLWriter w = new XMLWriter(out_pipe, " ");
-            gs.toxml(w);
+            gs.toxml(w, includeConstants, compressTerrain);
             w.getWriter().append("\n");
             w.flush();
 
@@ -190,13 +190,16 @@ public class SocketAI extends AIWithComputationBudget {
                 
             // parse the action:
             String actionString = in_pipe.readLine();
-            if (DEBUG>=1) System.out.println("action received from server: " + actionString);
-            Element action_e = new SAXBuilder().build(new StringReader(actionString)).getRootElement();
+            if (DEBUG >= 1) {
+                System.out.println("action received from server: " + actionString);
+            }
+            Element action_e = new SAXBuilder().build(new StringReader(actionString))
+                .getRootElement();
             PlayerAction pa = PlayerAction.fromXML(action_e, gs, utt);
             pa.fillWithNones(gs, player, 10);
             return pa;
         } else if (communication_language == LANGUAGE_JSON) {
-            gs.toJSON(out_pipe);
+            gs.toJSON(out_pipe, includeConstants, compressTerrain);
             out_pipe.append("\n");
             out_pipe.flush();
             
