@@ -134,7 +134,7 @@ public class SocketAI extends AIWithComputationBudget {
             out_pipe.append("budget ").append(String.valueOf(TIME_BUDGET)).append(" ").append(String.valueOf(ITERATIONS_BUDGET)).append("\n");
             out_pipe.flush();
 
-            if (DEBUG>=1) System.out.println("SocketAI: budgetd sent, waiting for ack");
+            if (DEBUG>=1) System.out.println("SocketAI: budget sent, waiting for ack");
             
             // wait for ack:
             in_pipe.readLine();
