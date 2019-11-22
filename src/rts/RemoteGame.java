@@ -3,9 +3,9 @@ package rts;
 import ai.core.AI;
 import ai.socket.SocketAI;
 import gui.PhysicalGameStatePanel;
-import rts.units.UnitTypeTable;
-import javax.swing.*;
 import java.net.Socket;
+import javax.swing.JFrame;
+import rts.units.UnitTypeTable;
 
 class RemoteGame extends Thread {
 
@@ -52,6 +52,10 @@ class RemoteGame extends Thread {
             // Reset all players
             player_one.reset();
             player_two.reset();
+
+            // allow for pre-game analysis
+            player_one.preGameAnalysis(gameState,0);
+            player_two.preGameAnalysis(gameState,0);
 
             // Setup UI
             JFrame w = PhysicalGameStatePanel.newVisualizer(gameState,640, 640, false, PhysicalGameStatePanel.COLORSCHEME_BLACK);
