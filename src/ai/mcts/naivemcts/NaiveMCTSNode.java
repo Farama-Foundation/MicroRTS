@@ -27,10 +27,10 @@ public class NaiveMCTSNode extends MCTSNode {
     
     boolean forceExplorationOfNonSampledActions = true;
     boolean hasMoreActions = true;
-    public PlayerActionGenerator moveGenerator = null;
+    public PlayerActionGenerator moveGenerator;
     HashMap<BigInteger,NaiveMCTSNode> childrenMap = new LinkedHashMap<>();    // associates action codes with children
     // Decomposition of the player actions in unit actions, and their contributions:
-    public List<UnitActionTableEntry> unitActionTable = null;
+    public List<UnitActionTableEntry> unitActionTable;
     double evaluation_bound;    // this is the maximum positive value that the evaluation function can return
     public BigInteger multipliers[];
 

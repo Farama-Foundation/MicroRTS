@@ -40,19 +40,19 @@ public class IDRTMinimax extends AIWithComputationBudget implements Interruptibl
 
     protected int defaultNONEduration = 8;
     
-    EvaluationFunction ef = null;    
+    EvaluationFunction ef;
         
     int max_depth_so_far = 0;
     long max_potential_branching_so_far = 0;
     
     int max_consecutive_frames_searching_so_far = 0;
     
-    GameState gs_to_start_from = null;
+    GameState gs_to_start_from;
     int consecutive_frames_searching = 0;
     int last_lookAhead = 1;
-    List<RTMiniMaxNode> stack = null;
-    Pair<PlayerAction,Float> lastResult = null;
-    PlayerAction bestMove = null;
+    List<RTMiniMaxNode> stack;
+    Pair<PlayerAction,Float> lastResult;
+    PlayerAction bestMove;
     
     Random r = new Random();
     int playerForThisComputation;

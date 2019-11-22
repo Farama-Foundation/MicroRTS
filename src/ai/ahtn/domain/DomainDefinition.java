@@ -19,7 +19,7 @@ import java.util.List;
 public class DomainDefinition {
     public static int DEBUG = 0;
     
-    String name = null;
+    String name;
     List<HTNOperator> operators = new LinkedList<>();
     List<HTNMethod> methods = new LinkedList<>();
     

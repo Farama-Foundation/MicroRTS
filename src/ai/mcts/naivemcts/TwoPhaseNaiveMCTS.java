@@ -24,14 +24,14 @@ import ai.core.InterruptibleAI;
  */
 public class TwoPhaseNaiveMCTS extends AIWithComputationBudget implements InterruptibleAI {
     public static int DEBUG = 0;
-    public EvaluationFunction ef = null;
+    public EvaluationFunction ef;
        
     Random r = new Random();
     public AI randomAI = new RandomBiasedAI();
     long max_actions_so_far = 0;
     
-    GameState gs_to_start_from = null;
-    NaiveMCTSNode tree = null;
+    GameState gs_to_start_from;
+    NaiveMCTSNode tree;
     int node_creation_ID = 0;
     int n_phase1_iterations_left = -1;      // this is set in the first cycle of execution for each action
     int n_phase1_milliseconds_left = -1;      // this is set in the first cycle of execution for each action

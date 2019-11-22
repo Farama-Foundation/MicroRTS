@@ -32,13 +32,13 @@ import util.XMLWriter;
  */
 public class FETracePane extends JPanel {
     
-    Trace currentTrace = null;
+    Trace currentTrace;
     int currentGameCycle = 0;
     
-    PhysicalGameStatePanel statePanel = null;
+    PhysicalGameStatePanel statePanel;
     
     JFileChooser fileChooser = new JFileChooser();
-    FEStatePane stateTab = null;
+    FEStatePane stateTab;
     
     public FETracePane(FEStatePane a_stateTab) {
         stateTab = a_stateTab;

@@ -42,7 +42,7 @@ public class AdversarialBoundedDepthPlannerAlphaBeta {
     GameState gs;
     DomainDefinition dd;
     EvaluationFunction f;
-    AI playoutAI = null;
+    AI playoutAI;
     int PLAYOUT_LOOKAHEAD = 100;
     int maxDepth = 3;
     int operatorExecutionTimeout = 1000;

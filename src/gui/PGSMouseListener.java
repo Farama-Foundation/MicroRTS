@@ -23,13 +23,13 @@ import util.Pair;
  * @author santi
  */
 public class PGSMouseListener implements MouseListener, MouseMotionListener, KeyListener {
-    MouseController AI = null;
-    PhysicalGameStateMouseJFrame frame = null;
-    GameState gs = null;
+    MouseController AI;
+    PhysicalGameStateMouseJFrame frame;
+    GameState gs;
     int playerID = -1;
     
     List<Unit> selectedUnits = new ArrayList<>();
-    String selectedButton = null;
+    String selectedButton;
 
     HashMap<Character,String> unitTypeQuickKeys = new HashMap<>();
     

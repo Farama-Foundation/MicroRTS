@@ -45,12 +45,12 @@ public class PGSAI extends AIWithComputationBudget {
     int LOOKAHEAD = 500;
     int I = 1;  // number of iterations for improving a given player
     int R = 1;  // number of times to improve with respect to the response fo the other player
-    EvaluationFunction evaluation = null;
-    HashMap<UnitType, List<UnitScript>> scripts = null;
+    EvaluationFunction evaluation;
+    HashMap<UnitType, List<UnitScript>> scripts;
     UnitTypeTable utt;
     PathFinding pf;
 
-    UnitScript defaultScript = null;
+    UnitScript defaultScript;
 
     long start_time = 0;
     int nplayouts = 0;

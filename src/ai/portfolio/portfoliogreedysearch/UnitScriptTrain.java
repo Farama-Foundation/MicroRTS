@@ -18,8 +18,8 @@ import rts.units.UnitType;
  */
 public class UnitScriptTrain extends UnitScript {
     
-    AbstractAction action = null;
-    UnitType ut = null;
+    AbstractAction action;
+    UnitType ut;
     
     public UnitScriptTrain(UnitType a_ut) {
         ut = a_ut;

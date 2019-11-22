@@ -18,8 +18,8 @@ import rts.units.Unit;
  */
 public class UnitScriptAttack extends UnitScript {
     
-    AbstractAction action = null;
-    PathFinding pf = null;
+    AbstractAction action;
+    PathFinding pf;
     
     public UnitScriptAttack(PathFinding a_pf) {
         pf = a_pf;

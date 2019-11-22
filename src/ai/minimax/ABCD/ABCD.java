@@ -40,9 +40,9 @@ public class ABCD extends AI {
     long max_nodes_so_far = 0;
     
     int MAXDEPTH = 4;
-    AI playoutAI = null;
+    AI playoutAI;
     int maxPlayoutTime = 100;
-    EvaluationFunction ef = null;
+    EvaluationFunction ef;
     protected int defaultNONEduration = 8;
     
     

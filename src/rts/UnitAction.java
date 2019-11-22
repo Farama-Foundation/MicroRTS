@@ -117,12 +117,12 @@ public class UnitAction {
     /**
      * UnitType associated with a 'produce' action
      */
-    UnitType unitType = null;
+    UnitType unitType;
 
     /**
      * Amount of resources associated with this action
      */
-    ResourceUsage r_cache = null;
+    ResourceUsage r_cache;
 
     /**
      * Creates an action with specified type

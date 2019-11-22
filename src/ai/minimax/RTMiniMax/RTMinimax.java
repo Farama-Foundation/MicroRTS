@@ -33,7 +33,7 @@ public class RTMinimax extends AI {
 
     protected int defaultNONEduration = 8;
     
-    EvaluationFunction ef = null;
+    EvaluationFunction ef;
     
     
     public RTMinimax(UnitTypeTable utt) {

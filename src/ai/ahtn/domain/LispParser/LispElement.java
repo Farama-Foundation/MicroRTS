@@ -14,8 +14,8 @@ import java.util.List;
  * @author santi
  */
 public class LispElement {
-    public String element = null;
-    public List<LispElement> children = null;
+    public String element;
+    public List<LispElement> children;
     
     // create a new atom:
     public LispElement(String e) {

@@ -25,7 +25,7 @@ public class UnitType {
     /**
      * The name of this type
      */
-    public String name = null;    		
+    public String name;
 
     /**
      * Cost to produce a unit of this type

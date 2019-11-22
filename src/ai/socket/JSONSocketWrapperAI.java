@@ -46,12 +46,12 @@ public class JSONSocketWrapperAI {
 
 
     private static class SocketWrapperAI extends Thread {
-        Socket socket = null;
+        Socket socket;
         int clientNumber = 0;
         int time_budget = 100;
         int iterations_budget = 0;
-        UnitTypeTable utt = null;
-        AIWithComputationBudget ai = null;
+        UnitTypeTable utt;
+        AIWithComputationBudget ai;
         
 
         public SocketWrapperAI(Socket socket, int clientNumber, AIWithComputationBudget a_ai) {

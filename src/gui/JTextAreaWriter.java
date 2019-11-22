@@ -15,7 +15,7 @@ import javax.swing.JTextArea;
  */
 public class JTextAreaWriter extends Writer {
 
-    JTextArea m_ta = null;
+    JTextArea m_ta;
     
     public JTextAreaWriter(JTextArea ta) {
         m_ta = ta;

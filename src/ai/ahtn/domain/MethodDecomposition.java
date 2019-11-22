@@ -39,11 +39,11 @@ public class MethodDecomposition {
     public static final int EXECUTION_CHOICE_POINT = 4;
     
     protected int type = METHOD_CONDITION;
-    protected Clause clause = null;
-    protected Term term = null;
-    protected MethodDecomposition[] subelements = null;
+    protected Clause clause;
+    protected Term term;
+    protected MethodDecomposition[] subelements;
     
-    HTNMethod method = null;
+    HTNMethod method;
     
     /*
     executionState:
@@ -55,8 +55,8 @@ public class MethodDecomposition {
     */
     int executionState = 0;
     int operatorExecutingState = 0;
-    List<MethodDecomposition> operatorsBeingExecuted = null;
-    Term updatedTerm = null;
+    List<MethodDecomposition> operatorsBeingExecuted;
+    Term updatedTerm;
     int updatedTermCycle = -1;  // at which game cycle did we update the term last time
     
     

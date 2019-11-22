@@ -63,15 +63,15 @@ public class SCV extends AIWithComputationBudget {
         double ltd3;
     }
     
-    AI strategies[] = null;
+    AI strategies[];
     int playerForThisComputation;
-    GameState gs_to_start_from = null;
-    SimpleLogistic rf = null;
-    UnitTypeTable localUtt = null;
-    Instances dataSet = null;
-    long tempoInicial = 0;
+    GameState gs_to_start_from;
+    SimpleLogistic rf;
+    UnitTypeTable localUtt;
+    Instances dataSet;
+    long tempoInicial;
     
-    HashMap<String, HashMap<Integer, List<infBattles> > > indice = null;
+    HashMap<String, HashMap<Integer, List<infBattles> > > indice;
     int heightMap;
     
     // This is the default constructor that microRTS will call

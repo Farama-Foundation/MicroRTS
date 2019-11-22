@@ -20,9 +20,9 @@ import rts.units.UnitType;
  */
 public class UnitScriptBuild extends UnitScript {
     
-    AbstractAction action = null;
-    PathFinding pf = null;
-    UnitType ut = null;
+    AbstractAction action;
+    PathFinding pf;
+    UnitType ut;
     
     public UnitScriptBuild(PathFinding a_pf, UnitType a_ut) {
         pf = a_pf;

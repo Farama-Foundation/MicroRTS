@@ -67,7 +67,7 @@ public class LSI extends AIWithComputationBudget {
 
     private LinkedHashMap<PlayerAction, Pair<Double, Integer>> elitePlayerActions = new LinkedHashMap<>();
     private Set<Unit> nextEpochUnits = new HashSet<>();
-    private Set<Unit> epochUnits = null;
+    private Set<Unit> epochUnits;
 
     private int actionCount;
 

@@ -21,14 +21,14 @@ public class UCTNode {
 //    public static float C = 1;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
     
     public int type;    // 0 : max, 1 : min, -1: Game-over
-    UCTNode parent = null;
+    UCTNode parent;
     public GameState gs;
     int depth = 0;  // the depth in the tree
     
     boolean hasMoreActions = true;
-    PlayerActionGenerator moveGenerator = null;
-    public List<PlayerAction> actions = null;
-    public List<UCTNode> children = null;
+    PlayerActionGenerator moveGenerator;
+    public List<PlayerAction> actions;
+    public List<UCTNode> children;
     float evaluation_bound = 0;
     float accum_evaluation = 0;
     int visit_count = 0;

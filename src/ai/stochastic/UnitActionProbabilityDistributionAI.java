@@ -24,9 +24,9 @@ public class UnitActionProbabilityDistributionAI extends AI {
     public static int DEBUG = 0;
     
     Random r = new Random();
-    UnitActionProbabilityDistribution model = null;
+    UnitActionProbabilityDistribution model;
     String modelName = "";  // name of the model for the toString method, so it can be identified
-    UnitTypeTable utt = null;
+    UnitTypeTable utt;
     
     
     public UnitActionProbabilityDistributionAI(UnitTypeTable utt) throws Exception {

@@ -19,11 +19,11 @@ public class BFSPathFinding extends PathFinding {
     public static int iterations = 0;   // this is a debugging variable    
     public static int accumlength = 0;   // this is a debugging variable    
     
-    Boolean free[][] = null;
-    int closed[] = null;
-    int open[] = null;
-    int inOpenOrClosed[] = null;
-    int parents[] = null;
+    Boolean free[][];
+    int closed[];
+    int open[];
+    int inOpenOrClosed[];
+    int parents[];
     int openinsert = 0;
     int openremove = 0;
     

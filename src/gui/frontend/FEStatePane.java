@@ -112,9 +112,9 @@ import ai.scv.SCV;
  * @author santi
  */
 public class FEStatePane extends JPanel {
-    PhysicalGameStatePanel statePanel = null;
-    JTextArea textArea = null;
-    UnitTypeTable currentUtt = null;
+    PhysicalGameStatePanel statePanel;
+    JTextArea textArea;
+    UnitTypeTable currentUtt;
 
     JFileChooser fileChooser = new JFileChooser();
 
@@ -199,14 +199,14 @@ public class FEStatePane extends JPanel {
                                    "Nondeterministic-Alternating",
                                    "Nondeterministic-Random"};
 
-    JFormattedTextField mapWidthField = null;
-    JFormattedTextField mapHeightField = null;
-    JFormattedTextField maxCyclesField = null;
-    JFormattedTextField defaultDelayField = null;
-    JCheckBox fullObservabilityBox = null;
-    JComboBox unitTypeTableBox = null;
-    JCheckBox saveTraceBox = null;
-    JCheckBox slowDownBox = null;    
+    JFormattedTextField mapWidthField;
+    JFormattedTextField mapHeightField;
+    JFormattedTextField maxCyclesField;
+    JFormattedTextField defaultDelayField;
+    JCheckBox fullObservabilityBox;
+    JComboBox unitTypeTableBox;
+    JCheckBox saveTraceBox;
+    JCheckBox slowDownBox;
     
     JComboBox aiComboBox[] = {null,null};    
     JCheckBox continuingBox[] = {null,null};
@@ -214,7 +214,7 @@ public class FEStatePane extends JPanel {
     HashMap AIOptionsPanelComponents[] = {new HashMap<String, JComponent>(), new HashMap<String, JComponent>()};
     
     
-    FEStateMouseListener mouseListener = null;
+    FEStateMouseListener mouseListener;
 
     public FEStatePane() throws Exception {        
         currentUtt = new UnitTypeTable();

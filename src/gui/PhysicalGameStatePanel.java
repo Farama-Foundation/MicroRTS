@@ -33,12 +33,12 @@ public class PhysicalGameStatePanel extends JPanel {
 
     boolean fullObservability = true;
     int drawFromPerspectiveOfPlayer = -1;   // if fullObservability is false, and this is 0 or 1, it only draws what the specified player can see
-    GameState gs = null;
+    GameState gs;
 
     // Units to be highlighted (this is used, for example, by the MouseController,
     // to give feedback to the human, on which units are selectable.
     List<Unit> toHighLight = new LinkedList<>();
-    EvaluationFunction evalFunction = null;
+    EvaluationFunction evalFunction;
 
     // area to highlight: this can be used to highlight a rectangle of the game:
     int m_mouse_selection_x0 = -1;

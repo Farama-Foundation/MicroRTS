@@ -65,8 +65,8 @@ public class HTNDomainVisualizerVertical {
     int vpadding = 4;
     int hMethodPadding = 32;
     int vMethodPadding  = 8;
-    Font font = null;
-    FontMetrics fm = null;
+    Font font;
+    FontMetrics fm;
     
     
     public HTNDomainVisualizerVertical() {
