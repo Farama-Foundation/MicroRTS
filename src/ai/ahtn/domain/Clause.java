@@ -28,8 +28,8 @@ public class Clause {
     public static final int CLAUSE_FALSE = 5;
     
     int type = CLAUSE_AND;
-    Term term = null;
-    Clause clauses[] = null;
+    Term term;
+    Clause clauses[];
     
     // variables to continue finding matches after the first:
     List<List<Binding>> matches_left;

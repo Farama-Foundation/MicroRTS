@@ -28,9 +28,9 @@ public abstract class BayesianModel extends UnitActionProbabilityDistribution {
     
     public static final double laplaceBeta = 1.0;    
     
-    protected List<UnitAction> allPossibleActions = null;
-    protected FeatureGenerator featureGenerator = null;
-    protected String name = null;
+    protected List<UnitAction> allPossibleActions;
+    protected FeatureGenerator featureGenerator;
+    protected String name;
     
     public BayesianModel(UnitTypeTable utt, FeatureGenerator fg, String a_name) {
         super(utt);

@@ -20,9 +20,9 @@ import rts.units.UnitTypeTable;
  */
 public class UnitScriptHarvest extends UnitScript {
     
-    AbstractAction action = null;
-    PathFinding pf = null;
-    UnitTypeTable utt = null;
+    AbstractAction action;
+    PathFinding pf;
+    UnitTypeTable utt;
     
     public UnitScriptHarvest(PathFinding a_pf, UnitTypeTable a_utt) {
         pf = a_pf;

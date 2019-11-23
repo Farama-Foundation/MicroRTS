@@ -26,13 +26,13 @@ public class AStarPathFinding extends PathFinding {
     public static int iterations = 0;   // this is a debugging variable    
     public static int accumlength = 0;   // this is a debugging variable    
     
-    Boolean free[][] = null;
-    int closed[] = null;
-    int open[] = null;  // open list
-    int heuristic[] = null;     // heuristic value of the elements in 'open'
-    int parents[] = null;
-    int cost[] = null;     // cost of reaching a given position so far
-    int inOpenOrClosed[] = null;
+    Boolean free[][];
+    int closed[];
+    int open[];  // open list
+    int heuristic[];     // heuristic value of the elements in 'open'
+    int parents[];
+    int cost[];     // cost of reaching a given position so far
+    int inOpenOrClosed[];
     int openinsert = 0;
     
     

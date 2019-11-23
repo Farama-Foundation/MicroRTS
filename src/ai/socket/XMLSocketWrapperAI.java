@@ -48,12 +48,12 @@ public class XMLSocketWrapperAI {
     
 
     private static class SocketWrapperAI extends Thread {
-        Socket socket = null;
+        Socket socket;
         int clientNumber = 0;
         int time_budget = 100;
         int iterations_budget = 0;
-        UnitTypeTable utt = null;
-        AIWithComputationBudget ai = null;
+        UnitTypeTable utt;
+        AIWithComputationBudget ai;
 
         public SocketWrapperAI(Socket a_socket, int a_clientNumber, AIWithComputationBudget a_ai) {
             socket = a_socket;

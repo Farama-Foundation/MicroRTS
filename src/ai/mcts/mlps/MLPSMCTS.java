@@ -24,14 +24,14 @@ import ai.core.InterruptibleAI;
  */
 public class MLPSMCTS extends AIWithComputationBudget implements InterruptibleAI {
     public static int DEBUG = 0;
-    public EvaluationFunction ef = null;
+    public EvaluationFunction ef;
        
     Random r = new Random();
     public AI randomAI = new RandomBiasedAI();
     long max_actions_so_far = 0;
     
-    GameState gs_to_start_from = null;
-    MLPSNode tree = null;
+    GameState gs_to_start_from;
+    MLPSNode tree;
     int current_iteration = 0;
             
     public int MAXSIMULATIONTIME = 1024;

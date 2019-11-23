@@ -12,7 +12,7 @@ import rts.GameState;
  */
 public class EvaluationFunctionForwarding extends EvaluationFunction {
     
-    EvaluationFunction baseFunction = null;
+    EvaluationFunction baseFunction;
 
     public EvaluationFunctionForwarding(EvaluationFunction base) {
         baseFunction = base;

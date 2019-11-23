@@ -28,7 +28,7 @@ public class ContinuingAI extends AI {
     /**
      * The game state for which the action is being computed
      */
-    protected GameState m_gameStateUsedForComputation = null;
+    protected GameState m_gameStateUsedForComputation;
     
     /**
      * Instantiates the ContinuingAI with an AI that implements {@link InterruptibleAI}.

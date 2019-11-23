@@ -21,12 +21,12 @@ public class UCTUnitActionsNode {
     static float C = 0.05f;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
     
     public int type;    // 0 : max, 1 : min, -1: Game-over
-    UCTUnitActionsNode parent = null;
+    UCTUnitActionsNode parent;
     public GameState gs;
     int depth = 0;
     
-    public List<PlayerAction> actions = null;
-    public List<UCTUnitActionsNode> children = null;
+    public List<PlayerAction> actions;
+    public List<UCTUnitActionsNode> children;
     float evaluation_bound = 0;
     float accum_evaluation = 0;
     int visit_count = 0;

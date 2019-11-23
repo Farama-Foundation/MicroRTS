@@ -17,7 +17,7 @@ import rts.units.Unit;
  */
 public class UnitScriptIdle extends UnitScript {
     
-    AbstractAction action = null;
+    AbstractAction action;
     
     public UnitScriptIdle() {
     }

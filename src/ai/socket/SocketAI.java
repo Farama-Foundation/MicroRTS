@@ -27,7 +27,7 @@ import util.XMLWriter;
  * @author santi
  */
 public class SocketAI extends AIWithComputationBudget {
-    public static int DEBUG = 0;
+    public static int DEBUG;
     
     public static final int LANGUAGE_XML = 1;
     public static final int LANGUAGE_JSON = 2;
@@ -39,9 +39,9 @@ public class SocketAI extends AIWithComputationBudget {
     int communication_language = LANGUAGE_XML;
     String serverAddress = "127.0.0.1";
     int serverPort = 9898;
-    Socket socket = null;
-    BufferedReader in_pipe = null;
-    PrintWriter out_pipe = null;
+    Socket socket;
+    BufferedReader in_pipe;
+    PrintWriter out_pipe;
     
     public SocketAI(UnitTypeTable a_utt) {
         super(100,-1);

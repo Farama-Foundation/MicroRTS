@@ -18,7 +18,7 @@ import util.Pair;
  * @author santi
  */
 public class FEStateMouseListener implements MouseListener, MouseMotionListener {
-    PhysicalGameStatePanel panel = null;
+    PhysicalGameStatePanel panel;
     UnitTypeTable utt;
     
     public FEStateMouseListener(PhysicalGameStatePanel a_panel, UnitTypeTable a_utt) {

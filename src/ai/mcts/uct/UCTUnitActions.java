@@ -24,14 +24,14 @@ import ai.core.InterruptibleAI;
  */
 public class UCTUnitActions extends AIWithComputationBudget implements InterruptibleAI {
     public static final int DEBUG = 0;
-    EvaluationFunction ef = null;
+    EvaluationFunction ef;
        
     Random r = new Random();
     AI randomAI = new RandomBiasedAI();
     long max_actions_so_far = 0;
     
-    GameState gs_to_start_from = null;
-    UCTUnitActionsNode tree = null;
+    GameState gs_to_start_from;
+    UCTUnitActionsNode tree;
     int MAX_TREE_DEPTH = 10;
     
     // statistics:

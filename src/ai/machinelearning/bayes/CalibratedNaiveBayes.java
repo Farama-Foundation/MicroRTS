@@ -30,9 +30,9 @@ public class CalibratedNaiveBayes extends BayesianModel {
         
     int estimationMethod = ESTIMATION_COUNTS;
     double calibrationFactor = 0.0;   // how much to crrect probabilities after estimation
-    double []prior_distribution = null;
-    DiscreteCPD []distributions = null;
-    boolean []selectedFeatures = null;
+    double []prior_distribution;
+    DiscreteCPD []distributions;
+    boolean []selectedFeatures;
     int Ysize = 0;
     int Xsizes[];
    

@@ -30,12 +30,12 @@ public class MLPSNode extends MCTSNode {
     static public int DEBUG = 0;
         
     boolean hasMoreActions = true;
-    public PlayerActionGenerator moveGenerator = null;
+    public PlayerActionGenerator moveGenerator;
     HashMap<Long,MLPSNode> childrenMap = new LinkedHashMap<>();    // associates action codes with children
     // Decomposition of the player actions in unit actions, and their contributions:
-    public List<UnitActionTableEntry> unitActionTable = null;
-    public List<double[]> UCBExplorationScores = null;
-    public List<double[]> UCBExploitationScores = null;
+    public List<UnitActionTableEntry> unitActionTable;
+    public List<double[]> UCBExplorationScores;
+    public List<double[]> UCBExploitationScores;
     double evaluation_bound = 0;
     int max_nactions = 0;
     

@@ -47,35 +47,35 @@ public class FETournamentPane extends JPanel {
     public static final String TOURNAMENT_ROUNDROBIN = "Round Robin";
     public static final String TOURNAMENT_FIXED_OPPONENTS = "Fixed Opponents";
     
-    JComboBox tournamentTypeComboBox = null;
+    JComboBox tournamentTypeComboBox;
     
-    DefaultListModel availableAIsListModel = null;
-    JList availableAIsList = null;
-    DefaultListModel selectedAIsListModel = null;
-    JList selectedAIsList = null;
-    DefaultListModel opponentAIsListModel = null;
-    JList opponentAIsList = null;
-    JButton opponentAddButton = null;
-    JButton opponentRemoveButton = null;
+    DefaultListModel availableAIsListModel;
+    JList availableAIsList;
+    DefaultListModel selectedAIsListModel;
+    JList selectedAIsList;
+    DefaultListModel opponentAIsListModel;
+    JList opponentAIsList;
+    JButton opponentAddButton;
+    JButton opponentRemoveButton;
     
     JFileChooser mapFileChooser = new JFileChooser();
-    JList mapList = null;
-    DefaultListModel mapListModel = null;
+    JList mapList;
+    DefaultListModel mapListModel;
     
-    JFormattedTextField iterationsField = null;
-    JFormattedTextField maxGameLengthField = null;
-    JFormattedTextField timeBudgetField = null;
-    JFormattedTextField iterationsBudgetField = null;
-    JFormattedTextField preAnalysisTimeField = null;
+    JFormattedTextField iterationsField;
+    JFormattedTextField maxGameLengthField;
+    JFormattedTextField timeBudgetField;
+    JFormattedTextField iterationsBudgetField;
+    JFormattedTextField preAnalysisTimeField;
     
-    JComboBox unitTypeTableBox = null;
-    JCheckBox fullObservabilityCheckBox = null;
-    JCheckBox selfMatchesCheckBox = null;
-    JCheckBox timeoutCheckBox = null;
-    JCheckBox gcCheckBox = null;
-    JCheckBox tracesCheckBox = null;
+    JComboBox unitTypeTableBox;
+    JCheckBox fullObservabilityCheckBox;
+    JCheckBox selfMatchesCheckBox;
+    JCheckBox timeoutCheckBox;
+    JCheckBox gcCheckBox;
+    JCheckBox tracesCheckBox;
     
-    JTextArea tournamentProgressTextArea = null;
+    JTextArea tournamentProgressTextArea;
     
     JFileChooser fileChooser = new JFileChooser();    
     

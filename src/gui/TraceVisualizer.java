@@ -23,10 +23,10 @@ import util.Pair;
  */
 public class TraceVisualizer extends JPanel implements ListSelectionListener {
     int current_step = 0;
-    Trace trace = null;
+    Trace trace;
 
-    JPanel statePanel = null;
-    JList Selector = null;
+    JPanel statePanel;
+    JList Selector;
     List<GameState> states = new LinkedList<>();
 
     public static JFrame newWindow(String name,int dx,int dy,Trace t, int subjectID) throws Exception {

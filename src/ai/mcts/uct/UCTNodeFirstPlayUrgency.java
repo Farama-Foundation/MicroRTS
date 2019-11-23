@@ -25,15 +25,15 @@ public class UCTNodeFirstPlayUrgency {
 //    static float C = 1;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
     
     public int type;    // 0 : max, 1 : min, -1: Game-over
-    UCTNodeFirstPlayUrgency parent = null;
+    UCTNodeFirstPlayUrgency parent;
     public GameState gs;
     int depth = 0;  // the depth in the tree
     
     boolean hasMoreActions = true;
-    PlayerActionGenerator moveGenerator = null;
-    public List<PlayerAction> actions = null;
+    PlayerActionGenerator moveGenerator;
+    public List<PlayerAction> actions;
     HashMap<Long,UCTNodeFirstPlayUrgency> childrenMap = new LinkedHashMap<>();    // associates action codes with children
-    public List<UCTNodeFirstPlayUrgency> children = null;
+    public List<UCTNodeFirstPlayUrgency> children;
     float evaluation_bound = 0;
     float accum_evaluation = 0;
     int visit_count = 0;

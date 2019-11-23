@@ -57,14 +57,14 @@ public class IDABCD extends AIWithComputationBudget implements InterruptibleAI {
     long max_leaves_so_far = 0;
     long max_nodes_so_far = 0;
     
-    AI playoutAI = null;
+    AI playoutAI;
     int maxPlayoutTime = 100;
-    EvaluationFunction ef = null;
+    EvaluationFunction ef;
     boolean performGreedyActionScan = false;
 
     int max_consecutive_frames_searching_so_far = 0;
 
-    GameState gs_to_start_from = null;
+    GameState gs_to_start_from;
     int consecutive_frames_searching = 0;
     int last_depth = 1;
     int last_nleaves = 0;
@@ -78,9 +78,9 @@ public class IDABCD extends AIWithComputationBudget implements InterruptibleAI {
     double count_time_depth_so_far = 0;
         
     boolean treeIsComplete = true;
-    List<ABCDNode> stack = null;
-    Pair<PlayerAction,Float> lastResult = null;
-    PlayerAction bestMove = null;
+    List<ABCDNode> stack;
+    Pair<PlayerAction,Float> lastResult;
+    PlayerAction bestMove;
     int playerForThisComputation;
 
     

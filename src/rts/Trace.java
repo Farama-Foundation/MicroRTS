@@ -28,7 +28,7 @@ import util.XMLWriter;
  */
 public class Trace {
 
-    UnitTypeTable utt = null;
+    UnitTypeTable utt;
     List<TraceEntry> entries = new LinkedList<>();
 
     /**
@@ -191,7 +191,7 @@ public class Trace {
     /**
      * this accelerates the function below if traversing a trace sequentially
      */
-    GameState getGameStateAtCycle_cache = null;
+    GameState getGameStateAtCycle_cache;
 
     /**
      * Simulates the game from the from the last cached cycle (initialized as

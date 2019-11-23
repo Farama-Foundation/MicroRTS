@@ -18,11 +18,11 @@ public class PlayerActionGenerator {
     PhysicalGameState physicalGameState;
     ResourceUsage base_ru;
     List<Pair<Unit,List<UnitAction>>> choices;
-    PlayerAction lastAction = null;
+    PlayerAction lastAction;
     long size = 1;  // this will be capped at Long.MAX_VALUE;
     long generated = 0;
-    int choiceSizes[] = null;
-    int currentChoice[] = null;
+    int choiceSizes[];
+    int currentChoice[];
     boolean moreActions = true;
     
     /**

@@ -17,7 +17,7 @@ import util.XMLWriter;
 public class TraceEntry {
 
     int time;
-    PhysicalGameState pgs = null;
+    PhysicalGameState pgs;
     List<Pair<Unit, UnitAction>> actions = new LinkedList<>();
 
     /**

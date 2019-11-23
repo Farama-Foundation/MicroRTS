@@ -38,7 +38,7 @@ public class PhysicalGameState {
 
     int width = 8;
     int height = 8;
-    int terrain[] = null;
+    int terrain[];
     List<Player> players = new ArrayList<>();
     List<Unit> units = new LinkedList<>();
 

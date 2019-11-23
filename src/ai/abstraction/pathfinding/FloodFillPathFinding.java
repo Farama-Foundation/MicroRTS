@@ -15,8 +15,8 @@ public class FloodFillPathFinding extends PathFinding {
 	PathFinding altPF=new AStarPathFinding();
 	private static final int ALT_THRESHOLD = 0;
 	HashMap<Integer,int[][]> cache= new HashMap<>();
-	boolean free[][] = null;
-	int distances[][] = null;
+	boolean free[][];
+	int distances[][];
 	int w,h;
 	int lastFrame=-1;
 	@Override

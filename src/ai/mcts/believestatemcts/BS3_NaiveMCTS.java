@@ -28,10 +28,10 @@ import rts.units.UnitTypeTable;
  */
 public class BS3_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
 
-    GameState initialGameState = null;
+    GameState initialGameState;
     List<Unit> lastKnownPosition = new LinkedList<>();
     List<Unit> inferedUnits = new LinkedList<>();
-    PartiallyObservableGameState lastObservedGame = null;
+    PartiallyObservableGameState lastObservedGame;
     boolean[] typeSeen;
 
     public BS3_NaiveMCTS(UnitTypeTable utt) {

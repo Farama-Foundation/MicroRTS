@@ -35,8 +35,8 @@ import rts.units.Unit;
  *        space, the selected worker will go and build a building in the desired place.
  */
 public class MouseController extends AbstractionLayerAI {
-    PhysicalGameStateMouseJFrame m_frame = null;
-    PGSMouseListener m_mouseListener = null;
+    PhysicalGameStateMouseJFrame m_frame;
+    PGSMouseListener m_mouseListener;
     
     public MouseController(PhysicalGameStateMouseJFrame frame) {
         super(new BFSPathFinding());
