@@ -3,9 +3,9 @@ package rts;
 import ai.core.AI;
 import ai.socket.SocketAI;
 import gui.PhysicalGameStatePanel;
-import rts.units.UnitTypeTable;
-import javax.swing.*;
 import java.net.Socket;
+import javax.swing.JFrame;
+import rts.units.UnitTypeTable;
 
 class RemoteGame extends Thread {
 
@@ -42,7 +42,8 @@ class RemoteGame extends Thread {
             // Generate players
             // player 1 is created from SocketAI
             AI player_one = SocketAI.createFromExistingSocket(100, 0, unitTypeTable,
-                gameSettings.getSerializationType(), socket);
+                gameSettings.getSerializationType(), gameSettings.isIncludeConstantsInState(),
+                gameSettings.isCompressTerrain(), socket);
             // player 2 is created using the info from gameSettings
             java.lang.reflect.Constructor cons2 = Class.forName(gameSettings.getAI2())
                 .getConstructor(UnitTypeTable.class);
@@ -51,6 +52,10 @@ class RemoteGame extends Thread {
             // Reset all players
             player_one.reset();
             player_two.reset();
+
+            // allow for pre-game analysis
+            player_one.preGameAnalysis(gameState,0);
+            player_two.preGameAnalysis(gameState,0);
 
             // Setup UI
             JFrame w = PhysicalGameStatePanel.newVisualizer(gameState,640, 640, false, PhysicalGameStatePanel.COLORSCHEME_BLACK);

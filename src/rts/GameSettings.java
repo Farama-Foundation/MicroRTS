@@ -29,16 +29,17 @@ public class GameSettings {
     private boolean partiallyObservable = false;
     private int uttVersion = 1;
     private int conflictPolicy = 1;
-    
+
+    private boolean includeConstantsInState = true, compressTerrain = false;
+
     // Opponents:
     private String AI1 = "";
     private String AI2 = "";
-    
 
-    public GameSettings( LaunchMode launchMode, String serverAddress, int serverPort, 
-                          int serializationType, String mapLocation, int maxCycles, 
-                          boolean partiallyObservable, int uttVersion, int confictPolicy, 
-                          String AI1, String AI2) {
+    public GameSettings(LaunchMode launchMode, String serverAddress, int serverPort,
+        int serializationType, String mapLocation, int maxCycles, boolean partiallyObservable,
+        int uttVersion, int confictPolicy, boolean includeConstantsInState, boolean compressTerrain,
+        String AI1, String AI2) {
         this.launchMode = launchMode;
         this.serverAddress = serverAddress;
         this.serverPort = serverPort;
@@ -48,6 +49,8 @@ public class GameSettings {
         this.partiallyObservable = partiallyObservable;
         this.uttVersion = uttVersion;
         this.conflictPolicy = confictPolicy;
+        this.includeConstantsInState = includeConstantsInState;
+        this.compressTerrain = compressTerrain;
         this.AI1 = AI1;
         this.AI2 = AI2;
     }
@@ -94,6 +97,14 @@ public class GameSettings {
 
     public String getAI2() {
         return AI2;
+    }
+
+    public boolean isIncludeConstantsInState() {
+        return includeConstantsInState;
+    }
+
+    public boolean isCompressTerrain() {
+        return compressTerrain;
     }
 
     /**
@@ -203,13 +214,14 @@ public class GameSettings {
         int uttVersion = readIntegerProperty(prop, "UTT_version", 2);
         int conflictPolicy = readIntegerProperty(prop, "conflict_policy", 1);
         LaunchMode launchMode = LaunchMode.valueOf(prop.getProperty("launch_mode"));
+        boolean includeConstantsInState = Boolean.parseBoolean(prop.getProperty("constants_in_state"));
+        boolean compressTerrain = Boolean.parseBoolean(prop.getProperty("compress_terrain"));
         String AI1 = prop.getProperty("AI1");
         String AI2 = prop.getProperty("AI2");
 
-        return new GameSettings(launchMode, serverAddress, serverPort,
-                                serializationType, mapLocation, maxCycles,
-                                partiallyObservable, uttVersion, conflictPolicy, 
-                                AI1, AI2);
+        return new GameSettings(launchMode, serverAddress, serverPort, serializationType,
+            mapLocation, maxCycles, partiallyObservable, uttVersion, conflictPolicy,
+            includeConstantsInState, compressTerrain, AI1, AI2);
     }
     
     
