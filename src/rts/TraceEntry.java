@@ -1,5 +1,6 @@
 package rts;
 
+import java.io.Writer;
 import java.util.LinkedList;
 import java.util.List;
 import org.jdom.Element;
@@ -115,6 +116,27 @@ public class TraceEntry {
         w.tag("/" + this.getClass().getName());
     }
 
+    /**
+     * Constructs a JSON representation for this object
+     *
+     * @param w
+     */
+    public void toJSON(Writer w) throws Exception {
+        w.write("{");
+        w.write("\"time\":" + time + ",\"pgs\":");
+        pgs.toJSON(w);
+        w.write(",\"actions\":[");
+        boolean first = true;
+        for (Pair<Unit, UnitAction> ua : actions) {
+            if (!first) w.write(",");
+            first = false;
+            w.write("{\"unitID\":" + ua.m_a.getID() +", \"action\":");
+            ua.m_b.toJSON(w);
+            w.write("}");
+        }
+        w.write("]}");
+    }       
+    
     /**
      * Constructs the TraceEntry from a XML element and a UnitTypeTable
      *

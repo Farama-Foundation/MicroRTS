@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -103,19 +104,37 @@ public class Trace {
     }
     
     /**
+     * Writes a JSON representation
+     *
+     * @param w
+     */
+    public void toJSON(Writer w) throws Exception {
+        w.write("{\"utt\":");
+        utt.toJSON(w);
+        w.write(",\n\"entries\":[");
+        boolean first = true;
+        for (TraceEntry te : entries) {
+            if (!first) w.write(",\n");
+            te.toJSON(w);
+            first = false;
+        }
+        w.write("]}");
+    }        
+    
+    /**
      * Dumps this trace to the XML file specified on path
      * It can be reconstructed later (e.g. with {@link #fromXML(String, UnitTypeTable)}
      * @param path
      */
     public void toxml(String path) {
     	try {
-			XMLWriter dumper = new XMLWriter(new FileWriter(path));
-			this.toxml(dumper);
-			dumper.close();
-		} catch (IOException e) {
-			System.err.println("Error while writing trace to: " + path);
-			e.printStackTrace();
-		}
+            XMLWriter dumper = new XMLWriter(new FileWriter(path));
+            this.toxml(dumper);
+            dumper.close();
+        } catch (IOException e) {
+            System.err.println("Error while writing trace to: " + path);
+            e.printStackTrace();
+        }
     }
     
     public void toZip(String path) {
@@ -125,29 +144,28 @@ public class Trace {
 
         File f = new File(path);
     	ZipOutputStream out;
-		try {
-			out = new ZipOutputStream(new FileOutputStream(f));
-			ZipEntry e = new ZipEntry(f.getName());
-	    	out.putNextEntry(e);
+        try {
+            out = new ZipOutputStream(new FileOutputStream(f));
+            ZipEntry e = new ZipEntry(f.getName());
+            out.putNextEntry(e);
 
-	    	StringWriter xmlStringContainer = new StringWriter();
-	    	XMLWriter dumper = new XMLWriter(xmlStringContainer);
-	    	//XMLWriter dumper = new XMLWriter(new FileWriter(path));
-			this.toxml(dumper);
-			
-	    	byte[] data = xmlStringContainer.toString().getBytes();
-	    	out.write(data, 0, data.length);
-	    	out.closeEntry();
-	    	out.close();
-	    	
-		} catch (FileNotFoundException e1) {
-			System.err.println("File not found: " + path);
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			System.err.println("Error while writing to " + path);
-			e1.printStackTrace();
-		}
-    	
+            StringWriter xmlStringContainer = new StringWriter();
+            XMLWriter dumper = new XMLWriter(xmlStringContainer);
+            //XMLWriter dumper = new XMLWriter(new FileWriter(path));
+            this.toxml(dumper);
+
+            byte[] data = xmlStringContainer.toString().getBytes();
+            out.write(data, 0, data.length);
+            out.closeEntry();
+            out.close();
+
+        } catch (FileNotFoundException e1) {
+            System.err.println("File not found: " + path);
+            e1.printStackTrace();
+        } catch (IOException e1) {
+            System.err.println("Error while writing to " + path);
+            e1.printStackTrace();
+        }    	
     }
     
     public static Trace fromZip(String path) throws Exception {

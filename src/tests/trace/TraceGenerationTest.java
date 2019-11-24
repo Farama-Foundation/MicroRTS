@@ -9,6 +9,7 @@ import ai.abstraction.WorkerRush;
 import ai.*;
 import ai.abstraction.pathfinding.BFSPathFinding;
 import java.io.FileWriter;
+import java.io.Writer;
 
 import rts.*;
 import rts.units.UnitTypeTable;
@@ -62,6 +63,8 @@ public class TraceGenerationTest {
         trace.toxml(xml);
         xml.flush();
         
-        
+        Writer w = new FileWriter("trace.json");
+        trace.toJSON(w);
+        w.flush();        
     }    
 }
