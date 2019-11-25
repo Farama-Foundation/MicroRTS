@@ -1,17 +1,23 @@
 package rts;
 
+import ai.core.AI;
+import gui.PhysicalGameStatePanel;
+import java.lang.reflect.Constructor;
+import javax.swing.JFrame;
+import rts.units.UnitTypeTable;
+
 public class Game {
 
-    private rts.units.UnitTypeTable utt;
+    private UnitTypeTable utt;
     private rts.GameState gs;
 
-    private ai.core.AI ai1, ai2;
+    private AI ai1, ai2;
 
     private boolean partiallyObservable, headless;
     private int maxCycles, updateInterval;
 
-    public Game(rts.GameSettings gameSettings) throws Exception {
-        utt = new rts.units.UnitTypeTable(gameSettings.getUTTVersion(),
+    public Game(GameSettings gameSettings) throws Exception {
+        utt = new UnitTypeTable(gameSettings.getUTTVersion(),
             gameSettings.getConflictPolicy());
         PhysicalGameState pgs = PhysicalGameState.load(gameSettings.getMapLocation(), utt);
 
@@ -22,17 +28,17 @@ public class Game {
         maxCycles = gameSettings.getMaxCycles();
         updateInterval = gameSettings.getUpdateInterval();
 
-        java.lang.reflect.Constructor cons1 = Class.forName(gameSettings.getAI1())
-            .getConstructor(rts.units.UnitTypeTable.class);
-        ai1 = (ai.core.AI) cons1.newInstance(utt);
-        java.lang.reflect.Constructor cons2 = Class.forName(gameSettings.getAI2())
-            .getConstructor(rts.units.UnitTypeTable.class);
-        ai2 = (ai.core.AI) cons2.newInstance(utt);
+        Constructor cons1 = Class.forName(gameSettings.getAI1())
+            .getConstructor(UnitTypeTable.class);
+        ai1 = (AI) cons1.newInstance(utt);
+        Constructor cons2 = Class.forName(gameSettings.getAI2())
+            .getConstructor(UnitTypeTable.class);
+        ai2 = (AI) cons2.newInstance(utt);
     }
 
-    public Game(rts.GameSettings gameSettings, ai.core.AI player_one, ai.core.AI player_two)
+    public Game(GameSettings gameSettings, AI player_one, AI player_two)
         throws Exception {
-        utt = new rts.units.UnitTypeTable(gameSettings.getUTTVersion(),
+        utt = new UnitTypeTable(gameSettings.getUTTVersion(),
             gameSettings.getConflictPolicy());
         PhysicalGameState pgs = PhysicalGameState.load(gameSettings.getMapLocation(), utt);
 
@@ -49,13 +55,13 @@ public class Game {
 
     void start() throws Exception {
         // Setup UI
-        javax.swing.JFrame w = headless ? null : gui.PhysicalGameStatePanel
-            .newVisualizer(gs, 640, 640, false, gui.PhysicalGameStatePanel.COLORSCHEME_BLACK);
+        JFrame w = headless ? null : PhysicalGameStatePanel
+            .newVisualizer(gs, 640, 640, false, PhysicalGameStatePanel.COLORSCHEME_BLACK);
 
         start(w);
     }
 
-    void start(javax.swing.JFrame w) throws Exception {
+    void start(JFrame w) throws Exception {
         // Reset all players
         ai1.reset();
         ai2.reset();
@@ -69,9 +75,9 @@ public class Game {
         do {
             if (w == null || System.currentTimeMillis() >= nextTimeToUpdate) {
                 rts.GameState playerOneGameState =
-                    partiallyObservable ? new rts.PartiallyObservableGameState(gs, 0) : gs;
+                    partiallyObservable ? new PartiallyObservableGameState(gs, 0) : gs;
                 rts.GameState playerTwoGameState =
-                    partiallyObservable ? new rts.PartiallyObservableGameState(gs, 1) : gs;
+                    partiallyObservable ? new PartiallyObservableGameState(gs, 1) : gs;
 
                 rts.PlayerAction pa1 = ai1.getAction(0, playerOneGameState);
                 rts.PlayerAction pa2 = ai2.getAction(1, playerTwoGameState);

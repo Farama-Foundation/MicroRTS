@@ -1,13 +1,8 @@
 package rts;
 
-import ai.core.AI;
-import gui.PhysicalGameStatePanel;
 import gui.frontend.FrontEnd;
-import java.lang.reflect.Constructor;
 import java.net.ServerSocket;
 import java.net.Socket;
-import javax.swing.JFrame;
-import rts.units.UnitTypeTable;
 
 /***
  * The main class for running a MicroRTS game. To modify existing settings change the file "config.properties".
