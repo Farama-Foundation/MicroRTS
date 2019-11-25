@@ -15,6 +15,13 @@ import rts.units.UnitTypeTable;
 public class MicroRTS {
 
     public static void main(String args[]) throws Exception {
+
+        for (int i = args.length; i > 0; i--) {
+            if (args[i - 1].equals("-h")) {
+                System.out.println(GameSettings.getHelpMessage());
+                return;
+            }
+        }
         
         String configFile = "resources/config.properties";
 

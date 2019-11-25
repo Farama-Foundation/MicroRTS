@@ -7,6 +7,19 @@ import java.util.Properties;
 
 public class GameSettings {
 
+    static String getHelpMessage() {
+        return "-f: path to config file\n" +
+                "-s: server IP address\n" +
+                "-p: server port\n" +
+                "-l: launch mode (STANDALONE, GUI, SERVER, CLIENT)\n" +
+                "--serialization: serialization type (1 for XML, 2 for JSON)\n" +
+                "-m: path for the map file\n" +
+                "-c: max cycles\n" +
+                "--partially_observable: 1 or true, 0 or false\n" +
+                "--ai1: name of the class to be instantiated for player 1\n" +
+                "--ai2: name of the class to be instantiated for player 2";
+    }
+
     public enum LaunchMode {
         STANDALONE,
         GUI,
