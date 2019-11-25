@@ -6,6 +6,11 @@ import java.lang.reflect.Constructor;
 import javax.swing.JFrame;
 import rts.units.UnitTypeTable;
 
+/**
+ * Class responsible for creating all objects necessary for a single game and
+ * run the main loop of the game until completion.
+ * @author douglasrizzo
+ */
 public class Game {
 
     private UnitTypeTable utt;
@@ -16,6 +21,12 @@ public class Game {
     private boolean partiallyObservable, headless;
     private int maxCycles, updateInterval;
 
+    /**
+     * Create a game from a GameSettings object.
+     * @param gameSettings a GameSettings object, created either by reading a config file or
+     *                     through command-ine arguments
+     * @throws Exception when reading the XML file for the map or instantiating AIs from class names
+     */
     public Game(GameSettings gameSettings) throws Exception {
         utt = new UnitTypeTable(gameSettings.getUTTVersion(),
             gameSettings.getConflictPolicy());
@@ -36,6 +47,14 @@ public class Game {
         ai2 = (AI) cons2.newInstance(utt);
     }
 
+    /**
+     * Create a game from a GameSettings object, but also receiving AI players as parameters
+     * @param gameSettings a GameSettings object, created either by reading a config file or
+     *                     through command-ine arguments
+     * @param player_one AI for player one
+     * @param player_two AI for player two
+     * @throws Exception when reading the XML file for the map
+     */
     public Game(GameSettings gameSettings, AI player_one, AI player_two)
         throws Exception {
         utt = new UnitTypeTable(gameSettings.getUTTVersion(),
@@ -53,6 +72,10 @@ public class Game {
         ai2=player_two;
     }
 
+    /**
+     * run the main loop of the game
+     * @throws Exception
+     */
     void start() throws Exception {
         // Setup UI
         JFrame w = headless ? null : PhysicalGameStatePanel
@@ -61,6 +84,11 @@ public class Game {
         start(w);
     }
 
+    /**
+     * run the main loop of the game
+     * @param w a window where the game will be displayed
+     * @throws Exception
+     */
     void start(JFrame w) throws Exception {
         // Reset all players
         ai1.reset();
