@@ -138,7 +138,8 @@ public class GameSettings {
      * --serialization: serialization type (1 for XML, 2 for JSON)
      * -m: path for the map file
      * -c: max cycles
-     * -h: headless
+     * -i: update interval between each tick, in milliseconds
+     * -h: headless: 1 or true, 0 or false
      * --partially_observable: 1 or true, 0 or false
      * --ai1: name of the class to be instantiated for player 1
      * --ai2: name of the class to be instantiated for player 2
@@ -170,7 +171,7 @@ public class GameSettings {
                 case "-i":
                     updateInterval = Integer.parseInt(args[i]);
                     break;
-                case "-h":
+                case "--headless":
                     headless = Boolean.parseBoolean(args[i]);
                     break;
                 case "--partially_observable":
@@ -179,7 +180,7 @@ public class GameSettings {
                 case "-u":
                     uttVersion = Integer.parseInt(args[i]);
                     break;
-                case "-conflict_policy":
+                case "--conflict_policy":
                     conflictPolicy = Integer.parseInt(args[i]);
                     break;
                 case "--ai1":
