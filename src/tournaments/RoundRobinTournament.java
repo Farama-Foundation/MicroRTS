@@ -93,46 +93,6 @@ public class RoundRobinTournament extends Tournament{
             }
         }
 
-        out.write("Wins:\n");
-        for (int ai1_idx = 0; ai1_idx < AIs.size(); ai1_idx++) {
-            for (int ai2_idx = 0; ai2_idx < AIs.size(); ai2_idx++) {
-                out.write(wins[ai1_idx][ai2_idx] + "\t");
-            }
-            out.write("\n");
-        }
-        out.write("Ties:\n");
-        for (int ai1_idx = 0; ai1_idx < AIs.size(); ai1_idx++) {
-            for (int ai2_idx = 0; ai2_idx < AIs.size(); ai2_idx++) {
-                out.write(ties[ai1_idx][ai2_idx] + "\t");
-            }
-            out.write("\n");
-        }
-        out.write("Average Game Length:\n");
-        for (int ai1_idx = 0; ai1_idx < AIs.size(); ai1_idx++) {
-            for (int ai2_idx = 0; ai2_idx < AIs.size(); ai2_idx++) {
-                out.write(accumTime[ai1_idx][ai2_idx] / (maps.size() * iterations) + "\t");
-            }
-            out.write("\n");
-        }
-        out.write("AI crashes:\n");
-        for (int ai1_idx = 0; ai1_idx < AIs.size(); ai1_idx++) {
-            for (int ai2_idx = 0; ai2_idx < AIs.size(); ai2_idx++) {
-                out.write(AIcrashes[ai1_idx][ai2_idx] + "\t");
-            }
-            out.write("\n");
-        }
-        out.write("AI timeout:\n");
-        for (int ai1_idx = 0; ai1_idx < AIs.size(); ai1_idx++) {
-            for (int ai2_idx = 0; ai2_idx < AIs.size(); ai2_idx++) {
-                out.write(AItimeout[ai1_idx][ai2_idx] + "\t");
-            }
-            out.write("\n");
-        }
-        out.flush();
-        if (progress != null) {
-            progress.write("RoundRobinTournament: tournament ended\n");
-        }
-        progress.flush();
+        printEndSummary(maps,iterations, out, progress);
     }
-
 }
