@@ -432,7 +432,8 @@ public class FETournamentPane extends JPanel {
                                         try {
                                             Writer writer = new FileWriter(fileToUse);
                                             Writer writerProgress = new JTextAreaWriter(tournamentProgressTextArea);
-                                            RoundRobinTournament.runTournament(selectedAIs, -1, maps, 
+                                            new
+                                            RoundRobinTournament(selectedAIs).runTournament(-1, maps,
                                                                                iterations, maxGameLength, timeBudget, iterationsBudget, 
                                                                                preAnalysisBudget, 1000, // 1000 is just to give 1 second to the AIs to load their read/write folder saved content
                                                                                fullObservability, selfMatches, timeOutCheck, gcCheck, preGameAnalysis, 
@@ -464,7 +465,7 @@ public class FETournamentPane extends JPanel {
                                         try {
                                             Writer writer = new FileWriter(fileToUse);
                                             Writer writerProgress = new JTextAreaWriter(tournamentProgressTextArea);
-                                            FixedOpponentsTournament.runTournament(selectedAIs, opponentAIs, maps, 
+                                            new FixedOpponentsTournament(selectedAIs, opponentAIs).runTournament(maps,
                                                                                iterations, maxGameLength, timeBudget, iterationsBudget, 
                                                                                preAnalysisBudget, 1000, // 1000 is just to give 1 second to the AIs to load their read/write folder saved content
                                                                                fullObservability, timeOutCheck, gcCheck, preGameAnalysis, 
