@@ -17,43 +17,36 @@ import rts.units.UnitTypeTable;
 /**
  *
  * @author santi
+ * @author douglasrizzo
  */
 public class RoundRobinTournament extends Tournament{
 
-    public static boolean visualize = false;
-    public static int TIMEOUT_CHECK_TOLERANCE = 20;
-    public static boolean USE_CONTINUING_ON_INTERRUPTIBLE = true;
+    public RoundRobinTournament(List<AI> AIs) {
+        super(AIs);
+    }
 
-    public static void runTournament(List<AI> AIs,
-            int playOnlyGamesInvolvingThisAI,
-            List<String> maps,
-            int iterations,
-            int maxGameLength,
-            int timeBudget,
-            int iterationsBudget,
-            long preAnalysisBudgetFirstTimeInAMap,
-            long preAnalysisBudgetRestOfTimes, 
-            boolean fullObservability,
-            boolean selfMatches,
-            boolean timeoutCheck,
-            boolean runGC,
-            boolean preAnalysis,
-            UnitTypeTable utt,
-            String traceOutputfolder,
-            Writer out,
-            Writer progress,
-            String folderForReadWriteFolders) throws Exception {
+    public void runTournament(int playOnlyGamesInvolvingThisAI,
+                              List<String> maps,
+                              int iterations,
+                              int maxGameLength,
+                              int timeBudget,
+                              int iterationsBudget,
+                              long preAnalysisBudgetFirstTimeInAMap,
+                              long preAnalysisBudgetRestOfTimes,
+                              boolean fullObservability,
+                              boolean selfMatches,
+                              boolean timeoutCheck,
+                              boolean runGC,
+                              boolean preAnalysis,
+                              UnitTypeTable utt,
+                              String traceOutputfolder,
+                              Writer out,
+                              Writer progress,
+                              String folderForReadWriteFolders) throws Exception {
         if (progress != null) {
-            progress.write("RoundRobinTournament: Starting tournament\n");
+            progress.write(getClass().getName()+": Starting tournament\n");
         }
-
-        int wins[][] = new int[AIs.size()][AIs.size()];
-        int ties[][] = new int[AIs.size()][AIs.size()];
-        int AIcrashes[][] = new int[AIs.size()][AIs.size()];
-        int AItimeout[][] = new int[AIs.size()][AIs.size()];
-        double accumTime[][] = new double[AIs.size()][AIs.size()];
-
-        out.write("RoundRobinTournament\n");
+        out.write(getClass().getName()+"\n");
         out.write("AIs\n");
         for (AI ai : AIs) {
             out.write("\t" + ai.toString() + "\n");
@@ -91,12 +84,10 @@ public class RoundRobinTournament extends Tournament{
                             if (ai1_idx != playOnlyGamesInvolvingThisAI &&
                                     ai2_idx != playOnlyGamesInvolvingThisAI) continue;
                         }
-                        playSingleGame(AIs, AIs, maxGameLength, timeBudget, iterationsBudget,
+                        playSingleGame(maxGameLength, timeBudget, iterationsBudget,
                                 preAnalysisBudgetFirstTimeInAMap, preAnalysisBudgetRestOfTimes, fullObservability,
-                                timeoutCheck, runGC, preAnalysis, utt, traceOutputfolder, out, progress, wins, ties,
-                                AIcrashes, AItimeout, accumTime, readWriteFolders, null,
-                                iteration, map_idx, pgs, ai1_idx,
-                                ai2_idx);
+                                timeoutCheck, runGC, preAnalysis, utt, traceOutputfolder, out, progress,
+                                readWriteFolders, null, iteration, map_idx, pgs, ai1_idx, ai2_idx);
                     }
                 }
             }

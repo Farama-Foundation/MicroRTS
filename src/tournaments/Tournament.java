@@ -15,24 +15,54 @@ import util.XMLWriter;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-public class Tournament {
+/**
+ * @author douglasrizzo
+ */
+class Tournament {
 
-    public static int TIMEOUT_CHECK_TOLERANCE = 20;
-    public static boolean USE_CONTINUING_ON_INTERRUPTIBLE = true;
+    private static int TIMEOUT_CHECK_TOLERANCE = 20;
+    private static boolean USE_CONTINUING_ON_INTERRUPTIBLE = true;
 
-    static void playSingleGame(List<AI> AIs, List<AI> opponentAIs, int maxGameLength, int timeBudget,
+    List<AI> AIs;
+    List<AI> opponentAIs;
+    private int[][] wins;
+    private int[][] ties;
+    private int[][] AIcrashes;
+    private int[][] opponentAIcrashes;
+    private int[][] AItimeout;
+    private int[][] opponentAItimeout;
+    private double[][] accumTime;
+
+    Tournament(List<AI> AIs, List<AI> opponentAIs){
+        this.AIs = AIs;
+        this.opponentAIs = opponentAIs;
+        wins = new int[AIs.size()][opponentAIs.size()];
+        ties = new int[AIs.size()][opponentAIs.size()];
+        AIcrashes = new int[AIs.size()][opponentAIs.size()];
+        opponentAIcrashes = new int[opponentAIs.size()][opponentAIs.size()];
+        AItimeout = new int[AIs.size()][opponentAIs.size()];
+        opponentAItimeout = new int[AIs.size()][opponentAIs.size()];
+        accumTime = new double[AIs.size()][opponentAIs.size()];
+    }
+
+    Tournament(List<AI> AIs){
+     this(AIs, AIs);
+    }
+
+    void playSingleGame(int maxGameLength, int timeBudget,
                                int iterationsBudget, long preAnalysisBudgetFirstTimeInAMap,
                                long preAnalysisBudgetRestOfTimes, boolean fullObservability,
                                boolean timeoutCheck, boolean runGC, boolean preAnalysis,
                                UnitTypeTable utt, String traceOutputfolder, Writer out,
-                               Writer progress, int[][] wins, int[][] ties, int[][] AIcrashes,
-                               int[][] AItimeout, double[][] accumTime, String[] readWriteFolders,
+                               Writer progress,
+                               String[] readWriteFolders,
                                boolean[][] firstPreAnalysis, int iteration, int map_idx, PhysicalGameState pgs,
                                int ai1_idx, int ai2_idx) throws Exception {
         // variables to keep track of time ussage amongst the AIs:
@@ -49,8 +79,8 @@ public class Tournament {
         double averageTimeOverTwiceBudget1 = 0;
         double averageTimeOverTwiceBudget2 = 0;
 
-        AI ai1 = AIs.get(ai1_idx).clone();
-        AI ai2 = opponentAIs.get(ai2_idx).clone();
+        AI ai1 = this.AIs.get(ai1_idx).clone();
+        AI ai2 = this.opponentAIs.get(ai2_idx).clone();
 
         if (ai1 instanceof AIWithComputationBudget) {
             ((AIWithComputationBudget) ai1).setTimeBudget(timeBudget);
@@ -184,7 +214,7 @@ public class Tournament {
         if (crashed != -1) {
             winner = 1 - crashed;
             if (crashed == 0) {
-                AIcrashes[ai1_idx][ai2_idx]++;
+                this.AIcrashes[ai1_idx][ai2_idx]++;
             }
             if (crashed == 1) {
 
@@ -192,7 +222,7 @@ public class Tournament {
         } else if (timedout != -1) {
             winner = 1 - timedout;
             if (timedout == 0) {
-                AItimeout[ai1_idx][ai2_idx]++;
+                this.AItimeout[ai1_idx][ai2_idx]++;
             }
             if (timedout == 1) {
 
@@ -220,10 +250,10 @@ public class Tournament {
         progress.flush();
 
         if (winner == -1) {
-            ties[ai1_idx][ai2_idx]++;
+            this.ties[ai1_idx][ai2_idx]++;
 //                            ties[ai2_idx][ai1_idx]++;
         } else if (winner == 0) {
-            wins[ai1_idx][ai2_idx]++;
+            this.wins[ai1_idx][ai2_idx]++;
         } else if (winner == 1) {
 //                            wins[ai2_idx][ai1_idx]++;
         }

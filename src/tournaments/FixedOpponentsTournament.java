@@ -17,38 +17,34 @@ import rts.units.UnitTypeTable;
 /**
  *
  * @author santi
+ * @author douglasrizzo
  */
 public class FixedOpponentsTournament extends Tournament {
 
-    public static void runTournament(List<AI> AIs,
-                                     List<AI> opponentAIs,
-                                     List<String> maps,
-                                     int iterations,
-                                     int maxGameLength,
-                                     int timeBudget,
-                                     int iterationsBudget,
-                                     long preAnalysisBudgetFirstTimeInAMap,
-                                     long preAnalysisBudgetRestOfTimes,
-                                     boolean fullObservability,
-                                     boolean timeoutCheck,
-                                     boolean runGC,
-                                     boolean preAnalysis,
-                                     UnitTypeTable utt,
-                                     String traceOutputfolder,
-                                     Writer out,
-                                     Writer progress,
-                                     String folderForReadWriteFolders) throws Exception {
-        if (progress != null) progress.write("FixedOpponentsTournament: Starting tournament\n");
+    public FixedOpponentsTournament(List<AI> AIs, List<AI> opponentAIs) {
+        super(AIs, opponentAIs);
+    }
 
-        int wins[][] = new int[AIs.size()][opponentAIs.size()];
-        int ties[][] = new int[AIs.size()][opponentAIs.size()];
-        int AIcrashes[][] = new int[AIs.size()][opponentAIs.size()];
-        int opponentAIcrashes[][] = new int[opponentAIs.size()][opponentAIs.size()];
-        int AItimeout[][] = new int[AIs.size()][opponentAIs.size()];
-        int opponentAItimeout[][] = new int[AIs.size()][opponentAIs.size()];
-        double accumTime[][] = new double[AIs.size()][opponentAIs.size()];
-
-        out.write("FixedOpponentsTournament\n");
+    public void runTournament(List<String> maps,
+                              int iterations,
+                              int maxGameLength,
+                              int timeBudget,
+                              int iterationsBudget,
+                              long preAnalysisBudgetFirstTimeInAMap,
+                              long preAnalysisBudgetRestOfTimes,
+                              boolean fullObservability,
+                              boolean timeoutCheck,
+                              boolean runGC,
+                              boolean preAnalysis,
+                              UnitTypeTable utt,
+                              String traceOutputfolder,
+                              Writer out,
+                              Writer progress,
+                              String folderForReadWriteFolders) throws Exception {
+        if (progress != null) {
+            progress.write(getClass().getName()+": Starting tournament\n");
+        }
+        out.write(getClass().getName()+"\n");
         out.write("AIs\n");
         for (AI ai : AIs) {
             out.write("\t" + ai.toString() + "\n");
@@ -73,22 +69,28 @@ public class FixedOpponentsTournament extends Tournament {
 
         // create all the read/write folders:
         String readWriteFolders[] = new String[AIs.size()];
-        boolean firstPreAnalysis[][] = new boolean[AIs.size()][maps.size()];
         for (int i = 0; i < AIs.size(); i++) {
             readWriteFolders[i] = folderForReadWriteFolders + "/AI" + i + "readWriteFolder";
             File f = new File(readWriteFolders[i]);
             f.mkdir();
+        }
+
+        boolean firstPreAnalysis[][] = new boolean[AIs.size()][maps.size()];
+        for (int i = 0; i < AIs.size(); i++) {
             for (int j = 0; j < maps.size(); j++) {
                 firstPreAnalysis[i][j] = true;
             }
         }
 
         String opponentReadWriteFolders[] = new String[opponentAIs.size()];
-        boolean opponentFirstPreAnalysis[][] = new boolean[opponentAIs.size()][maps.size()];
         for (int i = 0; i < opponentAIs.size(); i++) {
             opponentReadWriteFolders[i] = folderForReadWriteFolders + "/opponentAI" + i + "readWriteFolder";
             File f = new File(opponentReadWriteFolders[i]);
             f.mkdir();
+        }
+
+        boolean opponentFirstPreAnalysis[][] = new boolean[opponentAIs.size()][maps.size()];
+        for (int i = 0; i < opponentAIs.size(); i++) {
             for (int j = 0; j < maps.size(); j++) {
                 opponentFirstPreAnalysis[i][j] = true;
             }
@@ -99,12 +101,12 @@ public class FixedOpponentsTournament extends Tournament {
                 PhysicalGameState pgs = PhysicalGameState.load(maps.get(map_idx), utt);
                 for (int ai1_idx = 0; ai1_idx < AIs.size(); ai1_idx++) {
                     for (int ai2_idx = 0; ai2_idx < opponentAIs.size(); ai2_idx++) {
-                        playSingleGame(AIs, AIs, maxGameLength, timeBudget, iterationsBudget,
+                        playSingleGame(maxGameLength, timeBudget, iterationsBudget,
                                 preAnalysisBudgetFirstTimeInAMap, preAnalysisBudgetRestOfTimes, fullObservability,
-                                timeoutCheck, runGC, preAnalysis, utt, traceOutputfolder, out, progress, wins, ties,
-                                AIcrashes, AItimeout, accumTime, readWriteFolders, firstPreAnalysis,
+                                timeoutCheck, runGC, preAnalysis, utt, traceOutputfolder, out, progress, readWriteFolders, firstPreAnalysis,
                                 iteration, map_idx, pgs, ai1_idx,
-                                ai2_idx);           }
+                                ai2_idx);
+                    }
                 }
             }
         }
