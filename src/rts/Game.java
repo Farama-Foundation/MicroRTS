@@ -125,35 +125,33 @@ public class Game {
         ai2.preGameAnalysis(gs, 0);
 
         boolean gameover = false;
-        long nextTimeToUpdate = System.currentTimeMillis() + updateInterval;
-        do {
-            if (w == null || System.currentTimeMillis() >= nextTimeToUpdate) {
-                rts.GameState playerOneGameState =
+        while (!gameover && gs.getTime() < maxCycles) {
+            rts.GameState playerOneGameState =
                     partiallyObservable ? new PartiallyObservableGameState(gs, 0) : gs;
-                rts.GameState playerTwoGameState =
+            rts.GameState playerTwoGameState =
                     partiallyObservable ? new PartiallyObservableGameState(gs, 1) : gs;
 
-                rts.PlayerAction pa1 = ai1.getAction(0, playerOneGameState);
-                rts.PlayerAction pa2 = ai2.getAction(1, playerTwoGameState);
-                gs.issueSafe(pa1);
-                gs.issueSafe(pa2);
+            rts.PlayerAction pa1 = ai1.getAction(0, playerOneGameState);
+            rts.PlayerAction pa2 = ai2.getAction(1, playerTwoGameState);
+            gs.issueSafe(pa1);
+            gs.issueSafe(pa2);
 
-                // simulate
-                gameover = gs.cycle();
+            // simulate
+            gameover = gs.cycle();
 
-                if (w != null) {
+            if (w != null) {
+                if (!w.isVisible())
+                    break;
+                if (updateInterval > 0) {
                     w.repaint();
-                }
-
-                nextTimeToUpdate += updateInterval;
-            } else {
-                try {
-                    Thread.sleep(1);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    try {
+                        Thread.sleep(updateInterval);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
-        } while (!gameover && gs.getTime() < maxCycles);
+        }
         ai1.gameOver(gs.winner());
         ai2.gameOver(gs.winner());
     }
