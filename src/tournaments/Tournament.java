@@ -46,7 +46,7 @@ class Tournament {
         wins = new int[AIs.size()][opponentAIs.size()];
         ties = new int[AIs.size()][opponentAIs.size()];
         AIcrashes = new int[AIs.size()][opponentAIs.size()];
-        opponentAIcrashes = new int[opponentAIs.size()][opponentAIs.size()];
+        opponentAIcrashes = new int[AIs.size()][opponentAIs.size()];
         AItimeout = new int[AIs.size()][opponentAIs.size()];
         opponentAItimeout = new int[AIs.size()][opponentAIs.size()];
         accumTime = new double[AIs.size()][opponentAIs.size()];
