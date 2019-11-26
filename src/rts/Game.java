@@ -23,28 +23,54 @@ public class Game {
 
     /**
      * Create a game from a GameSettings object.
+     *
      * @param gameSettings a GameSettings object, created either by reading a config file or
      *                     through command-ine arguments
      * @throws Exception when reading the XML file for the map or instantiating AIs from class names
      */
     public Game(GameSettings gameSettings) throws Exception {
-        utt = new UnitTypeTable(gameSettings.getUTTVersion(),
-            gameSettings.getConflictPolicy());
-        PhysicalGameState pgs = PhysicalGameState.load(gameSettings.getMapLocation(), utt);
+        this(new UnitTypeTable(gameSettings.getUTTVersion(),
+                        gameSettings.getConflictPolicy()), gameSettings.getMapLocation(),
+                gameSettings.isHeadless(),
+                gameSettings.isPartiallyObservable(), gameSettings.getMaxCycles(), gameSettings.getUpdateInterval(),
+                gameSettings.getAI1(), gameSettings.getAI2());
+    }
+
+
+    public Game(UnitTypeTable utt, String mapLocation, boolean headless, boolean partiallyObservable, int maxCycles,
+                int updateInterval, String ai1, String ai2) throws Exception {
+        this(utt, mapLocation, headless, partiallyObservable, maxCycles, updateInterval);
+
+        Constructor cons1 = Class.forName(ai1)
+                .getConstructor(UnitTypeTable.class);
+        Constructor cons2 = Class.forName(ai2)
+                .getConstructor(UnitTypeTable.class);
+
+        this.ai1 = (AI) cons1.newInstance(utt);
+        this.ai2 = (AI) cons2.newInstance(utt);
+
+    }
+
+    public Game(UnitTypeTable utt, String mapLocation, boolean headless, boolean partiallyObservable, int maxCycles,
+                int updateInterval, AI ai1, AI ai2) throws Exception {
+        this(utt, mapLocation, headless, partiallyObservable, maxCycles, updateInterval);
+
+        this.ai1 = ai1;
+        this.ai2 = ai2;
+    }
+
+    private Game(UnitTypeTable utt, String mapLocation, boolean headless, boolean partiallyObservable, int maxCycles,
+                 int updateInterval) throws Exception {
+
+        this.utt = utt;
+
+        PhysicalGameState pgs = PhysicalGameState.load(mapLocation, utt);
 
         gs = new GameState(pgs, utt);
-
-        partiallyObservable = gameSettings.isPartiallyObservable();
-        headless = gameSettings.isHeadless();
-        maxCycles = gameSettings.getMaxCycles();
-        updateInterval = gameSettings.getUpdateInterval();
-
-        Constructor cons1 = Class.forName(gameSettings.getAI1())
-            .getConstructor(UnitTypeTable.class);
-        ai1 = (AI) cons1.newInstance(utt);
-        Constructor cons2 = Class.forName(gameSettings.getAI2())
-            .getConstructor(UnitTypeTable.class);
-        ai2 = (AI) cons2.newInstance(utt);
+        this.partiallyObservable = partiallyObservable;
+        this.headless = headless;
+        this.maxCycles = maxCycles;
+        this.updateInterval = updateInterval;
     }
 
     /**
