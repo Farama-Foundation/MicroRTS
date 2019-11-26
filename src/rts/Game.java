@@ -102,7 +102,7 @@ public class Game {
      * run the main loop of the game
      * @throws Exception
      */
-    void start() throws Exception {
+    public void start() throws Exception {
         // Setup UI
         JFrame w = headless ? null : PhysicalGameStatePanel
             .newVisualizer(gs, 640, 640, false, PhysicalGameStatePanel.COLORSCHEME_BLACK);
@@ -115,7 +115,7 @@ public class Game {
      * @param w a window where the game will be displayed
      * @throws Exception
      */
-    void start(JFrame w) throws Exception {
+    public void start(JFrame w) throws Exception {
         // Reset all players
         ai1.reset();
         ai2.reset();
