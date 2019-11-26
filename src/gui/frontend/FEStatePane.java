@@ -630,16 +630,10 @@ public class FEStatePane extends JPanel {
                                             
 //                                            System.out.println("----------------------------------------");
 //                                            System.out.println(gs);
-                                            
-                                            PlayerAction pa1 = null;
-                                            PlayerAction pa2 = null;
-                                            if (fullObservabilityBox.isSelected()) {
-                                                pa1 = ai1.getAction(0, gs);
-                                                pa2 = ai2.getAction(1, gs);
-                                            } else {
-                                                pa1 = ai1.getAction(0, new PartiallyObservableGameState(gs,0));
-                                                pa2 = ai2.getAction(1, new PartiallyObservableGameState(gs,1));
-                                            }
+
+                                            PlayerAction pa1 = ai1.getAction(0, fullObservabilityBox.isSelected() ? gs : new PartiallyObservableGameState(gs, 0));
+                                            PlayerAction pa2 = ai2.getAction(1, fullObservabilityBox.isSelected() ? gs : new PartiallyObservableGameState(gs, 0));
+
                                             if (trace!=null && (!pa1.isEmpty() || !pa2.isEmpty())) {
 //                                                System.out.println("- (for trace) ---------------------------------------");
 //                                                System.out.println(gs);
