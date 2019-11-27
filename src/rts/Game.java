@@ -4,6 +4,7 @@ import ai.core.AI;
 import gui.PhysicalGameStatePanel;
 import java.lang.reflect.Constructor;
 import javax.swing.JFrame;
+
 import rts.units.UnitTypeTable;
 
 /**
@@ -12,11 +13,8 @@ import rts.units.UnitTypeTable;
  * @author douglasrizzo
  */
 public class Game {
-
-    private UnitTypeTable utt;
-    private rts.GameState gs;
-
-    private AI ai1, ai2;
+    protected rts.GameState gs;
+    protected AI ai1, ai2;
 
     private boolean partiallyObservable, headless;
     private int maxCycles, updateInterval;
@@ -48,7 +46,6 @@ public class Game {
 
         this.ai1 = (AI) cons1.newInstance(utt);
         this.ai2 = (AI) cons2.newInstance(utt);
-
     }
 
     public Game(UnitTypeTable utt, String mapLocation, boolean headless, boolean partiallyObservable, int maxCycles,
@@ -61,8 +58,6 @@ public class Game {
 
     private Game(UnitTypeTable utt, String mapLocation, boolean headless, boolean partiallyObservable, int maxCycles,
                  int updateInterval) throws Exception {
-
-        this.utt = utt;
 
         PhysicalGameState pgs = PhysicalGameState.load(mapLocation, utt);
 
@@ -83,7 +78,7 @@ public class Game {
      */
     public Game(GameSettings gameSettings, AI player_one, AI player_two)
         throws Exception {
-        utt = new UnitTypeTable(gameSettings.getUTTVersion(),
+        UnitTypeTable utt = new UnitTypeTable(gameSettings.getUTTVersion(),
             gameSettings.getConflictPolicy());
         PhysicalGameState pgs = PhysicalGameState.load(gameSettings.getMapLocation(), utt);
 
