@@ -6,8 +6,6 @@ import gui.PhysicalGameStateMouseJFrame;
 import gui.PhysicalGameStatePanel;
 import rts.units.UnitTypeTable;
 
-import java.lang.reflect.Constructor;
-
 public class MouseGame extends Game {
 
     private PhysicalGameStateMouseJFrame w;
