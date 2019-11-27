@@ -35,8 +35,8 @@ public class Game {
     }
 
 
-    public Game(UnitTypeTable utt, String mapLocation, boolean headless, boolean partiallyObservable, int maxCycles,
-                int updateInterval, String ai1, String ai2) throws Exception {
+    private Game(UnitTypeTable utt, String mapLocation, boolean headless, boolean partiallyObservable, int maxCycles,
+                 int updateInterval, String ai1, String ai2) throws Exception {
         this(utt, mapLocation, headless, partiallyObservable, maxCycles, updateInterval);
 
         Constructor cons1 = Class.forName(ai1)
@@ -56,12 +56,15 @@ public class Game {
         this.ai2 = ai2;
     }
 
-    private Game(UnitTypeTable utt, String mapLocation, boolean headless, boolean partiallyObservable, int maxCycles,
-                 int updateInterval) throws Exception {
-
+    protected Game(UnitTypeTable utt, String mapLocation, boolean headless, boolean partiallyObservable, int maxCycles,
+                   int updateInterval) throws Exception {
+        this(headless, partiallyObservable, maxCycles, updateInterval);
         PhysicalGameState pgs = PhysicalGameState.load(mapLocation, utt);
-
         gs = new GameState(pgs, utt);
+    }
+
+    private Game(boolean headless, boolean partiallyObservable, int maxCycles,
+                 int updateInterval) {
         this.partiallyObservable = partiallyObservable;
         this.headless = headless;
         this.maxCycles = maxCycles;
