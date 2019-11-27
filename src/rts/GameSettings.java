@@ -172,10 +172,10 @@ public class GameSettings {
                     updateInterval = Integer.parseInt(args[i]);
                     break;
                 case "--headless":
-                    headless = Boolean.parseBoolean(args[i]);
+                    headless = args[i].equals("1") || Boolean.parseBoolean(args[i]);
                     break;
                 case "--partially_observable":
-                    partiallyObservable = Boolean.parseBoolean(args[i]);
+                    partiallyObservable = args[i].equals("1") || Boolean.parseBoolean(args[i]);
                     break;
                 case "-u":
                     uttVersion = Integer.parseInt(args[i]);
