@@ -1,6 +1,6 @@
 /*
-* This class was contributed by: Antonin Komenda, Alexander Shleyfman and Carmel Domshlak
-*/
+ * This class was contributed by: Antonin Komenda, Alexander Shleyfman and Carmel Domshlak
+ */
 
 package util;
 
@@ -19,11 +19,11 @@ public class CartesianProduct<E> {
      * @param definitionsOfDomains the inner set represent domain of i-th variable
      */
     public CartesianProduct(List<Set<E>> definitionsOfDomains) {
-        if (definitionsOfDomains.size() == 0) {
+        if(definitionsOfDomains.size() == 0) {
             throw new IllegalArgumentException("There has to be at least one domain!");
         }
 
-        for (Set<E> set : definitionsOfDomains) {
+        for(Set<E> set : definitionsOfDomains) {
             domains.add(new ArrayList<>(set));
         }
     }
@@ -39,7 +39,7 @@ public class CartesianProduct<E> {
     public List<E> element(int i) {
         LinkedList<E> result = new LinkedList<>();
 
-        for (List<E> currentDomain : domains) {
+        for(List<E> currentDomain : domains) {
             int currentSize = currentDomain.size();
 
             int currentIndex = i % currentSize;
@@ -48,7 +48,7 @@ public class CartesianProduct<E> {
             result.add(currentDomain.get(currentIndex));
         }
 
-        if (i > 0) {
+        if(i > 0) {
             // index overflow => stop generating
             result = null;
         }
@@ -64,11 +64,10 @@ public class CartesianProduct<E> {
     public int size() {
         int result = 1;
 
-        for (List<E> currentDomain : domains) {
+        for(List<E> currentDomain : domains) {
             result *= currentDomain.size();
         }
 
         return result;
     }
-
 }
