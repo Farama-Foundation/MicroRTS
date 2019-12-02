@@ -68,15 +68,15 @@ public class Game {
         maxCycles = gameSettings.getMaxCycles();
         updateInterval = gameSettings.getUpdateInterval();
 
-        ai1=player_one;
-        ai2=player_two;
+        ai1 = player_one;
+        ai2 = player_two;
     }
 
     /**
      * run the main loop of the game
      * @throws Exception
      */
-    void start() throws Exception {
+    public void start() throws Exception {
         // Setup UI
         JFrame w = headless ? null : PhysicalGameStatePanel
             .newVisualizer(gs, 640, 640, false, PhysicalGameStatePanel.COLORSCHEME_BLACK);
@@ -89,7 +89,7 @@ public class Game {
      * @param w a window where the game will be displayed
      * @throws Exception
      */
-    void start(JFrame w) throws Exception {
+    public void start(JFrame w) throws Exception {
         // Reset all players
         ai1.reset();
         ai2.reset();
@@ -99,35 +99,42 @@ public class Game {
         ai2.preGameAnalysis(gs, 0);
 
         boolean gameover = false;
-        long nextTimeToUpdate = System.currentTimeMillis() + updateInterval;
-        do {
-            if (w == null || System.currentTimeMillis() >= nextTimeToUpdate) {
-                rts.GameState playerOneGameState =
+
+        while (!gameover && gs.getTime() < maxCycles) {
+            long timeToNextUpdate = System.currentTimeMillis() + updateInterval;
+
+            rts.GameState playerOneGameState =
                     partiallyObservable ? new PartiallyObservableGameState(gs, 0) : gs;
-                rts.GameState playerTwoGameState =
+            rts.GameState playerTwoGameState =
                     partiallyObservable ? new PartiallyObservableGameState(gs, 1) : gs;
 
-                rts.PlayerAction pa1 = ai1.getAction(0, playerOneGameState);
-                rts.PlayerAction pa2 = ai2.getAction(1, playerTwoGameState);
-                gs.issueSafe(pa1);
-                gs.issueSafe(pa2);
+            rts.PlayerAction pa1 = ai1.getAction(0, playerOneGameState);
+            rts.PlayerAction pa2 = ai2.getAction(1, playerTwoGameState);
+            gs.issueSafe(pa1);
+            gs.issueSafe(pa2);
 
-                // simulate
-                gameover = gs.cycle();
+            // simulate
+            gameover = gs.cycle();
 
-                if (w != null) {
-                    w.repaint();
+            // if not headless mode, wait and repaint the window
+            if (w != null) {
+                if (!w.isVisible())
+                    break;
+
+                // only wait if the AIs have not already consumed more time than the predetermined interval
+                long waitTime = timeToNextUpdate - System.currentTimeMillis();
+                if (waitTime >=0) {
+                    try {
+                        Thread.sleep(waitTime);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
 
-                nextTimeToUpdate += updateInterval;
-            } else {
-                try {
-                    Thread.sleep(1);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                // repaint the window after (or regardless of) wait time
+                w.repaint();
             }
-        } while (!gameover && gs.getTime() < maxCycles);
+        }
         ai1.gameOver(gs.winner());
         ai2.gameOver(gs.winner());
     }
