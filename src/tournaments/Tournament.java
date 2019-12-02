@@ -104,8 +104,8 @@ class Tournament {
         if (progress != null) progress.write("MATCH UP: " + ai1 + " vs " + ai2 + "\n");
 
         if (preAnalysis && firstPreAnalysis != null) {
-            praAnalysisSingleAI(preAnalysisBudgetFirstTimeInAMap, preAnalysisBudgetRestOfTimes, progress, readWriteFolders[ai1_idx], firstPreAnalysis[ai1_idx], map_idx, ai1, gs);
-            praAnalysisSingleAI(preAnalysisBudgetFirstTimeInAMap, preAnalysisBudgetRestOfTimes, progress, readWriteFolders[ai2_idx], firstPreAnalysis[ai2_idx], map_idx, ai2, gs);
+            preAnalysisSingleAI(preAnalysisBudgetFirstTimeInAMap, preAnalysisBudgetRestOfTimes, progress, readWriteFolders[ai1_idx], firstPreAnalysis[ai1_idx], map_idx, ai1, gs);
+            preAnalysisSingleAI(preAnalysisBudgetFirstTimeInAMap, preAnalysisBudgetRestOfTimes, progress, readWriteFolders[ai2_idx], firstPreAnalysis[ai2_idx], map_idx, ai2, gs);
         }
 
         boolean gameover = false;
@@ -260,7 +260,7 @@ class Tournament {
         accumTime[ai1_idx][ai2_idx] += gs.getTime();
     }
 
-    private static void praAnalysisSingleAI(long preAnalysisBudgetFirstTimeInAMap, long preAnalysisBudgetRestOfTimes, Writer progress, String readWriteFolder, boolean[] firstPreAnalysis, int map_idx, AI ai1, GameState gs) throws Exception {
+    private static void preAnalysisSingleAI(long preAnalysisBudgetFirstTimeInAMap, long preAnalysisBudgetRestOfTimes, Writer progress, String readWriteFolder, boolean[] firstPreAnalysis, int map_idx, AI ai1, GameState gs) throws Exception {
         long preTime1 = preAnalysisBudgetRestOfTimes;
         if (firstPreAnalysis[map_idx]) {
             preTime1 = preAnalysisBudgetFirstTimeInAMap;
