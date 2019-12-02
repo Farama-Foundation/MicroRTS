@@ -1,12 +1,8 @@
 package rts;
 
-import ai.core.AI;
 import gui.MouseController;
 import gui.PhysicalGameStateMouseJFrame;
 import gui.PhysicalGameStatePanel;
-import rts.units.UnitTypeTable;
-
-import java.lang.reflect.Constructor;
 
 public class MouseGame extends Game {
 
