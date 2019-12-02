@@ -7,6 +7,23 @@ import java.util.Properties;
 
 public class GameSettings {
 
+    static String getHelpMessage() {
+        return "-f: path to config file\n" +
+                "-s: server IP address\n" +
+                "-p: server port\n" +
+                "-l: launch mode (STANDALONE, GUI, SERVER, CLIENT)\n" +
+                "--serialization: serialization type (1 for XML, 2 for JSON)\n" +
+                "-m: path for the map file\n" +
+                "-c: max cycles\n" +
+                "-i: update interval between each tick, in milliseconds\n" +
+                "--headless: 1 or true, 0 or false\n" +
+                "--partially_observable: 1 or true, 0 or false\n" +
+                "-u: unit type table version\n" +
+                "--conflict_policy: which conflict policy to use\n" +
+                "--ai1: name of the class to be instantiated for player 1\n" +
+                "--ai2: name of the class to be instantiated for player 2";
+    }
+
     public enum LaunchMode {
         STANDALONE,
         GUI,
@@ -139,8 +156,10 @@ public class GameSettings {
      * -m: path for the map file
      * -c: max cycles
      * -i: update interval between each tick, in milliseconds
-     * -h: headless: 1 or true, 0 or false
+     * --headless: headless: 1 or true, 0 or false
      * --partially_observable: 1 or true, 0 or false
+     * -u: unit type table version
+     * --conflict_policy: which conflict policy to use
      * --ai1: name of the class to be instantiated for player 1
      * --ai2: name of the class to be instantiated for player 2
      *
