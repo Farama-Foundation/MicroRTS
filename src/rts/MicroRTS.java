@@ -40,6 +40,7 @@ public class MicroRTS {
 
         switch (gameSettings.getLaunchMode()) {
             case STANDALONE:
+            case HUMAN:
                 runStandAloneGame(gameSettings);
             case GUI:
                 FrontEnd.main(args);
@@ -84,6 +85,9 @@ public class MicroRTS {
      * @throws Exception 
      */
     public static void runStandAloneGame(GameSettings gameSettings) throws Exception {
-        new Game(gameSettings).start();
+        if (gameSettings.getLaunchMode() == GameSettings.LaunchMode.STANDALONE)
+            new Game(gameSettings).start();
+        else if (gameSettings.getLaunchMode() == GameSettings.LaunchMode.HUMAN)
+            new MouseGame(gameSettings).start();
     }
 }

@@ -26,6 +26,7 @@ public class GameSettings {
 
     public enum LaunchMode {
         STANDALONE,
+        HUMAN,
         GUI,
         SERVER,
         CLIENT
