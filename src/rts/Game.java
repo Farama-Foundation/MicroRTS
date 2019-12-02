@@ -14,9 +14,9 @@ import rts.units.UnitTypeTable;
 public class Game {
 
     private UnitTypeTable utt;
-    private rts.GameState gs;
+    protected rts.GameState gs;
 
-    private AI ai1, ai2;
+    protected AI ai1, ai2;
 
     private boolean partiallyObservable, headless;
     private int maxCycles, updateInterval;
