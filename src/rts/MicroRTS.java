@@ -41,8 +41,10 @@ public class MicroRTS {
         switch (gameSettings.getLaunchMode()) {
             case STANDALONE:
                 runStandAloneGame(gameSettings);
+                break;
             case GUI:
                 FrontEnd.main(args);
+                break;
             case SERVER:
                 startServer(gameSettings);
                 break;
