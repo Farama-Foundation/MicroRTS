@@ -42,8 +42,10 @@ public class MicroRTS {
             case STANDALONE:
             case HUMAN:
                 runStandAloneGame(gameSettings);
+                break;
             case GUI:
                 FrontEnd.main(args);
+                break;
             case SERVER:
                 startServer(gameSettings);
                 break;
