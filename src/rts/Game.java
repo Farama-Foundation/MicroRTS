@@ -13,6 +13,8 @@ import rts.units.UnitTypeTable;
  * @author douglasrizzo
  */
 public class Game {
+
+    private UnitTypeTable utt;
     protected rts.GameState gs;
     protected AI ai1, ai2;
 
