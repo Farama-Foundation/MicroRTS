@@ -545,7 +545,7 @@ public class MethodDecomposition {
         List<Pair<Integer,List<Term>>> l = new ArrayList<>();
         convertToOperatorList(l);
         // sort the list:
-        l.sort(new Comparator<>() {
+        l.sort(new Comparator<Pair<Integer, List<Term>>>() {
             public int compare(Pair<Integer, List<Term>> o1, Pair<Integer, List<Term>> o2) {
                 return Integer.compare(o1.m_a, o2.m_a);
             }

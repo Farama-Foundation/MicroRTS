@@ -206,7 +206,7 @@ public class ActionInterdependenceModel extends BayesianModel {
         }
         
         // sort features:
-        featureIndexes.sort(new Comparator<>() {
+        featureIndexes.sort(new Comparator<Integer>() {
             public int compare(Integer o1, Integer o2) {
                 return Double.compare(featureGR.get(o2), featureGR.get(o1));
             }

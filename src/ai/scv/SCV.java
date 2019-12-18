@@ -230,7 +230,7 @@ public class SCV extends AIWithComputationBudget {
 
         PlayerAction resultado = new PlayerAction();
         ArrayList<UnitAction> vote = new ArrayList<>();
-        TreeMap<UnitAction, Integer> contagem = new TreeMap<>(new Comparator<>() {
+        TreeMap<UnitAction, Integer> contagem = new TreeMap<>(new Comparator<UnitAction>() {
             @Override
             public int compare(UnitAction u1, UnitAction u2) {
                 if (u1.equals(u2)) {
