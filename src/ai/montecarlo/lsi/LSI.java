@@ -290,7 +290,7 @@ public class LSI extends AIWithComputationBudget {
                                 });
                                 break;
                             case POST_ENTROPY_MIN:
-                                evaluatedIndices.sort(new Comparator<>() {
+                                evaluatedIndices.sort(new Comparator<Pair<Integer, Double>>() {
 
                                     @Override
                                     public int compare(Pair<Integer, Double> p1, Pair<Integer, Double> p2) {
