@@ -280,7 +280,7 @@ public class LSI extends AIWithComputationBudget {
                             case POST_ENTROPY_MAX:
                             case POST_MAX_DIFF:
                             case POST_MAX_TIME_NORMALIZE:
-                                evaluatedIndices.sort(new Comparator<>() {
+                                evaluatedIndices.sort(new Comparator<Pair<Integer, Double>>() {
 
                                     @Override
                                     public int compare(Pair<Integer, Double> p1, Pair<Integer, Double> p2) {
@@ -305,7 +305,7 @@ public class LSI extends AIWithComputationBudget {
 
                         // remove the single-actions of the weakest
                         evaluatedIndices = evaluatedIndices.subList(0, noToRemove);
-                        evaluatedIndices.sort(new Comparator<>() {
+                        evaluatedIndices.sort(new Comparator<Pair<Integer, Double>>() {
 
                             @Override
                             public int compare(Pair<Integer, Double> p1, Pair<Integer, Double> p2) {
@@ -691,7 +691,7 @@ public class LSI extends AIWithComputationBudget {
 
                 choseActList.add(new Pair<>(j, value));
             }
-            choseActList.sort(new Comparator<>() {
+            choseActList.sort(new Comparator<Pair<Integer, Double>>() {
 
                 @Override
                 public int compare(Pair<Integer, Double> p1, Pair<Integer, Double> p2) {
@@ -703,7 +703,7 @@ public class LSI extends AIWithComputationBudget {
             });
 
             choseActList = choseActList.subList(0, choseActList.size() - relaxationLimit);
-            choseActList.sort(new Comparator<>() {
+            choseActList.sort(new Comparator<Pair<Integer, Double>>() {
 
                 @Override
                 public int compare(Pair<Integer, Double> p1, Pair<Integer, Double> p2) {
@@ -835,7 +835,7 @@ public class LSI extends AIWithComputationBudget {
             // include elite combinations from estimation phase
             List<Entry<PlayerAction, Pair<Double, Integer>>> eliteEntries =
                     new ArrayList<>(elitePlayerActions.entrySet());
-            eliteEntries.sort(new Comparator<>() {
+            eliteEntries.sort(new Comparator<Entry<PlayerAction, Pair<Double, Integer>>>() {
 
                 @Override
                 public int compare(Entry<PlayerAction, Pair<Double, Integer>> e1,
@@ -912,7 +912,7 @@ public class LSI extends AIWithComputationBudget {
         }
 
         for (int i = 0; i <= budget - actionCount; i++) {
-            actionList.sort(new Comparator<>() {
+            actionList.sort(new Comparator<Pair<PlayerAction, Pair<Double, Integer>>>() {
 
                 @Override
                 public int compare(Pair<PlayerAction, Pair<Double, Integer>> p1, Pair<PlayerAction, Pair<Double, Integer>> p2) {

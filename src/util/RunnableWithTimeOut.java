@@ -22,7 +22,7 @@ import java.util.concurrent.TimeoutException;
 public class RunnableWithTimeOut {
 
     public static void runWithTimeout(final Runnable runnable, long timeout, TimeUnit timeUnit) throws Exception {
-        runWithTimeout(new Callable<>() {
+        runWithTimeout(new Callable<Object>() {
             public Object call() throws Exception {
                 runnable.run();
                 return null;
