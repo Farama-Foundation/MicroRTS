@@ -25,6 +25,7 @@ import util.XMLWriter;
  */
 public class SocketRewardAI extends SocketAI implements SocketAIInterface{
     boolean layerJSON = false;
+    boolean render = false;
     double reward = 0.0;
     double oldReward = 0.0;
     boolean firstRewardCalculation = true;
@@ -59,6 +60,7 @@ public class SocketRewardAI extends SocketAI implements SocketAIInterface{
 
     @Override
     public PlayerAction getAction(int player, GameState gs) throws Exception {
+        render = false;
         // send the game state:
         if (communication_language == LANGUAGE_XML) {
             // not implemented
@@ -91,6 +93,10 @@ public class SocketRewardAI extends SocketAI implements SocketAIInterface{
             if (actionString.equals("finished")) {
                 done = true;
                 finished = true;
+                return PlayerAction.fromJSON("[]", gs, utt);
+            }
+            if (actionString.equals("render")) {
+                render = true;
                 return PlayerAction.fromJSON("[]", gs, utt);
             }
             // System.out.println("action received from server: " + actionString);
@@ -196,5 +202,8 @@ public class SocketRewardAI extends SocketAI implements SocketAIInterface{
     }
     public double getReward() {
         return reward;
+    }
+    public boolean getRender() {
+        return render;
     }
 }

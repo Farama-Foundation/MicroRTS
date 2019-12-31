@@ -65,9 +65,6 @@ public class RunClient {
     @Parameter(names = "--window-size", description = "The microRTS server IP")
     int windowSize = 1;
 
-    @Parameter(names = "--render", description = "Whether to render the game")
-    boolean render = false;
-
     @Parameter(names = "--seed", description = "The random seed")
     int seed = 3;
 
@@ -130,9 +127,6 @@ public class RunClient {
 
         PhysicalGameState pgs = PhysicalGameState.load(map, utt);
         GameState gs = new GameState(pgs, utt);
-        if (render) {
-            w = PhysicalGameStatePanel.newVisualizer(gs, 640, 640, false, PhysicalGameStatePanel.COLORSCHEME_BLACK);
-        }
 
         // game evaluation
         ArrayList <Integer> firstHarvestedResourcesTimesteps = new ArrayList<Integer>();
@@ -148,10 +142,6 @@ public class RunClient {
             pgs = PhysicalGameState.load(map, utt);
             gs = new GameState(pgs, utt);
             while (true) {
-                if (render) {
-                    w.setStateCloning(gs);
-                    w.repaint();
-                }
                 ai1.computeReward(0, 1, gs);
                 if (ai1.getReward() == 10.0 && firstHarvestedResources) {
                     firstHarvestedResources = false;
@@ -162,6 +152,14 @@ public class RunClient {
                     firstReturnedResourcesTimestep = gs.getTime();
                 }
                 PlayerAction pa1 = ai1.getAction(0, gs);
+                if (ai1.getRender()) {
+                    if (w==null) {
+                        w = PhysicalGameStatePanel.newVisualizer(gs, 640, 640, false, PhysicalGameStatePanel.COLORSCHEME_BLACK);
+                    }
+                    w.setStateCloning(gs);
+                    w.repaint();
+                    continue;
+                }
                 if (ai1.getDone()) {
                     break;
                 }
@@ -190,8 +188,8 @@ public class RunClient {
                 break;
             }
         }
-        if (render) {
-            w.dispose();
+        if (w!=null) {
+            w.dispose();    
         }
         if (evaluationFileName.length() != 0) {
             try (Writer writer = new FileWriter(evaluationFileName)) {

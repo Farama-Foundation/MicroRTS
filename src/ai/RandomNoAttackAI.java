@@ -158,4 +158,7 @@ public class RandomNoAttackAI extends AI implements SocketAIInterface{
     public double getReward() {
         return reward;
     }
+    public boolean getRender() {
+        return false;
+    }
 }

@@ -90,6 +90,10 @@ public class SocketRewardPenaltyOnInvalidActionAI extends SocketRewardAI {
                 finished = true;
                 return PlayerAction.fromJSON("[]", gs, utt);
             }
+            if (actionString.equals("render")) {
+                render = true;
+                return PlayerAction.fromJSON("[]", gs, utt);
+            }
             // System.out.println("action received from server: " + actionString);
             Pair<PlayerAction, InvalidPlayerActionStats> pair = PlayerAction.fromActionArraysWithPenalty(actionString, gs, utt, player);
             PlayerAction pa = pair.m_a;
