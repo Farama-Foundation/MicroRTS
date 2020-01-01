@@ -62,7 +62,9 @@ public class IndividualSocketRewardAI extends SocketRewardAI {
                     data.put("observation", observation);
                     data.put("reward", reward);
                     data.put("done", false);
-                    data.put("info", new HashMap<String, Object>());
+                    Map<String, Object> subdata = new HashMap<String, Object>();
+                        subdata.put("resources", gs.getPlayer(player).getResources());
+                    data.put("info", subdata);
                 Gson gson = new Gson();
                 out_pipe.write(gson.toJson(data));
             } else {
@@ -83,6 +85,11 @@ public class IndividualSocketRewardAI extends SocketRewardAI {
             if (actionString.equals("finished")) {
                 done = true;
                 finished = true;
+                return PlayerAction.fromJSON("[]", gs, utt);
+            }
+            render = false;
+            if (actionString.equals("render")) {
+                render = true;
                 return PlayerAction.fromJSON("[]", gs, utt);
             }
             // System.out.println("action received from server: " + actionString);
