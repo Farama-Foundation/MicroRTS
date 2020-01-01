@@ -60,7 +60,6 @@ public class SocketRewardAI extends SocketAI implements SocketAIInterface{
 
     @Override
     public PlayerAction getAction(int player, GameState gs) throws Exception {
-        render = false;
         // send the game state:
         if (communication_language == LANGUAGE_XML) {
             // not implemented
@@ -72,7 +71,9 @@ public class SocketRewardAI extends SocketAI implements SocketAIInterface{
                     data.put("observation", observation);
                     data.put("reward", reward);
                     data.put("done", false);
-                    data.put("info", new HashMap<String, Object>());
+                    Map<String, Object> subdata = new HashMap<String, Object>();
+                        subdata.put("resources", gs.getPlayer(player).getResources());
+                    data.put("info", subdata);
                 Gson gson = new Gson();
                 out_pipe.write(gson.toJson(data));
             } else {
@@ -95,6 +96,7 @@ public class SocketRewardAI extends SocketAI implements SocketAIInterface{
                 finished = true;
                 return PlayerAction.fromJSON("[]", gs, utt);
             }
+            render = false;
             if (actionString.equals("render")) {
                 render = true;
                 return PlayerAction.fromJSON("[]", gs, utt);

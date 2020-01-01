@@ -731,14 +731,16 @@ public class UnitAction {
     
     /**
      * Creates a UnitAction from an action array
-     *
+     * expects [a_t(6), p_move(4), p_harvest(4), p_return(4), p_produce_direction(4), 
+     * p_produce_unit_type(z), p_attack_location_x_coordinate(x),  p_attack_location_y_coordinate(y)]
      * @param o
      * @param utt
      * @return
      */
     public static UnitAction fromActionArrayForUnit(JsonArray a, UnitTypeTable utt) {
-        UnitAction ua = new UnitAction(a.get(0).asInt());
-        switch (a.get(0).asInt()) {
+        int actionType = a.get(0).asInt();
+        UnitAction ua = new UnitAction(actionType);
+        switch (actionType) {
             case TYPE_NONE: {
                 break;
             }
@@ -747,25 +749,22 @@ public class UnitAction {
                 break;
             }
             case TYPE_HARVEST: {
-                ua.parameter = a.get(1).asInt();
+                ua.parameter = a.get(2).asInt();
                 break;
             }
             case TYPE_RETURN: {
-                ua.parameter = a.get(1).asInt();
+                ua.parameter = a.get(3).asInt();
                 break;
             }
-            // case TYPE_PRODUCE: {
-            //     ua.parameter = a.get(3).asInt();
-            //     // String ut = a.getString("unitType", null);
-            //     // if (ut != null) {
-            //     //     ua.unitType = utt.getUnitType(ut);
-            //     // }
-            // }
-            // case TYPE_ATTACK_LOCATION: {
-            //     ua.x = a.get(4).asInt();
-            //     ua.y = a.get(4).asInt();
-            //     break;
-            // }
+            case TYPE_PRODUCE: {
+                ua.parameter = a.get(4).asInt();
+                ua.unitType = utt.getUnitType(a.get(5).asInt());
+            }
+            case TYPE_ATTACK_LOCATION: {
+                ua.x = a.get(6).asInt();
+                ua.y = a.get(7).asInt();
+                break;
+            }
         }
         return ua;
     }

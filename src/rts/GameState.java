@@ -778,6 +778,8 @@ public class GameState {
         int[][] playersMatrix = new int[pgs.height][pgs.width];
         int[][] unitTypesMatrix = new int[pgs.height][pgs.width];
         int[][] unitActionMatrix = new int[pgs.height][pgs.width];
+        
+        // temp default value for empty spaces
         for (int i=0; i<unitTypesMatrix.length; i++) {
             Arrays.fill(unitTypesMatrix[i], -1);
             Arrays.fill(playersMatrix[i], -1);
@@ -794,6 +796,14 @@ public class GameState {
                 unitActionMatrix[u.getX()][u.getY()] = uaa.action.type;
             } else {
                 unitActionMatrix[u.getX()][u.getY()] = UnitAction.TYPE_NONE;
+            }
+        }
+
+        // normalize by getting rid of -1
+        for(int i=0; i<playersMatrix.length; i++) {
+            for(int j=0; j<playersMatrix[i].length; j++) {
+                unitTypesMatrix[i][j] += 1;
+                playersMatrix[i][j] += 1;
             }
         }
 
@@ -817,12 +827,11 @@ public class GameState {
         int[][] playersMatrix = new int[windowSize*2+1][windowSize*2+1];
         int[][] unitTypesMatrix = new int[windowSize*2+1][windowSize*2+1];
         int[][] unitActionMatrix = new int[windowSize*2+1][windowSize*2+1];
+
+        // temp default value for empty spaces
         for (int i=0; i<unitTypesMatrix.length; i++) {
-            Arrays.fill(hitpointsMatrix[i], 1);
-            Arrays.fill(resourcesMatrix[i], 1);
-            Arrays.fill(playersMatrix[i], 1);
-            Arrays.fill(unitTypesMatrix[i], 1);
-            Arrays.fill(unitActionMatrix[i], 1);
+            Arrays.fill(playersMatrix[i], -1);
+            Arrays.fill(unitTypesMatrix[i], -1);
         }
 
         int absoluteX = windowSize;
@@ -836,24 +845,36 @@ public class GameState {
                     Unit uprime = pgs.getUnitAt(u.getX() + relativeX, u.getY() +relativeY);
                     if (uprime != null) {
                         UnitActionAssignment uaa = unitActions.get(uprime);
-                        hitpointsMatrix[i][j] = uprime.getHitPoints() + 1;
-                        resourcesMatrix[i][j] = uprime.getResources() + 1;
-                        playersMatrix[i][j] = uprime.getPlayer() + 2;
-                        unitTypesMatrix[i][j] = uprime.getType().ID + 2;
+                        hitpointsMatrix[i][j] = uprime.getHitPoints();
+                        resourcesMatrix[i][j] = uprime.getResources();
+                        playersMatrix[i][j] = uprime.getPlayer();
+                        unitTypesMatrix[i][j] = uprime.getType().ID;
                         if (uaa != null) {
-                            unitActionMatrix[i][j] = uaa.action.type + 1;
+                            unitActionMatrix[i][j] = uaa.action.type;
                         } else {
-                            unitActionMatrix[i][j] = UnitAction.TYPE_NONE + 1;
+                            unitActionMatrix[i][j] = UnitAction.TYPE_NONE;
                         }
                     }
                 }
                 else {
-                    hitpointsMatrix[i][j] = 0;
-                    resourcesMatrix[i][j] = 0;
-                    playersMatrix[i][j] = 0;
-                    unitTypesMatrix[i][j] = 0;
-                    unitActionMatrix[i][j] = 0;
+                    // temp default value for walls
+                    hitpointsMatrix[i][j] = -1;
+                    resourcesMatrix[i][j] = -1;
+                    playersMatrix[i][j] = -2;
+                    unitTypesMatrix[i][j] = -2;
+                    unitActionMatrix[i][j] = -1;
                 }
+            }
+        }
+
+        // normalize by getting rid of -1 and -2
+        for(int i=0; i<playersMatrix.length; i++) {
+            for(int j=0; j<playersMatrix[i].length; j++) {
+                hitpointsMatrix[i][j] += 1;
+                resourcesMatrix[i][j] += 1;
+                playersMatrix[i][j] += 2;
+                unitTypesMatrix[i][j] += 2;
+                unitActionMatrix[i][j] += 1;
             }
         }
 
