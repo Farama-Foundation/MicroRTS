@@ -50,9 +50,12 @@ public class IndividualSocketRewardAI extends SocketRewardAI {
                 frameSkipCount = 0;
                 frameSkip = 0;
             }
-            currentUnit++;
-            if (currentUnit>=gs.getPhysicalGameState().getUnits().size()) {
-                currentUnit=0;
+            // ugly hack: if rendering then don't increment the unit number
+            if (!render) {
+                currentUnit++;
+                if (currentUnit>=gs.getPhysicalGameState().getUnits().size()) {
+                    currentUnit=0;
+                }
             }
             Unit u = gs.getPhysicalGameState().getUnits().get(currentUnit);
             while (!u.getType().equals(utt.getUnitType("Worker"))) {
@@ -107,5 +110,23 @@ public class IndividualSocketRewardAI extends SocketRewardAI {
         } else {
             throw new Exception("Communication language " + communication_language + " not supported!");
         }        
+    }
+
+    public Unit nextUnit(GameState gs) {
+        currentUnit++;
+        if (currentUnit>=gs.getPhysicalGameState().getUnits().size()) {
+            currentUnit=0;
+        }
+        Unit u = gs.getPhysicalGameState().getUnits().get(currentUnit);
+        while (!u.getType().equals(utt.getUnitType("Worker"))) {
+            currentUnit++;
+            if (currentUnit>=gs.getPhysicalGameState().getUnits().size()) {
+                currentUnit=0;
+            }
+            u = gs.getPhysicalGameState().getUnits().get(currentUnit);
+        }
+        System.out.println(currentUnit);
+        System.out.println(u);
+        return u;
     }
 }

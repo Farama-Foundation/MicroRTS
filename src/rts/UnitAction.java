@@ -737,7 +737,7 @@ public class UnitAction {
      * @param utt
      * @return
      */
-    public static UnitAction fromActionArrayForUnit(JsonArray a, UnitTypeTable utt) {
+    public static UnitAction fromActionArrayForUnit(JsonArray a, UnitTypeTable utt, GameState gs, Unit u) {
         int actionType = a.get(0).asInt();
         UnitAction ua = new UnitAction(actionType);
         switch (actionType) {
@@ -761,8 +761,23 @@ public class UnitAction {
                 ua.unitType = utt.getUnitType(a.get(5).asInt());
             }
             case TYPE_ATTACK_LOCATION: {
-                ua.x = a.get(6).asInt();
-                ua.y = a.get(7).asInt();
+                // normalize and clip
+                int x = a.get(6).asInt() - 1;
+                int y = a.get(7).asInt() - 1;
+                int targetx = u.getX() + x;
+                if (targetx<0) {
+                    targetx = 0;
+                } else if (targetx > gs.pgs.height) {
+                    targetx = gs.pgs.height;
+                }
+                int targety = u.getY() + y;
+                if (targety<0) {
+                    targety = 0;
+                } else if (targety > gs.pgs.width) {
+                    targety = gs.pgs.width;
+                }
+                ua.x = targetx;
+                ua.y = targety;
                 break;
             }
         }

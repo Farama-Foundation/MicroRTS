@@ -413,7 +413,7 @@ public class PlayerAction {
             // 2. The unit selected is owned by the current player
             // 3. The unit is not currently busy (its unit action is null)
             if (u != null && u.getPlayer() == currentPlayer && uaa == null) {
-                UnitAction ua = UnitAction.fromActionArrayForUnit(aa, utt);
+                UnitAction ua = UnitAction.fromActionArrayForUnit(aa, utt, gs, u);
                 pa.addUnitAction(u, ua);
             }
         }
