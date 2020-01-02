@@ -17,6 +17,7 @@ import org.jdom.input.SAXBuilder;
 import rts.GameState;
 import rts.PlayerAction;
 import rts.units.UnitTypeTable;
+import util.Pair;
 import util.XMLWriter;
 
 /**
@@ -29,7 +30,10 @@ public class SocketRewardAI extends SocketAI implements SocketAIInterface{
     double reward = 0.0;
     double oldReward = 0.0;
     boolean firstRewardCalculation = true;
-    public boolean done = false;
+    int frameSkip = 0;
+    int frameSkipCount = 0;
+    public boolean reset = false;
+    public boolean gameover = false;
     public boolean finished = false;
     boolean shouldSendUTTAndBudget = true;
     SimpleEvaluationFunction ef = new SimpleEvaluationFunction();
@@ -65,12 +69,19 @@ public class SocketRewardAI extends SocketAI implements SocketAIInterface{
             // not implemented
             return null;
         } else if (communication_language == LANGUAGE_JSON) {
+            if (frameSkipCount < frameSkip) {
+                frameSkipCount++;
+                return new PlayerAction();
+            } else {
+                frameSkipCount = 0;
+                frameSkip = 0;
+            }
             if (layerJSON) {
                 int [][][] observation = gs.getMatrixObservation();
                 Map<String, Object> data = new HashMap<String, Object>();
                     data.put("observation", observation);
                     data.put("reward", reward);
-                    data.put("done", false);
+                    data.put("done", gameover);
                     Map<String, Object> subdata = new HashMap<String, Object>();
                         subdata.put("resources", gs.getPlayer(player).getResources());
                     data.put("info", subdata);
@@ -87,48 +98,36 @@ public class SocketRewardAI extends SocketAI implements SocketAIInterface{
                 
             // parse the action:
             String actionString = in_pipe.readLine();
-            if (actionString.equals("done")) {
-                done = true;
-                return PlayerAction.fromJSON("[]", gs, utt);
+            if (actionString.equals("reset")) {
+                reset = true;
+                return new PlayerAction();
             }
             if (actionString.equals("finished")) {
-                done = true;
+                reset = true;
                 finished = true;
-                return PlayerAction.fromJSON("[]", gs, utt);
+                return new PlayerAction();
             }
             render = false;
             if (actionString.equals("render")) {
                 render = true;
-                return PlayerAction.fromJSON("[]", gs, utt);
+                return new PlayerAction();
+            }
+            if (actionString.equals("[]")) {
+                return new PlayerAction();
             }
             // System.out.println("action received from server: " + actionString);
-            PlayerAction pa = PlayerAction.fromActionArrays(actionString, gs, utt, player);
-            pa.fillWithNones(gs, player, 1);
-            return pa;
+            Pair<PlayerAction,Integer> p = PlayerAction.fromActionArrays(actionString, gs, utt, player);
+            p.m_a.fillWithNones(gs, player, 1);
+            frameSkip = p.m_b;
+            return p.m_a;
         } else {
             throw new Exception("Communication language " + communication_language + " not supported!");
         }        
     }
 
-    public void gameOver(int winner, GameState gs) throws Exception
+    public void gameOver(int winner) throws Exception
     {
-        // send the game state:
-        if (layerJSON) {
-            int [][][] observation = gs.getMatrixObservation();
-            Map<String, Object> data = new HashMap<String, Object>();
-                data.put("observation", observation);
-                data.put("reward", reward);
-                data.put("done", true);
-                data.put("info", new HashMap<String, Object>());
-            Gson gson = new Gson();
-            out_pipe.write(gson.toJson(data));
-        } else {
-            gs.toJSON(out_pipe);
-        }
-        out_pipe.append("\n");
-        out_pipe.flush();
-        // wait for ack:
-        in_pipe.readLine();
+        gameover = true;
     }
 
     @Override
@@ -176,8 +175,9 @@ public class SocketRewardAI extends SocketAI implements SocketAIInterface{
         }catch(Exception e) {
             e.printStackTrace();
         }
-        done = false;
+        reset = false;
         finished = false;
+        gameover = false;
     }
 
     @Override
@@ -196,8 +196,8 @@ public class SocketRewardAI extends SocketAI implements SocketAIInterface{
         shouldSendUTTAndBudget = true;
     }
 
-    public boolean getDone() {
-        return done;
+    public boolean getReset() {
+        return reset;
     }
 	public boolean getFinished() {
         return finished;

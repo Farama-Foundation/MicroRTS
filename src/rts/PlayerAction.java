@@ -371,11 +371,13 @@ public class PlayerAction {
      * @param utt
      * @return
      */
-    public static PlayerAction fromActionArrays(String JSON, GameState gs, UnitTypeTable utt, int currentPlayer) {
+    public static Pair<PlayerAction,Integer> fromActionArrays(String JSON, GameState gs, UnitTypeTable utt, int currentPlayer) {
+        int frameSkip = 0;
         PlayerAction pa = new PlayerAction();
         JsonArray a = Json.parse(JSON).asArray();
         for(JsonValue v:a.values()) {
             JsonArray aa = v.asArray();
+            frameSkip = aa.get(10).asInt();
             Unit u = gs.pgs.getUnitAt(aa.get(0).asInt(), aa.get(1).asInt());
             UnitActionAssignment uaa = gs.unitActions.get(u);
             // execute the action if the following happens
@@ -388,7 +390,7 @@ public class PlayerAction {
                 pa.addUnitAction(u, ua);
             }
         }
-        return pa;
+        return new Pair<PlayerAction,Integer>(pa, frameSkip);
     }
 
     /**
@@ -398,11 +400,13 @@ public class PlayerAction {
      * @param utt
      * @return
      */
-    public static PlayerAction fromActionArrayForUnit(String JSON, GameState gs, UnitTypeTable utt, int currentPlayer, Unit u) {
+    public static Pair<PlayerAction,Integer> fromActionArrayForUnit(String JSON, GameState gs, UnitTypeTable utt, int currentPlayer, Unit u) {
+        int frameSkip = 0;
         PlayerAction pa = new PlayerAction();
         JsonArray a = Json.parse(JSON).asArray();
         for(JsonValue v:a.values()) {
             JsonArray aa = v.asArray();
+            frameSkip = aa.get(8).asInt();
             UnitActionAssignment uaa = gs.unitActions.get(u);
             // execute the action if the following happens
             // 1. The selected unit is *not* null.
@@ -413,7 +417,7 @@ public class PlayerAction {
                 pa.addUnitAction(u, ua);
             }
         }
-        return pa;
+        return new Pair<PlayerAction,Integer>(pa, frameSkip);
     }
 
     public static Pair<PlayerAction, InvalidPlayerActionStats> fromActionArraysWithPenalty(String JSON, GameState gs, UnitTypeTable utt, int currentPlayer) {

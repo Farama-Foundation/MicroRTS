@@ -160,7 +160,7 @@ public class RunClient {
                     w.repaint();
                     continue;
                 }
-                if (ai1.getDone()) {
+                if (ai1.getReset()) {
                     break;
                 }
                 PlayerAction pa2 = ai2.getAction(1, gs);
@@ -170,7 +170,7 @@ public class RunClient {
                 // simulate:
                 gameover = gs.cycle();
                 if (gameover) {
-                    break;
+                    ai1.gameOver(gs.winner());
                 }
                 try {
                     Thread.yield();
@@ -181,7 +181,6 @@ public class RunClient {
             firstReturnedResourcesTimesteps.add(firstReturnedResourcesTimestep);
             firstHarvestedResourcesTimesteps.add(firstHarvestedResourcesTimestep);
             resourcesGathereds.add(gs.getPlayer(0).getResources()-5);
-            ai1.gameOver(gs.winner(), gs);
             ai2.gameOver(gs.winner());
             if (ai1.getFinished()) {
                 System.out.println("Socket client finished");

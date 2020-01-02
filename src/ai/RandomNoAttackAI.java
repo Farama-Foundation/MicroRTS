@@ -31,7 +31,7 @@ public class RandomNoAttackAI extends AI implements SocketAIInterface{
     int currentStep = 0;
     int episodeLenght = 2000;
     int totalTimestep = 10000;
-    boolean done = false;
+    boolean reset = false;
     boolean finished = false;
     int seed;
     double reward = 0.0;
@@ -48,7 +48,7 @@ public class RandomNoAttackAI extends AI implements SocketAIInterface{
     
     @Override
     public void reset() {
-        done = false;
+        reset = false;
         finished = false;
     }    
     
@@ -84,10 +84,10 @@ public class RandomNoAttackAI extends AI implements SocketAIInterface{
         PlayerAction pa = new PlayerAction();
         currentStep++;
         if (currentStep % episodeLenght == 0) {
-            done = true;
+            reset = true;
         }
         if (currentStep == totalTimestep) {
-            done = true;
+            reset = true;
             finished = true;
         }
         
@@ -149,8 +149,8 @@ public class RandomNoAttackAI extends AI implements SocketAIInterface{
         return new ArrayList<>();
     }
 
-    public boolean getDone() {
-        return done;
+    public boolean getReset() {
+        return reset;
     }
 	public boolean getFinished() {
         return finished;

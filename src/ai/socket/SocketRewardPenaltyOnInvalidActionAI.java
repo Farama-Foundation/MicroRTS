@@ -66,7 +66,7 @@ public class SocketRewardPenaltyOnInvalidActionAI extends SocketRewardAI {
                 Map<String, Object> data = new HashMap<String, Object>();
                     data.put("observation", observation);
                     data.put("reward", reward);
-                    data.put("done", false);
+                    data.put("done", gameover);
                     data.put("info", new HashMap<String, Object>());
                 Gson gson = new Gson();
                 out_pipe.write(gson.toJson(data));
@@ -81,12 +81,12 @@ public class SocketRewardPenaltyOnInvalidActionAI extends SocketRewardAI {
                 
             // parse the action:
             String actionString = in_pipe.readLine();
-            if (actionString.equals("done")) {
-                done = true;
+            if (actionString.equals("reset")) {
+                reset = true;
                 return PlayerAction.fromJSON("[]", gs, utt);
             }
             if (actionString.equals("finished")) {
-                done = true;
+                reset = true;
                 finished = true;
                 return PlayerAction.fromJSON("[]", gs, utt);
             }

@@ -690,7 +690,7 @@ public class UnitAction {
     /**
      * Creates a UnitAction from an action array
      * expects [x_coordinate(x), y_coordinate(y), a_t(6), p_move(4), p_harvest(4), p_return(4), p_produce_direction(4), 
-     * p_produce_unit_type(z), p_attack_location_x_coordinate(x),  p_attack_location_y_coordinate(y)]
+     * p_produce_unit_type(z), p_attack_location_x_coordinate(x),  p_attack_location_y_coordinate(y), frameskip(n)]
      *
      * @param o
      * @param utt
@@ -732,7 +732,7 @@ public class UnitAction {
     /**
      * Creates a UnitAction from an action array
      * expects [a_t(6), p_move(4), p_harvest(4), p_return(4), p_produce_direction(4), 
-     * p_produce_unit_type(z), p_attack_location_x_coordinate(x),  p_attack_location_y_coordinate(y)]
+     * p_produce_unit_type(z), p_attack_location_x_coordinate(x),  p_attack_location_y_coordinate(y), frameskip(n)]
      * @param o
      * @param utt
      * @return

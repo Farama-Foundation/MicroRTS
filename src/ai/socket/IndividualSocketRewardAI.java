@@ -43,6 +43,13 @@ public class IndividualSocketRewardAI extends SocketRewardAI {
             // not implemented
             return null;
         } else if (communication_language == LANGUAGE_JSON) {
+            if (frameSkipCount < frameSkip) {
+                frameSkipCount++;
+                return new PlayerAction();
+            } else {
+                frameSkipCount = 0;
+                frameSkip = 0;
+            }
             currentUnit++;
             if (currentUnit>=gs.getPhysicalGameState().getUnits().size()) {
                 currentUnit=0;
@@ -61,7 +68,7 @@ public class IndividualSocketRewardAI extends SocketRewardAI {
                 Map<String, Object> data = new HashMap<String, Object>();
                     data.put("observation", observation);
                     data.put("reward", reward);
-                    data.put("done", false);
+                    data.put("done", gameover);
                     Map<String, Object> subdata = new HashMap<String, Object>();
                         subdata.put("resources", gs.getPlayer(player).getResources());
                     data.put("info", subdata);
@@ -78,12 +85,12 @@ public class IndividualSocketRewardAI extends SocketRewardAI {
                 
             // parse the action:
             String actionString = in_pipe.readLine();
-            if (actionString.equals("done")) {
-                done = true;
+            if (actionString.equals("reset")) {
+                reset = true;
                 return PlayerAction.fromJSON("[]", gs, utt);
             }
             if (actionString.equals("finished")) {
-                done = true;
+                reset = true;
                 finished = true;
                 return PlayerAction.fromJSON("[]", gs, utt);
             }
@@ -93,9 +100,10 @@ public class IndividualSocketRewardAI extends SocketRewardAI {
                 return PlayerAction.fromJSON("[]", gs, utt);
             }
             // System.out.println("action received from server: " + actionString);
-            PlayerAction pa = PlayerAction.fromActionArrayForUnit(actionString, gs, utt, player, u);
-            pa.fillWithNones(gs, player, 1);
-            return pa;
+            Pair<PlayerAction,Integer> p = PlayerAction.fromActionArrayForUnit(actionString, gs, utt, player, u);
+            p.m_a.fillWithNones(gs, player, 1);
+            frameSkip = p.m_b;
+            return p.m_a;
         } else {
             throw new Exception("Communication language " + communication_language + " not supported!");
         }        
