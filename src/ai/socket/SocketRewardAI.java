@@ -247,12 +247,17 @@ public class SocketRewardAI extends SocketAI implements SocketAIInterface{
         try {
             if (dOut == null) {
                 dOut = new DataOutputStream(socket.getOutputStream());
-                // file = new RandomAccessFile("/home/costa/Documents/work/go/src/github.com/vwxyzjn/gym-microrts/unix/t", "rw");
+                file = new RandomAccessFile("/home/costa/Documents/work/go/src/github.com/vwxyzjn/gym-microrts/unix/t", "rw");
             }
+            file.seek(0);
+            MappedByteBuffer out = file.getChannel()
+            .map(FileChannel.MapMode.READ_WRITE, 0, file.length());
+            out.putInt(bytes.length);
+            out.put(bytes);
             dOut.writeInt(bytes.length);
             dOut.flush();
-            dOut.write(bytes);
-            dOut.flush();
+            // dOut.write(bytes);
+            // dOut.flush();
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
