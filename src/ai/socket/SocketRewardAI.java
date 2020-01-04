@@ -245,8 +245,9 @@ public class SocketRewardAI extends SocketAI implements SocketAIInterface{
         byte[] bytes = baos.toByteArray();
         Gson gson = new Gson();
         try {
-            if (dOut != null) {
+            if (dOut == null) {
                 dOut = new DataOutputStream(socket.getOutputStream());
+                // file = new RandomAccessFile("/home/costa/Documents/work/go/src/github.com/vwxyzjn/gym-microrts/unix/t", "rw");
             }
             dOut.writeInt(bytes.length);
             dOut.flush();
