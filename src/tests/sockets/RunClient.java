@@ -4,13 +4,6 @@
 */
 package tests.sockets;
 
-import ai.core.AI;
-import ai.*;
-import ai.socket.IndividualSocketRewardAI;
-import ai.socket.SocketAI;
-import ai.socket.SocketAIInterface;
-import gui.PhysicalGameStatePanel;
-
 import java.io.FileWriter;
 import java.io.Writer;
 import java.nio.file.Paths;
@@ -18,19 +11,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.JFrame;
-import rts.GameState;
-import rts.PhysicalGameState;
-import rts.PlayerAction;
-import rts.units.UnitTypeTable;
-import ai.socket.SocketRewardAI;
-import ai.socket.SocketRewardPenaltyOnInvalidActionAI;
-import gui.PhysicalGameStateJFrame;
-
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import ai.PassiveAI;
+import ai.RandomBiasedAI;
+import ai.RandomNoAttackAI;
+import ai.core.AI;
+import ai.socket.IndividualSocketRewardAI;
+import ai.socket.SocketAIInterface;
+import ai.socket.SocketRewardAI;
+import ai.socket.SocketRewardPenaltyOnInvalidActionAI;
+import gui.PhysicalGameStateJFrame;
+import gui.PhysicalGameStatePanel;
+import rts.GameState;
+import rts.PhysicalGameState;
+import rts.PlayerAction;
+import rts.units.UnitTypeTable;
 
 /**
  *
@@ -57,7 +56,7 @@ public class RunClient {
     String map = "maps/4x4/baseTwoWorkersMaxResources4x4.xml";
 
     @Parameter(names = "--ai1-type", description = "The type of AI1")
-    String ai1Type = "no-penalty-individual";
+    String ai1Type = "no-penalty";
 
     @Parameter(names = "--ai2-type", description = "The type of AI2")
     String ai2Type = "passive";
@@ -158,6 +157,7 @@ public class RunClient {
                     }
                     w.setStateCloning(gs);
                     w.repaint();
+                    ai1.sendGameStateRGBArray(w);
                     continue;
                 }
                 if (ai1.getReset()) {

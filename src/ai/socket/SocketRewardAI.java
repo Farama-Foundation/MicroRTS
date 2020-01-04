@@ -8,7 +8,15 @@ package ai.socket;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.awt.Color;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import ai.evaluation.SimpleEvaluationFunction;
+import gui.PhysicalGameStateJFrame;
 
 import com.google.gson.Gson;
 
@@ -76,22 +84,24 @@ public class SocketRewardAI extends SocketAI implements SocketAIInterface{
                 frameSkipCount = 0;
                 frameSkip = 0;
             }
-            if (layerJSON) {
-                int [][][] observation = gs.getMatrixObservation();
-                Map<String, Object> data = new HashMap<String, Object>();
-                    data.put("observation", observation);
-                    data.put("reward", reward);
-                    data.put("done", gameover);
-                    Map<String, Object> subdata = new HashMap<String, Object>();
-                        subdata.put("resources", gs.getPlayer(player).getResources());
-                    data.put("info", subdata);
-                Gson gson = new Gson();
-                out_pipe.write(gson.toJson(data));
-            } else {
-                gs.toJSON(out_pipe);
+            if (!render) {
+                if (layerJSON) {
+                    int [][][] observation = gs.getMatrixObservation();
+                    Map<String, Object> data = new HashMap<String, Object>();
+                        data.put("observation", observation);
+                        data.put("reward", reward);
+                        data.put("done", gameover);
+                        Map<String, Object> subdata = new HashMap<String, Object>();
+                            subdata.put("resources", gs.getPlayer(player).getResources());
+                        data.put("info", subdata);
+                    Gson gson = new Gson();
+                    out_pipe.write(gson.toJson(data));
+                } else {
+                    gs.toJSON(out_pipe);
+                }
+                out_pipe.append("\n");
+                out_pipe.flush();
             }
-            out_pipe.append("\n");
-            out_pipe.flush();
             
             // wait to get an action:
             //while(!in_pipe.ready());
@@ -208,4 +218,47 @@ public class SocketRewardAI extends SocketAI implements SocketAIInterface{
     public boolean getRender() {
         return render;
     }
+    public void sendGameStateRGBArray(PhysicalGameStateJFrame w) {
+        BufferedImage image = new BufferedImage(w.getWidth(),
+        w.getHeight(), BufferedImage.TYPE_INT_RGB);
+        // paints into image's Graphics
+        w.paint(image.getGraphics());
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(image, "jpg", baos);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        byte[] bytes = baos.toByteArray();
+        Gson gson = new Gson();
+        try {
+            DataOutputStream dOut = new DataOutputStream(socket.getOutputStream());
+            dOut.writeInt(bytes.length);
+            dOut.flush();
+            dOut.write(bytes);
+            dOut.flush();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+    }
+
+    private static int[][][] convertTo2DWithoutUsingGetRGB(BufferedImage image) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+        int[][][]rgbarray = new int[height][width][3];
+        for (int row = 0; row < height; row++) {
+            for (int col = 0; col < width; col++) {
+                Color c = new Color(image.getRGB(col, row));
+                rgbarray[row][col][0] = c.getRed();
+                rgbarray[row][col][1] = c.getGreen();
+                rgbarray[row][col][2] = c.getBlue();
+            }
+        }
+        return rgbarray;
+    }
+
 }

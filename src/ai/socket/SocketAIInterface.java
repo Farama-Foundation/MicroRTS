@@ -1,10 +1,12 @@
 package ai.socket;
 
+import gui.PhysicalGameStateJFrame;
 import rts.GameState;
 import rts.PlayerAction;
 
 public interface SocketAIInterface {
 	public PlayerAction getAction(int player, GameState gs) throws Exception;
+	public void sendGameStateRGBArray(PhysicalGameStateJFrame w);
     public void connectToServer() throws Exception;
     public void reset();
     public void gameOver(int winner) throws Exception;

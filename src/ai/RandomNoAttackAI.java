@@ -8,6 +8,7 @@ import ai.core.AI;
 import ai.core.ParameterSpecification;
 import ai.evaluation.SimpleEvaluationFunction;
 import ai.socket.SocketAIInterface;
+import gui.PhysicalGameStateJFrame;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -160,5 +161,7 @@ public class RandomNoAttackAI extends AI implements SocketAIInterface{
     }
     public boolean getRender() {
         return false;
+    }
+    public void sendGameStateRGBArray(PhysicalGameStateJFrame w) {
     }
 }
