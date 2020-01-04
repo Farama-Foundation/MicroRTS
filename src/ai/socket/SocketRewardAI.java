@@ -52,6 +52,12 @@ public class SocketRewardAI extends SocketAI implements SocketAIInterface{
         layerJSON = a_JSON;
     }
 
+    public SocketRewardAI(int mt, int mi, String a_usp, int a_language, UnitTypeTable a_utt, boolean a_JSON)
+            throws Exception {
+        super(mt, mi, a_usp, a_language, a_utt);
+        layerJSON = a_JSON;
+    }
+
     public void computeReward(int player, GameState gs) throws Exception {
         // do something
         reward = 1;

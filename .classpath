@@ -8,5 +8,6 @@
     <classpathentry exported="true" kind="lib" path="lib/json.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/minimal-json-0.9.4.jar"/>
     <classpathentry exported="true" kind="lib" path="lib/weka.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/junixsocket-selftest-2.3.0-jar-with-dependencies.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -7,7 +7,7 @@ import rts.PlayerAction;
 public interface SocketAIInterface {
 	public PlayerAction getAction(int player, GameState gs) throws Exception;
 	public void sendGameStateRGBArray(PhysicalGameStateJFrame w);
-    public void connectToServer() throws Exception;
+    public void connectToServer(boolean useUnixSocket) throws Exception;
     public void reset();
     public void gameOver(int winner) throws Exception;
 	public void computeReward(int i, int j, GameState gs) throws Exception;

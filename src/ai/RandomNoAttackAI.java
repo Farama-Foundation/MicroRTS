@@ -60,7 +60,7 @@ public class RandomNoAttackAI extends AI implements SocketAIInterface{
     }
 
     // Dummy methods
-    public void connectToServer() throws Exception {
+    public void connectToServer(boolean useUnixSocket) throws Exception {
     }
     public void gameOver(int winner, GameState gs) throws Exception{
     }

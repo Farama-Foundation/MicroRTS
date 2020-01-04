@@ -52,6 +52,9 @@ public class RunClient {
     @Parameter(names = "--server-port", description = "The microRTS server port")
     int serverPort = 9898;
 
+    @Parameter(names = "--unix-socket-path", description = "The path to the unix domain socket file")
+    String unixSocketPath = "";
+
     @Parameter(names = "--map", description = "Which map in the `maps` folder are you using?")
     String map = "maps/4x4/baseTwoWorkersMaxResources4x4.xml";
 
@@ -96,10 +99,19 @@ public class RunClient {
                 ai1 = new SocketRewardPenaltyOnInvalidActionAI(100, 0, serverIP, serverPort, SocketRewardAI.LANGUAGE_JSON, utt, layerJSON);
                 break;
             case "no-penalty":
-                ai1 = new SocketRewardAI(100, 0, serverIP, serverPort, SocketRewardAI.LANGUAGE_JSON, utt, layerJSON);
+                if (unixSocketPath.length() > 0) {
+                    ai1 = new SocketRewardAI(100, 0, unixSocketPath, SocketRewardAI.LANGUAGE_JSON, utt, layerJSON);
+                    System.out.println("unixSocket used");
+                } else {
+                    ai1 = new SocketRewardAI(100, 0, serverIP, serverPort, SocketRewardAI.LANGUAGE_JSON, utt, layerJSON);
+                }
                 break;
             case "no-penalty-individual":
-                ai1 = new IndividualSocketRewardAI(100, 0, serverIP, serverPort, SocketRewardAI.LANGUAGE_JSON, utt, layerJSON, windowSize);
+                if (unixSocketPath.length() > 0) {
+                    ai1 = new IndividualSocketRewardAI(100, 0, unixSocketPath, SocketRewardAI.LANGUAGE_JSON, utt, layerJSON, windowSize);
+                } else {
+                    ai1 = new IndividualSocketRewardAI(100, 0, serverIP, serverPort, SocketRewardAI.LANGUAGE_JSON, utt, layerJSON, windowSize);
+                }
                 break;
             case "random-no-attack":
                 ai1 = new RandomNoAttackAI(seed);

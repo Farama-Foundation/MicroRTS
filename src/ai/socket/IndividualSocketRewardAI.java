@@ -36,6 +36,11 @@ public class IndividualSocketRewardAI extends SocketRewardAI {
         this.windowSize = windowSize;
     }
 
+    public IndividualSocketRewardAI(int mt, int mi, String a_usp, int a_language, UnitTypeTable a_utt, boolean a_JSON, int windowSize) throws Exception {
+        super(mt, mi, a_usp, a_language, a_utt, a_JSON);
+        this.windowSize = windowSize;
+    }
+
     @Override
     public PlayerAction getAction(int player, GameState gs) throws Exception {
         // send the game state:

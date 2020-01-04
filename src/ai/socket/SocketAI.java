@@ -9,11 +9,15 @@ import ai.core.AI;
 import ai.core.AIWithComputationBudget;
 import ai.core.ParameterSpecification;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.net.ConnectException;
 import java.net.Socket;
+import org.newsclub.net.unix.AFUNIXSocket;
+import org.newsclub.net.unix.AFUNIXSocketAddress;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.jdom.Element;
@@ -38,6 +42,7 @@ public class SocketAI extends AIWithComputationBudget {
     int communication_language = LANGUAGE_XML;
     String serverAddress = "127.0.0.1";
     int serverPort = 9898;
+    String unixSocketPath = "/tmp/unixsocket";
     Socket socket = null;
     BufferedReader in_pipe = null;
     PrintWriter out_pipe = null;
@@ -49,7 +54,7 @@ public class SocketAI extends AIWithComputationBudget {
         super(100,-1);
         utt = a_utt;
         try {
-            connectToServer();
+            connectToServer(false);
         }catch(Exception e) {
             e.printStackTrace();
         }
@@ -66,7 +71,30 @@ public class SocketAI extends AIWithComputationBudget {
         int tryCount = 0;
         while(true) {
             try {
-                connectToServer();
+                connectToServer(false);
+                break;
+            } catch(ConnectException e) {
+                System.out.printf("Connection to the MicroRTS server failed. Retrying in %f seconds\n", connectionWaitDuration / 1000.0);
+                Thread.sleep(connectionWaitDuration);
+                if (++tryCount == connectionMaxTry) {
+                    throw new Exception("Connection to the MicroRTS server failed");
+                }
+            } catch(Exception e) {
+                throw e;
+            }
+        }
+    }
+
+    public SocketAI(int mt, int mi, String usp, int a_language, UnitTypeTable a_utt)
+            throws Exception {
+        super(mt, mi);
+        unixSocketPath = usp;
+        communication_language = a_language;
+        utt = a_utt;
+        int tryCount = 0;
+        while(true) {
+            try {
+                connectToServer(true);
                 break;
             } catch(ConnectException e) {
                 System.out.printf("Connection to the MicroRTS server failed. Retrying in %f seconds\n", connectionWaitDuration / 1000.0);
@@ -113,9 +141,16 @@ public class SocketAI extends AIWithComputationBudget {
     }
     
     
-    public void connectToServer() throws Exception {
-        // Make connection and initialize streams
-        socket = new Socket(serverAddress, serverPort);
+    public void connectToServer(boolean useUnixSocket) throws Exception {
+        // Make connection and initialize streams 
+        if (useUnixSocket) {
+            System.out.println(unixSocketPath);
+            File socketFile = new File(unixSocketPath);
+            socket = AFUNIXSocket.newInstance();
+            socket.connect(new AFUNIXSocketAddress(socketFile));
+        } else {
+            socket = new Socket(serverAddress, serverPort);
+        }
         in_pipe = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out_pipe = new PrintWriter(socket.getOutputStream(), true);
 
