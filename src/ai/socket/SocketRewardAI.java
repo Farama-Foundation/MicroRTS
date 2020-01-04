@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.io.RandomAccessFile;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -40,6 +43,8 @@ public class SocketRewardAI extends SocketAI implements SocketAIInterface{
     boolean firstRewardCalculation = true;
     int frameSkip = 0;
     int frameSkipCount = 0;
+    RandomAccessFile file = null;
+    DataOutputStream dOut = null;
     public boolean reset = false;
     public boolean gameover = false;
     public boolean finished = false;
@@ -240,7 +245,9 @@ public class SocketRewardAI extends SocketAI implements SocketAIInterface{
         byte[] bytes = baos.toByteArray();
         Gson gson = new Gson();
         try {
-            DataOutputStream dOut = new DataOutputStream(socket.getOutputStream());
+            if (dOut != null) {
+                dOut = new DataOutputStream(socket.getOutputStream());
+            }
             dOut.writeInt(bytes.length);
             dOut.flush();
             dOut.write(bytes);
