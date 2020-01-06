@@ -696,6 +696,47 @@ public class UnitAction {
      * @param utt
      * @return
      */
+    public static UnitAction fromActionArray(int[] action, UnitTypeTable utt) {
+        int actionType = action[2];
+        UnitAction ua = new UnitAction(actionType);
+        switch (actionType) {
+            case TYPE_NONE: {
+                break;
+            }
+            case TYPE_MOVE: {
+                ua.parameter = action[3];
+                break;
+            }
+            case TYPE_HARVEST: {
+                ua.parameter = action[4];
+                break;
+            }
+            case TYPE_RETURN: {
+                ua.parameter = action[5];
+                break;
+            }
+            case TYPE_PRODUCE: {
+                ua.parameter = action[6];
+                ua.unitType = utt.getUnitType(action[7]);
+            }
+            case TYPE_ATTACK_LOCATION: {
+                ua.x = action[8];
+                ua.y = action[9];
+                break;
+            }
+        }
+        return ua;
+    }
+
+    /**
+     * Creates a UnitAction from an action array
+     * expects [x_coordinate(x), y_coordinate(y), a_t(6), p_move(4), p_harvest(4), p_return(4), p_produce_direction(4), 
+     * p_produce_unit_type(z), p_attack_location_x_coordinate(x),  p_attack_location_y_coordinate(y), frameskip(n)]
+     *
+     * @param o
+     * @param utt
+     * @return
+     */
     public static UnitAction fromActionArray(JsonArray a, UnitTypeTable utt) {
         int actionType = a.get(2).asInt();
         UnitAction ua = new UnitAction(actionType);

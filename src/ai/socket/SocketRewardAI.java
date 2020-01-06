@@ -63,11 +63,6 @@ public class SocketRewardAI extends SocketAI implements SocketAIInterface{
         layerJSON = a_JSON;
     }
 
-    public void computeReward(int player, GameState gs) throws Exception {
-        // do something
-        reward = 1;
-    }
-
     public void computeReward(int maxplayer, int minplayer, GameState gs) throws Exception {
         // do something
         if (firstRewardCalculation) {

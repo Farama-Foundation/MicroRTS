@@ -53,7 +53,7 @@ public class RunClient {
     int serverPort = 9898;
 
     @Parameter(names = "--unix-socket-path", description = "The path to the unix domain socket file")
-    String unixSocketPath = "";
+    String unixSocketPath = "/home/costa/Documents/work/go/src/github.com/vwxyzjn/gym-microrts/unix/u";
 
     @Parameter(names = "--map", description = "Which map in the `maps` folder are you using?")
     String map = "maps/4x4/baseTwoWorkersMaxResources4x4.xml";

@@ -6,6 +6,8 @@ import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 import java.io.Writer;
 import rts.units.Unit;
+
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import org.jdom.Element;
@@ -363,6 +365,25 @@ public class PlayerAction {
         }
         return pa;
     }
+
+    public static PlayerAction fromActionArrays(int[][] actions, GameState gs, UnitTypeTable utt, int currentPlayer) {
+        PlayerAction pa = new PlayerAction();
+        for(int[] action:actions) {
+            Unit u = gs.pgs.getUnitAt(action[0], action[1]);
+            UnitActionAssignment uaa = gs.unitActions.get(u);
+            if (u != null && u.getPlayer() == currentPlayer && uaa == null) {
+                // execute the action if the following happens
+                // 1. The selected unit is *not* null.
+                // 2. The unit selected is owned by the current player
+                // 3. The unit is not currently busy (its unit action is null)
+                // int id = (int) u.getID();
+                UnitAction ua = UnitAction.fromActionArray(action, utt);
+                pa.addUnitAction(u, ua);
+            }
+        }
+        return pa;
+    }
+
 
     /**
      * Creates a PlayerAction from a action array object

@@ -9,3 +9,4 @@ done
 jar cvf microrts.jar *
 mv microrts.jar ../microrts.jar
 cd ..
+rm -rf build
