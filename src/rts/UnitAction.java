@@ -730,6 +730,61 @@ public class UnitAction {
 
     /**
      * Creates a UnitAction from an action array
+     * expects [a_t(6), p_move(4), p_harvest(4), p_return(4), p_produce_direction(4), 
+     * p_produce_unit_type(z), p_attack_location_x_coordinate(x),  p_attack_location_y_coordinate(y), frameskip(n)]
+     * @param o
+     * @param utt
+     * @return
+     */
+    public static UnitAction fromActionArrayForUnit(int[] action, UnitTypeTable utt, GameState gs, Unit u) {
+        int actionType = action[0];
+        UnitAction ua = new UnitAction(actionType);
+        switch (actionType) {
+            case TYPE_NONE: {
+                break;
+            }
+            case TYPE_MOVE: {
+                ua.parameter = action[1];
+                break;
+            }
+            case TYPE_HARVEST: {
+                ua.parameter = action[2];
+                break;
+            }
+            case TYPE_RETURN: {
+                ua.parameter = action[3];
+                break;
+            }
+            case TYPE_PRODUCE: {
+                ua.parameter = action[4];
+                ua.unitType = utt.getUnitType(action[5]);
+            }
+            case TYPE_ATTACK_LOCATION: {
+                // normalize and clip
+                int x = action[6];
+                int y = action[7];
+                int targetx = u.getX() + x;
+                if (targetx<0) {
+                    targetx = 0;
+                } else if (targetx > gs.pgs.height) {
+                    targetx = gs.pgs.height;
+                }
+                int targety = u.getY() + y;
+                if (targety<0) {
+                    targety = 0;
+                } else if (targety > gs.pgs.width) {
+                    targety = gs.pgs.width;
+                }
+                ua.x = targetx;
+                ua.y = targety;
+                break;
+            }
+        }
+        return ua;
+    }
+
+    /**
+     * Creates a UnitAction from an action array
      * expects [x_coordinate(x), y_coordinate(y), a_t(6), p_move(4), p_harvest(4), p_return(4), p_produce_direction(4), 
      * p_produce_unit_type(z), p_attack_location_x_coordinate(x),  p_attack_location_y_coordinate(y), frameskip(n)]
      *

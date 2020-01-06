@@ -384,6 +384,21 @@ public class PlayerAction {
         return pa;
     }
 
+    public static PlayerAction fromActionArrayForUnit(int[] action, GameState gs, UnitTypeTable utt, int currentPlayer, Unit u) {
+        PlayerAction pa = new PlayerAction();
+        UnitActionAssignment uaa = gs.unitActions.get(u);
+        if (u != null && u.getPlayer() == currentPlayer && uaa == null) {
+            // execute the action if the following happens
+            // 1. The selected unit is *not* null.
+            // 2. The unit selected is owned by the current player
+            // 3. The unit is not currently busy (its unit action is null)
+            // int id = (int) u.getID();
+            UnitAction ua = UnitAction.fromActionArrayForUnit(action, utt, gs, u);
+            pa.addUnitAction(u, ua);
+        }
+        return pa;
+    }
+
 
     /**
      * Creates a PlayerAction from a action array object

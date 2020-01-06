@@ -15,6 +15,8 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringReader;
+import java.io.Writer;
+import java.io.StringWriter;
 import java.net.ConnectException;
 import java.net.Socket;
 import org.newsclub.net.unix.AFUNIXSocket;
@@ -26,6 +28,7 @@ import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import rts.GameState;
 import rts.PlayerAction;
+import rts.units.Unit;
 import rts.units.UnitTypeTable;
 import util.XMLWriter;
 
@@ -33,16 +36,21 @@ import util.XMLWriter;
  *
  * @author santi
  */
-public class JNIAI extends AIWithComputationBudget implements JNIInterface {
+public class JNILocalAI extends AIWithComputationBudget implements JNIInterface{
     UnitTypeTable utt = null;
     double reward = 0.0;
     double oldReward = 0.0;
     boolean firstRewardCalculation = true;
     SimpleEvaluationFunction ef = new SimpleEvaluationFunction();
 
-    public JNIAI(int timeBudget, int iterationsBudget, UnitTypeTable a_utt) {
+    int windowSize = 1;
+    int currentUnitCounter = 0;
+    Unit currentUnit = null;
+
+    public JNILocalAI(int timeBudget, int iterationsBudget, UnitTypeTable a_utt, int a_ws) {
         super(timeBudget, iterationsBudget);
         utt = a_utt;
+        windowSize = a_ws;
     }
 
     public double computeReward(int maxplayer, int minplayer, GameState gs) throws Exception {
@@ -59,14 +67,20 @@ public class JNIAI extends AIWithComputationBudget implements JNIInterface {
         return reward;
     }
 
-    public PlayerAction getAction(int player, GameState gs, int[][] action) throws Exception {
-        PlayerAction pa = PlayerAction.fromActionArrays(action, gs, utt, player);
+    public PlayerAction getAction(int player, GameState gs, int[][] actions) throws Exception {
+        PlayerAction pa = PlayerAction.fromActionArrayForUnit(actions[0], gs, utt, player, currentUnit);
         pa.fillWithNones(gs, player, 1);
+        currentUnitCounter++;
+        if (currentUnitCounter>=gs.getPhysicalGameState().getUnits().size()) {
+            currentUnitCounter=0;
+        }
         return pa;
     }
 
     public int[][][] getObservation(int player, GameState gs) throws Exception {
-        return gs.getMatrixObservation();
+        currentUnit = gs.getPhysicalGameState().getUnits().get(currentUnitCounter);
+        return gs.getUnitObservation(
+            currentUnit, windowSize);
     }
 
     @Override
@@ -95,7 +109,9 @@ public class JNIAI extends AIWithComputationBudget implements JNIInterface {
     @Override
     public String computeInfo(int player, GameState gs) throws Exception {
         // TODO Auto-generated method stub
-        return "";
+        Writer writer = new StringWriter();
+        currentUnit.toJSON(writer);
+        return String.format("{\"current_unit\": %s}", writer.toString());
     }
     
 }

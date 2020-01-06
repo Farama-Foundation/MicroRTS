@@ -33,6 +33,8 @@ import ai.RandomBiasedAI;
 import ai.RandomNoAttackAI;
 import ai.core.AI;
 import ai.jni.JNIAI;
+import ai.jni.JNILocalAI;
+import ai.jni.JNIInterface;
 import ai.socket.IndividualSocketRewardAI;
 import ai.socket.SocketAIInterface;
 import ai.socket.SocketRewardAI;
@@ -86,11 +88,8 @@ public class JNIClient {
     @Parameter(names = "--evaluation-filename", description = "Whether to save the evaluation results in a the supplied filename")
     String evaluationFileName = "./test.json";
 
-    @Parameter(names = "--microrts-path", description = "The path of microrts unzipped folder")
-    String micrortsPath = "";
-
     PhysicalGameStateJFrame w;
-    public JNIAI ai1;
+    public JNIInterface ai1;
     public AI ai2;
     PhysicalGameState pgs;
     GameState gs;
@@ -112,7 +111,7 @@ public class JNIClient {
         }
     }
 
-    public JNIClient() throws Exception{
+    public JNIClient(String micrortsPath) throws Exception{
         utt = new UnitTypeTable();
         utt.getUnitType("Worker").harvestTime = 10;
         ai1 = new JNIAI(100, 0, utt);
@@ -132,26 +131,28 @@ public class JNIClient {
         System.out.println(map);
     }
 
-    // public byte[] render(boolean returnPixels) throws Exception {
-    //     long startTime = System.nanoTime();
-    //     if (w==null) {
-    //         w = PhysicalGameStatePanel.newVisualizer(gs, 640, 640, false, PhysicalGameStatePanel.COLORSCHEME_BLACK);
-    //     }
-    //     w.setStateCloning(gs);
-    //     w.repaint();
-    //     if (!returnPixels) {
-    //         return null;
-    //     }
-
-    //     BufferedImage image = new BufferedImage(w.getWidth(),
-    //     w.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-    //     w.paint(image.getGraphics());
-    //     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    //     ImageIO.write(image, "jpg", baos);
-    //     return baos.toByteArray();
-    // }
+    public JNIClient(String micrortsPath, int windowSize) throws Exception{
+        utt = new UnitTypeTable();
+        utt.getUnitType("Worker").harvestTime = 10;
+        ai1 = new JNILocalAI(100, 0, utt, windowSize);
+        switch (ai2Type) {
+            case "passive":
+                ai2 = new PassiveAI();
+                break;
+            case "random-biased":
+                ai2 = new RandomBiasedAI();
+                break;
+            default:
+                throw new Exception("no ai2 was chosen");
+        }
+        if (micrortsPath.length() != 0) {
+            map = Paths.get(micrortsPath, map).toString();
+        }
+        System.out.println(map);
+    }
 
     public byte[] render(boolean returnPixels) throws Exception {
+        // TODO: The blue and red color reversed. Low priority
         long startTime = System.nanoTime();
         if (w==null) {
             w = PhysicalGameStatePanel.newVisualizer(gs, 640, 640, false, PhysicalGameStatePanel.COLORSCHEME_BLACK);
@@ -180,7 +181,7 @@ public class JNIClient {
         // simulate:
         gameover = gs.cycle();
         if (gameover) {
-            ai1.gameOver(gs.winner());
+            // ai1.gameOver(gs.winner());
             ai2.gameOver(gs.winner());
         }
         try {
@@ -194,7 +195,7 @@ public class JNIClient {
             ai1.getObservation(0, gs),
             ai1.computeReward(0, 1, gs),
             gameover,
-            "{}");
+            ai1.computeInfo(0, gs));
     }
 
     public String sendUTT() throws Exception {
@@ -220,100 +221,4 @@ public class JNIClient {
             w.dispose();    
         }
     }
-
-    private static int[][] convertTo2DWithoutUsingGetRGB(BufferedImage image) {
-
-        final byte[] pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
-        final int width = image.getWidth();
-        final int height = image.getHeight();
-        final boolean hasAlphaChannel = image.getAlphaRaster() != null;
-  
-        int[][] result = new int[height][width];
-        if (hasAlphaChannel) {
-           final int pixelLength = 4;
-           for (int pixel = 0, row = 0, col = 0; pixel + 3 < pixels.length; pixel += pixelLength) {
-              int argb = 0;
-              argb += (((int) pixels[pixel] & 0xff) << 24); // alpha
-              argb += ((int) pixels[pixel + 1] & 0xff); // blue
-              argb += (((int) pixels[pixel + 2] & 0xff) << 8); // green
-              argb += (((int) pixels[pixel + 3] & 0xff) << 16); // red
-              result[row][col] = argb;
-              col++;
-              if (col == width) {
-                 col = 0;
-                 row++;
-              }
-           }
-        } else {
-           final int pixelLength = 3;
-           for (int pixel = 0, row = 0, col = 0; pixel + 2 < pixels.length; pixel += pixelLength) {
-              int argb = 0;
-              argb += -16777216; // 255 alpha
-              argb += ((int) pixels[pixel] & 0xff); // blue
-              argb += (((int) pixels[pixel + 1] & 0xff) << 8); // green
-              argb += (((int) pixels[pixel + 2] & 0xff) << 16); // red
-              result[row][col] = argb;
-              col++;
-              if (col == width) {
-                 col = 0;
-                 row++;
-              }
-           }
-        }
-  
-        return result;
-     }
-
-     private static int[][][] convertTo2DWithoutUsingGetRGB2(BufferedImage image) {
-
-        final byte[] pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
-        final int width = image.getWidth();
-        final int height = image.getHeight();
-        final boolean hasAlphaChannel = image.getAlphaRaster() != null;
-  
-        int[][] result = new int[height][width];
-
-        int[][][] rgbarray = new int[height][width][3];
-        if (hasAlphaChannel) {
-           final int pixelLength = 4;
-           for (int pixel = 0, row = 0, col = 0; pixel + 3 < pixels.length; pixel += pixelLength) {
-                rgbarray[row][col][0] = ((int) pixels[pixel + 1] & 0xff);
-                rgbarray[row][col][1] = (((int) pixels[pixel + 2] & 0xff) << 8);
-                rgbarray[row][col][2] = (((int) pixels[pixel + 3] & 0xff) << 16);
-              col++;
-              if (col == width) {
-                 col = 0;
-                 row++;
-              }
-           }
-        } else {
-           final int pixelLength = 3;
-           for (int pixel = 0, row = 0, col = 0; pixel + 2 < pixels.length; pixel += pixelLength) {
-              rgbarray[row][col][0] = ((int) pixels[pixel] & 0xff);
-              rgbarray[row][col][1] = (((int) pixels[pixel + 1] & 0xff) << 8);
-              rgbarray[row][col][2] = (((int) pixels[pixel + 2] & 0xff) << 16);
-              col++;
-              if (col == width) {
-                 col = 0;
-                 row++;
-              }
-           }
-        }
-  
-        return rgbarray;
-     }
-
-     private static int[][] convertTo2DUsingGetRGB(BufferedImage image) {
-        int width = image.getWidth();
-        int height = image.getHeight();
-        int[][] result = new int[height][width];
-  
-        for (int row = 0; row < height; row++) {
-           for (int col = 0; col < width; col++) {
-              result[row][col] = image.getRGB(col, row);
-           }
-        }
-  
-        return result;
-     }
 }
