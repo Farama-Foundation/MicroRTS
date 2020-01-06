@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.Writer;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -131,6 +132,25 @@ public class JNIClient {
         System.out.println(map);
     }
 
+    // public byte[] render(boolean returnPixels) throws Exception {
+    //     long startTime = System.nanoTime();
+    //     if (w==null) {
+    //         w = PhysicalGameStatePanel.newVisualizer(gs, 640, 640, false, PhysicalGameStatePanel.COLORSCHEME_BLACK);
+    //     }
+    //     w.setStateCloning(gs);
+    //     w.repaint();
+    //     if (!returnPixels) {
+    //         return null;
+    //     }
+
+    //     BufferedImage image = new BufferedImage(w.getWidth(),
+    //     w.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+    //     w.paint(image.getGraphics());
+    //     ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    //     ImageIO.write(image, "jpg", baos);
+    //     return baos.toByteArray();
+    // }
+
     public byte[] render(boolean returnPixels) throws Exception {
         long startTime = System.nanoTime();
         if (w==null) {
@@ -138,8 +158,6 @@ public class JNIClient {
         }
         w.setStateCloning(gs);
         w.repaint();
-        System.out.println("rendered");
-        System.out.println((System.nanoTime() - startTime));
 
         if (!returnPixels) {
             return null;
@@ -147,29 +165,10 @@ public class JNIClient {
         BufferedImage image = new BufferedImage(w.getWidth(),
         w.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
         w.paint(image.getGraphics());
-        System.out.println("painted");
-        System.out.println((System.nanoTime() - startTime));
 
         WritableRaster raster = image .getRaster();
-        DataBufferByte data   = (DataBufferByte) raster.getDataBuffer();
-        byte[] bytes1 = data.getData();
-        System.out.println("bytes1");
-        System.out.println((System.nanoTime() - startTime));
-
-        int[][] result = convertTo2DWithoutUsingGetRGB(image);
-        System.out.println("convertTo2DWithoutUsingGetRGB");
-        System.out.println((System.nanoTime() - startTime));
-
-        int[][][] result2 = convertTo2DWithoutUsingGetRGB2(image);
-        System.out.println("convertTo2DWithoutUsingGetRGB2");
-        System.out.println((System.nanoTime() - startTime));
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(image, "jpg", baos);
-        byte[] bytes = baos.toByteArray();
-        System.out.println("bytes");
-        System.out.println((System.nanoTime() - startTime));
-        return bytes1;
+        DataBufferByte data = (DataBufferByte) raster.getDataBuffer();
+        return data.getData();
     }
 
     public Response step(int[][] action) throws Exception {
