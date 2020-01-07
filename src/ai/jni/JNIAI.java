@@ -95,7 +95,7 @@ public class JNIAI extends AIWithComputationBudget implements JNIInterface {
     @Override
     public String computeInfo(int player, GameState gs) throws Exception {
         // TODO Auto-generated method stub
-        return "";
+        return "{}";
     }
     
 }

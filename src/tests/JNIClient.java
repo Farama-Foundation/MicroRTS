@@ -61,32 +61,12 @@ import rts.units.UnitTypeTable;
  * 
  */
 public class JNIClient {
-    @Parameter(names = "--server-ip", description = "The microRTS server IP")
-    String serverIP = "127.0.0.1";
-
-    @Parameter(names = "--server-port", description = "The microRTS server port")
-    int serverPort = 9898;
-
-    @Parameter(names = "--unix-socket-path", description = "The path to the unix domain socket file")
-    String unixSocketPath = "/home/costa/Documents/work/go/src/github.com/vwxyzjn/gym-microrts/unix/u";
-
-    @Parameter(names = "--map", description = "Which map in the `maps` folder are you using?")
-    String map = "maps/4x4/baseTwoWorkersMaxResources4x4.xml";
-
-    @Parameter(names = "--ai1-type", description = "The type of AI1")
-    String ai1Type = "random-no-attack";
 
     @Parameter(names = "--ai2-type", description = "The type of AI2")
     String ai2Type = "passive";
 
-    @Parameter(names = "--window-size", description = "The microRTS server IP")
-    int windowSize = 1;
-
     @Parameter(names = "--seed", description = "The random seed")
     int seed = 3;
-
-    @Parameter(names = "--evaluation-filename", description = "Whether to save the evaluation results in a the supplied filename")
-    String evaluationFileName = "./test.json";
 
     PhysicalGameStateJFrame w;
     public JNIInterface ai1;
@@ -94,6 +74,8 @@ public class JNIClient {
     PhysicalGameState pgs;
     GameState gs;
     UnitTypeTable utt;
+    String mapPath;
+    String micrortsPath;
     boolean gameover = false;
     boolean layerJSON = true;
 
@@ -111,7 +93,9 @@ public class JNIClient {
         }
     }
 
-    public JNIClient(String micrortsPath) throws Exception{
+    public JNIClient(String a_micrortsPath, String a_mapPath) throws Exception{
+        micrortsPath = a_micrortsPath;
+        mapPath = a_mapPath;
         utt = new UnitTypeTable();
         utt.getUnitType("Worker").harvestTime = 10;
         ai1 = new JNIAI(100, 0, utt);
@@ -126,12 +110,14 @@ public class JNIClient {
                 throw new Exception("no ai2 was chosen");
         }
         if (micrortsPath.length() != 0) {
-            map = Paths.get(micrortsPath, map).toString();
+            this.mapPath = Paths.get(micrortsPath, mapPath).toString();
         }
-        System.out.println(map);
+        System.out.println(mapPath);
     }
 
-    public JNIClient(String micrortsPath, int windowSize) throws Exception{
+    public JNIClient(String a_micrortsPath, String a_mapPath, int windowSize) throws Exception{
+        micrortsPath = a_micrortsPath;
+        mapPath = a_mapPath;
         utt = new UnitTypeTable();
         utt.getUnitType("Worker").harvestTime = 10;
         ai1 = new JNILocalAI(100, 0, utt, windowSize);
@@ -146,9 +132,9 @@ public class JNIClient {
                 throw new Exception("no ai2 was chosen");
         }
         if (micrortsPath.length() != 0) {
-            map = Paths.get(micrortsPath, map).toString();
+            mapPath = Paths.get(micrortsPath, mapPath).toString();
         }
-        System.out.println(map);
+        System.out.println(mapPath);
     }
 
     public byte[] render(boolean returnPixels) throws Exception {
@@ -207,7 +193,8 @@ public class JNIClient {
     public Response reset() throws Exception {
         ai1.reset();
         ai2.reset();
-        pgs = PhysicalGameState.load(map, utt);
+        System.out.println(mapPath);
+        pgs = PhysicalGameState.load(mapPath, utt);
         gs = new GameState(pgs, utt);
         return new Response(
             ai1.getObservation(0, gs),
