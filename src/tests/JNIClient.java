@@ -193,7 +193,6 @@ public class JNIClient {
     public Response reset() throws Exception {
         ai1.reset();
         ai2.reset();
-        System.out.println(mapPath);
         pgs = PhysicalGameState.load(mapPath, utt);
         gs = new GameState(pgs, utt);
         return new Response(
