@@ -696,7 +696,7 @@ public class UnitAction {
      * @param utt
      * @return
      */
-    public static UnitAction fromActionArray(int[] action, UnitTypeTable utt) {
+    public static UnitAction fromActionArray(int[] action, UnitTypeTable utt, GameState gs) {
         int actionType = action[2];
         UnitAction ua = new UnitAction(actionType);
         switch (actionType) {

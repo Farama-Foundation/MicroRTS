@@ -369,7 +369,7 @@ public class PlayerAction {
     public static PlayerAction fromActionArrays(int[][] actions, GameState gs, UnitTypeTable utt, int currentPlayer) {
         PlayerAction pa = new PlayerAction();
         for(int[] action:actions) {
-            Unit u = gs.pgs.getUnitAt(action[0], action[1]);
+            Unit u = gs.pgs.getUnitAt(action[0] % gs.pgs.height, action[0] % gs.pgs.width);
             UnitActionAssignment uaa = gs.unitActions.get(u);
             if (u != null && u.getPlayer() == currentPlayer && uaa == null) {
                 // execute the action if the following happens
@@ -377,7 +377,7 @@ public class PlayerAction {
                 // 2. The unit selected is owned by the current player
                 // 3. The unit is not currently busy (its unit action is null)
                 // int id = (int) u.getID();
-                UnitAction ua = UnitAction.fromActionArray(action, utt);
+                UnitAction ua = UnitAction.fromActionArray(action, utt, gs);
                 pa.addUnitAction(u, ua);
             }
         }
