@@ -689,39 +689,39 @@ public class UnitAction {
 
     /**
      * Creates a UnitAction from an action array
-     * expects [x_coordinate(x), y_coordinate(y), a_t(6), p_move(4), p_harvest(4), p_return(4), p_produce_direction(4), 
-     * p_produce_unit_type(z), p_attack_location_x_coordinate(x),  p_attack_location_y_coordinate(y), frameskip(n)]
+     * expects [x_coordinate(x) * y_coordinate(y), a_t(6), p_move(4), p_harvest(4), p_return(4), p_produce_direction(4), 
+     * p_produce_unit_type(z), p_attack_location_x_coordinate(x) * p_attack_location_y_coordinate(y), frameskip(n)]
      *
      * @param o
      * @param utt
      * @return
      */
     public static UnitAction fromActionArray(int[] action, UnitTypeTable utt, GameState gs) {
-        int actionType = action[2];
+        int actionType = action[1];
         UnitAction ua = new UnitAction(actionType);
         switch (actionType) {
             case TYPE_NONE: {
                 break;
             }
             case TYPE_MOVE: {
-                ua.parameter = action[3];
+                ua.parameter = action[2];
                 break;
             }
             case TYPE_HARVEST: {
-                ua.parameter = action[4];
+                ua.parameter = action[3];
                 break;
             }
             case TYPE_RETURN: {
-                ua.parameter = action[5];
+                ua.parameter = action[4];
                 break;
             }
             case TYPE_PRODUCE: {
-                ua.parameter = action[6];
-                ua.unitType = utt.getUnitType(action[7]);
+                ua.parameter = action[5];
+                ua.unitType = utt.getUnitType(action[6]);
             }
             case TYPE_ATTACK_LOCATION: {
-                ua.x = action[8];
-                ua.y = action[9];
+                ua.x = action[7] % gs.pgs.height;
+                ua.y = action[7] % gs.pgs.width;
                 break;
             }
         }
@@ -731,7 +731,7 @@ public class UnitAction {
     /**
      * Creates a UnitAction from an action array
      * expects [a_t(6), p_move(4), p_harvest(4), p_return(4), p_produce_direction(4), 
-     * p_produce_unit_type(z), p_attack_location_x_coordinate(x),  p_attack_location_y_coordinate(y), frameskip(n)]
+     * p_produce_unit_type(z), p_attack_location_x_coordinate(x) * p_attack_location_y_coordinate(y), frameskip(n)]
      * @param o
      * @param utt
      * @return
@@ -761,8 +761,8 @@ public class UnitAction {
             }
             case TYPE_ATTACK_LOCATION: {
                 // normalize and clip
-                int x = action[6];
-                int y = action[7];
+                int x = action[6] % gs.pgs.height;
+                int y = action[6] % gs.pgs.width;
                 int targetx = u.getX() + x;
                 if (targetx<0) {
                     targetx = 0;
