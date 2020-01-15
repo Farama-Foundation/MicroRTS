@@ -720,8 +720,8 @@ public class UnitAction {
                 ua.unitType = utt.getUnitType(action[6]);
             }
             case TYPE_ATTACK_LOCATION: {
-                ua.x = action[7] % gs.pgs.height;
-                ua.y = action[7] % gs.pgs.width;
+                ua.x = action[7] % gs.pgs.width;
+                ua.y = action[7] / gs.pgs.width;
                 break;
             }
         }
@@ -761,19 +761,19 @@ public class UnitAction {
             }
             case TYPE_ATTACK_LOCATION: {
                 // normalize and clip
-                int x = action[6] % gs.pgs.height;
-                int y = action[6] % gs.pgs.width;
+                int x = action[6] % gs.pgs.width;
+                int y = action[6] / gs.pgs.width;
                 int targetx = u.getX() + x;
                 if (targetx<0) {
                     targetx = 0;
-                } else if (targetx > gs.pgs.height) {
-                    targetx = gs.pgs.height;
+                } else if (targetx > gs.pgs.width) {
+                    targetx = gs.pgs.width;
                 }
                 int targety = u.getY() + y;
                 if (targety<0) {
                     targety = 0;
-                } else if (targety > gs.pgs.width) {
-                    targety = gs.pgs.width;
+                } else if (targety > gs.pgs.height) {
+                    targety = gs.pgs.height;
                 }
                 ua.x = targetx;
                 ua.y = targety;

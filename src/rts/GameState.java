@@ -788,14 +788,14 @@ public class GameState {
         for (int i = 0; i < pgs.units.size(); i++) {
             Unit u = pgs.units.get(i);
             UnitActionAssignment uaa = unitActions.get(u);
-            hitpointsMatrix[u.getX()][u.getY()] = u.getHitPoints();
-            resourcesMatrix[u.getX()][u.getY()] = u.getResources();
-            playersMatrix[u.getX()][u.getY()] = u.getPlayer();
-            unitTypesMatrix[u.getX()][u.getY()] = u.getType().ID;
+            hitpointsMatrix[u.getY()][u.getX()] = u.getHitPoints();
+            resourcesMatrix[u.getY()][u.getX()] = u.getResources();
+            playersMatrix[u.getY()][u.getX()] = u.getPlayer();
+            unitTypesMatrix[u.getY()][u.getX()] = u.getType().ID;
             if (uaa != null) {
-                unitActionMatrix[u.getX()][u.getY()] = uaa.action.type;
+                unitActionMatrix[u.getY()][u.getX()] = uaa.action.type;
             } else {
-                unitActionMatrix[u.getX()][u.getY()] = UnitAction.TYPE_NONE;
+                unitActionMatrix[u.getY()][u.getX()] = UnitAction.TYPE_NONE;
             }
         }
 
@@ -840,29 +840,29 @@ public class GameState {
             for (int j=0; j<hitpointsMatrix.length; j++) {
                 int relativeX = i - absoluteX;
                 int relativeY = j - absoluteY;
-                if (u.getX() + relativeX >= 0 && u.getX() + relativeX < pgs.height
-                && u.getY() +relativeY >= 0 && u.getY() +relativeY < pgs.width) {
+                if (u.getX() + relativeX >= 0 && u.getX() + relativeX < pgs.width
+                && u.getY() +relativeY >= 0 && u.getY() +relativeY < pgs.height) {
                     Unit uprime = pgs.getUnitAt(u.getX() + relativeX, u.getY() +relativeY);
                     if (uprime != null) {
                         UnitActionAssignment uaa = unitActions.get(uprime);
-                        hitpointsMatrix[i][j] = uprime.getHitPoints();
-                        resourcesMatrix[i][j] = uprime.getResources();
-                        playersMatrix[i][j] = uprime.getPlayer();
-                        unitTypesMatrix[i][j] = uprime.getType().ID;
+                        hitpointsMatrix[j][i] = uprime.getHitPoints();
+                        resourcesMatrix[j][i] = uprime.getResources();
+                        playersMatrix[j][i] = uprime.getPlayer();
+                        unitTypesMatrix[j][i] = uprime.getType().ID;
                         if (uaa != null) {
-                            unitActionMatrix[i][j] = uaa.action.type;
+                            unitActionMatrix[j][i] = uaa.action.type;
                         } else {
-                            unitActionMatrix[i][j] = UnitAction.TYPE_NONE;
+                            unitActionMatrix[j][i] = UnitAction.TYPE_NONE;
                         }
                     }
                 }
                 else {
                     // temp default value for walls
-                    hitpointsMatrix[i][j] = -1;
-                    resourcesMatrix[i][j] = -1;
-                    playersMatrix[i][j] = -2;
-                    unitTypesMatrix[i][j] = -2;
-                    unitActionMatrix[i][j] = -1;
+                    hitpointsMatrix[j][i] = -1;
+                    resourcesMatrix[j][i] = -1;
+                    playersMatrix[j][i] = -2;
+                    unitTypesMatrix[j][i] = -2;
+                    unitActionMatrix[j][i] = -1;
                 }
             }
         }

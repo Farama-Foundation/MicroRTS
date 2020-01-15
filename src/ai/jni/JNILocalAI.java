@@ -68,7 +68,7 @@ public class JNILocalAI extends AIWithComputationBudget implements JNIInterface{
     }
 
     public PlayerAction getAction(int player, GameState gs, int[][] actions) throws Exception {
-        PlayerAction pa = PlayerAction.fromActionArrayForUnit(actions[0], gs, utt, player, currentUnit);
+        PlayerAction pa = PlayerAction.fromActionArrayForUnit(actions, gs, utt, player, currentUnit);
         pa.fillWithNones(gs, player, 1);
         currentUnitCounter++;
         if (currentUnitCounter>=gs.getPhysicalGameState().getUnits().size()) {
