@@ -282,7 +282,7 @@ public class PhysicalGameState {
     	
         List<Unit> unitsInside = new LinkedList<Unit>();
         for (Unit u : units) {
-        	//tests for x <= unitX <= x+width && y <= unitY <= y+height 
+        	//tests for x <= unitX < x+width && y <= unitY < y+height 
         	if(x <= u.getX() && u.getX() < x + width && y <= u.getY() && u.getY() < y+height) {
                 unitsInside.add(u);
             }
