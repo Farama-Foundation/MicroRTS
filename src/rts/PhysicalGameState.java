@@ -269,20 +269,25 @@ public class PhysicalGameState {
     
     /**
      * Returns units within a rectangular area 
+     * Tests for x <= unitX < x+width && y <= unitY < y+height
+     * Notice that the test is inclusive in top and left but exclusive on bottom and right
      * @param x top left coordinate of the rectangle
-     * @param y top left coordinate of the square 
+     * @param y top left coordinate of the rectangle 
      * @param width rectangle width
      * @param height rectangle height
      * @return
      */
     public Collection<Unit> getUnitsAround(int x, int y, int width, int height) {
-        List<Unit> closeUnits = new LinkedList<Unit>();
+    	if(width < 1 || height < 1) throw new IllegalArgumentException("Width and height must be >=1");
+    	
+        List<Unit> unitsInside = new LinkedList<Unit>();
         for (Unit u : units) {
-            if ((Math.abs(u.getX() - x) <= width && Math.abs(u.getY() - y) <= height)) {
-                closeUnits.add(u);
+        	//tests for x <= unitX <= x+width && y <= unitY <= y+height 
+        	if(x <= u.getX() && u.getX() < x + width && y <= u.getY() && u.getY() < y+height) {
+                unitsInside.add(u);
             }
         }
-        return closeUnits;
+        return unitsInside;
     }
     
     
