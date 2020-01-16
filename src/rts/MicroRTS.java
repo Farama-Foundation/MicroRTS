@@ -1,13 +1,8 @@
 package rts;
 
-import ai.core.AI;
-import gui.PhysicalGameStatePanel;
 import gui.frontend.FrontEnd;
-import java.lang.reflect.Constructor;
 import java.net.ServerSocket;
 import java.net.Socket;
-import javax.swing.JFrame;
-import rts.units.UnitTypeTable;
 
 /***
  * The main class for running a MicroRTS game. To modify existing settings change the file "config.properties".
@@ -15,20 +10,42 @@ import rts.units.UnitTypeTable;
 public class MicroRTS {
 
     public static void main(String args[]) throws Exception {
+
+        for (int i = args.length; i > 0; i--) {
+            if (args[i - 1].equals("-h")) {
+                System.out.println(GameSettings.getHelpMessage());
+                return;
+            }
+        }
         
         String configFile = "resources/config.properties";
-                
-        for(int i = args.length; i > 0; i--)
-        if(args[i - 1].equals("-f")) configFile = args[i];
-        
-        GameSettings gameSettings = GameSettings.loadFromConfig(GameSettings.fetchConfig(configFile));
+
+        for (int i = args.length; i > 0; i--) {
+            if (args[i - 1].equals("-f")) {
+                configFile = args[i];
+            }
+        }
+
+        GameSettings gameSettings;
+        try {
+            gameSettings = GameSettings.loadFromConfig(GameSettings.fetchConfig(configFile))
+                .overrideFromArgs(args);
+        } catch (java.io.FileNotFoundException ex) {
+            System.err.println(
+                "File " + configFile + " not found. Trying to initialize from command-line args.");
+            gameSettings = new GameSettings(args);
+        }
+
         System.out.println(gameSettings);
 
         switch (gameSettings.getLaunchMode()) {
             case STANDALONE:
+            case HUMAN:
                 runStandAloneGame(gameSettings);
+                break;
             case GUI:
                 FrontEnd.main(args);
+                break;
             case SERVER:
                 startServer(gameSettings);
                 break;
@@ -70,49 +87,9 @@ public class MicroRTS {
      * @throws Exception 
      */
     public static void runStandAloneGame(GameSettings gameSettings) throws Exception {
-        UnitTypeTable utt = new UnitTypeTable(gameSettings.getUTTVersion(), gameSettings.getConflictPolicy());
-        PhysicalGameState pgs = PhysicalGameState.load(gameSettings.getMapLocation(), utt);
-
-        GameState gs = new GameState(pgs, utt);
-        int PERIOD = 20;
-        boolean gameover = false;
-        
-        Constructor cons1 = Class.forName(gameSettings.getAI1()).getConstructor(UnitTypeTable.class);
-        AI ai1 = (AI)cons1.newInstance(utt);
-        Constructor cons2 = Class.forName(gameSettings.getAI2()).getConstructor(UnitTypeTable.class);
-        AI ai2 = (AI)cons2.newInstance(utt);
-
-        JFrame w = PhysicalGameStatePanel.newVisualizer(gs,640,640,gameSettings.isPartiallyObservable(),
-                                                        PhysicalGameStatePanel.COLORSCHEME_BLACK);
-
-        long nextTimeToUpdate = System.currentTimeMillis() + PERIOD;
-        do{
-            if (System.currentTimeMillis()>=nextTimeToUpdate) {
-                if (gameSettings.isPartiallyObservable()) {
-                    PlayerAction pa1 = ai1.getAction(0, new PartiallyObservableGameState(gs,0));
-                    PlayerAction pa2 = ai2.getAction(1, new PartiallyObservableGameState(gs,1));            
-                    gs.issueSafe(pa1);
-                    gs.issueSafe(pa2);
-                } else {
-                    PlayerAction pa1 = ai1.getAction(0, gs);
-                    PlayerAction pa2 = ai2.getAction(1, gs);
-                    gs.issueSafe(pa1);
-                    gs.issueSafe(pa2);
-                }
-
-                // simulate:
-                gameover = gs.cycle();
-                w.repaint();
-                nextTimeToUpdate+=PERIOD;
-            } else {
-                try {
-                    Thread.sleep(1);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }while(!gameover && gs.getTime()<gameSettings.getMaxCycles());
-        ai1.gameOver(gs.winner());
-        ai2.gameOver(gs.winner());        
-    }       
+        if (gameSettings.getLaunchMode() == GameSettings.LaunchMode.STANDALONE)
+            new Game(gameSettings).start();
+        else if (gameSettings.getLaunchMode() == GameSettings.LaunchMode.HUMAN)
+            new MouseGame(gameSettings).start();
+    }
 }

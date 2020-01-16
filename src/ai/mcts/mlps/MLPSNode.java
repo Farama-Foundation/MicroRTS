@@ -30,12 +30,12 @@ public class MLPSNode extends MCTSNode {
     static public int DEBUG = 0;
         
     boolean hasMoreActions = true;
-    public PlayerActionGenerator moveGenerator = null;
-    HashMap<Long,MLPSNode> childrenMap = new LinkedHashMap<Long,MLPSNode>();    // associates action codes with children
+    public PlayerActionGenerator moveGenerator;
+    HashMap<Long,MLPSNode> childrenMap = new LinkedHashMap<>();    // associates action codes with children
     // Decomposition of the player actions in unit actions, and their contributions:
-    public List<UnitActionTableEntry> unitActionTable = null;
-    public List<double[]> UCBExplorationScores = null;
-    public List<double[]> UCBExploitationScores = null;
+    public List<UnitActionTableEntry> unitActionTable;
+    public List<double[]> UCBExplorationScores;
+    public List<double[]> UCBExploitationScores;
     double evaluation_bound = 0;
     int max_nactions = 0;
     
@@ -148,7 +148,7 @@ public class MLPSNode extends MCTSNode {
         if (DEBUG>=1) System.out.println("MLPSNode.selectLeaf...");
         
         // For each unit, compute the UCB1 scores for each action:
-        List<Integer> notSampledYetIDs = new LinkedList<Integer>();
+        List<Integer> notSampledYetIDs = new LinkedList<>();
         for(int ate_idx = 0;ate_idx<unitActionTable.size();ate_idx++) {
             UnitActionTableEntry ate = unitActionTable.get(ate_idx);
             double []scoresExploitation = UCBExploitationScores.get(ate_idx);
@@ -186,8 +186,7 @@ public class MLPSNode extends MCTSNode {
             double accumUCBScore = 0;
             double maxExplorationScore = 0;
             pa2.setResourceUsage(base_ru.clone());
-            List<Integer> notSampledYetIDs2 = new LinkedList<Integer>();
-            notSampledYetIDs2.addAll(notSampledYetIDs);
+            List<Integer> notSampledYetIDs2 = new LinkedList<>(notSampledYetIDs);
             while(!notSampledYetIDs2.isEmpty()) {            
                 if (DEBUG>=2) System.out.println("notSampledYet: " + notSampledYetIDs2);
                 int i = r.nextInt(notSampledYetIDs2.size());
@@ -214,7 +213,7 @@ public class MLPSNode extends MCTSNode {
                     r2 = ua.resourceUsage(ate.u, gs.getPhysicalGameState());
                     if (!pa2.getResourceUsage().consistentWith(r2, gs)) {
                         // get the best next one:
-                        List<Integer> actions = new ArrayList<Integer>();
+                        List<Integer> actions = new ArrayList<>();
 
                         for(int j = 0;j<ate.nactions;j++) {
                             if (j!=code) actions.add(j);

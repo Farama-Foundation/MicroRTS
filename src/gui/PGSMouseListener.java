@@ -14,10 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import rts.GameState;
-import rts.UnitAction;
 import rts.units.Unit;
 import rts.units.UnitType;
-import rts.units.UnitTypeTable;
 import util.Pair;
 
 /**
@@ -25,15 +23,15 @@ import util.Pair;
  * @author santi
  */
 public class PGSMouseListener implements MouseListener, MouseMotionListener, KeyListener {
-    MouseController AI = null;
-    PhysicalGameStateMouseJFrame frame = null;
-    GameState gs = null;
+    MouseController AI;
+    PhysicalGameStateMouseJFrame frame;
+    GameState gs;
     int playerID = -1;
     
     List<Unit> selectedUnits = new ArrayList<>();
-    String selectedButton = null;
+    String selectedButton;
 
-    HashMap<Character,String> unitTypeQuickKeys = new HashMap<Character,String>();
+    HashMap<Character,String> unitTypeQuickKeys = new HashMap<>();
     
     public PGSMouseListener(MouseController a_AI, PhysicalGameStateMouseJFrame a_frame, GameState a_gs, int a_playerID) {
         AI = a_AI;
@@ -331,8 +329,7 @@ public class PGSMouseListener implements MouseListener, MouseMotionListener, Key
         List<UnitType> shared = null;
         for(Unit u:selectedUnits) {
             if (shared==null) {
-                shared = new ArrayList<>();
-                shared.addAll(u.getType().produces);
+                shared = new ArrayList<>(u.getType().produces);
             } else {
                 List<UnitType> toDelete = new ArrayList<>();
                 for(UnitType ut:shared) {
@@ -361,8 +358,6 @@ public class PGSMouseListener implements MouseListener, MouseMotionListener, Key
                 
         Rectangle r = frame.panel.getBounds();
         // if mouse was outside of playing area, return:
-        if (x<r.x || x>=r.x+r.width ||
-            y<r.y || y>=r.y+r.height) return false;
-        return true;        
+        return x >= r.x && x < r.x + r.width && y >= r.y && y < r.y + r.height;
     }
 }

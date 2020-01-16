@@ -5,18 +5,15 @@
 package tests;
 
 import ai.core.AI;
-import ai.*;
 import gui.PhysicalGameStateJFrame;
 import gui.PhysicalGameStatePanel;
 
 import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.List;
-import javax.swing.JFrame;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 

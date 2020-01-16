@@ -93,7 +93,7 @@ public class EconomyMilitaryRush extends AbstractionLayerAI {
         }
 
         // behavior of workers:
-        List<Unit> workers = new ArrayList<Unit>();
+        List<Unit> workers = new ArrayList<>();
         for (Unit u : pgs.getUnits()) {
             if (u.getType().canHarvest
                     && u.getPlayer() == player
@@ -234,8 +234,7 @@ public class EconomyMilitaryRush extends AbstractionLayerAI {
         int resourcesUsed = 0;
         int nArmyUnits = 0;
 
-        List<Unit> freeWorkers = new ArrayList<Unit>();
-        freeWorkers.addAll(workers);
+        List<Unit> freeWorkers = new ArrayList<>(workers);
 
         if (workers.isEmpty()) {
             return;
@@ -256,7 +255,7 @@ public class EconomyMilitaryRush extends AbstractionLayerAI {
             }
         }
 
-        List<Integer> reservedPositions = new ArrayList<Integer>();
+        List<Integer> reservedPositions = new ArrayList<>();
         if (nbases == 0 && !freeWorkers.isEmpty()) {
             // build a base:
             if (p.getResources() >= baseType.cost + resourcesUsed) {

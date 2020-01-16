@@ -13,7 +13,6 @@ import rts.PlayerAction;
 import rts.UnitAction;
 import rts.UnitActionAssignment;
 import rts.units.Unit;
-import rts.units.UnitType;
 import rts.units.UnitTypeTable;
 
 /**
@@ -24,11 +23,11 @@ import rts.units.UnitTypeTable;
  */
 public class BS2_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
 
-    GameState initialGameState = null;
+    GameState initialGameState;
     
     // list of units we "believe" exist (for now it's just "last seen" position)
-    List<Unit> lastKnownPosition = new LinkedList<Unit>();
-    PartiallyObservableGameState lastObservedGame = null;
+    List<Unit> lastKnownPosition = new LinkedList<>();
+    PartiallyObservableGameState lastObservedGame;
 
     public BS2_NaiveMCTS(UnitTypeTable utt) {
         super(utt);
@@ -122,8 +121,7 @@ public class BS2_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
 
     @Override
     public List<Unit> getBelieveUnits() {
-        List<Unit> l = new LinkedList<Unit>();
-        l.addAll(lastKnownPosition);
+        List<Unit> l = new LinkedList<>(lastKnownPosition);
         return l;
     }
 

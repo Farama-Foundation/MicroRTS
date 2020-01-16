@@ -17,7 +17,7 @@ import rts.units.UnitTypeTable;
  */
 public class UnitActionTypeConstantDistribution extends UnitActionProbabilityDistribution {
 
-    double m_distribution[] = null;
+    double m_distribution[];
     
     public UnitActionTypeConstantDistribution(UnitTypeTable a_utt, double distribution[]) throws Exception {
         super(a_utt);

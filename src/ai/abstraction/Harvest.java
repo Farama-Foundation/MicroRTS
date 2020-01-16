@@ -40,8 +40,7 @@ public class Harvest extends AbstractAction  {
     
     
     public boolean completed(GameState gs) {
-        if (!gs.getPhysicalGameState().getUnits().contains(target)) return true;
-        return false;
+        return !gs.getPhysicalGameState().getUnits().contains(target);
     }
     
     
@@ -49,11 +48,8 @@ public class Harvest extends AbstractAction  {
     {
         if (!(o instanceof Harvest)) return false;
         Harvest a = (Harvest)o;
-        if (target.getID() != a.target.getID()) return false;
-        if (base.getID() != a.base.getID()) return false;
-        if (pf.getClass() != a.pf.getClass()) return false;
-        
-        return true;
+        return target.getID() == a.target.getID() && base.getID() == a.base.getID()
+            && pf.getClass() == a.pf.getClass();
     }
     
 

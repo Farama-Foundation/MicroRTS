@@ -5,9 +5,10 @@ import com.eclipsesource.json.JsonObject;
 import java.io.Writer;
 import java.util.Objects;
 import java.util.Random;
-
 import org.jdom.Element;
-import rts.units.*;
+import rts.units.Unit;
+import rts.units.UnitType;
+import rts.units.UnitTypeTable;
 import util.XMLWriter;
 
 /**
@@ -117,12 +118,12 @@ public class UnitAction {
     /**
      * UnitType associated with a 'produce' action
      */
-    UnitType unitType = null;
+    UnitType unitType;
 
     /**
      * Amount of resources associated with this action
      */
-    ResourceUsage r_cache = null;
+    ResourceUsage r_cache;
 
     /**
      * Creates an action with specified type
@@ -192,22 +193,14 @@ public class UnitAction {
 
         if (a.type != type) {
             return false;
-        }
-        if (type == TYPE_NONE || type == TYPE_MOVE || type == TYPE_HARVEST || type == TYPE_RETURN) {
-            if (a.parameter != parameter) {
-                return false;
-            }
+        } else if (type == TYPE_NONE || type == TYPE_MOVE || type == TYPE_HARVEST
+            || type == TYPE_RETURN) {
+            return a.parameter == parameter;
         } else if (type == TYPE_ATTACK_LOCATION) {
-            if (a.x != x || a.y != y) {
-                return false;
-            }
+            return a.x == x && a.y == y;
         } else {
-            if (a.parameter != parameter || a.unitType != unitType) {
-                return false;
-            }
+            return a.parameter == parameter && a.unitType == unitType;
         }
-
-        return true;
     }
 
     @Override
@@ -319,7 +312,7 @@ public class UnitAction {
                 return u.getAttackTime();
 
             case TYPE_HARVEST:
-                return 20;
+                return u.getHarvestTime();
 
             case TYPE_RETURN:
                 return u.getMoveTime();
@@ -395,7 +388,7 @@ public class UnitAction {
                         maybeAResource = pgs.getUnitAt(u.getX() - 1, u.getY());
                         break;
                 }
-                if (maybeAResource != null && u.getType().canHarvest && u.getResources() == 0) {
+                if (maybeAResource != null && maybeAResource.getType().isResource && u.getType().canHarvest && u.getResources() == 0) {
                     //indeed it is a resource, harvest from it
                     maybeAResource.setResources(maybeAResource.getResources() - u.getHarvestAmount());
                     if (maybeAResource.getResources() <= 0) {

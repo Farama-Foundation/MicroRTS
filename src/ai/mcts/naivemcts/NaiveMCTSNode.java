@@ -27,10 +27,10 @@ public class NaiveMCTSNode extends MCTSNode {
     
     boolean forceExplorationOfNonSampledActions = true;
     boolean hasMoreActions = true;
-    public PlayerActionGenerator moveGenerator = null;
-    HashMap<BigInteger,NaiveMCTSNode> childrenMap = new LinkedHashMap<BigInteger,NaiveMCTSNode>();    // associates action codes with children
+    public PlayerActionGenerator moveGenerator;
+    HashMap<BigInteger,NaiveMCTSNode> childrenMap = new LinkedHashMap<>();    // associates action codes with children
     // Decomposition of the player actions in unit actions, and their contributions:
-    public List<UnitActionTableEntry> unitActionTable = null;
+    public List<UnitActionTableEntry> unitActionTable;
     double evaluation_bound;    // this is the maximum positive value that the evaluation function can return
     public BigInteger multipliers[];
 
@@ -55,9 +55,9 @@ public class NaiveMCTSNode extends MCTSNode {
         } else if (gs.canExecuteAnyAction(maxplayer)) {
             type = 0;
             moveGenerator = new PlayerActionGenerator(gs, maxplayer);
-            actions = new ArrayList<PlayerAction>();
-            children = new ArrayList<MCTSNode>();
-            unitActionTable = new LinkedList<UnitActionTableEntry>();
+            actions = new ArrayList<>();
+            children = new ArrayList<>();
+            unitActionTable = new LinkedList<>();
             multipliers = new BigInteger[moveGenerator.getChoices().size()];
             BigInteger baseMultiplier = BigInteger.ONE;
             int idx = 0;
@@ -80,9 +80,9 @@ public class NaiveMCTSNode extends MCTSNode {
         } else if (gs.canExecuteAnyAction(minplayer)) {
             type = 1;
             moveGenerator = new PlayerActionGenerator(gs, minplayer);
-            actions = new ArrayList<PlayerAction>();
-            children = new ArrayList<MCTSNode>();
-            unitActionTable = new LinkedList<UnitActionTableEntry>();
+            actions = new ArrayList<>();
+            children = new ArrayList<>();
+            unitActionTable = new LinkedList<>();
             multipliers = new BigInteger[moveGenerator.getChoices().size()];
             BigInteger baseMultiplier = BigInteger.ONE;
             int idx = 0;
@@ -198,8 +198,8 @@ public class NaiveMCTSNode extends MCTSNode {
         BigInteger actionCode;       
 
         // For each unit, rank the unitActions according to preference:
-        List<double []> distributions = new LinkedList<double []>();
-        List<Integer> notSampledYet = new LinkedList<Integer>();
+        List<double []> distributions = new LinkedList<>();
+        List<Integer> notSampledYet = new LinkedList<>();
         for(UnitActionTableEntry ate:unitActionTable) {
             double []dist = new double[ate.nactions];
             int bestIdx = -1;
@@ -243,7 +243,7 @@ public class NaiveMCTSNode extends MCTSNode {
                 for(int i = 0;i<ate.nactions;i++) System.out.print("(" + ate.visit_count[i] + "," + ate.accum_evaluation[i]/ate.visit_count[i] + ")");
                 System.out.println("]");
                 System.out.print("[ ");
-                for(int i = 0;i<dist.length;i++) System.out.print(dist[i] + " ");
+                for (double v : dist) System.out.print(v + " ");
                 System.out.println("]");
             }
 
@@ -280,8 +280,8 @@ public class NaiveMCTSNode extends MCTSNode {
                 r2 = ua.resourceUsage(ate.u, gs.getPhysicalGameState());
                 if (!pa2.getResourceUsage().consistentWith(r2, gs)) {
                     // sample at random, eliminating the ones that have not worked so far:
-                    List<Double> dist_l = new ArrayList<Double>();
-                    List<Integer> dist_outputs = new ArrayList<Integer>();
+                    List<Double> dist_l = new ArrayList<>();
+                    List<Integer> dist_outputs = new ArrayList<>();
 
                     for(int j = 0;j<distribution.length;j++) {
                         dist_l.add(distribution[j]);

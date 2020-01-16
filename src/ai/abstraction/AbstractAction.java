@@ -46,9 +46,9 @@ public abstract class AbstractAction {
     
     public UnitAction execute(GameState pgs){
     	return execute(pgs,null);
-    };
-    
-    
+    }
+
+
     public abstract void toxml(XMLWriter w);
     
     

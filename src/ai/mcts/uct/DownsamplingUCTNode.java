@@ -24,14 +24,14 @@ public class DownsamplingUCTNode {
     static float C = 0.05f;   // this is the constant that regulates exploration vs exploitation, it must be tuned for each domain
     
     public int type;    // 0 : max, 1 : min, -1: Game-over
-    DownsamplingUCTNode parent = null;
+    DownsamplingUCTNode parent;
     public GameState gs;
     int depth = 0;  // the depth in the tree
     
     boolean hasMoreActions = true;
-    PlayerActionGenerator moveGenerator = null;
-    public List<PlayerAction> actions = null;
-    public List<DownsamplingUCTNode> children = null;
+    PlayerActionGenerator moveGenerator;
+    public List<PlayerAction> actions;
+    public List<DownsamplingUCTNode> children;
     float evaluation_bound = 0;
     float accum_evaluation = 0;
     int visit_count = 0;
@@ -69,8 +69,8 @@ public class DownsamplingUCTNode {
 
         // Downsample the number of actions:
         if (moveGenerator!=null && actions==null) {
-            actions = new ArrayList<PlayerAction>();
-            children = new ArrayList<DownsamplingUCTNode>();
+            actions = new ArrayList<>();
+            children = new ArrayList<>();
             if (moveGenerator.getSize()>2*MAXACTIONS) {
                 for(int i = 0;i<MAXACTIONS;i++) {
                     actions.add(moveGenerator.getRandom());
@@ -106,18 +106,17 @@ public class DownsamplingUCTNode {
         // Bandit policy:
         double best_score = 0;
         DownsamplingUCTNode best = null;
-        for(int i = 0;i<children.size();i++) {
-            DownsamplingUCTNode child = children.get(i);
-            double exploitation = ((double)child.accum_evaluation) / child.visit_count;
-            double exploration = Math.sqrt(Math.log((double)visit_count)/child.visit_count);
-            if (type==0) {
+        for (DownsamplingUCTNode child : children) {
+            double exploitation = ((double) child.accum_evaluation) / child.visit_count;
+            double exploration = Math.sqrt(Math.log((double) visit_count) / child.visit_count);
+            if (type == 0) {
                 // max node:
-                exploitation = (exploitation + evaluation_bound)/(2*evaluation_bound);
+                exploitation = (exploitation + evaluation_bound) / (2 * evaluation_bound);
             } else {
-                exploitation = - (exploitation - evaluation_bound)/(2*evaluation_bound);                
+                exploitation = -(exploitation - evaluation_bound) / (2 * evaluation_bound);
             }
-            double tmp = C*exploitation + exploration;
-            if (best==null || tmp>best_score) {
+            double tmp = C * exploitation + exploration;
+            if (best == null || tmp > best_score) {
                 best = child;
                 best_score = tmp;
             }

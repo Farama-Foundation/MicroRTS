@@ -4,19 +4,15 @@
  */
 package gui;
 
-import tests.*;
 import gui.PhysicalGameStatePanel;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.geom.Point2D;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
+
 import rts.*;
 import rts.units.Unit;
 import util.Pair;
@@ -27,11 +23,11 @@ import util.Pair;
  */
 public class TraceVisualizer extends JPanel implements ListSelectionListener {
     int current_step = 0;
-    Trace trace = null;
+    Trace trace;
 
-    JPanel statePanel = null;
-    JList Selector = null;
-    List<GameState> states = new LinkedList<GameState>();
+    JPanel statePanel;
+    JList Selector;
+    List<GameState> states = new LinkedList<>();
 
     public static JFrame newWindow(String name,int dx,int dy,Trace t, int subjectID) throws Exception {
         TraceVisualizer ad = new TraceVisualizer(t, dx, dy, subjectID);
@@ -75,11 +71,11 @@ public class TraceVisualizer extends JPanel implements ListSelectionListener {
 
         for(int i = 0;i<t.getEntries().size();i++) {
             if (!t.getEntries().get(i).getActions().isEmpty()) {
-                String tmp = "";
+                StringBuilder tmp = new StringBuilder();
                 for(Pair<Unit,UnitAction> uap:t.getEntries().get(i).getActions()) {
-                    tmp += "(" + uap.m_a.getID() + ", " + uap.m_b.getActionName() + "), ";
+                    tmp.append("(").append(uap.m_a.getID()).append(", ").append(uap.m_b.getActionName()).append("), ");
                 }
-                actionList[i] = tmp;
+                actionList[i] = tmp.toString();
             } else {
                 actionList[i] = "-";
             }

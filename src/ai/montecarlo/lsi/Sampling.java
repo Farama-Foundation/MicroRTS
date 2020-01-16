@@ -87,10 +87,10 @@ public class Sampling {
         pa.setResourceUsage(base_ru.clone());
 
         // entropy-based agent ordering
-        ArrayList<Pair<Integer, Double>> ent_list = new ArrayList<Pair<Integer, Double>>(distributions.size());
+        ArrayList<Pair<Integer, Double>> ent_list = new ArrayList<>(distributions.size());
         if (forcedAgentOrder == null) {
             for(int j = 0; j < distributions.size(); j++) {
-                ent_list.add(new Pair<Integer, Double>(j, entropy(distributions.get(j))));
+                ent_list.add(new Pair<>(j, entropy(distributions.get(j))));
             }
 
             switch(agentOrderingType) {
@@ -98,22 +98,19 @@ public class Sampling {
                 Collections.shuffle(ent_list);
                 break;
             case ENTROPY:
-                Collections.sort(ent_list, new Comparator<Pair<Integer, Double>>() {
-
+                ent_list.sort(new Comparator<Pair<Integer, Double>>() {
                     @Override
                     public int compare(Pair<Integer, Double> p1, Pair<Integer, Double> p2) {
-                        return p1.m_b > p2.m_b ? 1 : (p1.m_b < p2.m_b ? -1 : 0);
+                        return p1.m_b.compareTo(p2.m_b);
                     }
-
                 });
                 break;
-
             default:
                 throw new RuntimeException("Unknown AgentOrderingType");
             }
         } else {
             for (Integer agentIndex : forcedAgentOrder) {
-                ent_list.add(new Pair<Integer, Double>(agentIndex, 0.0));
+                ent_list.add(new Pair<>(agentIndex, 0.0));
             }
         }
 
@@ -128,8 +125,8 @@ public class Sampling {
 
             if (!pa.getResourceUsage().consistentWith(r2, gameState)) {
                 // sample at random, eliminating the ones that have not worked so far:
-                List<Double> dist_l = new ArrayList<Double>();
-                List<Integer> dist_outputs = new ArrayList<Integer>();
+                List<Double> dist_l = new ArrayList<>();
+                List<Integer> dist_outputs = new ArrayList<>();
 
                 for(int j = 0; j < distribution.length; j++) {
                     dist_l.add(distribution[j]);
@@ -178,21 +175,21 @@ public class Sampling {
         PlayerAction pa = new PlayerAction();
         pa.setResourceUsage(base_ru.clone());
 
-        ArrayList<Pair<Integer,ArrayList<Integer>>> idxTable = new ArrayList<Pair<Integer,ArrayList<Integer>>>();
-        ArrayList<Pair<Double,ArrayList<Double>>> distTable = new ArrayList<Pair<Double,ArrayList<Double>>>();
+        ArrayList<Pair<Integer,ArrayList<Integer>>> idxTable = new ArrayList<>();
+        ArrayList<Pair<Double,ArrayList<Double>>> distTable = new ArrayList<>();
         int i = 0;
         for(double [] actionDist :distributions) {
             double sum = 0;
-            ArrayList<Double> distList = new ArrayList<Double>();
-            ArrayList<Integer> idxList = new ArrayList<Integer>();
+            ArrayList<Double> distList = new ArrayList<>();
+            ArrayList<Integer> idxList = new ArrayList<>();
             for(int j = 0; j < actionDist.length; j++){
                 distList.add(actionDist[j]);
                 idxList.add(j);
                 sum += actionDist[j];
             }
 
-            Pair<Double,ArrayList<Double>> distPair = new Pair<Double,ArrayList<Double>>(sum, distList);
-            Pair<Integer,ArrayList<Integer>> idxPair = new Pair<Integer,ArrayList<Integer>>(i, idxList);
+            Pair<Double,ArrayList<Double>> distPair = new Pair<>(sum, distList);
+            Pair<Integer,ArrayList<Integer>> idxPair = new Pair<>(i, idxList);
             distTable.add(distPair);
             idxTable.add(idxPair);
             i++;
@@ -262,11 +259,11 @@ public class Sampling {
             }
         }
         
-        Set<PlayerAction> actionSet = new HashSet<PlayerAction>();
+        Set<PlayerAction> actionSet = new HashSet<>();
 
-        List<Set<Integer>> definitionOfDomains = new ArrayList<Set<Integer>>(unitActionTable.size());
+        List<Set<Integer>> definitionOfDomains = new ArrayList<>(unitActionTable.size());
         for (UnitActionTableEntry unitActionTableEntry : unitActionTable) {
-            HashSet<Integer> domain = new HashSet<Integer>();
+            HashSet<Integer> domain = new HashSet<>();
             for (int i = 0; i < unitActionTableEntry.nactions; i++) {
                 if (unitActionTableEntry.actions.get(i).getType() != UnitAction.TYPE_NONE || includeNoops) {
                     domain.add(i);
@@ -275,7 +272,7 @@ public class Sampling {
             definitionOfDomains.add(domain);
         }
 
-        CartesianProduct<Integer> product = new CartesianProduct<Integer>(definitionOfDomains);
+        CartesianProduct<Integer> product = new CartesianProduct<>(definitionOfDomains);
         int size = product.size();
         for (int elementIndex = 0; elementIndex < size; elementIndex++) {
             List<Integer> element = product.element(elementIndex);
@@ -321,13 +318,13 @@ public class Sampling {
             pair.m_b.m_b = oldNum + num;
         }
 
-        Collections.sort(actionList, new Comparator<Pair<PlayerAction, Pair<Double, Integer>>>() {
+        actionList.sort(new Comparator<Pair<PlayerAction, Pair<Double, Integer>>>() {
 
             @Override
             public int compare(Pair<PlayerAction, Pair<Double, Integer>> p1, Pair<PlayerAction, Pair<Double, Integer>> p2) {
                 double eval1 = p1.m_b.m_a / p1.m_b.m_b;
                 double eval2 = p2.m_b.m_a / p2.m_b.m_b;
-                return eval1 < eval2 ? 1 : (eval1 > eval2 ? -1 : 0);
+                return Double.compare(eval2, eval1);
 
             }
 
@@ -343,11 +340,11 @@ public class Sampling {
             pair.m_b = (pair.m_b*numEvalPrevious + eval*numEval)/(numEvalPrevious + numEval);
         }
 
-        Collections.sort(actionList, new Comparator<Pair<PlayerAction, Double>>() {
+        actionList.sort(new Comparator<Pair<PlayerAction, Double>>() {
 
             @Override
             public int compare(Pair<PlayerAction, Double> p1, Pair<PlayerAction, Double> p2) {
-                return p1.m_b < p2.m_b ? 1 : (p1.m_b > p2.m_b ? -1 : 0);
+                return p2.m_b.compareTo(p1.m_b);
             }
 
         });
@@ -362,11 +359,11 @@ public class Sampling {
             pair.m_b = (pair.m_b*numEvalPrevious + eval*numEval)/(numEvalPrevious + numEval);
         }
 
-        Collections.sort(actionList, new Comparator<Pair<PlayerAction, Double>>() {
+        actionList.sort(new Comparator<Pair<PlayerAction, Double>>() {
 
             @Override
             public int compare(Pair<PlayerAction, Double> p1, Pair<PlayerAction, Double> p2) {
-                return p1.m_b < p2.m_b ? 1 : (p1.m_b > p2.m_b ? -1 : 0);
+                return p2.m_b.compareTo(p1.m_b);
             }
 
         });
@@ -419,9 +416,9 @@ public class Sampling {
         public int idx;
         public Unit u;
         public int nactions = 0;
-        public List<UnitAction> actions = null;
-        public double[] accum_evaluation = null;
-        public int[] visit_count = null;
+        public List<UnitAction> actions;
+        public double[] accum_evaluation;
+        public int[] visit_count;
     }
 
     public enum AgentOrderingType {

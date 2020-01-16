@@ -25,7 +25,7 @@ public class PseudoContinuingAI extends AI {
     
     protected AIWithComputationBudget m_AI;
     protected int n_cycles_to_think = 1;
-    protected GameState m_farecastedGameState = null;
+    protected GameState m_farecastedGameState;
     
     public PseudoContinuingAI(AIWithComputationBudget ai) {
         m_AI = ai;

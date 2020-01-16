@@ -307,6 +307,14 @@ public class Unit implements Serializable {
     }
 
     /**
+     * The time it takes to harvest
+     * @return
+     */
+    public int getHarvestTime() {
+        return type.harvestTime;
+    }
+    
+    /**
      * Returns a list of actions this unit can perform in a given game state.
      * An idle action for 10 cycles is always generated
      * @param s
@@ -325,7 +333,7 @@ public class Unit implements Serializable {
      * @return
      */
     public List<UnitAction> getUnitActions(GameState s, int noneDuration) {
-        List<UnitAction> l = new ArrayList<UnitAction>();
+        List<UnitAction> l = new ArrayList<>();
 
         PhysicalGameState pgs = s.getPhysicalGameState();
         Player p = pgs.getPlayer(player);

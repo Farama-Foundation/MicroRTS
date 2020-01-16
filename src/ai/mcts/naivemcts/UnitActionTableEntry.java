@@ -15,7 +15,7 @@ import rts.units.Unit;
 public class UnitActionTableEntry {
     public Unit u;
     public int nactions = 0;
-    public List<UnitAction> actions = null;
-    public double[] accum_evaluation = null;
-    public int[] visit_count = null;
+    public List<UnitAction> actions;
+    public double[] accum_evaluation;
+    public int[] visit_count;
 }

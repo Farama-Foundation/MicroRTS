@@ -24,14 +24,14 @@ import ai.core.InterruptibleAI;
  */
 public class DownsamplingUCT extends AIWithComputationBudget implements InterruptibleAI {
     public static final int DEBUG = 0;
-    EvaluationFunction ef = null;
+    EvaluationFunction ef;
        
     Random r = new Random();
     AI randomAI = new RandomBiasedAI();
     long max_actions_so_far = 0;
     
-    GameState gs_to_start_from = null;
-    DownsamplingUCTNode tree = null;
+    GameState gs_to_start_from;
+    DownsamplingUCTNode tree;
     
     // statistics:
     public long total_runs = 0;

@@ -46,7 +46,7 @@ public class IDRTMinimaxRandomized extends IDRTMinimax {
     public PlayerAction timeBoundedRealTimeMinimaxRandomizedABOutsideStack(GameState initial_gs, int maxplayer, int minplayer, int lookAhead, long cutOffTime, boolean needAResult) throws Exception {
         RTMiniMaxNode head;
         if (stack == null) {
-            stack = new LinkedList<RTMiniMaxNode>();
+            stack = new LinkedList<>();
             head = new RTMiniMaxRandomizedRootNode(initial_gs);
             stack.add(head);
         } else {
@@ -77,7 +77,7 @@ public class IDRTMinimaxRandomized extends IDRTMinimax {
                             }
                         }
                         nLeaves++;
-                        lastResult = new Pair<PlayerAction, Float>(null, ef.evaluate(maxplayer, minplayer, current.gs));
+                        lastResult = new Pair<>(null, ef.evaluate(maxplayer, minplayer, current.gs));
                         stack.remove(0);
                     } else if (current.gs.canExecuteAnyAction(maxplayer)) {
                         if (stack.size() == 1

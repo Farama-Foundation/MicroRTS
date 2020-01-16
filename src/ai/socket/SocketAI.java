@@ -27,19 +27,21 @@ import util.XMLWriter;
  * @author santi
  */
 public class SocketAI extends AIWithComputationBudget {
-    public static int DEBUG = 0;
+    public static int DEBUG;
     
     public static final int LANGUAGE_XML = 1;
     public static final int LANGUAGE_JSON = 2;
+
+    private boolean includeConstants = true, compressTerrain = false;
     
-    UnitTypeTable utt = null;
+    UnitTypeTable utt;
             
     int communication_language = LANGUAGE_XML;
     String serverAddress = "127.0.0.1";
     int serverPort = 9898;
-    Socket socket = null;
-    BufferedReader in_pipe = null;
-    PrintWriter out_pipe = null;
+    Socket socket;
+    BufferedReader in_pipe;
+    PrintWriter out_pipe;
     
     public SocketAI(UnitTypeTable a_utt) {
         super(100,-1);
@@ -60,15 +62,18 @@ public class SocketAI extends AIWithComputationBudget {
         utt = a_utt;
         try {
             connectToServer();
-        }catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private SocketAI(int mt, int mi, UnitTypeTable a_utt, int a_language, Socket socket) {
+    private SocketAI(int mt, int mi, UnitTypeTable a_utt, int a_language,
+        boolean includeConstantsInState, boolean compressTerrain, Socket socket) {
         super(mt, mi);
         communication_language = a_language;
         utt = a_utt;
+        this.includeConstants = includeConstantsInState;
+        this.compressTerrain = compressTerrain;
         try {
             this.socket = socket;
             in_pipe = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -78,23 +83,31 @@ public class SocketAI extends AIWithComputationBudget {
             while(!in_pipe.ready());
             while(in_pipe.ready()) in_pipe.readLine();
 
-            if (DEBUG>=1) System.out.println("SocketAI: welcome message received");
+            if (DEBUG >= 1) {
+                System.out.println("SocketAI: welcome message received");
+            }
             reset();
-        }catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     /**
      * Creates a SocketAI from an existing socket.
-     * @param mt The time budget in milliseconds.
-     * @param mi The iterations budget in milliseconds
-     * @param a_utt The unit type table.
-     * @param a_language The communication layer to use.
-     * @param socket The socket the ai will communicate over.
+     *
+     * @param mt                      The time budget in milliseconds.
+     * @param mi                      The iterations budget in milliseconds
+     * @param a_utt                   The unit type table.
+     * @param a_language              The communication layer to use.
+     * @param includeConstantsInState
+     * @param compressTerrain
+     * @param socket                  The socket the ai will communicate over.
      */
-    public static SocketAI createFromExistingSocket(int mt, int mi, UnitTypeTable a_utt, int a_language, Socket socket) {
-        return new SocketAI(mt, mi, a_utt, a_language, socket);
+    public static SocketAI createFromExistingSocket(int mt, int mi, rts.units.UnitTypeTable a_utt,
+        int a_language, boolean includeConstantsInState, boolean compressTerrain,
+        java.net.Socket socket) {
+        return new SocketAI(mt, mi, a_utt, a_language, includeConstantsInState, compressTerrain,
+            socket);
     }
     
     
@@ -118,10 +131,10 @@ public class SocketAI extends AIWithComputationBudget {
     public void reset() {
         try {
             // set the game parameters:
-            out_pipe.append("budget " + TIME_BUDGET + " " + ITERATIONS_BUDGET + "\n");
+            out_pipe.append("budget ").append(String.valueOf(TIME_BUDGET)).append(" ").append(String.valueOf(ITERATIONS_BUDGET)).append("\n");
             out_pipe.flush();
 
-            if (DEBUG>=1) System.out.println("SocketAI: budgetd sent, waiting for ack");
+            if (DEBUG>=1) System.out.println("SocketAI: budget sent, waiting for ack");
             
             // wait for ack:
             in_pipe.readLine();
@@ -162,10 +175,10 @@ public class SocketAI extends AIWithComputationBudget {
     @Override
     public PlayerAction getAction(int player, GameState gs) throws Exception {
         // send the game state:
-        out_pipe.append("getAction " + player + "\n");
+        out_pipe.append("getAction ").append(String.valueOf(player)).append("\n");
         if (communication_language == LANGUAGE_XML) {
             XMLWriter w = new XMLWriter(out_pipe, " ");
-            gs.toxml(w);
+            gs.toxml(w, includeConstants, compressTerrain);
             w.getWriter().append("\n");
             w.flush();
 
@@ -177,13 +190,16 @@ public class SocketAI extends AIWithComputationBudget {
                 
             // parse the action:
             String actionString = in_pipe.readLine();
-            if (DEBUG>=1) System.out.println("action received from server: " + actionString);
-            Element action_e = new SAXBuilder().build(new StringReader(actionString)).getRootElement();
+            if (DEBUG >= 1) {
+                System.out.println("action received from server: " + actionString);
+            }
+            Element action_e = new SAXBuilder().build(new StringReader(actionString))
+                .getRootElement();
             PlayerAction pa = PlayerAction.fromXML(action_e, gs, utt);
             pa.fillWithNones(gs, player, 10);
             return pa;
         } else if (communication_language == LANGUAGE_JSON) {
-            gs.toJSON(out_pipe);
+            gs.toJSON(out_pipe, includeConstants, compressTerrain);
             out_pipe.append("\n");
             out_pipe.flush();
             
@@ -200,43 +216,22 @@ public class SocketAI extends AIWithComputationBudget {
             throw new Exception("Communication language " + communication_language + " not supported!");
         }        
     }
-    
 
     @Override
-    public void preGameAnalysis(GameState gs, long milliseconds) throws Exception 
-    {
-        // send the game state:
-        out_pipe.append("preGameAnalysis " + milliseconds + "\n");
-        switch (communication_language) {
-            case LANGUAGE_XML:
-                XMLWriter w = new XMLWriter(out_pipe, " ");
-                gs.toxml(w);
-                w.flush();
-                out_pipe.append("\n");
-                out_pipe.flush();
-                // wait for ack:
-                in_pipe.readLine();
-                break;
-                
-            case LANGUAGE_JSON:
-                gs.toJSON(out_pipe);
-                out_pipe.append("\n");
-                out_pipe.flush();
-                // wait for ack:
-                in_pipe.readLine();
-                break;
-                
-            default:
-                throw new Exception("Communication language " + communication_language + " not supported!");        
-        }
+    public void preGameAnalysis(GameState gs, long milliseconds) throws Exception {
+        preGameAnalysis(gs, milliseconds, null);
     }
 
-    
     @Override
-    public void preGameAnalysis(GameState gs, long milliseconds, String readWriteFolder) throws Exception 
-    {
-        // send the game state:
-        out_pipe.append("preGameAnalysis " + milliseconds + "  \""+readWriteFolder+"\"\n");
+    public void preGameAnalysis(GameState gs, long milliseconds, String readWriteFolder)
+        throws Exception {
+        out_pipe.append("preGameAnalysis ").append(String.valueOf(milliseconds));
+        if (readWriteFolder != null) {
+            out_pipe.append("  \"").append(readWriteFolder).append("\"");
+        }
+
+        out_pipe.append("\n");
+
         switch (communication_language) {
             case LANGUAGE_XML:
                 XMLWriter w = new XMLWriter(out_pipe, " ");
@@ -266,7 +261,7 @@ public class SocketAI extends AIWithComputationBudget {
     public void gameOver(int winner) throws Exception
     {
         // send the game state:
-        out_pipe.append("gameOver " + winner + "\n");
+        out_pipe.append("gameOver ").append(String.valueOf(winner)).append("\n");
         out_pipe.flush();
                 
         // wait for ack:

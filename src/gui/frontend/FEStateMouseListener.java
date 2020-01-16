@@ -8,12 +8,8 @@ package gui.frontend;
 
 import gui.*;
 import java.awt.event.*;
-import java.util.HashMap;
 
 import rts.GameState;
-import rts.UnitAction;
-import rts.units.Unit;
-import rts.units.UnitType;
 import rts.units.UnitTypeTable;
 import util.Pair;
 
@@ -22,7 +18,7 @@ import util.Pair;
  * @author santi
  */
 public class FEStateMouseListener implements MouseListener, MouseMotionListener {
-    PhysicalGameStatePanel panel = null;
+    PhysicalGameStatePanel panel;
     UnitTypeTable utt;
     
     public FEStateMouseListener(PhysicalGameStatePanel a_panel, UnitTypeTable a_utt) {

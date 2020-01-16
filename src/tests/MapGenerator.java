@@ -19,15 +19,15 @@ import util.XMLWriter;
  * 
  */
 public class MapGenerator {
-    static UnitTypeTable utt = null;
+    static UnitTypeTable utt;
     
-    UnitType resourceType = null;
-    UnitType baseType = null;
-    UnitType barracksType = null;
-    UnitType workerType = null;
-    UnitType lightType = null;
-    UnitType heavyType = null;
-    UnitType rangedType = null;
+    UnitType resourceType;
+    UnitType baseType;
+    UnitType barracksType;
+    UnitType workerType;
+    UnitType lightType;
+    UnitType heavyType;
+    UnitType rangedType;
     
     public MapGenerator(UnitTypeTable a_utt) {
         utt = a_utt;

@@ -19,7 +19,7 @@ import java.util.List;
 public class DomainDefinition {
     public static int DEBUG = 0;
     
-    String name = null;
+    String name;
     List<HTNOperator> operators = new LinkedList<>();
     List<HTNMethod> methods = new LinkedList<>();
     
@@ -105,14 +105,13 @@ public class DomainDefinition {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         
-        sb.append("Domain: " + name + "\n");
-        sb.append("Operators:\n");
+        sb.append("Domain: ").append(name).append("\n").append("Operators:\n");
         for(HTNOperator op:operators) {
-            sb.append("  " + op + "\n");
+            sb.append("  ").append(op).append("\n");
         }
         sb.append("Methods:\n");
         for(HTNMethod m:methods) {
-            sb.append("  " + m + "\n");
+            sb.append("  ").append(m).append("\n");
         }
         
         return sb.toString();

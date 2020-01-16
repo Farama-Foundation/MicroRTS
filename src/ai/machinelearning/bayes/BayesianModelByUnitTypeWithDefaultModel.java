@@ -19,10 +19,10 @@ import util.XMLWriter;
  * @author santi
  */
 public class BayesianModelByUnitTypeWithDefaultModel extends BayesianModel {
-    BayesianModel templateModel = null;
+    BayesianModel templateModel;
     
     HashMap<UnitType,BayesianModel> unitModels = new HashMap<>();
-    BayesianModel defaultModel = null;
+    BayesianModel defaultModel;
     
     public BayesianModelByUnitTypeWithDefaultModel(UnitTypeTable utt, BayesianModel tm, String a_name) {
         super(utt, tm.featureGenerator, a_name);

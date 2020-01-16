@@ -29,8 +29,7 @@ public class Attack extends AbstractAction  {
     
     public boolean completed(GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
-        if (!pgs.getUnits().contains(target)) return true;
-        return false;
+        return !pgs.getUnits().contains(target);
     }
     
     
@@ -38,10 +37,7 @@ public class Attack extends AbstractAction  {
     {
         if (!(o instanceof Attack)) return false;
         Attack a = (Attack)o;
-        if (target.getID() != a.target.getID()) return false;
-        if (pf.getClass() != a.pf.getClass()) return false;
-        
-        return true;
+        return target.getID() == a.target.getID() && pf.getClass() == a.pf.getClass();
     }
 
     

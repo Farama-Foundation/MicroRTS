@@ -24,14 +24,14 @@ import ai.core.InterruptibleAI;
  */
 public class NaiveMCTS extends AIWithComputationBudget implements InterruptibleAI {
     public static int DEBUG = 0;
-    public EvaluationFunction ef = null;
+    public EvaluationFunction ef;
        
     Random r = new Random();
     public AI playoutPolicy = new RandomBiasedAI();
     protected long max_actions_so_far = 0;
     
-    protected GameState gs_to_start_from = null;
-    protected NaiveMCTSNode tree = null;
+    protected GameState gs_to_start_from;
+    protected NaiveMCTSNode tree;
     protected int current_iteration = 0;
             
     public int MAXSIMULATIONTIME = 1024;

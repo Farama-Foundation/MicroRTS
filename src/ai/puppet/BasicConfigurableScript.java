@@ -20,7 +20,7 @@ import rts.units.Unit;
 import rts.units.UnitType;
 import rts.units.UnitTypeTable;
 
-enum BasicChoicePoint{UNITTYPE, EXPAND};
+enum BasicChoicePoint{UNITTYPE, EXPAND}
 
 
 public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint> {
@@ -62,8 +62,8 @@ public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint
         rangedType = utt.getUnitType("Ranged");
         resourceType = utt.getUnitType("Resource");
         
-        choicePoints = new EnumMap<BasicChoicePoint,Options>(BasicChoicePoint.class);
-        choices = new EnumMap<BasicChoicePoint,Integer>(BasicChoicePoint.class);
+        choicePoints = new EnumMap<>(BasicChoicePoint.class);
+        choices = new EnumMap<>(BasicChoicePoint.class);
         choicePointValues = BasicChoicePoint.values();
         reset();
     }
@@ -153,7 +153,7 @@ public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint
         }
 
         // behavior of workers:
-        List<Unit> workers = new LinkedList<Unit>();
+        List<Unit> workers = new LinkedList<>();
         for (Unit u : pgs.getUnits()) {
             if (u.getType().canHarvest
                     && u.getPlayer() == player) {
@@ -245,17 +245,16 @@ public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint
     	
         if(workers.isEmpty())return;
         
-        List<Unit> bases = new LinkedList<Unit>();
+        List<Unit> bases = new LinkedList<>();
         for (Unit u2 : pgs.getUnits()) {
             if (u2.getType() == baseType
                     && u2.getPlayer() == p.getID()) {
                 bases.add(u2);
             }
         }
-        
-        List<Unit> freeWorkers = new LinkedList<Unit>();
-        freeWorkers.addAll(workers);
-        List<Integer> reservedPositions = new LinkedList<Integer>();
+
+        List<Unit> freeWorkers = new LinkedList<>(workers);
+        List<Integer> reservedPositions = new LinkedList<>();
         if (nbases == 0 && !freeWorkers.isEmpty()) {
             // build a base:
             if (p.getResources() >= baseType.cost + resourcesUsed) {
@@ -287,12 +286,6 @@ public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint
             if (p.getResources() >= baseType.cost + resourcesUsed ) {
             	//System.out.println("expanding");
                 Unit u = freeWorkers.remove(0);
-                List<Unit> resources=new LinkedList<Unit>();
-                for (Unit u2 : pgs.getUnits()) {
-                    if(u2.getType() == resourceType){
-                    	resources.add(u2);
-                    }
-                }
                 
                 //get closest resource that hasn't got bases around, or enemy units
                 Unit closestFreeResource=findClosest(u, 
@@ -464,7 +457,7 @@ public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint
 				}
 			}
 		}
-		List<Options> choices=new ArrayList<Options>();
+		List<Options> choices= new ArrayList<>();
 
 		if(nbarracks>0){//already have a barracks, build combat units
 			choices.add(new Options(BasicChoicePoint.UNITTYPE.ordinal(),new int[]{
@@ -509,9 +502,9 @@ public class BasicConfigurableScript extends ConfigurableScript<BasicChoicePoint
 	}
 
 	public String toString(){
-		String str = getClass().getSimpleName() + "(";
+		StringBuilder str = new StringBuilder(getClass().getSimpleName() + "(");
 		for(BasicChoicePoint c:BasicChoicePoint.values()){
-			str+=c.toString()+",";
+			str.append(c.toString()).append(",");
 		}
 		return str+")";
 	}

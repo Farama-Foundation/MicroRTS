@@ -5,10 +5,6 @@
 package ai.evaluation;
 
 import rts.GameState;
-import rts.PhysicalGameState;
-import rts.UnitAction;
-import rts.UnitActionAssignment;
-import rts.units.*;
 
 /**
  *
@@ -16,7 +12,7 @@ import rts.units.*;
  */
 public class EvaluationFunctionForwarding extends EvaluationFunction {
     
-    EvaluationFunction baseFunction = null;
+    EvaluationFunction baseFunction;
 
     public EvaluationFunctionForwarding(EvaluationFunction base) {
         baseFunction = base;

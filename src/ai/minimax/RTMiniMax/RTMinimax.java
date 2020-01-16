@@ -4,7 +4,6 @@
  */
 package ai.minimax.RTMiniMax;
 
-import ai.evaluation.EvaluationFunctionForwarding;
 import ai.core.AI;
 import ai.core.ParameterSpecification;
 import ai.evaluation.EvaluationFunction;
@@ -16,7 +15,6 @@ import rts.GameState;
 import rts.PlayerAction;
 import rts.PlayerActionGenerator;
 import rts.units.UnitTypeTable;
-import util.Pair;
 
 /**
  *
@@ -35,7 +33,7 @@ public class RTMinimax extends AI {
 
     protected int defaultNONEduration = 8;
     
-    EvaluationFunction ef = null;
+    EvaluationFunction ef;
     
     
     public RTMinimax(UnitTypeTable utt) {

@@ -12,7 +12,7 @@ import rts.GameState;
  * @author santi
  */
 public class PhysicalGameStateJFrame extends JFrame {
-    PhysicalGameStatePanel panel = null;
+    PhysicalGameStatePanel panel;
     
     public PhysicalGameStateJFrame(String title, int dx, int dy, PhysicalGameStatePanel a_panel) {
         super(title);

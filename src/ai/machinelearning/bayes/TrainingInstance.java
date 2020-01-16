@@ -16,9 +16,9 @@ import rts.units.Unit;
  * @author santi
  */
 public class TrainingInstance {
-    public GameState gs = null;
-    public Unit u = null;
-    public UnitAction ua = null;
+    public GameState gs;
+    public Unit u;
+    public UnitAction ua;
     
     public TrainingInstance(GameState a_gs, long uID, UnitAction a_ua) throws Exception {
         gs = a_gs;

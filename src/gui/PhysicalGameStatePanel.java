@@ -33,12 +33,12 @@ public class PhysicalGameStatePanel extends JPanel {
 
     boolean fullObservability = true;
     int drawFromPerspectiveOfPlayer = -1;   // if fullObservability is false, and this is 0 or 1, it only draws what the specified player can see
-    GameState gs = null;
+    GameState gs;
 
     // Units to be highlighted (this is used, for example, by the MouseController,
     // to give feedback to the human, on which units are selectable.
-    List<Unit> toHighLight = new LinkedList<Unit>();
-    EvaluationFunction evalFunction = null;
+    List<Unit> toHighLight = new LinkedList<>();
+    EvaluationFunction evalFunction;
 
     // area to highlight: this can be used to highlight a rectangle of the game:
     int m_mouse_selection_x0 = -1;
@@ -194,7 +194,7 @@ public class PhysicalGameStatePanel extends JPanel {
         if (cellx>=gs.getPhysicalGameState().getWidth()) return null;
         if (celly>=gs.getPhysicalGameState().getHeight()) return null;
 
-        return new Pair<Integer,Integer>(cellx,celly);
+        return new Pair<>(cellx, celly);
     }
 
 
@@ -210,7 +210,7 @@ public class PhysicalGameStatePanel extends JPanel {
         if (cellx>=gs.getPhysicalGameState().getWidth()) cellx = gs.getPhysicalGameState().getWidth()-1;
         if (celly>=gs.getPhysicalGameState().getHeight()) celly = gs.getPhysicalGameState().getHeight()-1;
 
-        return new Pair<Integer,Integer>(cellx,celly);
+        return new Pair<>(cellx, celly);
     }
 
 
@@ -352,8 +352,7 @@ public class PhysicalGameStatePanel extends JPanel {
 
         // draw the units:
         // this list copy is to prevent a concurrent modification exception
-        List<Unit> l = new LinkedList<Unit>();
-        l.addAll(pgs.getUnits());
+        List<Unit> l = new LinkedList<>(pgs.getUnits());
         for(Unit u:l) {
             int reduction = 0;
 

@@ -6,7 +6,6 @@ package tests;
 
 import java.util.List;
 import rts.*;
-import rts.units.Unit;
 import rts.units.UnitTypeTable;
 
 /**

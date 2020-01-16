@@ -78,7 +78,7 @@ public class CRush_V1 extends AbstractionLayerAI {
         
 //        System.out.println("LightRushAI for player " + player + " (cycle " + gs.getTime() + ")");
 
-        List<Unit> workers = new LinkedList<Unit>();
+        List<Unit> workers = new LinkedList<>();
         for (Unit u : pgs.getUnits()) {
             if (u.getType().canHarvest
                     && u.getPlayer() == player) {
@@ -224,8 +224,8 @@ public class CRush_V1 extends AbstractionLayerAI {
         int nworkers = 0;
         resourcesUsed = 0;
         
-        List<Unit> freeWorkers = new LinkedList<Unit>();
-        List<Unit> battleWorkers = new LinkedList<Unit>();
+        List<Unit> freeWorkers = new LinkedList<>();
+        List<Unit> battleWorkers = new LinkedList<>();
 
         for (Unit u2 : pgs.getUnits()) {
             if (u2.getType() == baseType
@@ -256,7 +256,7 @@ public class CRush_V1 extends AbstractionLayerAI {
             return;
         }
 
-        List<Integer> reservedPositions = new LinkedList<Integer>();
+        List<Integer> reservedPositions = new LinkedList<>();
         if (nbases == 0 && !freeWorkers.isEmpty()) {
             // build a base:
             if (p.getResources() >= baseType.cost) {
@@ -336,8 +336,8 @@ public class CRush_V1 extends AbstractionLayerAI {
         int nworkers = 0;
         resourcesUsed = 0;
         
-        List<Unit> freeWorkers = new LinkedList<Unit>();
-        List<Unit> battleWorkers = new LinkedList<Unit>();
+        List<Unit> freeWorkers = new LinkedList<>();
+        List<Unit> battleWorkers = new LinkedList<>();
 
         for (Unit u2 : pgs.getUnits()) {
             if (u2.getType() == baseType
@@ -366,7 +366,7 @@ public class CRush_V1 extends AbstractionLayerAI {
             return;
         }
 
-        List<Integer> reservedPositions = new LinkedList<Integer>();
+        List<Integer> reservedPositions = new LinkedList<>();
         if (nbases == 0 && !freeWorkers.isEmpty()) {
             // build a base:
             if (p.getResources() >= baseType.cost) {

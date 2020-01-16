@@ -15,7 +15,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -33,13 +32,13 @@ import util.XMLWriter;
  */
 public class FETracePane extends JPanel {
     
-    Trace currentTrace = null;
+    Trace currentTrace;
     int currentGameCycle = 0;
     
-    PhysicalGameStatePanel statePanel = null;
+    PhysicalGameStatePanel statePanel;
     
     JFileChooser fileChooser = new JFileChooser();
-    FEStatePane stateTab = null;
+    FEStatePane stateTab;
     
     public FETracePane(FEStatePane a_stateTab) {
         stateTab = a_stateTab;
@@ -88,7 +87,7 @@ public class FETracePane extends JPanel {
                 public void actionPerformed(ActionEvent e)
                 {
                     int returnVal = fileChooser.showSaveDialog((Component)null);
-                    if (returnVal == fileChooser.APPROVE_OPTION) {
+                    if (returnVal == JFileChooser.APPROVE_OPTION) {
                         File file = fileChooser.getSelectedFile();
                         try {
                             XMLWriter xml = new XMLWriter(new FileWriter(file.getAbsolutePath()));

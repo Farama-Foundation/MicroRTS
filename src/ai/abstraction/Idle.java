@@ -28,8 +28,7 @@ public class Idle extends AbstractAction  {
     
     public boolean equals(Object o)
     {
-        if (!(o instanceof Idle)) return false;        
-        return true;
+        return o instanceof Idle;
     }
 
     

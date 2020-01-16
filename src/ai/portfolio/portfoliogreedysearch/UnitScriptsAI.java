@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import rts.GameState;
 import rts.PlayerAction;
+import rts.ResourceUsage;
 import rts.UnitAction;
 import rts.units.Unit;
 import rts.units.UnitType;
@@ -26,9 +27,9 @@ public class UnitScriptsAI extends AI {
     
     UnitScript scriptsInput[];
     List<Unit> unitsInput;
-    HashMap<Unit,UnitScript> scripts = new HashMap<>();
-    HashMap<UnitType, List<UnitScript>> allScripts = null;
-    UnitScript defaultScript = null;
+    HashMap<Long,UnitScript> scripts = new HashMap<>();
+    HashMap<UnitType, List<UnitScript>> allScripts;
+    UnitScript defaultScript;
     
     
     public UnitScriptsAI(UnitScript a_scripts[], List<Unit> a_units,
@@ -37,7 +38,7 @@ public class UnitScriptsAI extends AI {
         scriptsInput = a_scripts;
         unitsInput = a_units;
         for(int i = 0;i<a_scripts.length;i++) {
-            scripts.put(a_units.get(i), a_scripts[i]);
+            scripts.put(a_units.get(i).getID(), a_scripts[i]);
         }
         allScripts = a_allScripts;
         defaultScript = a_defaultScript;
@@ -48,34 +49,38 @@ public class UnitScriptsAI extends AI {
     }
     
     public void resetScripts(GameState gs) {   
-        for(Unit u:scripts.keySet()) {
-            UnitScript s = scripts.get(u);
-            scripts.put(u, s.instantiate(u, gs));
+        for(Long ID:scripts.keySet()) {
+            UnitScript s = scripts.get(ID);
+            scripts.put(ID, s.instantiate(gs.getUnit(ID), gs));
         }
     }
     
 
     public PlayerAction getAction(int player, GameState gs) throws Exception {
-//        System.out.println("    UnitScriptsAI.getAction " + player + ", " + gs.getTime());
         PlayerAction pa = new PlayerAction();
+        ResourceUsage ru = gs.getResourceUsage();
         for(Unit u:gs.getUnits()) {
             if (u.getPlayer()==player && gs.getUnitAction(u)==null) {
-                UnitScript s = scripts.get(u);
+                UnitScript s = scripts.get(u.getID());
                 if (s!=null) s = s.instantiate(u, gs);
                 if (s==null) {
                     // new unit, or completed script
                     s = allScripts.get(u.getType()).get(0).instantiate(u, gs);
                     if (s==null) s = defaultScript.instantiate(u, gs);
-                    scripts.put(u,s);
+                    scripts.put(u.getID(),s);
                 }
                 UnitAction ua = s.getAction(u, gs);
                 if (ua!=null) {
-                    pa.addUnitAction(u, ua);
-                } else {
-                    pa.addUnitAction(u, new UnitAction(UnitAction.TYPE_NONE));
+                    ResourceUsage ru2 = ua.resourceUsage(u, gs.getPhysicalGameState());
+                    if (ru.consistentWith(ru2, gs)) {
+                        pa.addUnitAction(u, ua);
+                        ru.merge(ru2);
+                    }
                 }
             }
         }
+        //System.out.println("    UnitScriptsAI.getAction " + player + ", " + gs.getTime() + ": " + pa);
+        pa.fillWithNones(gs, player, 10);
         return pa;
     }
 

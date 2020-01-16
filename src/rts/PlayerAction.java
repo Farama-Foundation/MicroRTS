@@ -21,7 +21,7 @@ public class PlayerAction {
     /**
      * A list of unit actions
      */
-    List<Pair<Unit,UnitAction>> actions = new LinkedList<Pair<Unit,UnitAction>>();
+    List<Pair<Unit,UnitAction>> actions = new LinkedList<>();
     
     /**
      * Represents the resources used by the player action
@@ -112,7 +112,7 @@ public class PlayerAction {
      * @param a
      */
     public void addUnitAction(Unit u, UnitAction a) {
-        actions.add(new Pair<Unit, UnitAction>(u,a));
+        actions.add(new Pair<>(u, a));
     }
     
     /**
@@ -140,8 +140,8 @@ public class PlayerAction {
      */
     public PlayerAction merge(PlayerAction a) {
         PlayerAction merge = new PlayerAction();
-        for(Pair<Unit,UnitAction> ua : actions) merge.actions.add(ua);
-        for(Pair<Unit,UnitAction> ua : a.actions) merge.actions.add(ua);
+        merge.actions.addAll(actions);
+        merge.actions.addAll(a.actions);
         merge.r = r.mergeIntoNew(a.r);
         
         return merge;
@@ -175,7 +175,7 @@ public class PlayerAction {
      * @return
      */
     public List<PlayerAction> cartesianProduct(List<UnitAction> lu, Unit u, GameState s) {
-        List<PlayerAction> l = new LinkedList<PlayerAction>();
+        List<PlayerAction> l = new LinkedList<>();
         
 		for (UnitAction ua : lu) {
 			ResourceUsage r2 = ua.resourceUsage(u, s.getPhysicalGameState());
@@ -224,7 +224,7 @@ public class PlayerAction {
 						}
 					}
                     if (!found) {
-                        actions.add(new Pair<Unit,UnitAction>(u, new UnitAction(UnitAction.TYPE_NONE, duration)));
+                        actions.add(new Pair<>(u, new UnitAction(UnitAction.TYPE_NONE, duration)));
                     }
                 }
             }
@@ -262,7 +262,7 @@ public class PlayerAction {
         PlayerAction clone = new PlayerAction();
         clone.actions = new LinkedList<>();
         for(Pair<Unit,UnitAction> tmp:actions) {
-            clone.actions.add(new Pair<Unit,UnitAction>(tmp.m_a, tmp.m_b));
+            clone.actions.add(new Pair<>(tmp.m_a, tmp.m_b));
         }
         clone.r = r.clone();
         return clone;
@@ -281,9 +281,9 @@ public class PlayerAction {
      * @see java.lang.Object#toString()
      */
     public String toString() {
-        String tmp = "{ ";
+        StringBuilder tmp = new StringBuilder("{ ");
         for(Pair<Unit,UnitAction> ua:actions) {
-            tmp += "(" + ua.m_a + "," + ua.m_b + ")";
+            tmp.append("(").append(ua.m_a).append(",").append(ua.m_b).append(")");
         }
         return tmp + " }";
     }    

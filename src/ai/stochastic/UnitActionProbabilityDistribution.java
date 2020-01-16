@@ -16,7 +16,7 @@ import rts.units.UnitTypeTable;
  * @author santi
  */
 public abstract class UnitActionProbabilityDistribution {
-    protected UnitTypeTable utt = null;
+    protected UnitTypeTable utt;
     
     public UnitActionProbabilityDistribution(UnitTypeTable a_utt) {
         utt = a_utt;

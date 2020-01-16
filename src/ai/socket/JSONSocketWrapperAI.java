@@ -46,12 +46,12 @@ public class JSONSocketWrapperAI {
 
 
     private static class SocketWrapperAI extends Thread {
-        Socket socket = null;
+        Socket socket;
         int clientNumber = 0;
         int time_budget = 100;
         int iterations_budget = 0;
-        UnitTypeTable utt = null;
-        AIWithComputationBudget ai = null;
+        UnitTypeTable utt;
+        AIWithComputationBudget ai;
         
 
         public SocketWrapperAI(Socket socket, int clientNumber, AIWithComputationBudget a_ai) {
@@ -124,6 +124,8 @@ public class JSONSocketWrapperAI {
                         int milliseconds = Integer.parseInt(tokens[1]);
                         String readWriteFolder = null;
                         if (tokens.length>=2) {
+                            // TODO tokens.length>=2 is always true because we have already accessed tokens[1] previously
+                            // TODO but checking if tokens.length>=2 does not ensure that tokens[2] (accessed below) exists
                             readWriteFolder = tokens[2];
                             if (readWriteFolder.startsWith("\"")) readWriteFolder = readWriteFolder.substring(1, readWriteFolder.length()-1);
                         }
@@ -136,6 +138,7 @@ public class JSONSocketWrapperAI {
                         if (DEBUG>=1) System.out.println(gs);
 
                         if (readWriteFolder != null) {
+                            // TODO this is also always true...
                             ai.preGameAnalysis(gs, milliseconds, readWriteFolder);                            
                         } else {
                             ai.preGameAnalysis(gs, milliseconds);
