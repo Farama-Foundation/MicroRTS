@@ -1,0 +1,56 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package ai.rewardfunction;
+
+import java.util.List;
+
+import rts.GameState;
+import rts.PhysicalGameState;
+import rts.TraceEntry;
+import rts.UnitAction;
+import rts.units.Unit;
+import util.Pair;
+
+/**
+ *
+ * @author santi
+ */
+public class ResourceGatherRewardFunction implements RewardFunctionInterface{
+    public double reward = 0.0;
+    public boolean done = false;
+    public static float RESOURCE_RETURN_REWARD = 20;
+    public static float RESOURCE_HARVEST_REWARD = 10;
+    public static float UNIT_BONUS_MULTIPLIER = 40.0f;
+
+    public void computeReward(int maxplayer, int minplayer, TraceEntry te, GameState afterGs) {
+        reward = 0.0;
+        for(Pair<Unit, UnitAction> p:te.getActions()) {
+            if (p.m_a.getPlayer()==maxplayer && p.m_b.getType()==UnitAction.TYPE_HARVEST) {
+                reward += RESOURCE_HARVEST_REWARD;
+            } else if (p.m_a.getPlayer()==maxplayer && p.m_b.getType()==UnitAction.TYPE_RETURN) {
+                reward += RESOURCE_RETURN_REWARD;
+            }
+        }
+        done = true;
+        PhysicalGameState pgs = afterGs.getPhysicalGameState();
+        for(Unit u:pgs.getUnits()) {
+            // If there are Resources left, it's not done
+            if (u.getType().equals(afterGs.getUnitTypeTable().getUnitType(0))) {
+                if (u.getResources()>0) {
+                    done = false;
+                    return;
+                }
+            }
+        }
+    }
+
+    public double getReward() {
+        return reward;
+    }
+
+    public boolean isDone() {
+        return done;
+    }
+}

@@ -34,6 +34,7 @@ import ai.RandomNoAttackAI;
 import ai.core.AI;
 import ai.jni.JNIAI;
 import ai.jni.JNILocalAI;
+import ai.rewardfunction.RewardFunctionInterface;
 import ai.jni.JNIInterface;
 import ai.socket.IndividualSocketRewardAI;
 import ai.socket.SocketAIInterface;
@@ -44,6 +45,8 @@ import gui.PhysicalGameStatePanel;
 import rts.GameState;
 import rts.PhysicalGameState;
 import rts.PlayerAction;
+import rts.Trace;
+import rts.TraceEntry;
 import rts.units.UnitTypeTable;
 
 /**
@@ -74,6 +77,7 @@ public class JNIClient {
     PhysicalGameState pgs;
     GameState gs;
     UnitTypeTable utt;
+    public RewardFunctionInterface rf;
     String mapPath;
     String micrortsPath;
     boolean gameover = false;
@@ -93,9 +97,10 @@ public class JNIClient {
         }
     }
 
-    public JNIClient(String a_micrortsPath, String a_mapPath) throws Exception{
+    public JNIClient(RewardFunctionInterface a_rf, String a_micrortsPath, String a_mapPath) throws Exception{
         micrortsPath = a_micrortsPath;
         mapPath = a_mapPath;
+        rf = a_rf;
         utt = new UnitTypeTable();
         utt.getUnitType("Worker").harvestTime = 10;
         ai1 = new JNIAI(100, 0, utt);
@@ -113,9 +118,10 @@ public class JNIClient {
             this.mapPath = Paths.get(micrortsPath, mapPath).toString();
         }
         System.out.println(mapPath);
+        System.out.println(rf);
     }
 
-    public JNIClient(String a_micrortsPath, String a_mapPath, int windowSize) throws Exception{
+    public JNIClient(RewardFunctionInterface a_rf, String a_micrortsPath, String a_mapPath, int windowSize) throws Exception{
         micrortsPath = a_micrortsPath;
         mapPath = a_mapPath;
         utt = new UnitTypeTable();
@@ -158,29 +164,45 @@ public class JNIClient {
         return data.getData();
     }
 
-    public Response step(int[][] action) throws Exception {
-        PlayerAction pa1 = ai1.getAction(0, gs, action);
-        PlayerAction pa2 = ai2.getAction(1, gs);
-        gs.issueSafe(pa1);
-        gs.issueSafe(pa2);
-
-        // simulate:
-        gameover = gs.cycle();
-        if (gameover) {
-            // ai1.gameOver(gs.winner());
-            ai2.gameOver(gs.winner());
-        }
-        try {
-            Thread.yield();
-        } catch (Exception e) {
-            e.printStackTrace();
+    public Response step(int[][] action, int frameskip) throws Exception {
+        double totalReward = 0.0;
+        PlayerAction pa1;
+        PlayerAction pa2;
+        // frameskip
+        for (int i=0;i<=frameskip;i++) {
+            if (i==0) {
+                pa1 = ai1.getAction(0, gs, action);
+            } else {
+                pa1 = new PlayerAction();
+                pa1.fillWithNones(gs, 0, 0);
+            }
+            pa2 = ai2.getAction(1, gs);
+            gs.issueSafe(pa1);
+            gs.issueSafe(pa2);
+            TraceEntry te  = new TraceEntry(gs.getPhysicalGameState().clone(),gs.getTime());
+            te.addPlayerAction(pa1.clone());
+            te.addPlayerAction(pa2.clone());
+    
+            // simulate:
+            gameover = gs.cycle();
+            if (gameover) {
+                // ai1.gameOver(gs.winner());
+                ai2.gameOver(gs.winner());
+            }
+            try {
+                Thread.yield();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            rf.computeReward(0, 1, te, gs);
+            totalReward += rf.getReward();
         }
 
         // TODO return observation in JSON format
         return new Response(
             ai1.getObservation(0, gs),
-            ai1.computeReward(0, 1, gs),
-            gameover,
+            totalReward,
+            rf.isDone(),
             ai1.computeInfo(0, gs));
     }
 

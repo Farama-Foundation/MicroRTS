@@ -1,5 +1,6 @@
 mkdir build
-javac -d "./build" -cp "./lib/*" -sourcepath "./src" ./src/tests/*.java ./src/tests/sockets/*.java
+javac -d "./build" -cp "./lib/*" -sourcepath "./src"  $(find ./src/* | grep .java)
+# javac ./src/tests/*.java ./src/tests/sockets/*.java
 cp -a lib/. build/
 cd build
 for i in *.jar; do
