@@ -8,7 +8,7 @@ package ai.ahtn.domain;
 
 import ai.ahtn.domain.LispParser.LispElement;
 import ai.ahtn.planner.AdversarialChoicePoint;
-import java.util.Collections;
+
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -39,11 +39,11 @@ public class MethodDecomposition {
     public static final int EXECUTION_CHOICE_POINT = 4;
     
     protected int type = METHOD_CONDITION;
-    protected Clause clause = null;
-    protected Term term = null;
-    protected MethodDecomposition[] subelements = null;
+    protected Clause clause;
+    protected Term term;
+    protected MethodDecomposition[] subelements;
     
-    HTNMethod method = null;
+    HTNMethod method;
     
     /*
     executionState:
@@ -55,8 +55,8 @@ public class MethodDecomposition {
     */
     int executionState = 0;
     int operatorExecutingState = 0;
-    List<MethodDecomposition> operatorsBeingExecuted = null;
-    Term updatedTerm = null;
+    List<MethodDecomposition> operatorsBeingExecuted;
+    Term updatedTerm;
     int updatedTermCycle = -1;  // at which game cycle did we update the term last time
     
     
@@ -148,44 +148,53 @@ public class MethodDecomposition {
     
     public static MethodDecomposition fromLispElement(LispElement e) throws Exception {
         LispElement head = e.children.get(0);
-        if (head.element.equals(":condition")) {
-            MethodDecomposition d = new MethodDecomposition();
-            d.type = METHOD_CONDITION;
-            d.clause = Clause.fromLispElement(e.children.get(1));
-            return d;
-        } else if (head.element.equals(":!condition")) {
-            MethodDecomposition d = new MethodDecomposition();
-            d.type = METHOD_NON_BRANCHING_CONDITION;
-            d.clause = Clause.fromLispElement(e.children.get(1));
-            return d;
-        } else if (head.element.equals(":operator")) {
-            MethodDecomposition d = new MethodDecomposition();
-            d.type = METHOD_OPERATOR;
-            d.term = Term.fromLispElement(e.children.get(1));
-            return d;
-        } else if (head.element.equals(":method")) {
-            MethodDecomposition d = new MethodDecomposition();
-            d.type = METHOD_METHOD;
-            d.term = Term.fromLispElement(e.children.get(1));
-            return d;
-        } else if (head.element.equals(":sequence")) {
-            MethodDecomposition d = new MethodDecomposition();
-            d.type = METHOD_SEQUENCE;
-            d.subelements = new MethodDecomposition[e.children.size()-1];
-            for(int i = 0;i<e.children.size()-1;i++) {
-                d.subelements[i] = MethodDecomposition.fromLispElement(e.children.get(i+1));
+        switch (head.element) {
+            case ":condition": {
+                ai.ahtn.domain.MethodDecomposition d = new ai.ahtn.domain.MethodDecomposition();
+                d.type = METHOD_CONDITION;
+                d.clause = ai.ahtn.domain.Clause.fromLispElement(e.children.get(1));
+                return d;
             }
-            return d;
-        } else if (head.element.equals(":parallel")) {
-            MethodDecomposition d = new MethodDecomposition();
-            d.type = METHOD_PARALLEL;
-            d.subelements = new MethodDecomposition[e.children.size()-1];
-            for(int i = 0;i<e.children.size()-1;i++) {
-                d.subelements[i] = MethodDecomposition.fromLispElement(e.children.get(i+1));
+            case ":!condition": {
+                ai.ahtn.domain.MethodDecomposition d = new ai.ahtn.domain.MethodDecomposition();
+                d.type = METHOD_NON_BRANCHING_CONDITION;
+                d.clause = ai.ahtn.domain.Clause.fromLispElement(e.children.get(1));
+                return d;
             }
-            return d;
-        } else {
-            throw new Exception("unrecognized method decomposition!: " + head.element);
+            case ":operator": {
+                ai.ahtn.domain.MethodDecomposition d = new ai.ahtn.domain.MethodDecomposition();
+                d.type = METHOD_OPERATOR;
+                d.term = ai.ahtn.domain.Term.fromLispElement(e.children.get(1));
+                return d;
+            }
+            case ":method": {
+                ai.ahtn.domain.MethodDecomposition d = new ai.ahtn.domain.MethodDecomposition();
+                d.type = METHOD_METHOD;
+                d.term = ai.ahtn.domain.Term.fromLispElement(e.children.get(1));
+                return d;
+            }
+            case ":sequence": {
+                ai.ahtn.domain.MethodDecomposition d = new ai.ahtn.domain.MethodDecomposition();
+                d.type = METHOD_SEQUENCE;
+                d.subelements = new ai.ahtn.domain.MethodDecomposition[e.children.size() - 1];
+                for (int i = 0; i < e.children.size() - 1; i++) {
+                    d.subelements[i] = ai.ahtn.domain.MethodDecomposition
+                        .fromLispElement(e.children.get(i + 1));
+                }
+                return d;
+            }
+            case ":parallel": {
+                ai.ahtn.domain.MethodDecomposition d = new ai.ahtn.domain.MethodDecomposition();
+                d.type = METHOD_PARALLEL;
+                d.subelements = new ai.ahtn.domain.MethodDecomposition[e.children.size() - 1];
+                for (int i = 0; i < e.children.size() - 1; i++) {
+                    d.subelements[i] = ai.ahtn.domain.MethodDecomposition
+                        .fromLispElement(e.children.get(i + 1));
+                }
+                return d;
+            }
+            default:
+                throw new Exception("unrecognized method decomposition!: " + head.element);
         }
     }  
     
@@ -213,9 +222,9 @@ public class MethodDecomposition {
                 {
                     StringBuilder sb = new StringBuilder();
                     sb.append("(:sequence");
-                    for(int i = 0;i<subelements.length;i++) {
+                    for (MethodDecomposition subelement : subelements) {
                         sb.append(" ");
-                        sb.append(subelements[i]);
+                        sb.append(subelement);
                     }
                     sb.append(")");
                     return sb.toString();
@@ -224,9 +233,9 @@ public class MethodDecomposition {
                 {
                     StringBuilder sb = new StringBuilder();
                     sb.append("(:parallel");
-                    for(int i = 0;i<subelements.length;i++) {
+                    for (MethodDecomposition subelement : subelements) {
                         sb.append(" ");
-                        sb.append(subelements[i]);
+                        sb.append(subelement);
                     }
                     sb.append(")");
                     return sb.toString();
@@ -269,8 +278,8 @@ public class MethodDecomposition {
             case METHOD_SEQUENCE:
                 {
                     System.out.println(this.hashCode() + " - "+executionState+" - (:sequence");
-                    for(int i = 0;i<subelements.length;i++) {
-                        subelements[i].printDetailed(tabs+1);
+                    for (MethodDecomposition subelement : subelements) {
+                        subelement.printDetailed(tabs + 1);
                     }
                     for(int j = 0;j<tabs;j++) System.out.print("  ");
                     System.out.println(")");
@@ -279,8 +288,8 @@ public class MethodDecomposition {
             case METHOD_PARALLEL:
                 {
                     System.out.println(this.hashCode() + " - "+executionState+" - (:parallel");
-                    for(int i = 0;i<subelements.length;i++) {
-                        subelements[i].printDetailed(tabs+1);
+                    for (MethodDecomposition subelement : subelements) {
+                        subelement.printDetailed(tabs + 1);
                     }
                     for(int j = 0;j<tabs;j++) System.out.print("  ");
                     System.out.println(")");
@@ -363,8 +372,8 @@ public class MethodDecomposition {
         if (term!=null) term.renameVariables(renamingIndex);
         if (updatedTerm!=null) updatedTerm.renameVariables(renamingIndex);
         if (subelements!=null) {
-            for(int i = 0;i<subelements.length;i++) {
-                subelements[i].renameVariables(renamingIndex);
+            for (MethodDecomposition subelement : subelements) {
+                subelement.renameVariables(renamingIndex);
             }
         }
         if (method!=null) method.renameVariables(renamingIndex);
@@ -376,8 +385,8 @@ public class MethodDecomposition {
         if (term!=null) term.applyBindings(l);
         if (updatedTerm!=null) updatedTerm.applyBindings(l);
         if (subelements!=null) {
-            for(int i = 0;i<subelements.length;i++) {
-                subelements[i].applyBindings(l);
+            for (MethodDecomposition subelement : subelements) {
+                subelement.applyBindings(l);
             }
         }
         if (method!=null) method.applyBindings(l);
@@ -390,8 +399,8 @@ public class MethodDecomposition {
         operatorsBeingExecuted = null;
         
         if (subelements!=null) {
-            for(int i = 0;i<subelements.length;i++) {
-                subelements[i].executionReset();
+            for (MethodDecomposition subelement : subelements) {
+                subelement.executionReset();
             }
         }
         if (method!=null) {
@@ -447,12 +456,12 @@ public class MethodDecomposition {
                 {
                     boolean allSuccess = true;
                     boolean anyActionIssue = false;
-                    for(int i = 0;i<subelements.length;i++) {
-                        int tmp = subelements[i].executionCycle(gs, actions, choicePoints);
-                        if (tmp==EXECUTION_ACTION_ISSUE) anyActionIssue = true;
-                        if (tmp==EXECUTION_CHOICE_POINT ||
-                            tmp==EXECUTION_FAILURE) return tmp;
-                        if (tmp!=EXECUTION_SUCCESS) allSuccess = false;
+                    for (MethodDecomposition subelement : subelements) {
+                        int tmp = subelement.executionCycle(gs, actions, choicePoints);
+                        if (tmp == EXECUTION_ACTION_ISSUE) anyActionIssue = true;
+                        if (tmp == EXECUTION_CHOICE_POINT ||
+                                tmp == EXECUTION_FAILURE) return tmp;
+                        if (tmp != EXECUTION_SUCCESS) allSuccess = false;
                     }
                     if (allSuccess) return EXECUTION_SUCCESS;
                     if (anyActionIssue) return EXECUTION_ACTION_ISSUE;
@@ -516,12 +525,12 @@ public class MethodDecomposition {
                 {
                     boolean allSuccess = true;
                     boolean anyActionIssue = false;
-                    for(int i = 0;i<subelements.length;i++) {
-                        int tmp = subelements[i].executionCycle(gs, actions, choicePoints, previous_cp);
-                        if (tmp==EXECUTION_ACTION_ISSUE) anyActionIssue = true;
-                        if (tmp==EXECUTION_CHOICE_POINT ||
-                            tmp==EXECUTION_FAILURE) return tmp;
-                        if (tmp!=EXECUTION_SUCCESS) allSuccess = false;
+                    for (MethodDecomposition subelement : subelements) {
+                        int tmp = subelement.executionCycle(gs, actions, choicePoints, previous_cp);
+                        if (tmp == EXECUTION_ACTION_ISSUE) anyActionIssue = true;
+                        if (tmp == EXECUTION_CHOICE_POINT ||
+                                tmp == EXECUTION_FAILURE) return tmp;
+                        if (tmp != EXECUTION_SUCCESS) allSuccess = false;
                     }
                     if (allSuccess) return EXECUTION_SUCCESS;
                     if (anyActionIssue) return EXECUTION_ACTION_ISSUE;
@@ -536,7 +545,7 @@ public class MethodDecomposition {
         List<Pair<Integer,List<Term>>> l = new ArrayList<>();
         convertToOperatorList(l);
         // sort the list:
-        Collections.sort(l, new Comparator<Pair<Integer,List<Term>>>() {
+        l.sort(new Comparator<Pair<Integer, List<Term>>>() {
             public int compare(Pair<Integer, List<Term>> o1, Pair<Integer, List<Term>> o2) {
                 return Integer.compare(o1.m_a, o2.m_a);
             }
@@ -575,8 +584,8 @@ public class MethodDecomposition {
             case METHOD_SEQUENCE:
             case METHOD_PARALLEL:
                 if (subelements!=null) {
-                    for(int i = 0;i<subelements.length;i++) {
-                        subelements[i].convertToOperatorList(l);
+                    for (MethodDecomposition subelement : subelements) {
+                        subelement.convertToOperatorList(l);
                     }
                 }
                 break;

@@ -1,4 +1,7 @@
+*.*~
 *.class
 /bin/
 /.classpath
 /.project
+/.idea
+/.vscode

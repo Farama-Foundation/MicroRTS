@@ -26,13 +26,13 @@ public class AStarPathFinding extends PathFinding {
     public static int iterations = 0;   // this is a debugging variable    
     public static int accumlength = 0;   // this is a debugging variable    
     
-    Boolean free[][] = null;
-    int closed[] = null;
-    int open[] = null;  // open list
-    int heuristic[] = null;     // heuristic value of the elements in 'open'
-    int parents[] = null;
-    int cost[] = null;     // cost of reaching a given position so far
-    int inOpenOrClosed[] = null;
+    Boolean free[][];
+    int closed[];
+    int open[];  // open list
+    int heuristic[];     // heuristic value of the elements in 'open'
+    int parents[];
+    int cost[];     // cost of reaching a given position so far
+    int inOpenOrClosed[];
     int openinsert = 0;
     
     
@@ -190,9 +190,8 @@ public class AStarPathFinding extends PathFinding {
     }      
 
     public boolean pathExists(Unit start, int targetpos, GameState gs, ResourceUsage ru) {
-        if (start.getPosition(gs.getPhysicalGameState())==targetpos) return true;
-        if (findPath(start,targetpos,gs,ru)!=null) return true;
-        return false;
+        return start.getPosition(gs.getPhysicalGameState()) == targetpos
+            || findPath(start, targetpos, gs, ru) != null;
     }
     
 
@@ -200,9 +199,8 @@ public class AStarPathFinding extends PathFinding {
         int x = targetpos%gs.getPhysicalGameState().getWidth();
         int y = targetpos/gs.getPhysicalGameState().getWidth();
         int d = (x-start.getX())*(x-start.getX()) + (y-start.getY())*(y-start.getY());
-        if (d<=range*range) return true;
-        if (findPathToPositionInRange(start,targetpos,range,gs,ru)!=null) return true;
-        return false;
+        return d <= range * range
+            || findPathToPositionInRange(start, targetpos, range, gs, ru) != null;
     }
     
     // and keep the "open" list sorted:
@@ -338,11 +336,9 @@ public class AStarPathFinding extends PathFinding {
 
             if (((x-targetx)*(x-targetx)+(y-targety)*(y-targety))<=sq_range) {
                 // path found, backtrack:
-                int last = pos;
                 //System.out.println("- Path from " + start.getX() + "," + start.getY() + " to " + targetpos%w + "," + targetpos/w + " (range " + range + ") in " + iterations + " iterations");
                 int temp = 0;
                 while(parent!=pos) {
-                    last = pos;
                     pos = parent;
                     parent = closed[pos];
                     accumlength++;

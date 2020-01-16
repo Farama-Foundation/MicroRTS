@@ -6,7 +6,6 @@ package tests;
 
 import ai.core.AI;
 import ai.abstraction.WorkerRush;
-import ai.*;
 import ai.abstraction.AbstractAction;
 import ai.abstraction.AbstractTrace;
 import ai.abstraction.AbstractTraceEntry;
@@ -14,7 +13,7 @@ import ai.abstraction.AbstractionLayerAI;
 import ai.abstraction.LightRush;
 import ai.abstraction.pathfinding.BFSPathFinding;
 import java.io.FileWriter;
-import java.io.IOException;
+
 import rts.*;
 import rts.units.Unit;
 import rts.units.UnitTypeTable;
@@ -25,7 +24,7 @@ import util.XMLWriter;
  * @author santi
  */
 public class AbstractTraceGenerationTest {
-    public static void main(String args[]) throws IOException, Exception {
+    public static void main(String args[]) throws Exception {
         UnitTypeTable utt = new UnitTypeTable();
         PhysicalGameState pgs = PhysicalGameState.load("maps/16x16/basesWorkers16x16.xml", utt);
         GameState gs = new GameState(pgs, utt);

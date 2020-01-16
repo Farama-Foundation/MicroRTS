@@ -86,33 +86,23 @@ public class Symbol {
     
     public boolean equals(String str) {
         if (mSym == null) {
-            if (str == null) {
-                return true;
-            }
-            return false;
-        } else {
-            if (str == null) {
-                return false;
-            }
-            return (mSym.toString().equals(str));
+            return str == null;
         }
+        if (str == null) {
+            return false;
+        }
+        return (mSym.toString().equals(str));
     }
     
 
     public boolean equals(StringBuffer str) {
         if (mSym == null) {
-            if (str == null) {
-                return true;
-            }
-            return false;
-        } else {
-            if (str == null) {
-                return false;
-            }
-			// System.out.println("Symbol.equals: '" + m_sym + "' == '" + str + "'? -> " +
-            // m_sym.toString().equals(str.toString()));
-            return (mSym.toString().equals(str.toString()));
+            return str == null;
         }
+        if (str == null) {
+            return false;
+        }
+        return (mSym.toString().equals(str.toString()));
     }
     
 

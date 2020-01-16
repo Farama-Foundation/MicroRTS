@@ -26,13 +26,13 @@ public class InformedNaiveMCTSNode extends MCTSNode {
     public static float C = 0.05f;   // exploration constant for UCB1
     
     boolean hasMoreActions = true;
-    public PlayerActionGenerator moveGenerator = null;
-    HashMap<BigInteger,InformedNaiveMCTSNode> childrenMap = new LinkedHashMap<BigInteger,InformedNaiveMCTSNode>();    // associates action codes with children
+    public PlayerActionGenerator moveGenerator;
+    HashMap<BigInteger,InformedNaiveMCTSNode> childrenMap = new LinkedHashMap<>();    // associates action codes with children
     // Decomposition of the player actions in unit actions, and their contributions:
-    public List<InformedUnitActionTableEntry> unitActionTable = null;
+    public List<InformedUnitActionTableEntry> unitActionTable;
     double evaluation_bound;    // this is the maximum positive value that the evaluation function can return
     public BigInteger multipliers[];
-    UnitActionProbabilityDistribution model = null;
+    UnitActionProbabilityDistribution model;
     
 
 
@@ -183,8 +183,8 @@ public class InformedNaiveMCTSNode extends MCTSNode {
         BigInteger actionCode;       
 
         // For each unit, rank the unitActions according to preference:
-        List<double []> distributions = new LinkedList<double []>();
-        List<Integer> notSampledYet = new LinkedList<Integer>();
+        List<double []> distributions = new LinkedList<>();
+        List<Integer> notSampledYet = new LinkedList<>();
         for(InformedUnitActionTableEntry ate:unitActionTable) {
             double []dist = new double[ate.nactions];
             int bestIdx = -1;
@@ -265,8 +265,8 @@ public class InformedNaiveMCTSNode extends MCTSNode {
                 r2 = ua.resourceUsage(ate.u, gs.getPhysicalGameState());
                 if (!pa2.getResourceUsage().consistentWith(r2, gs)) {
                     // sample at random, eliminating the ones that have not worked so far:
-                    List<Double> dist_l = new ArrayList<Double>();
-                    List<Integer> dist_outputs = new ArrayList<Integer>();
+                    List<Double> dist_l = new ArrayList<>();
+                    List<Integer> dist_outputs = new ArrayList<>();
 
                     for(int j = 0;j<distribution.length;j++) {
                         dist_l.add(distribution[j]);

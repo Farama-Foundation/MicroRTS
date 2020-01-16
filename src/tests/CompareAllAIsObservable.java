@@ -101,9 +101,8 @@ public class CompareAllAIsObservable {
         PrintStream out = new PrintStream(new File("results.txt"));
         
         // Separate the matchs by map:
-        List<PhysicalGameState> maps = new LinkedList<PhysicalGameState>();        
+        List<PhysicalGameState> maps = new LinkedList<>();
 
-        maps.clear();
         maps.add(PhysicalGameState.load("maps/8x8/basesWorkers8x8.xml",utt));
 //        Experimenter.runExperimentsPartiallyObservable(bots, maps, 10, 3000, 300, true, out);
         Experimenter.runExperiments(bots, maps, utt, 10, 3000, 300, true, out);

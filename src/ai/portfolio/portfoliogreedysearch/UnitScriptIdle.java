@@ -7,7 +7,6 @@ package ai.portfolio.portfoliogreedysearch;
 
 import ai.abstraction.AbstractAction;
 import ai.abstraction.Idle;
-import ai.abstraction.pathfinding.PathFinding;
 import rts.GameState;
 import rts.UnitAction;
 import rts.units.Unit;
@@ -18,7 +17,7 @@ import rts.units.Unit;
  */
 public class UnitScriptIdle extends UnitScript {
     
-    AbstractAction action = null;
+    AbstractAction action;
     
     public UnitScriptIdle() {
     }

@@ -5,7 +5,6 @@
 package ai.abstraction.cRush;
 
 import ai.abstraction.AbstractAction;
-import ai.abstraction.Attack;
 import ai.abstraction.pathfinding.PathFinding;
 import rts.GameState;
 import rts.PhysicalGameState;
@@ -13,7 +12,6 @@ import rts.ResourceUsage;
 import rts.UnitAction;
 import rts.units.Unit;
 import rts.units.UnitType;
-import rts.units.UnitTypeTable;
 import util.XMLWriter;
 
 /**
@@ -37,8 +35,7 @@ public class RangedAttack extends AbstractAction  {
     
     public boolean completed(GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
-        if (!pgs.getUnits().contains(target)) return true;
-        return false;
+        return !pgs.getUnits().contains(target);
     }
     
     
@@ -46,11 +43,8 @@ public class RangedAttack extends AbstractAction  {
     {
         if (!(o instanceof RangedAttack)) return false;
         RangedAttack a = (RangedAttack)o;
-        if (target.getID() != a.target.getID()) return false;
-        if (pf.getClass() != a.pf.getClass()) return false;
-        if (racks.getID() != a.racks.getID()) return false;
-        
-        return true;
+        return target.getID() == a.target.getID() && pf.getClass() == a.pf.getClass()
+            && racks.getID() == a.racks.getID();
     }
 
     

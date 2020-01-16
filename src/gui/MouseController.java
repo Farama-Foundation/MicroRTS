@@ -35,8 +35,8 @@ import rts.units.Unit;
  *        space, the selected worker will go and build a building in the desired place.
  */
 public class MouseController extends AbstractionLayerAI {
-    PhysicalGameStateMouseJFrame m_frame = null;
-    PGSMouseListener m_mouseListener = null;
+    PhysicalGameStateMouseJFrame m_frame;
+    PGSMouseListener m_mouseListener;
     
     public MouseController(PhysicalGameStateMouseJFrame frame) {
         super(new BFSPathFinding());
@@ -92,11 +92,11 @@ public class MouseController extends AbstractionLayerAI {
     public PlayerAction translateActions(int player, GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         PlayerAction pa = new PlayerAction();
-        List<Integer> usedCells = new LinkedList<Integer>();
+        List<Integer> usedCells = new LinkedList<>();
 
         // Execute abstract actions:
         ResourceUsage r = gs.getResourceUsage();
-        List<Unit> toDelete = new LinkedList<Unit>();
+        List<Unit> toDelete = new LinkedList<>();
         for(AbstractAction aa:actions.values()) {
 //            Unit u = null;
 //            for(Unit u2:pgs.getUnits()) {

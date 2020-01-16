@@ -85,7 +85,7 @@ public class WorkerRush extends AbstractionLayerAI {
         }
 
         // behavior of workers:
-        List<Unit> workers = new LinkedList<Unit>();
+        List<Unit> workers = new LinkedList<>();
         for(Unit u:pgs.getUnits()) {
             if (u.getType().canHarvest && 
                 u.getPlayer() == player) {
@@ -126,8 +126,7 @@ public class WorkerRush extends AbstractionLayerAI {
         int nbases = 0;
         int resourcesUsed = 0;
         Unit harvestWorker = null;
-        List<Unit> freeWorkers = new LinkedList<Unit>();
-        freeWorkers.addAll(workers);
+        List<Unit> freeWorkers = new LinkedList<>(workers);
         
         if (workers.isEmpty()) return;
         
@@ -136,7 +135,7 @@ public class WorkerRush extends AbstractionLayerAI {
                 u2.getPlayer() == p.getID()) nbases++;
         }
         
-        List<Integer> reservedPositions = new LinkedList<Integer>();
+        List<Integer> reservedPositions = new LinkedList<>();
         if (nbases==0 && !freeWorkers.isEmpty()) {
             // build a base:
             if (p.getResources()>=baseType.cost + resourcesUsed) {

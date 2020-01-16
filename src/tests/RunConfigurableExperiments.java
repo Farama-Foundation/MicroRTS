@@ -58,9 +58,9 @@ public class RunConfigurableExperiments {
     private static int PUPPET_PLAN_TIME = 5000;
     private static int PUPPET_PLAN_PLAYOUTS = -1;
 
-    private static List<AI> bots1 = new LinkedList<AI>();
-    private static List<AI> bots2 = new LinkedList<AI>();
-    private static List<PhysicalGameState> maps = new LinkedList<PhysicalGameState>();
+    private static List<AI> bots1 = new LinkedList<>();
+    private static List<AI> bots2 = new LinkedList<>();
+    private static List<PhysicalGameState> maps = new LinkedList<>();
     static UnitTypeTable utt = new UnitTypeTable(
             UnitTypeTable.VERSION_ORIGINAL_FINETUNED,
             UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH);

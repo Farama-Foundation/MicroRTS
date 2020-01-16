@@ -4,9 +4,7 @@
  */
 package gui;
 
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import javax.swing.BoxLayout;
@@ -19,8 +17,8 @@ import util.Pair;
  * @author santi
  */
 public class PhysicalGameStateMouseJFrame extends JFrame {
-    PhysicalGameStatePanel panel = null;
-    MouseControllerPanel mousePanel = null;
+    PhysicalGameStatePanel panel;
+    MouseControllerPanel mousePanel;
         
     public PhysicalGameStateMouseJFrame(String title, int dx, int dy, PhysicalGameStatePanel a_panel) {
         super(title);

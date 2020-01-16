@@ -1,5 +1,6 @@
 package rts;
 
+import java.io.Writer;
 import java.util.LinkedList;
 import java.util.List;
 import org.jdom.Element;
@@ -17,8 +18,8 @@ import util.XMLWriter;
 public class TraceEntry {
 
     int time;
-    PhysicalGameState pgs = null;
-    List<Pair<Unit, UnitAction>> actions = new LinkedList<Pair<Unit, UnitAction>>();
+    PhysicalGameState pgs;
+    List<Pair<Unit, UnitAction>> actions = new LinkedList<>();
 
     /**
      * Creates from a PhysicalGameState and time
@@ -38,7 +39,7 @@ public class TraceEntry {
      * @param a
      */
     public void addUnitAction(Unit u, UnitAction a) {
-        actions.add(new Pair<Unit, UnitAction>(u, a));
+        actions.add(new Pair<>(u, a));
 
     }
 
@@ -116,6 +117,27 @@ public class TraceEntry {
     }
 
     /**
+     * Constructs a JSON representation for this object
+     *
+     * @param w
+     */
+    public void toJSON(Writer w) throws Exception {
+        w.write("{");
+        w.write("\"time\":" + time + ",\"pgs\":");
+        pgs.toJSON(w);
+        w.write(",\"actions\":[");
+        boolean first = true;
+        for (Pair<Unit, UnitAction> ua : actions) {
+            if (!first) w.write(",");
+            first = false;
+            w.write("{\"unitID\":" + ua.m_a.getID() +", \"action\":");
+            ua.m_b.toJSON(w);
+            w.write("}");
+        }
+        w.write("]}");
+    }       
+    
+    /**
      * Constructs the TraceEntry from a XML element and a UnitTypeTable
      *
      * @param e
@@ -136,7 +158,7 @@ public class TraceEntry {
             if (u == null) {
                 System.err.println("Undefined unit ID " + ID + " in action " + a + " at time " + time);
             }
-            actions.add(new Pair<Unit, UnitAction>(u, a));
+            actions.add(new Pair<>(u, a));
         }
     }
 }

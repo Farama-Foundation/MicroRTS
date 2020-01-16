@@ -29,19 +29,19 @@ import util.XMLWriter;
 public class ActionInterdependenceModel extends BayesianModel {
     int estimationMethod = ESTIMATION_COUNTS;
     double calibrationFactor = 0.0;   // how much to crrect probabilities after estimation
-    double []prior_distribution = null;
-    DiscreteCPD []distributions = null;
-    boolean []selectedFeatures = null;
+    double []prior_distribution;
+    DiscreteCPD []distributions;
+    boolean []selectedFeatures;
     int Ysize = 0;
     int YtypeSize = 0;
     int Xsizes[];
     
-    int []action_allowed_counts_prior = null;    // number of times actions were allowed
-    int [][]selected_allowed_action_prior = null;    // [i][j]: number of times i was selected when j was also allowed
+    int []action_allowed_counts_prior;    // number of times actions were allowed
+    int [][]selected_allowed_action_prior;    // [i][j]: number of times i was selected when j was also allowed
     
-    List<Integer> allPossibleActionsTypes = null;
-    int []actiontypes_allowed_counts_prior = null;    // number of times action types were allowed
-    int [][]selected_allowed_actiontype_prior = null;    // [i][j]: number of times i was selected when j was also allowed
+    List<Integer> allPossibleActionsTypes;
+    int []actiontypes_allowed_counts_prior;    // number of times action types were allowed
+    int [][]selected_allowed_actiontype_prior;    // [i][j]: number of times i was selected when j was also allowed
 
     boolean consider_individual_actions = false;
     boolean consider_action_types = true;
@@ -206,10 +206,10 @@ public class ActionInterdependenceModel extends BayesianModel {
         }
         
         // sort features:
-        Collections.sort(featureIndexes, new Comparator<Integer>() {
+        featureIndexes.sort(new Comparator<Integer>() {
             public int compare(Integer o1, Integer o2) {
                 return Double.compare(featureGR.get(o2), featureGR.get(o1));
-            }            
+            }
         });
         
 //        System.out.println("FS:");
@@ -375,8 +375,8 @@ public class ActionInterdependenceModel extends BayesianModel {
         }
         w.tag("/selected_allowed_actiontype_prior");
 
-        for(int i = 0;i<distributions.length;i++) {
-            distributions[i].save(w);
+        for (DiscreteCPD distribution : distributions) {
+            distribution.save(w);
         }        
         w.tag("/" + getClass().getSimpleName());
         w.flush();
@@ -499,7 +499,7 @@ public class ActionInterdependenceModel extends BayesianModel {
             for(int i = 0;i<nfeatures;i++) {
                 if (!bestSelection[i]) {
                     boolean currentSelection[] = new boolean[nfeatures];
-                    for(int j = 0;j<nfeatures;j++) currentSelection[j] = bestSelection[j];
+                    System.arraycopy(bestSelection, 0, currentSelection, 0, nfeatures);
                     currentSelection[i] = true;
 
                     selectedFeatures = currentSelection;

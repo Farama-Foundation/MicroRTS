@@ -50,7 +50,7 @@ public class CompareAllAIsPartiallyObservable {
         int MAX_DEPTH = 10;
         int RANDOMIZED_AB_REPEATS = 10;
         
-        List<AI> bots = new LinkedList<AI>();
+        List<AI> bots = new LinkedList<>();
         UnitTypeTable utt = new UnitTypeTable();
 
         bots.add(new RandomAI(utt));
@@ -101,9 +101,8 @@ public class CompareAllAIsPartiallyObservable {
         PrintStream out = new PrintStream(new File("results-PO.txt"));
         
         // Separate the matchs by map:
-        List<PhysicalGameState> maps = new LinkedList<PhysicalGameState>();        
+        List<PhysicalGameState> maps = new LinkedList<>();
 
-        maps.clear();
         maps.add(PhysicalGameState.load("maps/8x8/basesWorkers8x8.xml",utt));
         Experimenter.runExperimentsPartiallyObservable(bots, maps, utt, 10, 3000, 300, true, out);
       

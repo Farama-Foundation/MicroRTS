@@ -25,7 +25,7 @@ import ai.core.InterruptibleAI;
  */
 public class MonteCarlo extends AIWithComputationBudget implements InterruptibleAI {
     public static final int DEBUG = 0;
-    EvaluationFunction ef = null;
+    EvaluationFunction ef;
     
     
     public class PlayerActionTableEntry {
@@ -39,10 +39,10 @@ public class MonteCarlo extends AIWithComputationBudget implements Interruptible
     AI randomAI = new RandomBiasedAI();
     long max_actions_so_far = 0;
     
-    PlayerActionGenerator  moveGenerator = null;
+    PlayerActionGenerator  moveGenerator;
     boolean allMovesGenerated = false;
-    List<PlayerActionTableEntry> actions = null;
-    GameState gs_to_start_from = null;
+    List<PlayerActionTableEntry> actions;
+    GameState gs_to_start_from;
     int run = 0;
     int playerForThisComputation;
     

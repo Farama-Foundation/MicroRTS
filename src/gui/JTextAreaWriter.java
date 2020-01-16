@@ -15,14 +15,14 @@ import javax.swing.JTextArea;
  */
 public class JTextAreaWriter extends Writer {
 
-    JTextArea m_ta = null;
+    JTextArea m_ta;
     
     public JTextAreaWriter(JTextArea ta) {
         m_ta = ta;
     }
             
     public void write(char[] cbuf, int off, int len) throws IOException {
-        StringBuffer tmp = new StringBuffer();
+        StringBuilder tmp = new StringBuilder();
         for(int i = off;i<off+len;i++) {
             tmp.append(cbuf[i]);
         }

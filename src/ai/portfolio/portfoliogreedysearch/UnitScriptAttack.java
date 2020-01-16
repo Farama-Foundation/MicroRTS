@@ -11,8 +11,6 @@ import ai.abstraction.pathfinding.PathFinding;
 import rts.GameState;
 import rts.UnitAction;
 import rts.units.Unit;
-import rts.units.UnitType;
-import rts.units.UnitTypeTable;
 
 /**
  *
@@ -20,8 +18,8 @@ import rts.units.UnitTypeTable;
  */
 public class UnitScriptAttack extends UnitScript {
     
-    AbstractAction action = null;
-    PathFinding pf = null;
+    AbstractAction action;
+    PathFinding pf;
     
     public UnitScriptAttack(PathFinding a_pf) {
         pf = a_pf;

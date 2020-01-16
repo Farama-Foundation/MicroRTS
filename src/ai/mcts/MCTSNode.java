@@ -18,12 +18,12 @@ public abstract class MCTSNode {
     public static Random r = new Random();
 
     public int type;    // 0 : max, 1 : min, -1: Game-over
-    public MCTSNode parent = null;
-    public GameState gs = null;
+    public MCTSNode parent;
+    public GameState gs;
     public int depth = 0;  // the depth in the tree
 
-    public List<PlayerAction> actions = null;
-    public List<MCTSNode> children = null;
+    public List<PlayerAction> actions;
+    public List<MCTSNode> children;
 
     public double accum_evaluation = 0;
     public int visit_count = 0;

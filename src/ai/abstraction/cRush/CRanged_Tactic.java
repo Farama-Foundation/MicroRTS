@@ -7,7 +7,7 @@ package ai.abstraction.cRush;
 import ai.abstraction.AbstractAction;
 import ai.abstraction.Attack;
 import ai.abstraction.pathfinding.PathFinding;
-import java.util.LinkedList;
+
 import java.util.List;
 import rts.GameState;
 import rts.PhysicalGameState;
@@ -58,10 +58,7 @@ public class CRanged_Tactic extends AbstractAction {
 
     public boolean completed(GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
-        if (!pgs.getUnits().contains(target)) {
-            return true;
-        }
-        return false;
+        return !pgs.getUnits().contains(target);
     }
 
     public boolean equals(Object o) {
@@ -69,14 +66,7 @@ public class CRanged_Tactic extends AbstractAction {
             return false;
         }
         CRanged_Tactic a = (CRanged_Tactic) o;
-        if (target.getID() != a.target.getID()) {
-            return false;
-        }
-        if (pf.getClass() != a.pf.getClass()) {
-            return false;
-        }
-
-        return true;
+        return target.getID() == a.target.getID() && pf.getClass() == a.pf.getClass();
     }
 
     public void toxml(XMLWriter w) {

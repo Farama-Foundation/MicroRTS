@@ -44,40 +44,40 @@ import tournaments.RoundRobinTournament;
  * @author santi
  */
 public class FETournamentPane extends JPanel {
-    public static final String TOURNAMENT_ROUNDROBIN = "Round Robin";
-    public static final String TOURNAMENT_FIXED_OPPONENTS = "Fixed Opponents";
+    private static final String TOURNAMENT_ROUNDROBIN = "Round Robin";
+    private static final String TOURNAMENT_FIXED_OPPONENTS = "Fixed Opponents";
     
-    JComboBox tournamentTypeComboBox = null;
+    private JComboBox tournamentTypeComboBox;
     
-    DefaultListModel availableAIsListModel = null;
-    JList availableAIsList = null;
-    DefaultListModel selectedAIsListModel = null;
-    JList selectedAIsList = null;
-    DefaultListModel opponentAIsListModel = null;
-    JList opponentAIsList = null;
-    JButton opponentAddButton = null;
-    JButton opponentRemoveButton = null;
+    private DefaultListModel availableAIsListModel;
+    private JList availableAIsList;
+    private DefaultListModel selectedAIsListModel;
+    private JList selectedAIsList;
+    private DefaultListModel opponentAIsListModel;
+    private JList opponentAIsList;
+    private JButton opponentAddButton;
+    private JButton opponentRemoveButton;
     
-    JFileChooser mapFileChooser = new JFileChooser();
-    JList mapList = null;
-    DefaultListModel mapListModel = null;
+    private JFileChooser mapFileChooser = new JFileChooser();
+    private JList mapList;
+    private DefaultListModel mapListModel;
     
-    JFormattedTextField iterationsField = null;
-    JFormattedTextField maxGameLengthField = null;
-    JFormattedTextField timeBudgetField = null;
-    JFormattedTextField iterationsBudgetField = null;
-    JFormattedTextField preAnalysisTimeField = null;
+    private JFormattedTextField iterationsField;
+    private JFormattedTextField maxGameLengthField;
+    private JFormattedTextField timeBudgetField;
+    private JFormattedTextField iterationsBudgetField;
+    private JFormattedTextField preAnalysisTimeField;
     
-    JComboBox unitTypeTableBox = null;
-    JCheckBox fullObservabilityCheckBox = null;
-    JCheckBox selfMatchesCheckBox = null;
-    JCheckBox timeoutCheckBox = null;
-    JCheckBox gcCheckBox = null;
-    JCheckBox tracesCheckBox = null;
+    private JComboBox unitTypeTableBox;
+    private JCheckBox fullObservabilityCheckBox;
+    private JCheckBox selfMatchesCheckBox;
+    private JCheckBox timeoutCheckBox;
+    private JCheckBox gcCheckBox;
+    private JCheckBox tracesCheckBox;
     
-    JTextArea tournamentProgressTextArea = null;
+    private JTextArea tournamentProgressTextArea;
     
-    JFileChooser fileChooser = new JFileChooser();    
+    private JFileChooser fileChooser = new JFileChooser();
     
     public FETournamentPane() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -432,7 +432,8 @@ public class FETournamentPane extends JPanel {
                                         try {
                                             Writer writer = new FileWriter(fileToUse);
                                             Writer writerProgress = new JTextAreaWriter(tournamentProgressTextArea);
-                                            RoundRobinTournament.runTournament(selectedAIs, -1, maps, 
+                                            new
+                                            RoundRobinTournament(selectedAIs).runTournament(-1, maps,
                                                                                iterations, maxGameLength, timeBudget, iterationsBudget, 
                                                                                preAnalysisBudget, 1000, // 1000 is just to give 1 second to the AIs to load their read/write folder saved content
                                                                                fullObservability, selfMatches, timeOutCheck, gcCheck, preGameAnalysis, 
@@ -464,7 +465,7 @@ public class FETournamentPane extends JPanel {
                                         try {
                                             Writer writer = new FileWriter(fileToUse);
                                             Writer writerProgress = new JTextAreaWriter(tournamentProgressTextArea);
-                                            FixedOpponentsTournament.runTournament(selectedAIs, opponentAIs, maps, 
+                                            new FixedOpponentsTournament(selectedAIs, opponentAIs).runTournament(maps,
                                                                                iterations, maxGameLength, timeBudget, iterationsBudget, 
                                                                                preAnalysisBudget, 1000, // 1000 is just to give 1 second to the AIs to load their read/write folder saved content
                                                                                fullObservability, timeOutCheck, gcCheck, preGameAnalysis, 

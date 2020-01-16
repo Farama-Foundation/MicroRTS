@@ -1,9 +1,9 @@
 /********************************************************************************
-Organization		: Drexel University
-Institute		: Computer Science Department
-Authors			: Santiago Ontanon
-Class			: Sampler
-Function		: This class contains methods to sample
+   Organization		: Drexel University
+   Institute		: Computer Science Department
+   Authors			: Santiago Ontanon
+   Class			: Sampler
+   Function		: This class contains methods to sample
                           from a given distribution. Including support
                           for exploration vs exploitation.
  *********************************************************************************/
@@ -23,7 +23,6 @@ public class Sampler {
         return generator.nextInt(distribution.length);
     }
 
-    
     /*
      * Returns a random element in the distribution
      */
@@ -31,85 +30,84 @@ public class Sampler {
         return generator.nextInt(distribution.size());
     }
 
-    
     /*
      * Returns the element with maximum probability (ties are resolved randomly)
      */
     public static int max(double[] distribution) throws Exception {
-        List<Integer> best = new LinkedList<Integer>();
+        List<Integer> best = new LinkedList<>();
         double max = distribution[0];
 
-        for (int i = 0; i < distribution.length; i++) {
+        for(int i = 0; i < distribution.length; i++) {
             double f = distribution[i];
-            if (f == max) {
-                best.add(new Integer(i));
+
+            if(f == max) {
+                best.add(i);
             } else {
-                if (f > max) {
+                if(f > max) {
                     best.clear();
-                    best.add(new Integer(i));
+                    best.add(i);
                     max = f;
                 }
             }
         }
 
-        if (best.size() > 0) {
+        if(best.size() > 0) {
             return best.get(generator.nextInt(best.size()));
         }
 
         throw new Exception("Input distribution empty in Sampler.max!");
     }
 
-    
     /*
      * Returns the element with maximum probability (ties are resolved randomly)
      */
     public static int max(List<Double> distribution) throws Exception {
-        List<Integer> best = new LinkedList<Integer>();
+        List<Integer> best = new LinkedList<>();
         double max = distribution.get(0);
 
-        for (int i = 0; i < distribution.size(); i++) {
+        for(int i = 0; i < distribution.size(); i++) {
             double f = distribution.get(i);
-            if (f == max) {
-                best.add(new Integer(i));
+
+            if(f == max) {
+                best.add(i);
             } else {
-                if (f > max) {
+                if(f > max) {
                     best.clear();
-                    best.add(new Integer(i));
+                    best.add(i);
                     max = f;
                 }
             }
         }
 
-        if (best.size() > 0) {
+        if(best.size() > 0) {
             return best.get(generator.nextInt(best.size()));
         }
 
         throw new Exception("Input distribution empty in Sampler.max!");
     }
-    
-    
+
     /*
      * Returns the score with maximum probability (ties are resolved randomly)
      */
     public static Double maxScore(double[] distribution) {
-        List<Integer> best = new LinkedList<Integer>();
+        List<Integer> best = new LinkedList<>();
         double max = distribution[0];
 
-        for (int i = 0; i < distribution.length; i++) {
+        for(int i = 0; i < distribution.length; i++) {
             double f = distribution[i];
-            if (f == max) {
-                best.add(new Integer(i));
+
+            if(f == max) {
+                best.add(i);
             } else {
-                if (f > max) {
+                if(f > max) {
                     best.clear();
-                    best.add(new Integer(i));
+                    best.add(i);
                     max = f;
                 }
             }
         }
 
         return max;
-
     }
 
     /*
@@ -118,46 +116,51 @@ public class Sampler {
     public static int weighted(double[] distribution) throws Exception {
         double total = 0, accum = 0, tmp;
 
-        for (double f : distribution) {
+        for(double f : distribution) {
             total += f;
         }
-        
-        if (total==0) return random(distribution);
+
+        if(total == 0)
+            return random(distribution);
 
         tmp = generator.nextDouble() * total;
-        for (int i = 0; i < distribution.length; i++) {
+
+        for(int i = 0; i < distribution.length; i++) {
             accum += distribution[i];
-            if (accum >= tmp) {
+
+            if(accum >= tmp) {
                 return i;
             }
         }
 
         throw new Exception("Input distribution empty in Sampler.weighted!");
     }
-    
-    
+
     /*
      * Returns an element in the distribution, using the weights as their relative probabilities
      */
-    public static Object weighted(List<Double> distribution, List<? extends Object> outputs) throws Exception {
+    public static Object weighted(List<Double> distribution, List<?> outputs) throws Exception {
         double total = 0, accum = 0, tmp;
 
-        for (double f : distribution) {
+        for(double f : distribution) {
             total += f;
         }
-        
-        if (total==0) return outputs.get(generator.nextInt(outputs.size()));
+
+        if(total == 0)
+            return outputs.get(generator.nextInt(outputs.size()));
 
         tmp = generator.nextDouble() * total;
-        for (int i = 0; i < distribution.size(); i++) {
+
+        for(int i = 0; i < distribution.size(); i++) {
             accum += distribution.get(i);
-            if (accum >= tmp) {
+
+            if(accum >= tmp) {
                 return outputs.get(i);
             }
         }
 
         throw new Exception("Input distribution empty in Sampler.weighted!");
-    }    
+    }
 
     /*
      * Returns an element in the distribution following the probabilities, but using 'e' as the exploration factor.
@@ -173,72 +176,73 @@ public class Sampler {
 
         double exponent = 0;
         double quotient = 1 - e;
-        if (quotient != 0) {
+
+        if(quotient != 0) {
             exponent = 1 / quotient - 1;
         } else {
             exponent = 1000;
         }
+
         double[] exponentiated = new double[distribution.length];
 
-        for (int i = 0;i<distribution.length;i++) {
-            exponentiated[i]=Math.pow(distribution[i], exponent);
+        for(int i = 0; i < distribution.length; i++) {
+            exponentiated[i] = Math.pow(distribution[i], exponent);
         }
 
         return weighted(exponentiated);
     }
-    
-    
+
     public static int eGreedy(List<Double> distribution, double e) throws Exception {
-        if (generator.nextDouble()<e) {
+        if(generator.nextDouble() < e) {
             // explore:
             return random(distribution);
         } else {
-           // exploit:
+            // exploit:
             return max(distribution);
         }
     }
 
-/*
-    // Example:
-    public static void main(String args[]) {
-        int histo[] = {0, 0, 0, 0, 0};
-        List<Double> d = new LinkedList<Double>();
+    /*
+        // Example:
+        public static void main(String args[]) {
+            int histo[] = {0, 0, 0, 0, 0};
+            List<Double> d = new LinkedList<Double>();
 
-        d.add(0.1);
-        d.add(0.5);
-        d.add(0.89);
-        d.add(0.9);
-        d.add(0.9);
+            d.add(0.1);
+            d.add(0.5);
+            d.add(0.89);
+            d.add(0.9);
+            d.add(0.9);
 
-        try {
-            for (int i = 0; i < 1000; i++) {
-                histo[random(d)]++;
-            }
-            System.out.println("Random: [" + histo[0] + "," + histo[1] + "," + histo[2] + "," + histo[3] + "," + histo[4] + "]");
-            histo[0] = histo[1] = histo[2] = histo[3] = histo[4] = 0;
-
-            for (int i = 0; i < 1000; i++) {
-                histo[max(d)]++;
-            }
-            System.out.println("Max: [" + histo[0] + "," + histo[1] + "," + histo[2] + "," + histo[3] + "," + histo[4] + "]");
-            histo[0] = histo[1] = histo[2] = histo[3] = histo[4] = 0;
-
-            for (int i = 0; i < 1000; i++) {
-                histo[weighted(d)]++;
-            }
-            System.out.println("Weighted: [" + histo[0] + "," + histo[1] + "," + histo[2] + "," + histo[3] + "," + histo[4] + "]");
-            histo[0] = histo[1] = histo[2] = histo[3] = histo[4] = 0;
-
-            for (double e = 0; e <= 1.0; e += 0.015625) {
+            try {
                 for (int i = 0; i < 1000; i++) {
-                    histo[explorationWeighted(d, e)]++;
+                    histo[random(d)]++;
                 }
-                System.out.println("explorationWeighted(" + e + "): [" + histo[0] + "," + histo[1] + "," + histo[2] + "," + histo[3] + "," + histo[4] + "]");
+                System.out.println("Random: [" + histo[0] + "," + histo[1] + "," + histo[2] + "," + histo[3] + "," + histo[4] + "]");
                 histo[0] = histo[1] = histo[2] = histo[3] = histo[4] = 0;
+
+                for (int i = 0; i < 1000; i++) {
+                    histo[max(d)]++;
+                }
+                System.out.println("Max: [" + histo[0] + "," + histo[1] + "," + histo[2] + "," + histo[3] + "," + histo[4] + "]");
+                histo[0] = histo[1] = histo[2] = histo[3] = histo[4] = 0;
+
+                for (int i = 0; i < 1000; i++) {
+                    histo[weighted(d)]++;
+                }
+                System.out.println("Weighted: [" + histo[0] + "," + histo[1] + "," + histo[2] + "," + histo[3] + "," + histo[4] + "]");
+                histo[0] = histo[1] = histo[2] = histo[3] = histo[4] = 0;
+
+                for (double e = 0; e <= 1.0; e += 0.015625) {
+                    for (int i = 0; i < 1000; i++) {
+                        histo[explorationWeighted(d, e)]++;
+                    }
+                    System.out.println("explorationWeighted(" + e + "): [" + histo[0] + "," + histo[1] + "," + histo[2] + "," + histo[3] + "," + histo[4] + "]");
+                    histo[0] = histo[1] = histo[2] = histo[3] = histo[4] = 0;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-    }
- */
+     */
 }

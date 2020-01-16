@@ -15,10 +15,10 @@ import rts.units.Unit;
 public class InformedUnitActionTableEntry {
     public Unit u;
     public int nactions = 0;
-    public List<UnitAction> actions = null;
-    public double[] prior_distribution = null;
-    public double[] accum_evaluation = null;
-    public int[] visit_count = null;
+    public List<UnitAction> actions;
+    public double[] prior_distribution;
+    public double[] accum_evaluation;
+    public int[] visit_count;
     
     
     public InformedUnitActionTableEntry(Unit a_u, List<UnitAction> a_actions, double []a_prior) 

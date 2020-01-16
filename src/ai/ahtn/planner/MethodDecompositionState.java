@@ -17,7 +17,7 @@ import java.util.List;
 public class MethodDecompositionState {
     int executionState = 0;
     int operatorExecutingState = 0;
-    List<MethodDecomposition> operatorsBeingExecuted = null;
+    List<MethodDecomposition> operatorsBeingExecuted;
 
     public MethodDecompositionState(MethodDecomposition md) {
         executionState = md.getExecutionState();

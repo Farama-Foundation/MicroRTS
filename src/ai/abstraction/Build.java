@@ -33,8 +33,7 @@ public class Build extends AbstractAction  {
     public boolean completed(GameState gs) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         Unit u = pgs.getUnitAt(x, y);
-        if (u!=null) return true;
-        return false;
+        return u != null;
     }
     
     
@@ -42,12 +41,7 @@ public class Build extends AbstractAction  {
     {
         if (!(o instanceof Build)) return false;
         Build a = (Build)o;
-        if (type != a.type) return false;
-        if (x != a.x) return false;
-        if (y != a.y) return false;
-        if (pf.getClass() != a.pf.getClass()) return false;
-        
-        return true;
+        return type == a.type && x == a.x && y == a.y && pf.getClass() == a.pf.getClass();
     }
     
 

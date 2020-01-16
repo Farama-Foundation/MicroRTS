@@ -18,11 +18,11 @@ public class PlayerActionGenerator {
     PhysicalGameState physicalGameState;
     ResourceUsage base_ru;
     List<Pair<Unit,List<UnitAction>>> choices;
-    PlayerAction lastAction = null;
+    PlayerAction lastAction;
     long size = 1;  // this will be capped at Long.MAX_VALUE;
     long generated = 0;
-    int choiceSizes[] = null;
-    int currentChoice[] = null;
+    int choiceSizes[];
+    int currentChoice[];
     boolean moreActions = true;
     
     /**
@@ -109,8 +109,7 @@ public class PlayerActionGenerator {
      */
     public void randomizeOrder() {
 		for (Pair<Unit, List<UnitAction>> choice : choices) {
-			List<UnitAction> tmp = new LinkedList<>();
-			tmp.addAll(choice.m_b);
+            List<UnitAction> tmp = new LinkedList<>(choice.m_b);
 			choice.m_b.clear();
 			while (!tmp.isEmpty())
 				choice.m_b.add(tmp.remove(r.nextInt(tmp.size())));
@@ -197,8 +196,7 @@ public class PlayerActionGenerator {
 		PlayerAction pa = new PlayerAction();
 		pa.setResourceUsage(base_ru.clone());
 		for (Pair<Unit, List<UnitAction>> unitChoices : choices) {
-			List<UnitAction> l = new LinkedList<UnitAction>();
-			l.addAll(unitChoices.m_b);
+            List<UnitAction> l = new LinkedList<>(unitChoices.m_b);
 			Unit u = unitChoices.m_a;
 
 			boolean consistent = false;
@@ -249,16 +247,16 @@ public class PlayerActionGenerator {
     
     
     public String toString() {
-        String ret = "PlayerActionGenerator:\n";
+        StringBuilder ret = new StringBuilder("PlayerActionGenerator:\n");
         for(Pair<Unit,List<UnitAction>> choice:choices) {
-            ret = ret + "  (" + choice.m_a + "," + choice.m_b.size() + ")\n";
+            ret.append("  (").append(choice.m_a).append(",").append(choice.m_b.size()).append(")\n");
         }
-        ret += "currentChoice: ";
-        for(int i = 0;i<currentChoice.length;i++) {
-            ret += currentChoice[i] + " ";
-        }
-        ret += "\nactions generated so far: " + generated;
-        return ret;
+        ret.append("currentChoice: ");
+		for (int value : currentChoice) {
+			ret.append(value).append(" ");
+		}
+        ret.append("\nactions generated so far: ").append(generated);
+        return ret.toString();
     }
     
 }

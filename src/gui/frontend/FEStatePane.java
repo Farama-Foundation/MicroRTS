@@ -112,9 +112,9 @@ import ai.scv.SCV;
  * @author santi
  */
 public class FEStatePane extends JPanel {
-    PhysicalGameStatePanel statePanel = null;
-    JTextArea textArea = null;
-    UnitTypeTable currentUtt = null;
+    PhysicalGameStatePanel statePanel;
+    JTextArea textArea;
+    UnitTypeTable currentUtt;
 
     JFileChooser fileChooser = new JFileChooser();
 
@@ -199,14 +199,14 @@ public class FEStatePane extends JPanel {
                                    "Nondeterministic-Alternating",
                                    "Nondeterministic-Random"};
 
-    JFormattedTextField mapWidthField = null;
-    JFormattedTextField mapHeightField = null;
-    JFormattedTextField maxCyclesField = null;
-    JFormattedTextField defaultDelayField = null;
-    JCheckBox fullObservabilityBox = null;
-    JComboBox unitTypeTableBox = null;
-    JCheckBox saveTraceBox = null;
-    JCheckBox slowDownBox = null;    
+    JFormattedTextField mapWidthField;
+    JFormattedTextField mapHeightField;
+    JFormattedTextField maxCyclesField;
+    JFormattedTextField defaultDelayField;
+    JCheckBox fullObservabilityBox;
+    JComboBox unitTypeTableBox;
+    JCheckBox saveTraceBox;
+    JCheckBox slowDownBox;
     
     JComboBox aiComboBox[] = {null,null};    
     JCheckBox continuingBox[] = {null,null};
@@ -214,7 +214,7 @@ public class FEStatePane extends JPanel {
     HashMap AIOptionsPanelComponents[] = {new HashMap<String, JComponent>(), new HashMap<String, JComponent>()};
     
     
-    FEStateMouseListener mouseListener = null;
+    FEStateMouseListener mouseListener;
 
     public FEStatePane() throws Exception {        
         currentUtt = new UnitTypeTable();
@@ -281,7 +281,7 @@ public class FEStatePane extends JPanel {
                     {
                         if (statePanel.getGameState()!=null) {
                             int returnVal = fileChooser.showSaveDialog((Component)null);
-                            if (returnVal == fileChooser.APPROVE_OPTION) {
+                            if (returnVal == JFileChooser.APPROVE_OPTION) {
                                 File file = fileChooser.getSelectedFile();
                                 try {
                                     XMLWriter xml = new XMLWriter(new FileWriter(file.getAbsolutePath()));
@@ -564,7 +564,7 @@ public class FEStatePane extends JPanel {
                                     AI ai1 = createAI(aiComboBox[0].getSelectedIndex(), 0, currentUtt);
                                     AI ai2 = createAI(aiComboBox[1].getSelectedIndex(), 1, currentUtt);
                                     int PERIOD1 = Integer.parseInt(defaultDelayField.getText());
-                                    int PERIOD2 = Integer.parseInt(defaultDelayField.getText());;
+                                    int PERIOD2 = Integer.parseInt(defaultDelayField.getText());
                                     JFormattedTextField t1 = (JFormattedTextField)AIOptionsPanelComponents[0].get("TimeBudget");
                                     JFormattedTextField t2 = (JFormattedTextField)AIOptionsPanelComponents[1].get("TimeBudget");
                                     if (t1!=null) PERIOD1 = Integer.parseInt(t1.getText());

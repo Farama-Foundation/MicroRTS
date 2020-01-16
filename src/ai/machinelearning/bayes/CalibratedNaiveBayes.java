@@ -30,9 +30,9 @@ public class CalibratedNaiveBayes extends BayesianModel {
         
     int estimationMethod = ESTIMATION_COUNTS;
     double calibrationFactor = 0.0;   // how much to crrect probabilities after estimation
-    double []prior_distribution = null;
-    DiscreteCPD []distributions = null;
-    boolean []selectedFeatures = null;
+    double []prior_distribution;
+    DiscreteCPD []distributions;
+    boolean []selectedFeatures;
     int Ysize = 0;
     int Xsizes[];
    
@@ -154,10 +154,10 @@ public class CalibratedNaiveBayes extends BayesianModel {
         }
         
         // sort features:
-        Collections.sort(featureIndexes, new Comparator<Integer>() {
+        featureIndexes.sort(new Comparator<Integer>() {
             public int compare(Integer o1, Integer o2) {
                 return Double.compare(featureGR.get(o2), featureGR.get(o1));
-            }            
+            }
         });
         
 //        System.out.println("FS:");
@@ -248,8 +248,8 @@ public class CalibratedNaiveBayes extends BayesianModel {
             w.rawXML("\n");
             w.tag("/selectedFeatures");        
         }
-        for(int i = 0;i<distributions.length;i++) {
-            distributions[i].save(w);
+        for (DiscreteCPD distribution : distributions) {
+            distribution.save(w);
         }        
         w.tag("/SimpleNaiveBayes");
         w.flush();
@@ -325,7 +325,7 @@ public class CalibratedNaiveBayes extends BayesianModel {
             for(int i = 0;i<nfeatures;i++) {
                 if (!bestSelection[i]) {
                     boolean currentSelection[] = new boolean[nfeatures];
-                    for(int j = 0;j<nfeatures;j++) currentSelection[j] = bestSelection[j];
+                    System.arraycopy(bestSelection, 0, currentSelection, 0, nfeatures);
                     currentSelection[i] = true;
 
                     selectedFeatures = currentSelection;

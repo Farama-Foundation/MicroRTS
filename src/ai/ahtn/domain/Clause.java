@@ -28,8 +28,8 @@ public class Clause {
     public static final int CLAUSE_FALSE = 5;
     
     int type = CLAUSE_AND;
-    Term term = null;
-    Clause clauses[] = null;
+    Term term;
+    Clause clauses[];
     
     // variables to continue finding matches after the first:
     List<List<Binding>> matches_left;
@@ -42,41 +42,48 @@ public class Clause {
     
     public static Clause fromLispElement(LispElement e) throws Exception {
         LispElement head = e.children.get(0);
-        if (head.element.equals("and")) {
-            Clause c = new Clause();
-            c.type = CLAUSE_AND;
-            c.clauses = new Clause[e.children.size()-1];
-            for(int i = 0;i<e.children.size()-1;i++) {
-                c.clauses[i] = Clause.fromLispElement(e.children.get(i+1));
+        switch (head.element) {
+            case "and": {
+                ai.ahtn.domain.Clause c = new ai.ahtn.domain.Clause();
+                c.type = CLAUSE_AND;
+                c.clauses = new ai.ahtn.domain.Clause[e.children.size() - 1];
+                for (int i = 0; i < e.children.size() - 1; i++) {
+                    c.clauses[i] = ai.ahtn.domain.Clause.fromLispElement(e.children.get(i + 1));
+                }
+                return c;
             }
-            return c;            
-        } else if (head.element.equals("or")) {
-            Clause c = new Clause();
-            c.type = CLAUSE_OR;
-            c.clauses = new Clause[e.children.size()-1];
-            for(int i = 0;i<e.children.size()-1;i++) {
-                c.clauses[i] = Clause.fromLispElement(e.children.get(i+1));
+            case "or": {
+                ai.ahtn.domain.Clause c = new ai.ahtn.domain.Clause();
+                c.type = CLAUSE_OR;
+                c.clauses = new ai.ahtn.domain.Clause[e.children.size() - 1];
+                for (int i = 0; i < e.children.size() - 1; i++) {
+                    c.clauses[i] = ai.ahtn.domain.Clause.fromLispElement(e.children.get(i + 1));
+                }
+                return c;
             }
-            return c;            
-        } else if (head.element.equals("not")) {
-            Clause c = new Clause();
-            c.type = CLAUSE_NOT;
-            c.clauses = new Clause[1];
-            c.clauses[0] = Clause.fromLispElement(e.children.get(1));
-            return c;            
-        } else if (head.element.equals("true")) {
-            Clause c = new Clause();
-            c.type = CLAUSE_TRUE;
-            return c;
-        } else if (head.element.equals("false")) {
-            Clause c = new Clause();
-            c.type = CLAUSE_FALSE;
-            return c;
-        } else {
-            Clause c = new Clause();
-            c.type = CLAUSE_TERM;
-            c.term = Term.fromLispElement(e);
-            return c;
+            case "not": {
+                ai.ahtn.domain.Clause c = new ai.ahtn.domain.Clause();
+                c.type = CLAUSE_NOT;
+                c.clauses = new ai.ahtn.domain.Clause[1];
+                c.clauses[0] = ai.ahtn.domain.Clause.fromLispElement(e.children.get(1));
+                return c;
+            }
+            case "true": {
+                ai.ahtn.domain.Clause c = new ai.ahtn.domain.Clause();
+                c.type = CLAUSE_TRUE;
+                return c;
+            }
+            case "false": {
+                ai.ahtn.domain.Clause c = new ai.ahtn.domain.Clause();
+                c.type = CLAUSE_FALSE;
+                return c;
+            }
+            default: {
+                ai.ahtn.domain.Clause c = new ai.ahtn.domain.Clause();
+                c.type = CLAUSE_TERM;
+                c.term = ai.ahtn.domain.Term.fromLispElement(e);
+                return c;
+            }
         }
     }    
     
@@ -88,9 +95,9 @@ public class Clause {
                 {
                     StringBuilder sb = new StringBuilder();
                     sb.append("(and");
-                    for(int i = 0;i<clauses.length;i++) {
+                    for (Clause clause : clauses) {
                         sb.append(" ");
-                        sb.append(clauses[i]);
+                        sb.append(clause);
                     }
                     sb.append(")");
                     return sb.toString();
@@ -99,9 +106,9 @@ public class Clause {
                 {
                     StringBuilder sb = new StringBuilder();
                     sb.append("(or");
-                    for(int i = 0;i<clauses.length;i++) {
+                    for (Clause clause : clauses) {
                         sb.append(" ");
-                        sb.append(clauses[i]);
+                        sb.append(clause);
                     }
                     sb.append(")");
                     return sb.toString();
@@ -110,9 +117,9 @@ public class Clause {
                 {
                     StringBuilder sb = new StringBuilder();
                     sb.append("(not");
-                    for(int i = 0;i<clauses.length;i++) {
+                    for (Clause clause : clauses) {
                         sb.append(" ");
-                        sb.append(clauses[i]);
+                        sb.append(clause);
                     }
                     sb.append(")");
                     return sb.toString();
@@ -164,8 +171,8 @@ public class Clause {
     public void renameVariables(int renamingIndex) {
         if (term!=null) term.renameVariables(renamingIndex);
         if (clauses!=null) {
-            for(int i = 0;i<clauses.length;i++) {
-                clauses[i].renameVariables(renamingIndex);
+            for (Clause clause : clauses) {
+                clause.renameVariables(renamingIndex);
             }
         }
     }
@@ -176,8 +183,8 @@ public class Clause {
         if (l.isEmpty()) return;
         if (term!=null) term.applyBindings(l);
         if (clauses!=null) {
-            for(int i = 0;i<clauses.length;i++) {
-                clauses[i].applyBindings(l);
+            for (Clause clause : clauses) {
+                clause.applyBindings(l);
             }
         }
     }        

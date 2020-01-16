@@ -23,10 +23,10 @@ import rts.units.UnitTypeTable;
  */
 public class BS1_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
 
-    GameState initialGameState = null;
+    GameState initialGameState;
     
     // list of units we "believe" exist (for now it's just "last seen" position)
-    List<Unit> lastKnownPosition = new LinkedList<Unit>();
+    List<Unit> lastKnownPosition = new LinkedList<>();
 
     public BS1_NaiveMCTS(UnitTypeTable utt) {
         super(utt);
@@ -146,8 +146,7 @@ public class BS1_NaiveMCTS extends NaiveMCTS implements AIWithBelieveState {
 
     @Override
     public List<Unit> getBelieveUnits() {
-        List<Unit> l = new LinkedList<Unit>();
-        l.addAll(lastKnownPosition);
+        List<Unit> l = new LinkedList<>(lastKnownPosition);
         return l;
     }
 

@@ -8,23 +8,20 @@ import ai.core.AI;
 import ai.*;
 import ai.abstraction.WorkerRush;
 import ai.abstraction.pathfinding.BFSPathFinding;
-import ai.mcts.naivemcts.NaiveMCTS;
-import ai.scv.SCV;
 import gui.PhysicalGameStatePanel;
-import java.io.OutputStreamWriter;
+
 import javax.swing.JFrame;
 import rts.GameState;
 import rts.PhysicalGameState;
 import rts.PlayerAction;
 import rts.units.UnitTypeTable;
-import util.XMLWriter;
 
-/**
+ /**
  *
  * @author santi
  */
 public class GameVisualSimulationTest {
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         UnitTypeTable utt = new UnitTypeTable();
         PhysicalGameState pgs = PhysicalGameState.load("maps/16x16/basesWorkers16x16.xml", utt);
 //        PhysicalGameState pgs = MapGenerator.basesWorkers8x8Obstacle();
