@@ -255,10 +255,10 @@ public class PhysicalGameState {
     }
 
     /**
-     * Returns the units within a squared area
+     * Returns the units within a squared area centered in the given coordinates
      *
-     * @param x top left coordinate of the square
-     * @param y top left coordinate of the square
+     * @param x center coordinate of the square
+     * @param y center coordinate of the square
      * @param squareRange square size
      * @return
      */
@@ -268,7 +268,25 @@ public class PhysicalGameState {
     }
     
     /**
-     * Returns units within a rectangular area 
+     * Returns units within a rectangular area centered in the given coordinates
+     * @param x center coordinate of the rectangle
+     * @param y center coordinate of the square 
+     * @param width rectangle width
+     * @param height rectangle height
+     * @return
+     */
+    public Collection<Unit> getUnitsAround(int x, int y, int width, int height) {
+        List<Unit> closeUnits = new LinkedList<>();
+        for (Unit u : units) {
+            if ((Math.abs(u.getX() - x) <= width && Math.abs(u.getY() - y) <= height)) {
+                closeUnits.add(u);
+            }
+        }
+        return closeUnits;
+    }
+    
+    /**
+     * Returns units within a rectangle with the given top-left vertex and dimensions
      * Tests for x <= unitX < x+width && y <= unitY < y+height
      * Notice that the test is inclusive in top and left but exclusive on bottom and right
      * @param x top left coordinate of the rectangle
@@ -277,7 +295,7 @@ public class PhysicalGameState {
      * @param height rectangle height
      * @return
      */
-    public Collection<Unit> getUnitsAround(int x, int y, int width, int height) {
+    public Collection<Unit> getUnitsInRectangle(int x, int y, int width, int height) {
     	if(width < 1 || height < 1) throw new IllegalArgumentException("Width and height must be >=1");
     	
         List<Unit> unitsInside = new LinkedList<Unit>();
