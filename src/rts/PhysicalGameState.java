@@ -12,12 +12,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import util.XMLWriter;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import rts.units.Unit;
 import rts.units.UnitTypeTable;
-import util.XMLWriter;
 
 /**
  * The physical game state (the actual 'map') of a microRTS game
@@ -255,10 +255,10 @@ public class PhysicalGameState {
     }
 
     /**
-     * Returns the units within a squared area
+     * Returns the units within a squared area centered in the given coordinates
      *
-     * @param x top left coordinate of the square
-     * @param y top left coordinate of the square
+     * @param x center coordinate of the square
+     * @param y center coordinate of the square
      * @param squareRange square size
      * @return
      */
@@ -268,9 +268,9 @@ public class PhysicalGameState {
     }
     
     /**
-     * Returns units within a rectangular area 
-     * @param x top left coordinate of the rectangle
-     * @param y top left coordinate of the square 
+     * Returns units within a rectangular area centered in the given coordinates
+     * @param x center coordinate of the rectangle
+     * @param y center coordinate of the square 
      * @param width rectangle width
      * @param height rectangle height
      * @return
@@ -283,6 +283,29 @@ public class PhysicalGameState {
             }
         }
         return closeUnits;
+    }
+    
+    /**
+     * Returns units within a rectangle with the given top-left vertex and dimensions
+     * Tests for x <= unitX < x+width && y <= unitY < y+height
+     * Notice that the test is inclusive in top and left but exclusive on bottom and right
+     * @param x top left coordinate of the rectangle
+     * @param y top left coordinate of the rectangle 
+     * @param width rectangle width
+     * @param height rectangle height
+     * @return
+     */
+    public Collection<Unit> getUnitsInRectangle(int x, int y, int width, int height) {
+    	if(width < 1 || height < 1) throw new IllegalArgumentException("Width and height must be >=1");
+    	
+        List<Unit> unitsInside = new LinkedList<Unit>();
+        for (Unit u : units) {
+        	//tests for x <= unitX < x+width && y <= unitY < y+height 
+        	if(x <= u.getX() && u.getX() < x + width && y <= u.getY() && u.getY() < y+height) {
+                unitsInside.add(u);
+            }
+        }
+        return unitsInside;
     }
     
     
