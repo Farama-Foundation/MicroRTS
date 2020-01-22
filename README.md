@@ -36,6 +36,16 @@ java -cp "lib/*;bin" rts.MicroRTS # to run
 
 If you want to run other classes that have a `main` method (such as `gui/frontend/FrontEnd.java`), change the build and run commands accordingly.
 
+### Generating a JAR file
+
+```shell
+javac -cp "lib/*:src" -d bin $(find . -name "*.java")
+cd bin
+find ../lib -name "*.jar" | xargs -n 1 jar xvf
+jar cvf microrts.jar $(find . -name '*.class' -type f)
+java -cp microrts.jar rts.MicroRTS
+```
+
 ## Instructions
 
 ![instructions image](https://raw.githubusercontent.com/santiontanon/microrts/master/help.png)
