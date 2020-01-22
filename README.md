@@ -62,7 +62,7 @@ java -cp microrts.jar rts.MicroRTS
 
 #### Which class to execute
 
-microRTS has multiple entry points, but a default one is the `gui.frontend.FrontEnd` class, which opens the default GUI. To execute microRTS in this way, use the following command:
+microRTS has multiple entry points, and for experimentation purposes you might eventually want to create your own class if none of the base ones suit your needs (see the "tests" folder for examples), but a default one is the `gui.frontend.FrontEnd` class, which opens the default GUI. To execute microRTS in this way, use the following command:
 
 ```shell
 java -cp microrts.jar gui.frontend.FrontEnd
