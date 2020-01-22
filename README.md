@@ -14,27 +14,73 @@ To cite microRTS, please cite this paper:
 
 Santiago Ontañón (2013) The Combinatorial Multi-Armed Bandit Problem and its Application to Real-Time Strategy Games, In AIIDE 2013. pp. 58 - 64.
 
-## Setting up microRTS
+## Setting up microRTS in an IDE
 
 Watch [this YouTube video](https://www.youtube.com/watch?v=_jVOMNqw3Qs) to learn how to acquire microRTS and setup a project using Netbeans.
 
-### Terminal commands
+## Executing microRTS through the terminal
 
-If you want to build and run microRTS using the Linux or Mac OS command line, clone or download this repository and run the following commands in the root folder of the project:
+If you want to build and run microRTS from source using the command line, clone or download this repository and run the following commands in the root folder of the project to compile the source code:
+
+Linux or Mac OS:
 
 ```shell
 javac -cp "lib/*:src" -d bin src/rts/MicroRTS.java # to build
-java -cp "lib/*:bin" rts.MicroRTS # to run
 ```
 
-Or in Windows:
+Windows:
 
 ```shell
 javac -cp "lib/*;src" -d bin src/rts/MicroRTS.java # to build
-java -cp "lib/*;bin" rts.MicroRTS # to run
 ```
 
-If you want to run other classes that have a `main` method (such as `gui/frontend/FrontEnd.java`), change the build and run commands accordingly.
+### Generating a JAR file
+
+You can join all compiled source files and dependencies into a single JAR file, which can be executed on its own. In order to create a JAR file for microRTS:
+
+```shell
+javac -cp "lib/*:src" -d bin $(find . -name "*.java") # compile source files
+cd bin
+find ../lib -name "*.jar" | xargs -n 1 jar xvf # extract the contents of the JAR dependencies
+jar cvf microrts.jar $(find . -name '*.class' -type f) # create a single JAR file with sources and dependencies
+```
+
+### Executing microRTS
+
+To execute microRTS from compiled class files:
+
+```shell
+java -cp "lib/*:bin" rts.MicroRTS # on Linux/Mac
+java -cp "lib/*;bin" rts.MicroRTS # on Windows
+```
+
+To execute microRTS from the JAR file:
+
+```shell
+java -cp microrts.jar rts.MicroRTS
+```
+
+#### Which class to execute
+
+microRTS has multiple entry points, but a default one is the `gui.frontend.FrontEnd` class, which opens the default GUI. To execute microRTS in this way, use the following command:
+
+```shell
+java -cp microrts.jar gui.frontend.FrontEnd
+```
+
+Another, more expansive entry point is the `rts.MicroRTS` class. It is capable of starting microRTS in multiple modes, such as in client mode (attempts to connect to a server which will provide commands to a bot), server mode (tries to connect to a client in order to control a bot), run a standalone game and exit or open the default GUI.
+
+The `rts.MicroRTS` class accepts multiple initialization parameters, either from the command line or from a properties file. A list of all the acceptable command-line arguments can be accessed through the following command:
+
+```shell
+java -cp microrts.jar rts.MicroRTS -h
+```
+
+An example of a properties file is provided in the `resources` directory. microRTS can be started using a properties file with the following command:
+
+```shell
+java -cp microrts.jar rts.MicroRTS -f my_file.properties
+```
 
 ## Instructions
 

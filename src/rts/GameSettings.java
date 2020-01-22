@@ -33,11 +33,11 @@ public class GameSettings {
     }
 
     // Networking
-    private String serverAddress = "";
+    private String serverAddress = "localhost";
     private int serverPort = 9898;
-    private LaunchMode launchMode;
+    private LaunchMode launchMode = LaunchMode.GUI;
 
-    private int serializationType = 1; // Default is JSON
+    private int serializationType = 2; // Default is JSON
 
     // Maps
     private String mapLocation = "";
@@ -53,8 +53,8 @@ public class GameSettings {
     private boolean headless = false;
 
     // Opponents:
-    private String AI1 = "";
-    private String AI2 = "";
+    private String AI2 = "ai.RandomAI";
+    private String AI1 = "ai.RandomAI";
 
     public GameSettings(LaunchMode launchMode, String serverAddress, int serverPort,
         int serializationType, String mapLocation, int maxCycles, int updateInterval,
@@ -246,7 +246,7 @@ public class GameSettings {
 
         assert !prop.isEmpty();
 
-        String serverAddress = prop.getProperty("server_address");
+        String serverAddress = prop.getProperty("server_address", "localhost");
         int serverPort = readIntegerProperty(prop, "server_port", 9898);
         int serializationType = readIntegerProperty(prop, "serialization_type", 2);
         String mapLocation = prop.getProperty("map_location");
@@ -255,12 +255,12 @@ public class GameSettings {
         boolean partiallyObservable = Boolean.parseBoolean(prop.getProperty("partially_observable"));
         int uttVersion = readIntegerProperty(prop, "UTT_version", 2);
         int conflictPolicy = readIntegerProperty(prop, "conflict_policy", 1);
-        LaunchMode launchMode = LaunchMode.valueOf(prop.getProperty("launch_mode"));
-        boolean includeConstantsInState = Boolean.parseBoolean(prop.getProperty("constants_in_state"));
-        boolean compressTerrain = Boolean.parseBoolean(prop.getProperty("compress_terrain"));
-        boolean headless = Boolean.parseBoolean(prop.getProperty("headless"));
-        String AI1 = prop.getProperty("AI1");
-        String AI2 = prop.getProperty("AI2");
+        LaunchMode launchMode = LaunchMode.valueOf(prop.getProperty("launch_mode",  "GUI"));
+        boolean includeConstantsInState = Boolean.parseBoolean(prop.getProperty("constants_in_state", "true"));
+        boolean compressTerrain = Boolean.parseBoolean(prop.getProperty("compress_terrain", "false"));
+        boolean headless = Boolean.parseBoolean(prop.getProperty("headless", "false"));
+        String AI1 = prop.getProperty("AI1", "ai.RandomAI");
+        String AI2 = prop.getProperty("AI2", "ai.RandomAI");
 
         return new GameSettings(launchMode, serverAddress, serverPort, serializationType,
             mapLocation, maxCycles, updateInterval, partiallyObservable, uttVersion, conflictPolicy,
