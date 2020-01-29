@@ -15,14 +15,13 @@ import util.Pair;
 
 /**
  *
- * @author santi
+ * @author costa
  */
 public class ResourceGatherRewardFunction implements RewardFunctionInterface{
     public double reward = 0.0;
     public boolean done = false;
-    public static float RESOURCE_RETURN_REWARD = 20;
-    public static float RESOURCE_HARVEST_REWARD = 10;
-    public static float UNIT_BONUS_MULTIPLIER = 40.0f;
+    public static float RESOURCE_RETURN_REWARD = 1;
+    public static float RESOURCE_HARVEST_REWARD = 1;
 
     public void computeReward(int maxplayer, int minplayer, TraceEntry te, GameState afterGs) {
         reward = 0.0;
@@ -37,7 +36,7 @@ public class ResourceGatherRewardFunction implements RewardFunctionInterface{
         PhysicalGameState pgs = afterGs.getPhysicalGameState();
         for(Unit u:pgs.getUnits()) {
             // If there are Resources left, it's not done
-            if (u.getType().equals(afterGs.getUnitTypeTable().getUnitType(0))) {
+            if (u.getType().name.equals("Resource")) {
                 if (u.getResources()>0) {
                     done = false;
                     return;
