@@ -4,29 +4,14 @@
 */
 package tests;
 
-import java.io.FileWriter;
 import java.io.Writer;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.StringWriter;
-import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.WritableRaster;
-import java.io.IOException;
-import javax.imageio.ImageIO;
-
-import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import ai.PassiveAI;
 import ai.RandomBiasedAI;
@@ -36,10 +21,6 @@ import ai.jni.JNIAI;
 import ai.jni.JNILocalAI;
 import ai.rewardfunction.RewardFunctionInterface;
 import ai.jni.JNIInterface;
-import ai.socket.IndividualSocketRewardAI;
-import ai.socket.SocketAIInterface;
-import ai.socket.SocketRewardAI;
-import ai.socket.SocketRewardPenaltyOnInvalidActionAI;
 import gui.PhysicalGameStateJFrame;
 import gui.PhysicalGameStatePanel;
 import rts.GameState;
@@ -77,7 +58,7 @@ public class JNIClient {
     PhysicalGameState pgs;
     GameState gs;
     UnitTypeTable utt;
-    public RewardFunctionInterface rf;
+    public RewardFunctionInterface[] rfs;
     String mapPath;
     String micrortsPath;
     boolean gameover = false;
@@ -85,11 +66,11 @@ public class JNIClient {
 
     public class Response {
         public int[][][] observation;
-        public double reward;
-        public boolean done;
+        public double[] reward;
+        public boolean[] done;
         public String info;
 
-        public Response(int[][][] observation, double reward, boolean done, String info) {
+        public Response(int[][][] observation, double reward[], boolean done[], String info) {
             this.observation = observation;
             this.reward = reward;
             this.done = done;
@@ -97,10 +78,10 @@ public class JNIClient {
         }
     }
 
-    public JNIClient(RewardFunctionInterface a_rf, String a_micrortsPath, String a_mapPath) throws Exception{
+    public JNIClient(RewardFunctionInterface[] a_rfs, String a_micrortsPath, String a_mapPath) throws Exception{
         micrortsPath = a_micrortsPath;
         mapPath = a_mapPath;
-        rf = a_rf;
+        rfs = a_rfs;
         utt = new UnitTypeTable();
         utt.getUnitType("Worker").harvestTime = 10;
         ai1 = new JNIAI(100, 0, utt);
@@ -118,10 +99,10 @@ public class JNIClient {
             this.mapPath = Paths.get(micrortsPath, mapPath).toString();
         }
         System.out.println(mapPath);
-        System.out.println(rf);
+        System.out.println(rfs);
     }
 
-    public JNIClient(RewardFunctionInterface a_rf, String a_micrortsPath, String a_mapPath, int windowSize) throws Exception{
+    public JNIClient(RewardFunctionInterface[] a_rfs, String a_micrortsPath, String a_mapPath, int windowSize) throws Exception{
         micrortsPath = a_micrortsPath;
         mapPath = a_mapPath;
         utt = new UnitTypeTable();
@@ -168,6 +149,7 @@ public class JNIClient {
         double totalReward = 0.0;
         PlayerAction pa1;
         PlayerAction pa2;
+        double[] rewards = new double[rfs.length];
         // frameskip
         for (int i=0;i<=frameskip;i++) {
             if (i==0) {
@@ -194,15 +176,22 @@ public class JNIClient {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            rf.computeReward(0, 1, te, gs);
-            totalReward += rf.getReward();
+            
+            for (int j = 0; j < rewards.length; j++) {
+                rfs[j].computeReward(0, 1, te, gs);
+                rewards[j] += rfs[j].getReward();
+            }
         }
 
+        boolean[] dones = new boolean[rfs.length];
+        for (int i = 0; i < rewards.length; i++) {
+            dones[i] = rfs[i].isDone();
+        }
         // TODO return observation in JSON format
         return new Response(
             ai1.getObservation(0, gs),
-            totalReward,
-            rf.isDone(),
+            rewards,
+            dones,
             ai1.computeInfo(0, gs));
     }
 
@@ -219,8 +208,8 @@ public class JNIClient {
         gs = new GameState(pgs, utt);
         return new Response(
             ai1.getObservation(0, gs),
-            0.0,
-            false,
+            new double[rfs.length],
+            new boolean[rfs.length],
             "{}");
     }
 

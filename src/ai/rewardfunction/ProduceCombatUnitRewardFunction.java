@@ -17,7 +17,7 @@ import util.Pair;
  *
  * @author costa
  */
-public class ProduceCombatUnitsRewardFunction implements RewardFunctionInterface{
+public class ProduceCombatUnitRewardFunction implements RewardFunctionInterface{
     public double reward = 0.0;
     public boolean done = false;
     public static float COMBAT_UNITS_PRODUCE_REWARD = 1;
