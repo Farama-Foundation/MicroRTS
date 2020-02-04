@@ -17,9 +17,8 @@ import util.Pair;
  *
  * @author costa
  */
-public class WinLossRewardFunction implements RewardFunctionInterface{
-    public double reward = 0.0;
-    public boolean done = false;
+public class WinLossRewardFunction extends RewardFunctionInterface{
+
 
     public void computeReward(int maxplayer, int minplayer, TraceEntry te, GameState afterGs) {
         reward = 0.0;
@@ -32,13 +31,5 @@ public class WinLossRewardFunction implements RewardFunctionInterface{
             reward = -1.0;
             done = true;
         }
-    }
-
-    public double getReward() {
-        return reward;
-    }
-
-    public boolean isDone() {
-        return done;
     }
 }

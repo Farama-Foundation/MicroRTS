@@ -18,9 +18,8 @@ import util.Pair;
  *
  * @author costa
  */
-public class SimpleEvaluationRewardFunction implements RewardFunctionInterface{
-    public double reward = 0.0;
-    public boolean done = false;
+public class SimpleEvaluationRewardFunction extends RewardFunctionInterface{
+
     public static float RESOURCE_RETURN_REWARD = 2;
     public static float RESOURCE_HARVEST_REWARD = 1;
     public static float UNIT_BONUS_MULTIPLIER = 4.0f;

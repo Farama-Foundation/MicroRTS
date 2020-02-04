@@ -17,9 +17,8 @@ import util.Pair;
  *
  * @author costa
  */
-public class ResourceGatherRewardFunction implements RewardFunctionInterface{
-    public double reward = 0.0;
-    public boolean done = false;
+public class ResourceGatherRewardFunction extends RewardFunctionInterface{
+
     public static float RESOURCE_RETURN_REWARD = 1;
     public static float RESOURCE_HARVEST_REWARD = 1;
 

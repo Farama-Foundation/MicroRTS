@@ -17,9 +17,8 @@ import util.Pair;
  *
  * @author costa
  */
-public class AttackRewardFunction implements RewardFunctionInterface{
-    public double reward = 0.0;
-    public boolean done = false;
+public class AttackRewardFunction extends RewardFunctionInterface{
+
     public static float ATTACK_REWARD = 1;
 
     public void computeReward(int maxplayer, int minplayer, TraceEntry te, GameState afterGs) {

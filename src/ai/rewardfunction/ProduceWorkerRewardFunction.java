@@ -17,9 +17,8 @@ import util.Pair;
  *
  * @author santi
  */
-public class ProduceWorkerRewardFunction implements RewardFunctionInterface{
-    public double reward = 0.0;
-    public boolean done = false;
+public class ProduceWorkerRewardFunction extends RewardFunctionInterface{
+
     public static float WORKER_PRODUCE_REWARD = 1;
 
     public void computeReward(int maxplayer, int minplayer, TraceEntry te, GameState afterGs) {

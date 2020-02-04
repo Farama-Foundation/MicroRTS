@@ -17,9 +17,8 @@ import util.Pair;
  *
  * @author costa
  */
-public class ProduceBuildingRewardFunction implements RewardFunctionInterface{
-    public double reward = 0.0;
-    public boolean done = false;
+public class ProduceBuildingRewardFunction extends RewardFunctionInterface{
+
     public static float BUILDING_PRODUCE_REWARD = 1;
 
     public void computeReward(int maxplayer, int minplayer, TraceEntry te, GameState afterGs) {
