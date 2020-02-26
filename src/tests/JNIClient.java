@@ -102,6 +102,24 @@ public class JNIClient {
         System.out.println(rfs);
     }
 
+    public JNIClient(RewardFunctionInterface[] a_rfs, String a_micrortsPath, String a_mapPath, AI a_ai2) throws Exception{
+        micrortsPath = a_micrortsPath;
+        mapPath = a_mapPath;
+        rfs = a_rfs;
+        utt = new UnitTypeTable();
+        utt.getUnitType("Worker").harvestTime = 10;
+        ai1 = new JNIAI(100, 0, utt);
+        ai2 = a_ai2;
+        if (ai2 == null) {
+            throw new Exception("no ai2 was chosen");
+        }
+        if (micrortsPath.length() != 0) {
+            this.mapPath = Paths.get(micrortsPath, mapPath).toString();
+        }
+        System.out.println(mapPath);
+        System.out.println(rfs);
+    }
+
     public JNIClient(RewardFunctionInterface[] a_rfs, String a_micrortsPath, String a_mapPath, int windowSize) throws Exception{
         micrortsPath = a_micrortsPath;
         mapPath = a_mapPath;
