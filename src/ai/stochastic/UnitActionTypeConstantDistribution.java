@@ -27,6 +27,7 @@ public class UnitActionTypeConstantDistribution extends UnitActionProbabilityDis
     }
     
     
+    @Override
     public double[] predictDistribution(Unit u, GameState gs, List<UnitAction> actions) throws Exception
     {
         int nActions = actions.size();

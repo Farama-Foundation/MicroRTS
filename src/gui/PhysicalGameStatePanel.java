@@ -252,7 +252,7 @@ public class PhysicalGameStatePanel extends JPanel {
         int sizex = grid*pgs.getWidth();
         int sizey = grid*pgs.getHeight();
 
-        if (pogs!=null && pogs[0]!=null && pogs[1]!=null) {
+        if (!fullObservability && pogs!=null && pogs[0]!=null && pogs[1]!=null) {
             if (pogs[0].getTime() != gs.getTime()) {
                 // update
                 pogs[0] = new PartiallyObservableGameState(gs, 0);
