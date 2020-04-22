@@ -63,6 +63,8 @@ public class JNIClient {
     String micrortsPath;
     boolean gameover = false;
     boolean layerJSON = true;
+    int gamestep = 0;
+    int ai2Frameskip = 20;
 
     public class Response {
         public int[][][] observation;
@@ -172,11 +174,13 @@ public class JNIClient {
         for (int i=0;i<=frameskip;i++) {
             if (i==0) {
                 pa1 = ai1.getAction(0, gs, action);
+                pa2 = ai2.getAction(1, gs);
             } else {
                 pa1 = new PlayerAction();
                 pa1.fillWithNones(gs, 0, 0);
+                pa2 = new PlayerAction();
+                pa2.fillWithNones(gs, 1, 0);
             }
-            pa2 = ai2.getAction(1, gs);
             gs.issueSafe(pa1);
             gs.issueSafe(pa2);
             TraceEntry te  = new TraceEntry(gs.getPhysicalGameState().clone(),gs.getTime());
@@ -206,6 +210,7 @@ public class JNIClient {
             dones[i] = rfs[i].isDone();
         }
         // TODO return observation in JSON format
+        gamestep += 1;
         return new Response(
             ai1.getObservation(0, gs),
             rewards,

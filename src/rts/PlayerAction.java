@@ -366,11 +366,22 @@ public class PlayerAction {
         return pa;
     }
 
-    public static PlayerAction fromActionArrays(int[][] actions, GameState gs, UnitTypeTable utt, int currentPlayer) {
+    public static Pair<PlayerAction, InvalidPlayerActionStats> fromActionArrays(int[][] actions, GameState gs, UnitTypeTable utt, int currentPlayer) {
         PlayerAction pa = new PlayerAction();
+        InvalidPlayerActionStats ipas = new InvalidPlayerActionStats();
         for(int[] action:actions) {
             Unit u = gs.pgs.getUnitAt(action[0] % gs.pgs.width, action[0] / gs.pgs.width);
             UnitActionAssignment uaa = gs.unitActions.get(u);
+            if (u == null) {
+                ipas.numInvalidActionNull += 1;
+            } else {
+                if (u.getPlayer() != currentPlayer) {
+                    ipas.numInvalidActionOwnership += 1;
+                }
+            }
+            if (uaa != null && UnitAction.fromActionArray(action, utt, gs).type != UnitAction.TYPE_NONE) {
+                ipas.numInvalidActionBusyUnit += 1;
+            }
             if (u != null && u.getPlayer() == currentPlayer && uaa == null) {
                 // execute the action if the following happens
                 // 1. The selected unit is *not* null.
@@ -381,7 +392,7 @@ public class PlayerAction {
                 pa.addUnitAction(u, ua);
             }
         }
-        return pa;
+        return new Pair<>(pa, ipas);
     }
 
     public static PlayerAction fromActionArrayForUnit(int[][] actions, GameState gs, UnitTypeTable utt, int currentPlayer, Unit u) {

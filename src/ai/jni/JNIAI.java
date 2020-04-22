@@ -21,12 +21,21 @@ import org.newsclub.net.unix.AFUNIXSocket;
 import org.newsclub.net.unix.AFUNIXSocketAddress;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import rts.GameState;
+import rts.InvalidPlayerActionStats;
 import rts.PlayerAction;
 import rts.units.UnitTypeTable;
+import util.Pair;
 import util.XMLWriter;
 
 /**
@@ -39,6 +48,7 @@ public class JNIAI extends AIWithComputationBudget implements JNIInterface {
     double oldReward = 0.0;
     boolean firstRewardCalculation = true;
     SimpleEvaluationFunction ef = new SimpleEvaluationFunction();
+    InvalidPlayerActionStats ipas = null;
 
     public JNIAI(int timeBudget, int iterationsBudget, UnitTypeTable a_utt) {
         super(timeBudget, iterationsBudget);
@@ -60,9 +70,10 @@ public class JNIAI extends AIWithComputationBudget implements JNIInterface {
     }
 
     public PlayerAction getAction(int player, GameState gs, int[][] action) throws Exception {
-        PlayerAction pa = PlayerAction.fromActionArrays(action, gs, utt, player);
-        pa.fillWithNones(gs, player, 1);
-        return pa;
+        Pair<PlayerAction, InvalidPlayerActionStats> p = PlayerAction.fromActionArrays(action, gs, utt, player);
+        p.m_a.fillWithNones(gs, player, 1);
+        ipas = p.m_b;
+        return p.m_a;
     }
 
     public int[][][] getObservation(int player, GameState gs) throws Exception {
@@ -94,8 +105,12 @@ public class JNIAI extends AIWithComputationBudget implements JNIInterface {
 
     @Override
     public String computeInfo(int player, GameState gs) throws Exception {
-        // TODO Auto-generated method stub
-        return "{}";
+        Map<String, Object> data = new HashMap<String, Object>();
+            data.put("invalid_action_stats", ipas);
+        Gson gson = new GsonBuilder()
+            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+            .create();
+        return gson.toJson(data);
     }
     
 }
