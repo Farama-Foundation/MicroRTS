@@ -315,6 +315,15 @@ public class Unit implements Serializable {
     }
     
     /**
+     * Returns true if the unit is idle 
+     * @return
+     */
+    public boolean isIdle(GameState s) {
+	UnitAction ua = s.getUnitAction(this);
+	return (ua == null || ua.getType() == UnitAction.TYPE_NONE);
+    }
+    	
+    /**
      * Returns a list of actions this unit can perform in a given game state.
      * An idle action for 10 cycles is always generated
      * @param s
