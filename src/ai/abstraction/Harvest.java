@@ -40,7 +40,11 @@ public class Harvest extends AbstractAction  {
     
     
     public boolean completed(GameState gs) {
-        return !gs.getPhysicalGameState().getUnits().contains(target);
+        if (unit.getResources() > 0) {
+            return !gs.getPhysicalGameState().getUnits().contains(base);
+        } else {
+            return !gs.getPhysicalGameState().getUnits().contains(target);
+        }
     }
     
     
@@ -48,8 +52,14 @@ public class Harvest extends AbstractAction  {
     {
         if (!(o instanceof Harvest)) return false;
         Harvest a = (Harvest)o;
-        return target.getID() == a.target.getID() && base.getID() == a.base.getID()
-            && pf.getClass() == a.pf.getClass();
+        if (target == null && a.target != null) return false;
+        if (target != null && a.target == null) return false;
+        if (target != null && target.getID() != a.target.getID()) return false;
+
+        if (base == null && a.base != null) return false;
+        if (base != null && a.base == null) return false;
+        if (base != null && base.getID() != a.base.getID()) return false;
+        return pf.getClass() == a.pf.getClass();
     }
     
 
@@ -62,6 +72,7 @@ public class Harvest extends AbstractAction  {
     public UnitAction execute(GameState gs, ResourceUsage ru) {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         if (unit.getResources()==0) {
+            if (target == null) return null;
             // go get resources:
 //            System.out.println("findPathToAdjacentPosition from Harvest: (" + target.getX() + "," + target.getY() + ")");
             UnitAction move = pf.findPathToAdjacentPosition(unit, target.getX()+target.getY()*gs.getPhysicalGameState().getWidth(), gs, ru);
@@ -81,6 +92,7 @@ public class Harvest extends AbstractAction  {
                 target.getY() == unit.getY()) return new UnitAction(UnitAction.TYPE_HARVEST,UnitAction.DIRECTION_LEFT);
         } else {
             // return resources:
+            if (base == null) return null;
 //            System.out.println("findPathToAdjacentPosition from Return: (" + target.getX() + "," + target.getY() + ")");
             UnitAction move = pf.findPathToAdjacentPosition(unit, base.getX()+base.getY()*gs.getPhysicalGameState().getWidth(), gs, ru);
             if (move!=null) {

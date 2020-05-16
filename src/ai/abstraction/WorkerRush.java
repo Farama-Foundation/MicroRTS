@@ -171,15 +171,32 @@ public class WorkerRush extends AbstractionLayerAI {
                     }
                 }
             }
-            if (closestResource!=null && closestBase!=null) {
-                AbstractAction aa = getAbstractAction(harvestWorker);
-                if (aa instanceof Harvest) {
-                    Harvest h_aa = (Harvest)aa;
-                    if (h_aa.target != closestResource || h_aa.base!=closestBase) harvest(harvestWorker, closestResource, closestBase);
-                } else {
-                    harvest(harvestWorker, closestResource, closestBase);
+            boolean harestWorkerFree = true;
+            if (harvestWorker.getResources() > 0) {
+                if (closestBase!=null) {
+                    AbstractAction aa = getAbstractAction(harvestWorker);
+                    if (aa instanceof Harvest) {
+                        Harvest h_aa = (Harvest)aa;
+                        if (h_aa.base!=closestBase) harvest(harvestWorker, null, closestBase);
+                    } else {
+                        harvest(harvestWorker, null, closestBase);
+                    }
+                    harestWorkerFree = false;
+                }
+            } else {            
+                if (closestResource!=null && closestBase!=null) {
+                    AbstractAction aa = getAbstractAction(harvestWorker);
+                    if (aa instanceof Harvest) {
+                        Harvest h_aa = (Harvest)aa;
+                        if (h_aa.target != closestResource || h_aa.base!=closestBase) harvest(harvestWorker, closestResource, closestBase);
+                    } else {
+                        harvest(harvestWorker, closestResource, closestBase);
+                    }
+                    harestWorkerFree = false;
                 }
             }
+            
+            if (harestWorkerFree) freeWorkers.add(harvestWorker);
         }
         
         for(Unit u:freeWorkers) meleeUnitBehavior(u, p, gs);

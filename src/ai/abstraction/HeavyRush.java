@@ -113,7 +113,7 @@ public class HeavyRush extends AbstractionLayerAI {
                 workers.add(u);
             }
         }
-        workersBehavior(workers, p, pgs);
+        workersBehavior(workers, p, gs);
 
         // This method simply takes all the unit actions executed so far, and packages them into a PlayerAction
         return translateActions(player, gs);
@@ -157,7 +157,8 @@ public class HeavyRush extends AbstractionLayerAI {
         }
     }
 
-    public void workersBehavior(List<Unit> workers, Player p, PhysicalGameState pgs) {
+    public void workersBehavior(List<Unit> workers, Player p, GameState gs) {
+        PhysicalGameState pgs = gs.getPhysicalGameState();
         int nbases = 0;
         int nbarracks = 0;
 
@@ -200,6 +201,7 @@ public class HeavyRush extends AbstractionLayerAI {
 
 
         // harvest with all the free workers:
+        List<Unit> stillFreeWorkers = new LinkedList<>();
         for (Unit u : freeWorkers) {
             Unit closestBase = null;
             Unit closestResource = null;
@@ -223,16 +225,35 @@ public class HeavyRush extends AbstractionLayerAI {
                     }
                 }
             }
-            if (closestResource != null && closestBase != null) {
-                AbstractAction aa = getAbstractAction(u);
-                if (aa instanceof Harvest) {
-                    Harvest h_aa = (Harvest)aa;
-                    if (h_aa.target != closestResource || h_aa.base!=closestBase) harvest(u, closestResource, closestBase);
-                } else {
-                    harvest(u, closestResource, closestBase);
+            boolean workerStillFree = true;
+            if (u.getResources() > 0) {
+                if (closestBase!=null) {
+                    AbstractAction aa = getAbstractAction(u);
+                    if (aa instanceof Harvest) {
+                        Harvest h_aa = (Harvest)aa;
+                        if (h_aa.base!=closestBase) harvest(u, null, closestBase);
+                    } else {
+                        harvest(u, null, closestBase);
+                    }
+                    workerStillFree = false;
+                }
+            } else {            
+                if (closestResource!=null && closestBase!=null) {
+                    AbstractAction aa = getAbstractAction(u);
+                    if (aa instanceof Harvest) {
+                        Harvest h_aa = (Harvest)aa;
+                        if (h_aa.target != closestResource || h_aa.base!=closestBase) harvest(u, closestResource, closestBase);
+                    } else {
+                        harvest(u, closestResource, closestBase);
+                    }
+                    workerStillFree = false;
                 }
             }
+            
+            if (workerStillFree) stillFreeWorkers.add(u);            
         }
+        
+        for(Unit u:stillFreeWorkers) meleeUnitBehavior(u, p, gs);        
     }
 
 
