@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -128,6 +129,10 @@ class Tournament {
                 pa1 = ai1.getAction(0, fullObservability ? gs : new PartiallyObservableGameState(gs, 0));
                 AI1end = System.currentTimeMillis();
             } catch (Exception e) {
+                if (progress != null) {
+                    progress.write(e + "\n");
+                    progress.write(Arrays.toString(e.getStackTrace()) + "\n");
+                }
                 crashed = 0;
                 break;
             }
@@ -137,6 +142,10 @@ class Tournament {
                 pa2 = ai2.getAction(1, fullObservability ? gs : new PartiallyObservableGameState(gs, 1));
                 AI2end = System.currentTimeMillis();
             } catch (Exception e) {
+                if (progress != null) {
+                    progress.write(e + "\n");
+                    progress.write(Arrays.toString(e.getStackTrace()) + "\n");
+                }
                 crashed = 1;
                 break;
             }
@@ -246,16 +255,14 @@ class Tournament {
             progress.write("AI2 time usage, average:  " + (averageTime2 / numTimes2) +
                     ", # times over budget: " + numberOfTimeOverBudget2 + " (avg " + (averageTimeOverBudget2 / numberOfTimeOverBudget2) +
                     ") , # times over 2*budget: " + numberOfTimeOverTwiceBudget2 + " (avg " + (averageTimeOverTwiceBudget2 / numberOfTimeOverTwiceBudget2) + ")\n");
+            progress.flush();
         }
-        progress.flush();
 
         if (winner == -1) {
             this.ties[ai1_idx][ai2_idx]++;
-//                            ties[ai2_idx][ai1_idx]++;
         } else if (winner == 0) {
             this.wins[ai1_idx][ai2_idx]++;
         } else if (winner == 1) {
-//                            wins[ai2_idx][ai1_idx]++;
         }
         accumTime[ai1_idx][ai2_idx] += gs.getTime();
     }

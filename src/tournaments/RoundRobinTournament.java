@@ -60,6 +60,7 @@ public class RoundRobinTournament extends Tournament{
         out.write("timeBudget\t" + timeBudget + "\n");
         out.write("iterationsBudget\t" + iterationsBudget + "\n");
         out.write("pregameAnalysisBudget\t" + preAnalysisBudgetFirstTimeInAMap + "\t" + preAnalysisBudgetRestOfTimes + "\n");
+        out.write("preAnalysis\t" + preAnalysis + "\n");
         out.write("fullObservability\t" + fullObservability + "\n");
         out.write("timeoutCheck\t" + timeoutCheck + "\n");
         out.write("runGC\t" + runGC + "\n");
@@ -74,6 +75,13 @@ public class RoundRobinTournament extends Tournament{
             f.mkdir();
         }
 
+        boolean firstPreAnalysis[][] = new boolean[AIs.size()][maps.size()];
+        for (int i = 0; i < AIs.size(); i++) {
+            for (int j = 0; j < maps.size(); j++) {
+                firstPreAnalysis[i][j] = true;
+            }
+        }
+        
         for (int iteration = 0; iteration < iterations; iteration++) {
             for (int map_idx = 0; map_idx < maps.size(); map_idx++) {
                 PhysicalGameState pgs = PhysicalGameState.load(maps.get(map_idx), utt);
@@ -87,7 +95,7 @@ public class RoundRobinTournament extends Tournament{
                         playSingleGame(maxGameLength, timeBudget, iterationsBudget,
                                 preAnalysisBudgetFirstTimeInAMap, preAnalysisBudgetRestOfTimes, fullObservability,
                                 timeoutCheck, runGC, preAnalysis, utt, traceOutputfolder, out, progress,
-                                readWriteFolders, null, iteration, map_idx, pgs, ai1_idx, ai2_idx);
+                                readWriteFolders, firstPreAnalysis, iteration, map_idx, pgs, ai1_idx, ai2_idx);
                     }
                 }
             }
