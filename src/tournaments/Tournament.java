@@ -274,7 +274,7 @@ class Tournament {
             firstPreAnalysis[map_idx] = false;
         }
         long pre_start1 = System.currentTimeMillis();
-        ai1.preGameAnalysis(gs, preAnalysisBudgetRestOfTimes, readWriteFolder);
+        ai1.preGameAnalysis(gs, preTime1, readWriteFolder);
         long pre_end1 = System.currentTimeMillis();
         if (progress != null) {
             progress.write("preGameAnalysis player 1 took " + (pre_end1 - pre_start1) + "\n");
