@@ -26,12 +26,17 @@ public class CloserToEnemyBaseRewardFunction extends RewardFunctionInterface{
         done = false;
         int baseX = 0;
         int baseY = 0;
+        boolean baseExists = false;
         for(Unit t: te.getPhysicalGameState().getUnits()) {
             if (t.getPlayer() == minplayer && t.getType().name.equals("Base")) {
+                baseExists = true;
                 baseX = t.getX();
                 baseY = t.getY();
                 break;
             }
+        }
+        if (!baseExists) {
+            return;
         }
         double oldMinDistanceToEnemyBase = 2000000000;
         for(Unit t: te.getPhysicalGameState().getUnits()) {

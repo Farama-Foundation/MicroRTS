@@ -166,7 +166,6 @@ public class JNIClient {
     }
 
     public Response step(int[][] action, int frameskip) throws Exception {
-        double totalReward = 0.0;
         PlayerAction pa1;
         PlayerAction pa2;
         double[] rewards = new double[rfs.length];
@@ -183,7 +182,7 @@ public class JNIClient {
             }
             gs.issueSafe(pa1);
             gs.issueSafe(pa2);
-            TraceEntry te  = new TraceEntry(gs.getPhysicalGameState().clone(),gs.getTime());
+            TraceEntry te  = new TraceEntry(gs.getPhysicalGameState().clone(), gs.getTime());
             te.addPlayerAction(pa1.clone());
             te.addPlayerAction(pa2.clone());
     
@@ -216,6 +215,60 @@ public class JNIClient {
             rewards,
             dones,
             ai1.computeInfo(0, gs));
+    }
+
+    public Response simulateStep(int[][] action, int frameskip) throws Exception {
+        PlayerAction pa1;
+        PlayerAction pa2;
+        GameState simulatedGs = gs.clone();
+        double[] rewards = new double[rfs.length];
+        // frameskip
+        for (int i=0;i<=frameskip;i++) {
+            if (i==0) {
+                pa1 = ai1.getAction(0, simulatedGs, action);
+                pa2 = new PlayerAction();
+                pa2.fillWithNones(simulatedGs, 1, 0);
+            } else {
+                pa1 = new PlayerAction();
+                pa1.fillWithNones(simulatedGs, 0, 0);
+                pa2 = new PlayerAction();
+                pa2.fillWithNones(simulatedGs, 1, 0);
+            }
+            simulatedGs.issueSafe(pa1);
+            simulatedGs.issueSafe(pa2);
+            TraceEntry te  = new TraceEntry(simulatedGs.getPhysicalGameState().clone(), simulatedGs.getTime());
+            te.addPlayerAction(pa1.clone());
+            te.addPlayerAction(pa2.clone());
+    
+            // simulate:
+            gameover = simulatedGs.cycle();
+            if (gameover) {
+                // ai1.gameOver(simulatedGs.winner());
+                ai2.gameOver(simulatedGs.winner());
+            }
+            try {
+                Thread.yield();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            
+            for (int j = 0; j < rewards.length; j++) {
+                rfs[j].computeReward(0, 1, te, simulatedGs);
+                rewards[j] += rfs[j].getReward();
+            }
+        }
+
+        boolean[] dones = new boolean[rfs.length];
+        for (int i = 0; i < rewards.length; i++) {
+            dones[i] = rfs[i].isDone();
+        }
+        // TODO return observation in JSON format
+        gamestep += 1;
+        return new Response(
+            ai1.getObservation(0, simulatedGs),
+            rewards,
+            dones,
+            ai1.computeInfo(0, simulatedGs));
     }
 
     public String sendUTT() throws Exception {
