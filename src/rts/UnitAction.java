@@ -4,8 +4,10 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
@@ -528,6 +530,40 @@ public class UnitAction {
         }
 
         return tmp + ")";
+    }
+
+    public static int[] getValidActionArray(List<UnitAction> uas, GameState gs, UnitTypeTable utt) {
+        int[] validAction = new int[6+4+4+4+4+utt.getUnitTypes().size()+gs.pgs.width*gs.pgs.height];
+        for (UnitAction ua:uas) {
+            validAction[ua.type] = 1;
+            switch (ua.type) {
+                case TYPE_NONE: {
+                    break;
+                }
+                case TYPE_MOVE: {
+                    validAction[6+ua.parameter] = 1;
+                    break;
+                }
+                case TYPE_HARVEST: {
+                    validAction[6+4+ua.parameter] = 1;
+                    break;
+                }
+                case TYPE_RETURN: {
+                    validAction[6+4+4+ua.parameter] = 1;
+                    break;
+                }
+                case TYPE_PRODUCE: {
+                    validAction[6+4+4+4+ua.parameter] = 1;
+                    validAction[6+4+4+4+4+ua.unitType.ID] = 1;
+                    break;
+                }
+                case TYPE_ATTACK_LOCATION: {
+                    validAction[6+4+4+4+4+utt.getUnitTypes().size()+ua.y*gs.pgs.width+ua.x] = 1;
+                    break;
+                }
+            }
+        }
+        return validAction;
     }
 
     /**

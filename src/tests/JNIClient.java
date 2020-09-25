@@ -28,6 +28,8 @@ import rts.PhysicalGameState;
 import rts.PlayerAction;
 import rts.Trace;
 import rts.TraceEntry;
+import rts.UnitAction;
+import rts.units.Unit;
 import rts.units.UnitTypeTable;
 
 /**
@@ -234,6 +236,18 @@ public class JNIClient {
             ai1.computeInfo(0, gs));
     }
 
+    public int[][] getUnitActionMasks(int[][] actions) throws Exception {
+        int[][] unitActionMasks = new int[actions.length][6+4+4+4+4];
+        int width = gs.getPhysicalGameState().getWidth();
+        for (int i = 0; i < unitActionMasks.length; i++) {
+            Unit u = gs.getPhysicalGameState().getUnitAt(
+                actions[i][0] % width,
+                actions[i][0] / width);
+            unitActionMasks[i] = UnitAction.getValidActionArray(u.getUnitActions(gs), gs, utt);
+        }
+        return unitActionMasks;
+    }
+
     public Response simulateStep(int[][] action, int frameskip) throws Exception {
         PlayerAction pa1;
         PlayerAction pa2;
@@ -261,7 +275,7 @@ public class JNIClient {
             gameover = simulatedGs.cycle();
             if (gameover) {
                 // ai1.gameOver(simulatedGs.winner());
-                ai2.gameOver(simulatedGs.winner());
+                // ai2.gameOver(simulatedGs.winner());
             }
             try {
                 Thread.yield();
