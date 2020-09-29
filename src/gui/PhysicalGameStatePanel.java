@@ -6,6 +6,7 @@ package gui;
 
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleEvaluationFunction;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -251,6 +252,9 @@ public class PhysicalGameStatePanel extends JPanel {
         int grid = Math.min(gridx,gridy);
         int sizex = grid*pgs.getWidth();
         int sizey = grid*pgs.getHeight();
+        int unitLineThickness = 1;
+        if (grid > 10) unitLineThickness = 2;
+        if (grid > 20) unitLineThickness = 4;
 
         if (!fullObservability && pogs!=null && pogs[0]!=null && pogs[1]!=null) {
             if (pogs[0].getTime() != gs.getTime()) {
@@ -444,12 +448,16 @@ public class PhysicalGameStatePanel extends JPanel {
                 g2d.fillRect(u.getX()*grid+reduction, u.getY()*grid+reduction, grid-reduction*2, grid-reduction*2);
                 g2d.setColor(playerColor);
                 if (panel!=null && panel.toHighLight.contains(u)) g2d.setColor(Color.green);
+                g2d.setStroke(new BasicStroke(unitLineThickness));
                 g2d.drawRect(u.getX()*grid+reduction, u.getY()*grid+reduction, grid-reduction*2, grid-reduction*2);
+                g2d.setStroke(new BasicStroke(1));
             } else {
                 g2d.fillOval(u.getX()*grid+reduction, u.getY()*grid+reduction, grid-reduction*2, grid-reduction*2);
                 g2d.setColor(playerColor);
                 if (panel!=null && panel.toHighLight.contains(u)) g2d.setColor(Color.green);
+                g2d.setStroke(new BasicStroke(unitLineThickness));
                 g2d.drawOval(u.getX()*grid+reduction, u.getY()*grid+reduction, grid-reduction*2, grid-reduction*2);
+                g2d.setStroke(new BasicStroke(1));
             }
 
             if (u.getType().isStockpile) {
