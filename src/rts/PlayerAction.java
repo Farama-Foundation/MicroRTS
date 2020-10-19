@@ -368,6 +368,17 @@ public class PlayerAction {
 
     public static Pair<PlayerAction, InvalidPlayerActionStats> fromActionArrays(int[][] actions, GameState gs, UnitTypeTable utt, int currentPlayer) {
         PlayerAction pa = new PlayerAction();
+        // calculating the resource usage of existing actions
+        ResourceUsage base_ru = new ResourceUsage();
+		for (Unit u : gs.getPhysicalGameState().getUnits()) {
+			UnitActionAssignment uaa = gs.unitActions.get(u);
+			if (uaa != null) {
+				ResourceUsage ru = uaa.action.resourceUsage(u, gs.getPhysicalGameState());
+				base_ru.merge(ru);
+			}
+        }
+        pa.setResourceUsage(base_ru.clone());
+        
         InvalidPlayerActionStats ipas = new InvalidPlayerActionStats();
         for(int[] action:actions) {
             Unit u = gs.pgs.getUnitAt(action[0] % gs.pgs.width, action[0] / gs.pgs.width);
@@ -389,7 +400,11 @@ public class PlayerAction {
                 // 3. The unit is not currently busy (its unit action is null)
                 // int id = (int) u.getID();
                 UnitAction ua = UnitAction.fromActionArray(action, utt, gs);
-                pa.addUnitAction(u, ua);
+                if (ua.resourceUsage(u, gs.pgs).consistentWith(pa.getResourceUsage(), gs)) {
+                    ResourceUsage ru = ua.resourceUsage(u, gs.pgs);
+                    pa.getResourceUsage().merge(ru);                        
+                    pa.addUnitAction(u, ua);
+                }
             }
         }
         return new Pair<>(pa, ipas);
