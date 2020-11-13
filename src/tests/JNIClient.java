@@ -67,6 +67,7 @@ public class JNIClient {
     boolean layerJSON = true;
     int gamestep = 0;
     int ai2Frameskip = 20;
+    public int renderTheme = PhysicalGameStatePanel.COLORSCHEME_BLACK;
 
     public class Response {
         public int[][][] observation;
@@ -80,48 +81,6 @@ public class JNIClient {
             this.done = done;
             this.info = info;
         }
-    }
-
-    public JNIClient(RewardFunctionInterface[] a_rfs, String a_micrortsPath, String a_mapPath) throws Exception{
-        micrortsPath = a_micrortsPath;
-        mapPath = a_mapPath;
-        rfs = a_rfs;
-        utt = new UnitTypeTable();
-        utt.getUnitType("Worker").harvestTime = 10;
-        ai1 = new JNIAI(100, 0, utt);
-        switch (ai2Type) {
-            case "passive":
-                ai2 = new PassiveAI();
-                break;
-            case "random-biased":
-                ai2 = new RandomBiasedAI();
-                break;
-            default:
-                throw new Exception("no ai2 was chosen");
-        }
-        if (micrortsPath.length() != 0) {
-            this.mapPath = Paths.get(micrortsPath, mapPath).toString();
-        }
-        System.out.println(mapPath);
-        System.out.println(rfs);
-    }
-
-    public JNIClient(RewardFunctionInterface[] a_rfs, String a_micrortsPath, String a_mapPath, AI a_ai2) throws Exception{
-        micrortsPath = a_micrortsPath;
-        mapPath = a_mapPath;
-        rfs = a_rfs;
-        utt = new UnitTypeTable();
-        utt.getUnitType("Worker").harvestTime = 10;
-        ai1 = new JNIAI(100, 0, utt);
-        ai2 = a_ai2;
-        if (ai2 == null) {
-            throw new Exception("no ai2 was chosen");
-        }
-        if (micrortsPath.length() != 0) {
-            this.mapPath = Paths.get(micrortsPath, mapPath).toString();
-        }
-        System.out.println(mapPath);
-        System.out.println(rfs);
     }
 
     public JNIClient(RewardFunctionInterface[] a_rfs, String a_micrortsPath, String a_mapPath, AI a_ai2, UnitTypeTable a_utt) throws Exception{
@@ -141,33 +100,11 @@ public class JNIClient {
         System.out.println(rfs);
     }
 
-    public JNIClient(RewardFunctionInterface[] a_rfs, String a_micrortsPath, String a_mapPath, int windowSize) throws Exception{
-        micrortsPath = a_micrortsPath;
-        mapPath = a_mapPath;
-        utt = new UnitTypeTable();
-        utt.getUnitType("Worker").harvestTime = 10;
-        ai1 = new JNILocalAI(100, 0, utt, windowSize);
-        switch (ai2Type) {
-            case "passive":
-                ai2 = new PassiveAI();
-                break;
-            case "random-biased":
-                ai2 = new RandomBiasedAI();
-                break;
-            default:
-                throw new Exception("no ai2 was chosen");
-        }
-        if (micrortsPath.length() != 0) {
-            mapPath = Paths.get(micrortsPath, mapPath).toString();
-        }
-        System.out.println(mapPath);
-    }
-
     public byte[] render(boolean returnPixels) throws Exception {
         // TODO: The blue and red color reversed. Low priority
         long startTime = System.nanoTime();
         if (w==null) {
-            w = PhysicalGameStatePanel.newVisualizer(gs, 640, 640, false, PhysicalGameStatePanel.COLORSCHEME_BLACK);
+            w = PhysicalGameStatePanel.newVisualizer(gs, 640, 640, false, renderTheme);
         }
         w.setStateCloning(gs);
         w.repaint();
