@@ -98,14 +98,14 @@ public class JNIClient {
         }
         System.out.println(mapPath);
         System.out.println(rfs);
+        if (w==null) {
+            w = PhysicalGameStatePanel.newVisualizer(gs, 640, 640, false, renderTheme);
+        }
     }
 
     public byte[] render(boolean returnPixels) throws Exception {
         // TODO: The blue and red color reversed. Low priority
         long startTime = System.nanoTime();
-        if (w==null) {
-            w = PhysicalGameStatePanel.newVisualizer(gs, 640, 640, false, renderTheme);
-        }
         w.setStateCloning(gs);
         w.repaint();
 
