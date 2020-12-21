@@ -92,7 +92,7 @@ public class SocketRewardAI extends SocketAI implements SocketAIInterface{
             }
             if (!render) {
                 if (layerJSON) {
-                    int [][][] observation = gs.getMatrixObservation();
+                    int [][][] observation = gs.getMatrixObservation(player);
                     Map<String, Object> data = new HashMap<String, Object>();
                         data.put("observation", observation);
                         data.put("reward", reward);

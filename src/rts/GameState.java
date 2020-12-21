@@ -772,7 +772,7 @@ public class GameState {
      * Writes a JSON layers representation of this state
      * @param w
      */
-    public int [][][] getMatrixObservation(){
+    public int [][][] getMatrixObservation(int player){
         int[][] hitpointsMatrix = new int[pgs.height][pgs.width];
         int[][] resourcesMatrix = new int[pgs.height][pgs.width];
         int[][] playersMatrix = new int[pgs.height][pgs.width];
@@ -790,7 +790,7 @@ public class GameState {
             UnitActionAssignment uaa = unitActions.get(u);
             hitpointsMatrix[u.getY()][u.getX()] = u.getHitPoints();
             resourcesMatrix[u.getY()][u.getX()] = u.getResources();
-            playersMatrix[u.getY()][u.getX()] = u.getPlayer();
+            playersMatrix[u.getY()][u.getX()] = (u.getPlayer() + player) % 2;
             unitTypesMatrix[u.getY()][u.getX()] = u.getType().ID;
             if (uaa != null) {
                 unitActionMatrix[u.getY()][u.getX()] = uaa.action.type;

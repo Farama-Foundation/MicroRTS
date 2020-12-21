@@ -62,7 +62,7 @@ public class SocketRewardPenaltyOnInvalidActionAI extends SocketRewardAI {
             return null;
         } else if (communication_language == LANGUAGE_JSON) {
             if (layerJSON) {
-                int [][][] observation = gs.getMatrixObservation();
+                int [][][] observation = gs.getMatrixObservation(player);
                 Map<String, Object> data = new HashMap<String, Object>();
                     data.put("observation", observation);
                     data.put("reward", reward);

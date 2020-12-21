@@ -77,7 +77,7 @@ public class JNIAI extends AIWithComputationBudget implements JNIInterface {
     }
 
     public int[][][] getObservation(int player, GameState gs) throws Exception {
-        return gs.getMatrixObservation();
+        return gs.getMatrixObservation(player);
     }
 
     @Override
