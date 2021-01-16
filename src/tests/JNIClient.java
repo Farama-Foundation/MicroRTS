@@ -6,7 +6,8 @@ package tests;
 
 import java.io.Writer;
 import java.nio.file.Paths;
-
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.awt.image.BufferedImage;
 import java.io.StringWriter;
 import java.awt.image.DataBufferByte;
@@ -49,12 +50,6 @@ import rts.units.UnitTypeTable;
  */
 public class JNIClient {
 
-    @Parameter(names = "--ai2-type", description = "The type of AI2")
-    String ai2Type = "passive";
-
-    @Parameter(names = "--seed", description = "The random seed")
-    int seed = 3;
-
     PhysicalGameStateJFrame w;
     public JNIInterface ai1;
     public AI ai2;
@@ -66,9 +61,10 @@ public class JNIClient {
     String micrortsPath;
     boolean gameover = false;
     boolean layerJSON = true;
-    int gamestep = 0;
-    int ai2Frameskip = 20;
-    public int renderTheme = PhysicalGameStatePanel.COLORSCHEME_BLACK;
+    ArrayList<int[]> ai1Actions;
+    double[] ai1SimulatedRewards;
+    public int[][] ai1UnitMasks;
+    public int renderTheme = PhysicalGameStatePanel.COLORSCHEME_WHITE;
 
     public class Response {
         public int[][][] observation;
@@ -97,13 +93,12 @@ public class JNIClient {
         if (micrortsPath.length() != 0) {
             this.mapPath = Paths.get(micrortsPath, mapPath).toString();
         }
+        ai1SimulatedRewards = new double[rfs.length];
         System.out.println(mapPath);
         System.out.println(rfs);
     }
 
     public byte[] render(boolean returnPixels) throws Exception {
-        // TODO: The blue and red color reversed. Low priority
-        long startTime = System.nanoTime();
         if (w==null) {
             w = PhysicalGameStatePanel.newVisualizer(gs, 640, 640, false, renderTheme);
         }
@@ -122,51 +117,61 @@ public class JNIClient {
         return data.getData();
     }
 
-    public Response step(int[][] action, int frameskip, int player) throws Exception {
+
+    public Response step(int[][] action, int player) throws Exception {
+        int numSourceUnits = sumArray(ai1UnitMasks);
+        for (int[] a: action) {
+            ai1Actions.add(a);
+            int x = a[0] % gs.getPhysicalGameState().getWidth(), y = a[0] / gs.getPhysicalGameState().getWidth();
+            ai1UnitMasks[y][x] = 0;
+        }
+        int[][] submittedAction = new int[ai1Actions.size()][action[0].length];
+        for (int i = 0; i < submittedAction.length; i++) {
+            for (int j = 0; j < submittedAction[0].length; j++) {
+                submittedAction[i][j] = ai1Actions.get(i)[j];
+            }
+        }
+        Response r = numSourceUnits > 1 
+            ? simulateStep(submittedAction, player) : gameStep(submittedAction, player);
+        double[] rewardDiff = subtract(r.reward, ai1SimulatedRewards);
+        ai1SimulatedRewards = add(ai1SimulatedRewards, rewardDiff);
+        r.reward = rewardDiff;
+        if (numSourceUnits <= 1) {
+            ai1Actions = new ArrayList<int[]>();
+            ai1UnitMasks = getUnitMasks(player);
+            ai1SimulatedRewards = new double[rfs.length];
+        }
+        return r;
+    }
+
+    public Response gameStep(int[][] action, int player) throws Exception {
         PlayerAction pa1;
         PlayerAction pa2;
         double[] rewards = new double[rfs.length];
-        // frameskip
-        for (int i=0;i<=frameskip;i++) {
-            if (i==0) {
-                pa1 = ai1.getAction(player, gs, action);
-                pa2 = ai2.getAction(1 - player, gs);
-            } else {
-                pa1 = new PlayerAction();
-                pa1.fillWithNones(gs, player, 0);
-                pa2 = new PlayerAction();
-                pa2.fillWithNones(gs, 1 - player, 0);
-            }
-            gs.issueSafe(pa1);
-            gs.issueSafe(pa2);
-            TraceEntry te  = new TraceEntry(gs.getPhysicalGameState().clone(), gs.getTime());
-            te.addPlayerAction(pa1.clone());
-            te.addPlayerAction(pa2.clone());
-    
-            // simulate:
-            gameover = gs.cycle();
-            if (gameover) {
-                // ai1.gameOver(gs.winner());
-                ai2.gameOver(gs.winner());
-            }
-            try {
-                Thread.yield();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            
-            for (int j = 0; j < rewards.length; j++) {
-                rfs[j].computeReward(player, 1 - player, te, gs);
-                rewards[j] += rfs[j].getReward();
-            }
-        }
+        pa1 = ai1.getAction(player, gs, action);
+        pa2 = ai2.getAction(1 - player, gs);
 
+        gs.issueSafe(pa1);
+        gs.issueSafe(pa2);
+        TraceEntry te  = new TraceEntry(gs.getPhysicalGameState().clone(), gs.getTime());
+        te.addPlayerAction(pa1.clone());
+        te.addPlayerAction(pa2.clone());
+
+        // simulate:
+        gameover = gs.cycle();
+        if (gameover) {
+            // ai1.gameOver(gs.winner());
+            ai2.gameOver(gs.winner());
+        }
+        
+        for (int j = 0; j < rewards.length; j++) {
+            rfs[j].computeReward(player, 1 - player, te, gs);
+            rewards[j] += rfs[j].getReward();
+        }
         boolean[] dones = new boolean[rfs.length];
         for (int i = 0; i < rewards.length; i++) {
             dones[i] = rfs[i].isDone();
         }
-        // TODO return observation in JSON format
-        gamestep += 1;
         return new Response(
             ai1.getObservation(player, gs),
             rewards,
@@ -174,14 +179,52 @@ public class JNIClient {
             ai1.computeInfo(player, gs));
     }
 
+    public Response simulateStep(int[][] action, int player) throws Exception {
+        PlayerAction pa1;
+        PlayerAction pa2;
+        GameState simulatedGs = gs.clone();
+        double[] rewards = new double[rfs.length];
+        pa1 = ai1.getAction(player, simulatedGs, action);
+        pa2 = new PlayerAction();
+        pa2.fillWithNones(simulatedGs, 1 - player, 0);
+        simulatedGs.issueSafe(pa1);
+        simulatedGs.issueSafe(pa2);
+        TraceEntry te  = new TraceEntry(simulatedGs.getPhysicalGameState().clone(), simulatedGs.getTime());
+        te.addPlayerAction(pa1.clone());
+        te.addPlayerAction(pa2.clone());
+
+        // simulate:
+        gameover = simulatedGs.cycle();
+        if (gameover) {
+            // ai1.gameOver(simulatedGs.winner());
+            // ai2.gameOver(simulatedGs.winner());
+        }
+        for (int j = 0; j < rewards.length; j++) {
+            rfs[j].computeReward(player, 1 - player, te, simulatedGs);
+            rewards[j] += rfs[j].getReward();
+        }
+        boolean[] dones = new boolean[rfs.length];
+        for (int i = 0; i < rewards.length; i++) {
+            dones[i] = rfs[i].isDone();
+        }
+        return new Response(
+            ai1.getObservation(player, simulatedGs),
+            rewards,
+            dones,
+            ai1.computeInfo(player, simulatedGs));
+    }
+
     public int[][] getUnitActionMasks(int[][] actions) throws Exception {
-        int[][] unitActionMasks = new int[actions.length][6+4+4+4+4];
         int width = gs.getPhysicalGameState().getWidth();
-        for (int i = 0; i < unitActionMasks.length; i++) {
-            Unit u = gs.getPhysicalGameState().getUnitAt(
-                actions[i][0] % width,
-                actions[i][0] / width);
-            unitActionMasks[i] = UnitAction.getValidActionArray(u.getUnitActions(gs), gs, utt);
+        int height = gs.getPhysicalGameState().getHeight();
+        int[][] unitActionMasks = new int[actions.length][6+4+4+4+4+utt.getUnitTypes().size()+width*height];
+        if (sumArray(ai1UnitMasks)!=0){
+            for (int i = 0; i < unitActionMasks.length; i++) {
+                Unit u = gs.getPhysicalGameState().getUnitAt(
+                    actions[i][0] % width,
+                    actions[i][0] / width);
+                unitActionMasks[i] = UnitAction.getValidActionArray(u.getUnitActions(gs), gs, utt);
+            }
         }
         return unitActionMasks;
     }
@@ -199,60 +242,6 @@ public class JNIClient {
         return unitMasks;
     }
 
-    public Response simulateStep(int[][] action, int frameskip, int player) throws Exception {
-        PlayerAction pa1;
-        PlayerAction pa2;
-        GameState simulatedGs = gs.clone();
-        double[] rewards = new double[rfs.length];
-        // frameskip
-        for (int i=0;i<=frameskip;i++) {
-            if (i==0) {
-                pa1 = ai1.getAction(player, simulatedGs, action);
-                pa2 = new PlayerAction();
-                pa2.fillWithNones(simulatedGs, 1 - player, 0);
-            } else {
-                pa1 = new PlayerAction();
-                pa1.fillWithNones(simulatedGs, player, 0);
-                pa2 = new PlayerAction();
-                pa2.fillWithNones(simulatedGs, 1 - player, 0);
-            }
-            simulatedGs.issueSafe(pa1);
-            simulatedGs.issueSafe(pa2);
-            TraceEntry te  = new TraceEntry(simulatedGs.getPhysicalGameState().clone(), simulatedGs.getTime());
-            te.addPlayerAction(pa1.clone());
-            te.addPlayerAction(pa2.clone());
-    
-            // simulate:
-            gameover = simulatedGs.cycle();
-            if (gameover) {
-                // ai1.gameOver(simulatedGs.winner());
-                // ai2.gameOver(simulatedGs.winner());
-            }
-            try {
-                Thread.yield();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            
-            for (int j = 0; j < rewards.length; j++) {
-                rfs[j].computeReward(player, 1 - player, te, simulatedGs);
-                rewards[j] += rfs[j].getReward();
-            }
-        }
-
-        boolean[] dones = new boolean[rfs.length];
-        for (int i = 0; i < rewards.length; i++) {
-            dones[i] = rfs[i].isDone();
-        }
-        // TODO return observation in JSON format
-        gamestep += 1;
-        return new Response(
-            ai1.getObservation(player, simulatedGs),
-            rewards,
-            dones,
-            ai1.computeInfo(player, simulatedGs));
-    }
-
     public String sendUTT() throws Exception {
         Writer w = new StringWriter();
         utt.toJSON(w);
@@ -265,6 +254,9 @@ public class JNIClient {
         ai2.reset();
         pgs = PhysicalGameState.load(mapPath, utt);
         gs = new GameState(pgs, utt);
+        ai1Actions = new ArrayList<int[]>();
+        ai1UnitMasks = getUnitMasks(player);
+        ai1SimulatedRewards = new double[rfs.length];
         return new Response(
             ai1.getObservation(player, gs),
             new double[rfs.length],
@@ -276,5 +268,31 @@ public class JNIClient {
         if (w!=null) {
             w.dispose();    
         }
+    }
+
+    public static int sumArray(int[][] array) {
+        int sum = 0;
+        for (int[] ints : array) {
+            for (int number : ints) {
+                sum += number;
+            }
+        }
+        return sum;
+    }
+
+    public static double[] add(double[] first, double[] second) {
+        double[] result = new double[first.length];
+        for (int i = 0; i < first.length; i++) {
+            result[i] = first[i] + second[i];
+        }
+        return result;
+    }
+
+    public static double[] subtract(double[] first, double[] second) {
+        double[] result = new double[first.length];
+        for (int i = 0; i < first.length; i++) {
+            result[i] = first[i] - second[i];
+        }
+        return result;
     }
 }

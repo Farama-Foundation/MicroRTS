@@ -768,10 +768,6 @@ public class GameState {
         w.write("}");
     }
 
-    /**
-     * Writes a JSON layers representation of this state
-     * @param w
-     */
     public int [][][] getMatrixObservation(int player){
         int[][] hitpointsMatrix = new int[pgs.height][pgs.width];
         int[][] resourcesMatrix = new int[pgs.height][pgs.width];
