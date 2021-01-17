@@ -23,13 +23,10 @@ public class WinLossRewardFunction extends RewardFunctionInterface{
     public void computeReward(int maxplayer, int minplayer, TraceEntry te, GameState afterGs) {
         reward = 0.0;
         done = false;
-        if (afterGs.winner()==maxplayer) {
-            reward = 1.0;
+        if (afterGs.gameover()) {
             done = true;
+            reward = afterGs.winner()==maxplayer ? 1.0 : -1.0;
         }
-        else if (afterGs.winner()==minplayer) {
-            reward = -1.0;
-            done = true;
-        }
+
     }
 }
