@@ -56,14 +56,18 @@ import tests.JNIClient.Response;
  */
 public class JNIVecClient {
     public JNIClient[] clients;
+    public int maxSteps;
+    public int[] envSteps; 
     ExecutorService pool;
 
-    public JNIVecClient(int a_num_envs, RewardFunctionInterface[] a_rfs, String a_micrortsPath, String a_mapPath,
+    public JNIVecClient(int a_num_envs, int a_max_steps, RewardFunctionInterface[] a_rfs, String a_micrortsPath, String a_mapPath,
             AI a_ai2, UnitTypeTable a_utt) throws Exception {
+        maxSteps = a_max_steps;
         clients = new JNIClient[a_num_envs];
         for (int i = 0; i < a_num_envs; i++) {
             clients[i] = new JNIClient(a_rfs, a_micrortsPath, a_mapPath, a_ai2, a_utt);
         }
+        envSteps = new int[a_num_envs];
         pool = Executors.newFixedThreadPool(64);
     }
 
@@ -103,10 +107,12 @@ public class JNIVecClient {
     public Responses step(int[][] action, int[] players) throws Exception {
         JNIClient.Response[] rs = new JNIClient.Response[players.length];
         for (int i = 0; i < players.length; i++) {
+            envSteps[i] += 1;
             rs[i] = clients[i].step(new int[][] { action[i] }, players[i]);
-            if (rs[i].done[0]) {
+            if (rs[i].done[0] || envSteps[i] >= maxSteps) {
                 JNIClient.Response r = clients[i].reset(players[i]);
                 rs[i].observation = r.observation;
+                envSteps[i] = 0;
             }
         }
         int s1 = players.length, s2 = rs[0].observation.length, s3 = rs[0].observation[0].length,
