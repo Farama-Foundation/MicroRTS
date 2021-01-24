@@ -61,11 +61,11 @@ public class JNIVecClient {
     ExecutorService pool;
 
     public JNIVecClient(int a_num_envs, int a_max_steps, RewardFunctionInterface[] a_rfs, String a_micrortsPath, String a_mapPath,
-            AI a_ai2, UnitTypeTable a_utt) throws Exception {
+            AI[] a_ai2s, UnitTypeTable a_utt) throws Exception {
         maxSteps = a_max_steps;
         clients = new JNIClient[a_num_envs];
         for (int i = 0; i < a_num_envs; i++) {
-            clients[i] = new JNIClient(a_rfs, a_micrortsPath, a_mapPath, a_ai2, a_utt);
+            clients[i] = new JNIClient(a_rfs, a_micrortsPath, a_mapPath, a_ai2s[i], a_utt);
         }
         envSteps = new int[a_num_envs];
         pool = Executors.newFixedThreadPool(64);
@@ -112,6 +112,7 @@ public class JNIVecClient {
             if (rs[i].done[0] || envSteps[i] >= maxSteps) {
                 JNIClient.Response r = clients[i].reset(players[i]);
                 rs[i].observation = r.observation;
+                rs[i].done[0] = true;
                 envSteps[i] = 0;
             }
         }
