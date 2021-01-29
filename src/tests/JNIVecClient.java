@@ -58,11 +58,13 @@ public class JNIVecClient {
     public JNIClient[] clients;
     public int maxSteps;
     public int[] envSteps; 
-    ExecutorService pool;
+    public ExecutorService pool;
+    public UnitTypeTable utt;
 
     public JNIVecClient(int a_num_envs, int a_max_steps, RewardFunctionInterface[] a_rfs, String a_micrortsPath, String a_mapPath,
             AI[] a_ai2s, UnitTypeTable a_utt) throws Exception {
         maxSteps = a_max_steps;
+        utt = a_utt;
         clients = new JNIClient[a_num_envs];
         for (int i = 0; i < a_num_envs; i++) {
             clients[i] = new JNIClient(a_rfs, a_micrortsPath, a_mapPath, a_ai2s[i], a_utt);
@@ -109,6 +111,32 @@ public class JNIVecClient {
         for (int i = 0; i < players.length; i++) {
             envSteps[i] += 1;
             rs[i] = clients[i].step(new int[][] { action[i] }, players[i]);
+            if (rs[i].done[0] || envSteps[i] >= maxSteps) {
+                JNIClient.Response r = clients[i].reset(players[i]);
+                rs[i].observation = r.observation;
+                rs[i].done[0] = true;
+                envSteps[i] = 0;
+            }
+        }
+        int s1 = players.length, s2 = rs[0].observation.length, s3 = rs[0].observation[0].length,
+                s4 = rs[0].observation[0][0].length;
+        int[][][][] observation = new int[s1][s2][s3][s4];
+        double[][] reward = new double[s1][rs[0].reward.length];
+        boolean[][] done = new boolean[s1][rs[0].done.length];
+
+        for (int i = 0; i < rs.length; i++) {
+            observation[i] = rs[i].observation;
+            reward[i] = rs[i].reward;
+            done[i] = rs[i].done;
+        }
+        return new Responses(observation, reward, done);
+    }
+
+    public Responses gameStep(int[][][] action, int[] players) throws Exception {
+        JNIClient.Response[] rs = new JNIClient.Response[players.length];
+        for (int i = 0; i < players.length; i++) {
+            envSteps[i] += 1;
+            rs[i] = clients[i].gameStep(action[i], players[i]);
             if (rs[i].done[0] || envSteps[i] >= maxSteps) {
                 JNIClient.Response r = clients[i].reset(players[i]);
                 rs[i].observation = r.observation;
@@ -195,5 +223,13 @@ public class JNIVecClient {
             unitLocationMasks[i] = clients[i].getUnitActionMasks(new int[][]{{units[i]}})[0];
         }
         return unitLocationMasks;
+    }
+
+    public int[][][][] getMasks(int player) throws Exception {
+        int[][][][] masks = new int[clients.length][][][];
+        for (int i = 0; i < masks.length; i++) {
+            masks[i] = clients[i].getMasks(player);
+        }
+        return masks;
     }
 }

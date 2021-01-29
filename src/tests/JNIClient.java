@@ -215,14 +215,12 @@ public class JNIClient {
     }
 
     public int[][] getUnitActionMasks(int[][] actions) throws Exception {
-        int width = gs.getPhysicalGameState().getWidth();
-        int height = gs.getPhysicalGameState().getHeight();
-        int[][] unitActionMasks = new int[actions.length][6+4+4+4+4+utt.getUnitTypes().size()+width*height];
+        int[][] unitActionMasks = new int[actions.length][6+4+4+4+4+utt.getUnitTypes().size()+pgs.getWidth()*pgs.getHeight()];
         if (sumArray(ai1UnitMasks)!=0){
             for (int i = 0; i < unitActionMasks.length; i++) {
                 Unit u = gs.getPhysicalGameState().getUnitAt(
-                    actions[i][0] % width,
-                    actions[i][0] / width);
+                    actions[i][0] % pgs.getWidth(),
+                    actions[i][0] / pgs.getWidth());
                 unitActionMasks[i] = UnitAction.getValidActionArray(u.getUnitActions(gs), gs, utt);
             }
         }
@@ -230,7 +228,6 @@ public class JNIClient {
     }
 
     public int[][] getUnitMasks(int player) throws Exception {
-        PhysicalGameState pgs = gs.getPhysicalGameState();
         int[][] unitMasks = new int[pgs.getHeight()][pgs.getWidth()];
         for (int i = 0; i < pgs.getUnits().size(); i++) {
             Unit u = pgs.getUnits().get(i);
@@ -240,6 +237,22 @@ public class JNIClient {
             }
         }
         return unitMasks;
+    }
+
+    public int[][][] getMasks(int player) throws Exception {
+        int[][][] masks = new int[pgs.getHeight()][pgs.getWidth()][1+6+4+4+4+4+utt.getUnitTypes().size()+pgs.getWidth()*pgs.getHeight()];
+        for (int i = 0; i < pgs.getUnits().size(); i++) {
+            Unit u = pgs.getUnits().get(i);
+            UnitActionAssignment uaa = gs.getUnitActions().get(u);
+            if (u.getPlayer() == player && uaa == null) {
+                masks[u.getY()][u.getX()][0] = 1;
+                int[] unitActionMask = UnitAction.getValidActionArray(u.getUnitActions(gs), gs, utt);
+                for (int j = 1; j < masks[u.getY()][u.getX()].length; j++) {
+                    masks[u.getY()][u.getX()][j] = unitActionMask[j-1];
+                }
+            }
+        }
+        return masks;
     }
 
     public String sendUTT() throws Exception {
