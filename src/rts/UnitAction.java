@@ -566,6 +566,39 @@ public class UnitAction {
         return validAction;
     }
 
+    public static void getValidActionArray(List<UnitAction> uas, GameState gs, UnitTypeTable utt, int[] mask) {
+        // int[] validAction = new int[6+4+4+4+4+utt.getUnitTypes().size()+gs.pgs.width*gs.pgs.height];
+        for (UnitAction ua:uas) {
+            mask[1+ua.type] = 1;
+            switch (ua.type) {
+                case TYPE_NONE: {
+                    break;
+                }
+                case TYPE_MOVE: {
+                    mask[1+6+ua.parameter] = 1;
+                    break;
+                }
+                case TYPE_HARVEST: {
+                    mask[1+6+4+ua.parameter] = 1;
+                    break;
+                }
+                case TYPE_RETURN: {
+                    mask[1+6+4+4+ua.parameter] = 1;
+                    break;
+                }
+                case TYPE_PRODUCE: {
+                    mask[1+6+4+4+4+ua.parameter] = 1;
+                    mask[1+6+4+4+4+4+ua.unitType.ID] = 1;
+                    break;
+                }
+                case TYPE_ATTACK_LOCATION: {
+                    mask[1+6+4+4+4+4+utt.getUnitTypes().size()+ua.y*gs.pgs.width+ua.x] = 1;
+                    break;
+                }
+            }
+        }
+    }
+
     /**
      * Returns the name of this action
      *
