@@ -63,6 +63,7 @@ public class JNIGridnetClient {
     boolean gameover = false;
     boolean layerJSON = true;
     public int renderTheme = PhysicalGameStatePanel.COLORSCHEME_WHITE;
+    public int maxAttackRadius;
 
     // storage
     int[][][] masks;
@@ -96,6 +97,7 @@ public class JNIGridnetClient {
         mapPath = a_mapPath;
         rfs = a_rfs;
         utt = a_utt;
+        maxAttackRadius = utt.getMaxAttackRange() * 2 + 1;
         ai1 = new JNIAI(100, 0, utt);
         ai2 = a_ai2;
         if (ai2 == null) {
@@ -109,7 +111,7 @@ public class JNIGridnetClient {
         pgs = PhysicalGameState.load(mapPath, utt);
 
         // initialize storage
-        masks = new int[pgs.getHeight()][pgs.getWidth()][1+6+4+4+4+4+utt.getUnitTypes().size()+pgs.getWidth()*pgs.getHeight()];
+        masks = new int[pgs.getHeight()][pgs.getWidth()][1+6+4+4+4+4+utt.getUnitTypes().size()+maxAttackRadius*maxAttackRadius];
         rewards = new double[rfs.length];
         dones = new boolean[rfs.length];
         response = new Response(null, null, null, null);
@@ -181,7 +183,7 @@ public class JNIGridnetClient {
             UnitActionAssignment uaa = gs.getUnitActions().get(u);
             if (u.getPlayer() == player && uaa == null) {
                 masks[u.getY()][u.getX()][0] = 1;
-                UnitAction.getValidActionArray(u.getUnitActions(gs), gs, utt, masks[u.getY()][u.getX()]);
+                UnitAction.getValidActionArray(u, gs, utt, masks[u.getY()][u.getX()], maxAttackRadius);
             }
         }
         return masks;

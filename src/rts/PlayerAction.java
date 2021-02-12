@@ -366,7 +366,7 @@ public class PlayerAction {
         return pa;
     }
 
-    public static Pair<PlayerAction, InvalidPlayerActionStats> fromActionArrays(int[][] actions, GameState gs, UnitTypeTable utt, int currentPlayer) {
+    public static Pair<PlayerAction, InvalidPlayerActionStats> fromActionArrays(int[][] actions, GameState gs, UnitTypeTable utt, int currentPlayer, int maxAttackRadius) {
         PlayerAction pa = new PlayerAction();
         // calculating the resource usage of existing actions
         ResourceUsage base_ru = new ResourceUsage();
@@ -390,11 +390,12 @@ public class PlayerAction {
                     ipas.numInvalidActionOwnership += 1;
                 }
             }
-            UnitAction ua = UnitAction.fromActionArray(action, utt, gs);
-            if (uaa != null && ua.type != UnitAction.TYPE_NONE) {
-                ipas.numInvalidActionBusyUnit += 1;
-            }
+            
+            // if (uaa != null && ua.type != UnitAction.TYPE_NONE) {
+            //     ipas.numInvalidActionBusyUnit += 1;
+            // }
             if (u != null && u.getPlayer() == currentPlayer && uaa == null) {
+                UnitAction ua = UnitAction.fromActionArray(action, utt, gs, u, maxAttackRadius);
                 // execute the action if the following happens
                 // 1. The selected unit is *not* null.
                 // 2. The unit selected is owned by the current player

@@ -49,10 +49,12 @@ public class JNIAI extends AIWithComputationBudget implements JNIInterface {
     boolean firstRewardCalculation = true;
     SimpleEvaluationFunction ef = new SimpleEvaluationFunction();
     InvalidPlayerActionStats ipas = null;
+    int maxAttackRadius;
 
     public JNIAI(int timeBudget, int iterationsBudget, UnitTypeTable a_utt) {
         super(timeBudget, iterationsBudget);
         utt = a_utt;
+        maxAttackRadius = utt.getMaxAttackRange() * 2 + 1;
     }
 
     public double computeReward(int maxplayer, int minplayer, GameState gs) throws Exception {
@@ -70,7 +72,7 @@ public class JNIAI extends AIWithComputationBudget implements JNIInterface {
     }
 
     public PlayerAction getAction(int player, GameState gs, int[][] action) throws Exception {
-        Pair<PlayerAction, InvalidPlayerActionStats> p = PlayerAction.fromActionArrays(action, gs, utt, player);
+        Pair<PlayerAction, InvalidPlayerActionStats> p = PlayerAction.fromActionArrays(action, gs, utt, player, maxAttackRadius);
         p.m_a.fillWithNones(gs, player, 1);
         ipas = p.m_b;
         return p.m_a;

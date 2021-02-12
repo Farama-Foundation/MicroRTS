@@ -566,8 +566,9 @@ public class UnitAction {
         return validAction;
     }
 
-    public static void getValidActionArray(List<UnitAction> uas, GameState gs, UnitTypeTable utt, int[] mask) {
-        // int[] validAction = new int[6+4+4+4+4+utt.getUnitTypes().size()+gs.pgs.width*gs.pgs.height];
+    public static void getValidActionArray(Unit u, GameState gs, UnitTypeTable utt, int[] mask, int maxAttackRange) {
+        List<UnitAction> uas = u.getUnitActions(gs);
+        int centerCoordinate = maxAttackRange / 2;
         for (UnitAction ua:uas) {
             mask[1+ua.type] = 1;
             switch (ua.type) {
@@ -592,7 +593,9 @@ public class UnitAction {
                     break;
                 }
                 case TYPE_ATTACK_LOCATION: {
-                    mask[1+6+4+4+4+4+utt.getUnitTypes().size()+ua.y*gs.pgs.width+ua.x] = 1;
+                    int relative_x = ua.x - u.getX();
+                    int relative_y = ua.y - u.getY();
+                    mask[1+6+4+4+4+4+utt.getUnitTypes().size()+(centerCoordinate+relative_y)*maxAttackRange+(centerCoordinate+relative_x)] = 1;
                     break;
                 }
             }
@@ -765,9 +768,10 @@ public class UnitAction {
      * @param utt
      * @return
      */
-    public static UnitAction fromActionArray(int[] action, UnitTypeTable utt, GameState gs) {
+    public static UnitAction fromActionArray(int[] action, UnitTypeTable utt, GameState gs, Unit u, int maxAttackRange) {
         int actionType = action[1];
         UnitAction ua = new UnitAction(actionType);
+        int centerCoordinate = maxAttackRange / 2;
         switch (actionType) {
             case TYPE_NONE: {
                 break;
@@ -789,8 +793,10 @@ public class UnitAction {
                 ua.unitType = utt.getUnitType(action[6]);
             }
             case TYPE_ATTACK_LOCATION: {
-                ua.x = action[7] % gs.pgs.width;
-                ua.y = action[7] / gs.pgs.width;
+                int relative_x = (action[7] % maxAttackRange - centerCoordinate);
+                int relative_y = (action[7] / maxAttackRange - centerCoordinate);
+                ua.x = u.getX() + relative_x;
+                ua.y = u.getY() + relative_y;
                 break;
             }
         }
