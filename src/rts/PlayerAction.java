@@ -390,7 +390,8 @@ public class PlayerAction {
                     ipas.numInvalidActionOwnership += 1;
                 }
             }
-            if (uaa != null && UnitAction.fromActionArray(action, utt, gs).type != UnitAction.TYPE_NONE) {
+            UnitAction ua = UnitAction.fromActionArray(action, utt, gs);
+            if (uaa != null && ua.type != UnitAction.TYPE_NONE) {
                 ipas.numInvalidActionBusyUnit += 1;
             }
             if (u != null && u.getPlayer() == currentPlayer && uaa == null) {
@@ -399,7 +400,6 @@ public class PlayerAction {
                 // 2. The unit selected is owned by the current player
                 // 3. The unit is not currently busy (its unit action is null)
                 // int id = (int) u.getID();
-                UnitAction ua = UnitAction.fromActionArray(action, utt, gs);
                 if (ua.resourceUsage(u, gs.pgs).consistentWith(pa.getResourceUsage(), gs)) {
                     ResourceUsage ru = ua.resourceUsage(u, gs.pgs);
                     pa.getResourceUsage().merge(ru);                        
