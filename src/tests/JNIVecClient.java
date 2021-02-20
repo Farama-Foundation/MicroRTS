@@ -70,7 +70,6 @@ public class JNIVecClient {
             clients[i] = new JNIClient(a_rfs, a_micrortsPath, a_mapPath, a_ai2s[i], a_utt);
         }
         envSteps = new int[a_num_envs];
-        pool = Executors.newFixedThreadPool(64);
     }
 
     public class Responses {
@@ -158,57 +157,6 @@ public class JNIVecClient {
         return new Responses(observation, reward, done);
     }
 
-    class StepWorker implements Runnable {
-        public Response[] rs;
-        public JNIClient[] clients;
-        public int i;
-        public int[] action;
-        public int player;
-        
-
-        public StepWorker(JNIClient.Response[] rs, JNIClient[] clients, int i, int[] action, int player) {
-            this.rs = rs;
-            this.clients = clients;
-            this.i = i;
-            this.action = action;
-            this.player = player;
-        }
-        public void run(){ 
-            try {
-                rs[i] = clients[i].step(new int[][]{action}, player);
-                if (rs[i].done[0]) {
-                    JNIClient.Response r = clients[i].reset(player);
-                    rs[i].observation = r.observation;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                //TODO: handle exception
-            }
-        }   
-    }
-
-    public Responses stepAsync(int[][] action, int[] players) throws Exception {
-        JNIClient.Response[] rs = new JNIClient.Response[players.length];
-
-        List<Callable<Object>> calls = new ArrayList<Callable<Object>>();
-        for (int i = 0; i < players.length; i++) {
-            // pool.execute(new StepWorker(rs, clients, i, action[i], players[i]));
-            calls.add(Executors.callable(new StepWorker(rs, clients, i, action[i], players[i])));
-        }
-        List<Future<Object>> futures = pool.invokeAll(calls);
-        int s1 = players.length, s2 = rs[0].observation.length, s3 = rs[0].observation[0].length, s4 = rs[0].observation[0][0].length;
-        int[][][][] observation = new int[s1][s2][s3][s4];
-        double[][] reward =  new double[s1][rs[0].reward.length];
-        boolean[][] done =  new boolean[s1][rs[0].done.length];
-        
-        for (int i = 0; i < rs.length; i++) {
-            observation[i] = rs[i].observation;
-            reward[i] = rs[i].reward;
-            done[i] = rs[i].done;
-        }
-        return new Responses(observation, reward, done);
-    }
-
     public int[][][] getUnitLocationMasks() {
         int[][][] unitLocationMasks = new int[clients.length][clients[0].ai1UnitMasks.length][clients[0].ai1UnitMasks[0].length];
         for (int i = 0; i < clients.length; i++) {
@@ -225,11 +173,4 @@ public class JNIVecClient {
         return unitLocationMasks;
     }
 
-    public int[][][][] getMasks(int player) throws Exception {
-        int[][][][] masks = new int[clients.length][][][];
-        for (int i = 0; i < masks.length; i++) {
-            masks[i] = clients[i].getMasks(player);
-        }
-        return masks;
-    }
 }

@@ -180,7 +180,7 @@ public class JNIGridnetClient {
             UnitActionAssignment uaa = gs.getUnitActions().get(u);
             if (u.getPlayer() == player && uaa == null) {
                 masks[u.getY()][u.getX()][0] = 1;
-                UnitAction.getValidActionArray(u, gs, utt, masks[u.getY()][u.getX()], maxAttackRadius);
+                UnitAction.getValidActionArray(u, gs, utt, masks[u.getY()][u.getX()], maxAttackRadius, 1);
             }
         }
         return masks;

@@ -28,6 +28,9 @@ public class GameState {
     protected HashMap<Unit,UnitActionAssignment> unitActions = new LinkedHashMap<>();
     protected UnitTypeTable utt = null;
 
+    protected int [][][][] matrixObservation;
+    public static final int numFeatureMaps = 5;
+
     /**
      * Initializes the GameState with a PhysicalGameState and a UnitTypeTable
      * @param a_pgs
@@ -769,47 +772,48 @@ public class GameState {
     }
 
     public int [][][] getMatrixObservation(int player){
-        int[][] hitpointsMatrix = new int[pgs.height][pgs.width];
-        int[][] resourcesMatrix = new int[pgs.height][pgs.width];
-        int[][] playersMatrix = new int[pgs.height][pgs.width];
-        int[][] unitTypesMatrix = new int[pgs.height][pgs.width];
-        int[][] unitActionMatrix = new int[pgs.height][pgs.width];
-        
-        // temp default value for empty spaces
-        for (int i=0; i<unitTypesMatrix.length; i++) {
-            Arrays.fill(unitTypesMatrix[i], -1);
-            Arrays.fill(playersMatrix[i], -1);
+        if (matrixObservation == null) {
+            matrixObservation = new int[2][numFeatureMaps][pgs.height][pgs.width]; 
+        }
+        // hitpointsMatrix is matrixObservation[player][0]
+        // resourcesMatrix is matrixObservation[player][1]
+        // playersMatrix is matrixObservation[player][2]
+        // unitTypesMatrix is matrixObservation[player][3]
+        // unitActionMatrix is matrixObservation[player][4]
+
+
+        for (int i=0; i<matrixObservation[player][0].length; i++) {
+            Arrays.fill(matrixObservation[player][0][i], 0);
+            Arrays.fill(matrixObservation[player][1][i], 0);
+            Arrays.fill(matrixObservation[player][4][i], 0);
+            // temp default value for empty spaces
+            Arrays.fill(matrixObservation[player][2][i], -1);
+            Arrays.fill(matrixObservation[player][3][i], -1);
         }
 
         for (int i = 0; i < pgs.units.size(); i++) {
             Unit u = pgs.units.get(i);
             UnitActionAssignment uaa = unitActions.get(u);
-            hitpointsMatrix[u.getY()][u.getX()] = u.getHitPoints();
-            resourcesMatrix[u.getY()][u.getX()] = u.getResources();
-            playersMatrix[u.getY()][u.getX()] = (u.getPlayer() + player) % 2;
-            unitTypesMatrix[u.getY()][u.getX()] = u.getType().ID;
+            matrixObservation[player][0][u.getY()][u.getX()] = u.getHitPoints();
+            matrixObservation[player][1][u.getY()][u.getX()] = u.getResources();
+            matrixObservation[player][2][u.getY()][u.getX()] = (u.getPlayer() + player) % 2;
+            matrixObservation[player][3][u.getY()][u.getX()] = u.getType().ID;
             if (uaa != null) {
-                unitActionMatrix[u.getY()][u.getX()] = uaa.action.type;
+                matrixObservation[player][4][u.getY()][u.getX()] = uaa.action.type;
             } else {
-                unitActionMatrix[u.getY()][u.getX()] = UnitAction.TYPE_NONE;
+                matrixObservation[player][4][u.getY()][u.getX()] = UnitAction.TYPE_NONE;
             }
         }
 
         // normalize by getting rid of -1
-        for(int i=0; i<playersMatrix.length; i++) {
-            for(int j=0; j<playersMatrix[i].length; j++) {
-                unitTypesMatrix[i][j] += 1;
-                playersMatrix[i][j] += 1;
+        for(int i=0; i<matrixObservation[player][2].length; i++) {
+            for(int j=0; j<matrixObservation[player][2][i].length; j++) {
+                matrixObservation[player][3][i][j] += 1;
+                matrixObservation[player][2][i][j] += 1;
             }
         }
 
-        return new int [][][]{
-            hitpointsMatrix,
-            resourcesMatrix,
-            playersMatrix,
-            unitTypesMatrix,
-            unitActionMatrix
-        };
+        return matrixObservation[player];
     }
 
     /**

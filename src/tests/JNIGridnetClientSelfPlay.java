@@ -162,7 +162,7 @@ public class JNIGridnetClientSelfPlay {
             UnitActionAssignment uaa = gs.getUnitActions().get(u);
             if (u.getPlayer() == player && uaa == null) {
                 masks[player][u.getY()][u.getX()][0] = 1;
-                UnitAction.getValidActionArray(u, gs, utt, masks[player][u.getY()][u.getX()], maxAttackRadius);
+                UnitAction.getValidActionArray(u, gs, utt, masks[player][u.getY()][u.getX()], maxAttackRadius, 1);
             }
         }
         return masks[player];
