@@ -218,4 +218,13 @@ public class JNIGridnetVecClient {
         }
         return masks;
     }
+
+    public void close() throws Exception {
+        for (JNIGridnetClient client : clients) {
+            client.close();
+        }
+        for (JNIGridnetClientSelfPlay client : selfPlayClients) {
+            client.close();
+        }
+    }
 }

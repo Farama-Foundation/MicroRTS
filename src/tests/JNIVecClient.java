@@ -173,4 +173,10 @@ public class JNIVecClient {
         return unitLocationMasks;
     }
 
+    public void close() throws Exception {
+        for (JNIClient client : clients) {
+            client.close();
+        }
+    }
+
 }
