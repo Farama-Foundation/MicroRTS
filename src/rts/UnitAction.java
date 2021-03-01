@@ -446,10 +446,13 @@ public class UnitAction {
                         targetx--;
                         break;
                 }
-                newUnit = new Unit(u.getPlayer(), unitType, targetx, targety, 0);
-                pgs.addUnit(newUnit);
+                newUnit = new Unit(u.getPlayer(), unitType, targetx, targety, 0);                
                 Player p = pgs.getPlayer(u.getPlayer());
-                p.setResources(p.getResources() - newUnit.getCost());
+                if((p.getResources() - newUnit.getCost())>=0){
+                    pgs.addUnit(newUnit);
+                    p.setResources(p.getResources() - newUnit.getCost());
+                }
+                
                 if (p.getResources() < 0) {
                     System.err.print("Illegal action executed! resources of player " + p.ID + " are now " + p.getResources() + "\n");
                     System.err.print(s);
