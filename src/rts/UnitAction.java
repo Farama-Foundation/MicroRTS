@@ -429,7 +429,6 @@ public class UnitAction {
 
             case TYPE_PRODUCE: //produces a unit in the target direction
             {
-                Unit newUnit = null;
                 int targetx = u.getX();
                 int targety = u.getY();
                 switch (parameter) {
@@ -446,15 +445,14 @@ public class UnitAction {
                         targetx--;
                         break;
                 }
-                newUnit = new Unit(u.getPlayer(), unitType, targetx, targety, 0);                
+                Unit newUnit = new Unit(u.getPlayer(), unitType, targetx, targety, 0);                
                 Player p = pgs.getPlayer(u.getPlayer());
                 if((p.getResources() - newUnit.getCost())>=0){
                     pgs.addUnit(newUnit);
                     p.setResources(p.getResources() - newUnit.getCost());
-                }
-                
-                if (p.getResources() < 0) {
-                    System.err.print("Illegal action executed! resources of player " + p.ID + " are now " + p.getResources() + "\n");
+                } else {
+                    System.err.print("Illegal action attempted ("+this+")! "+
+                                     "Resources of player " + p.ID + " would have been negative!\n");
                     System.err.print(s);
                 }
             }
@@ -462,35 +460,37 @@ public class UnitAction {
         }
     }
 
+
+    @Override
     public String toString() {
         String tmp = actionName[type] + "(";
 
-        if (type == TYPE_ATTACK_LOCATION) {
-            tmp += x + "," + y;
-        } else if (type == TYPE_NONE) {
-            tmp += parameter;
-        } else {
-            if (parameter != DIRECTION_NONE) {
-                if (parameter == DIRECTION_UP) {
-                    tmp += "up";
-                }
-                if (parameter == DIRECTION_RIGHT) {
-                    tmp += "right";
-                }
-                if (parameter == DIRECTION_DOWN) {
-                    tmp += "down";
-                }
-                if (parameter == DIRECTION_LEFT) {
-                    tmp += "left";
-                }
-            }
-            if (parameter != DIRECTION_NONE && unitType != null) {
-                tmp += ",";
-            }
-
-            if (unitType != null) {
-                tmp += unitType.name;
-            }
+        switch (type) {
+            case TYPE_ATTACK_LOCATION:
+                tmp += x + "," + y;
+                break;
+            case TYPE_NONE:
+                tmp += parameter;
+                break;
+            default:
+                if (parameter != DIRECTION_NONE) {
+                    if (parameter == DIRECTION_UP) {
+                        tmp += "up";
+                    }
+                    if (parameter == DIRECTION_RIGHT) {
+                        tmp += "right";
+                    }
+                    if (parameter == DIRECTION_DOWN) {
+                        tmp += "down";
+                    }
+                    if (parameter == DIRECTION_LEFT) {
+                        tmp += "left";
+                    }
+                }   if (parameter != DIRECTION_NONE && unitType != null) {
+                    tmp += ",";
+                }   if (unitType != null) {
+                    tmp += unitType.name;
+                }   break;
         }
 
         return tmp + ")";
