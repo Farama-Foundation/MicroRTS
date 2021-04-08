@@ -79,12 +79,14 @@ public class S5DSL extends AbstractNodeDSLTree implements iS5ConstraintDSL{
     
     @Override
     public iDSL getRightChild() {
-        return this.boolCommand;
+        //return this.boolCommand;
+        return null;
     }
 
     @Override
     public iDSL getLeftChild() {
-        return null;
+        //return null;
+        return this.boolCommand;
     }
 
     @Override
@@ -94,12 +96,14 @@ public class S5DSL extends AbstractNodeDSLTree implements iS5ConstraintDSL{
 
     @Override
     public void removeRightNode() {
-        this.boolCommand = null;
+        //this.boolCommand = null;
+        throw new UnsupportedOperationException("Not supported remotion in BooleanDSL."); 
     }
 
     @Override
     public void removeLeftNode() {
-        throw new UnsupportedOperationException("Not supported remotion in BooleanDSL."); 
+        //throw new UnsupportedOperationException("Not supported remotion in BooleanDSL."); 
+        this.boolCommand = null;
     }    
     
     public S5DSL clone() {
@@ -133,6 +137,16 @@ public class S5DSL extends AbstractNodeDSLTree implements iS5ConstraintDSL{
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String formmated_translation() {
+        if(this.NotFactor == NotFactor.NONE){
+            return boolCommand.formmated_translation().trim();
+        }else if (this.NotFactor == NotFactor.NOT) {
+            return "not "+boolCommand.translate().trim();
+        }
+        return boolCommand.formmated_translation().trim();
     }
 
     

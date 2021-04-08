@@ -101,5 +101,10 @@ public class BooleanDSL extends AbstractNodeDSLTree implements iBooleanDSL{
     public void removeLeftNode() {
         throw new UnsupportedOperationException("Not supported remotion in BooleanDSL."); 
     }
+
+    @Override
+    public String formmated_translation() {
+        return booleanCommand;
+    }
     
 }

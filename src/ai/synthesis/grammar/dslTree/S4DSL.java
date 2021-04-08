@@ -14,8 +14,8 @@ import java.util.Objects;
  * @author rubens
  */
 public class S4DSL extends AbstractNodeDSLTree implements iDSL{
-    private iS4ConstraintDSL firstDSL;
-    private S4DSL nextCommand;
+    private iS4ConstraintDSL firstDSL; //left
+    private S4DSL nextCommand; //right
 
     public S4DSL(iS4ConstraintDSL firstDSL) {
         this.firstDSL = firstDSL;
@@ -108,15 +108,17 @@ public class S4DSL extends AbstractNodeDSLTree implements iDSL{
         }
         return true;
     }
-
+    
     @Override
     public iDSL getRightChild() {
-        return this.firstDSL;
+        //return this.firstDSL;
+        return this.nextCommand;
     }
 
     @Override
     public iDSL getLeftChild() {
-        return this.nextCommand;
+        //return this.nextCommand;
+        return this.firstDSL;
     }
     
     @Override
@@ -126,12 +128,22 @@ public class S4DSL extends AbstractNodeDSLTree implements iDSL{
 
     @Override
     public void removeRightNode() {
-        this.firstDSL = null;
+        //this.firstDSL = null;
+        this.nextCommand = null;
     }
 
     @Override
     public void removeLeftNode() {
-        this.nextCommand = null;
+        //this.nextCommand = null;
+        this.firstDSL = null;
+    }
+
+    @Override
+    public String formmated_translation() {
+        if(nextCommand == null){
+            return firstDSL.formmated_translation();
+        }
+        return (firstDSL.formmated_translation()+"\n"+nextCommand.formmated_translation()).trim();
     }
     
 }

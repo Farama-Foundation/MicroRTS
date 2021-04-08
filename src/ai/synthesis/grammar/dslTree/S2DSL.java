@@ -148,12 +148,14 @@ public class S2DSL extends AbstractNodeDSLTree implements iDSL, iS4ConstraintDSL
 
     @Override
     public iDSL getRightChild() {
-        return this.thenCommand;
+        //return this.thenCommand;
+        return this.elseCommand;
     }
 
     @Override
     public iDSL getLeftChild() {
-        return this.elseCommand;
+        //return this.elseCommand;
+        return this.thenCommand;
     }
     
     @Override
@@ -163,12 +165,25 @@ public class S2DSL extends AbstractNodeDSLTree implements iDSL, iS4ConstraintDSL
 
     @Override
     public void removeRightNode() {
-        this.thenCommand = null;        
+        //this.thenCommand = null;        
+        this.elseCommand = null;
     }
 
     @Override
     public void removeLeftNode() {
-        this.elseCommand = null;
+        //this.elseCommand = null;
+        this.thenCommand = null;        
+    }
+
+    @Override
+    public String formmated_translation() {
+        String ifCode;
+        ifCode = "if(" + this.boolCommand.formmated_translation() + ")\n";
+        ifCode += " begin-then{\n \t" + this.thenCommand.formmated_translation() + "\n\t}end-then\n";
+        if (this.elseCommand != null) {
+            ifCode += " begin-else{\n \t" + this.elseCommand.formmated_translation() + "\n\t}end-else";
+        }
+        return ifCode.replace("begin-else{}end-else", "").trim();
     }
 
 }

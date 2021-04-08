@@ -96,6 +96,11 @@ public class EmptyDSL extends AbstractNodeDSLTree implements iEmptyDSL, iS4Const
         throw new UnsupportedOperationException("Not supported in EmptyDSL.");
     }
 
+    @Override
+    public String formmated_translation() {
+        return "";
+    }
+
     
     
 }

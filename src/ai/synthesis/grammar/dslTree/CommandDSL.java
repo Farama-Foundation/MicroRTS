@@ -101,6 +101,11 @@ public class CommandDSL extends AbstractNodeDSLTree implements iCommandDSL {
     public void removeLeftNode() {
         throw new UnsupportedOperationException("Not supported in CommandDSL."); 
     }
+
+    @Override
+    public String formmated_translation() {
+        return grammarDSF+"\n";
+    }
     
     
 
