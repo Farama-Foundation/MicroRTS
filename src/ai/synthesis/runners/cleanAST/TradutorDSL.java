@@ -156,7 +156,10 @@ public class TradutorDSL {
 		// ... <-- C <-- c
 		if(fila.size() == 1) {
 			//System.out.println("fim dessa linha do c");
-			if(fila.peek().contains("ε")) return new CDSL(new EmptyDSL());
+			//if(fila.peek().contains("ε")) return new CDSL(new EmptyDSL());
+			String command = fila.peek();
+			//System.out.println(command);
+			if(fila.peek().contains("(e)")) return new CDSL(new EmptyDSL());
 			return new CDSL(new CommandDSL(fila.remove()));
 		}
 		

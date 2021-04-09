@@ -14,5 +14,6 @@ import java.io.Serializable;
 public interface iDSL extends Serializable{
     public String translate();
     public String friendly_translate();
+    public String formmated_translation();
     public Object clone();
 }

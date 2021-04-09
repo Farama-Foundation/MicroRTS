@@ -79,12 +79,14 @@ public class S3DSL extends AbstractNodeDSLTree implements iDSL, iS1ConstraintDSL
 
     @Override
     public iDSL getRightChild() {
-        return this.forCommand;
+        //return this.forCommand;
+        return null;
     }
 
     @Override
     public iDSL getLeftChild() {
-        return null;
+        //return null;
+        return this.forCommand;
     }
     
     @Override
@@ -94,12 +96,19 @@ public class S3DSL extends AbstractNodeDSLTree implements iDSL, iS1ConstraintDSL
 
     @Override
     public void removeRightNode() {
-        this.forCommand = null;
+        //this.forCommand = null;
+        throw new UnsupportedOperationException("Not supported in S3DSL."); 
     }
 
     @Override
     public void removeLeftNode() {
-        throw new UnsupportedOperationException("Not supported in S3DSL."); 
+        //throw new UnsupportedOperationException("Not supported in S3DSL."); 
+        this.forCommand = null;
+    }
+
+    @Override
+    public String formmated_translation() {
+        return "for(u) {\n\t" + forCommand.formmated_translation()+ "\n\t}\n";
     }
 
 }

@@ -136,4 +136,14 @@ public class CDSL extends AbstractNodeDSLTree implements iDSL, iS4ConstraintDSL,
         this.nextCommand = null;
     }
 
+    @Override
+    public String formmated_translation() {
+        if (nextCommand == null) {
+            return realCommand.formmated_translation();
+        } else if (nextCommand instanceof iEmptyDSL) {
+            return realCommand.translate();
+        }
+        return (realCommand.formmated_translation() + "\t " + nextCommand.formmated_translation()).trim();
+    }
+
 }
