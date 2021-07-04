@@ -6,6 +6,7 @@ package gui;
 
 import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleEvaluationFunction;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -33,12 +34,12 @@ public class PhysicalGameStatePanel extends JPanel {
 
     boolean fullObservability = true;
     int drawFromPerspectiveOfPlayer = -1;   // if fullObservability is false, and this is 0 or 1, it only draws what the specified player can see
-    GameState gs = null;
+    GameState gs;
 
     // Units to be highlighted (this is used, for example, by the MouseController,
     // to give feedback to the human, on which units are selectable.
-    List<Unit> toHighLight = new LinkedList<Unit>();
-    EvaluationFunction evalFunction = null;
+    List<Unit> toHighLight = new LinkedList<>();
+    EvaluationFunction evalFunction;
 
     // area to highlight: this can be used to highlight a rectangle of the game:
     int m_mouse_selection_x0 = -1;
@@ -194,7 +195,7 @@ public class PhysicalGameStatePanel extends JPanel {
         if (cellx>=gs.getPhysicalGameState().getWidth()) return null;
         if (celly>=gs.getPhysicalGameState().getHeight()) return null;
 
-        return new Pair<Integer,Integer>(cellx,celly);
+        return new Pair<>(cellx, celly);
     }
 
 
@@ -210,7 +211,7 @@ public class PhysicalGameStatePanel extends JPanel {
         if (cellx>=gs.getPhysicalGameState().getWidth()) cellx = gs.getPhysicalGameState().getWidth()-1;
         if (celly>=gs.getPhysicalGameState().getHeight()) celly = gs.getPhysicalGameState().getHeight()-1;
 
-        return new Pair<Integer,Integer>(cellx,celly);
+        return new Pair<>(cellx, celly);
     }
 
 
@@ -251,8 +252,11 @@ public class PhysicalGameStatePanel extends JPanel {
         int grid = Math.min(gridx,gridy);
         int sizex = grid*pgs.getWidth();
         int sizey = grid*pgs.getHeight();
+        int unitLineThickness = 1;
+        if (grid > 10) unitLineThickness = 2;
+        if (grid > 20) unitLineThickness = 4;
 
-        if (pogs!=null && pogs[0]!=null && pogs[1]!=null) {
+        if (!fullObservability && pogs!=null && pogs[0]!=null && pogs[1]!=null) {
             if (pogs[0].getTime() != gs.getTime()) {
                 // update
                 pogs[0] = new PartiallyObservableGameState(gs, 0);
@@ -279,7 +283,7 @@ public class PhysicalGameStatePanel extends JPanel {
         float eval0 = (evalFunction!=null ? evalFunction.evaluate(0, 1, gs):0);
         float eval1 = (evalFunction!=null ? evalFunction.evaluate(1, 0, gs):0);
 
-        String info = "T: " + gs.getTime() + ", P_0: " + unitCount0 + " (" + eval0 + "), P_1: " + unitCount1 + " (" + eval1 + ")";
+        String info = "T: " + gs.getTime() + ", P₀: " + unitCount0 + " (" + eval0 + "), P₁: " + unitCount1 + " (" + eval1 + ")";
         g2d.drawString(info, 10, dy-15);
 
 //        g.drawString(gs.getTime() + "", 10, getHeight()-15);
@@ -352,8 +356,7 @@ public class PhysicalGameStatePanel extends JPanel {
 
         // draw the units:
         // this list copy is to prevent a concurrent modification exception
-        List<Unit> l = new LinkedList<Unit>();
-        l.addAll(pgs.getUnits());
+        List<Unit> l = new LinkedList<>(pgs.getUnits());
         for(Unit u:l) {
             int reduction = 0;
 
@@ -445,12 +448,16 @@ public class PhysicalGameStatePanel extends JPanel {
                 g2d.fillRect(u.getX()*grid+reduction, u.getY()*grid+reduction, grid-reduction*2, grid-reduction*2);
                 g2d.setColor(playerColor);
                 if (panel!=null && panel.toHighLight.contains(u)) g2d.setColor(Color.green);
+                g2d.setStroke(new BasicStroke(unitLineThickness));
                 g2d.drawRect(u.getX()*grid+reduction, u.getY()*grid+reduction, grid-reduction*2, grid-reduction*2);
+                g2d.setStroke(new BasicStroke(1));
             } else {
                 g2d.fillOval(u.getX()*grid+reduction, u.getY()*grid+reduction, grid-reduction*2, grid-reduction*2);
                 g2d.setColor(playerColor);
                 if (panel!=null && panel.toHighLight.contains(u)) g2d.setColor(Color.green);
+                g2d.setStroke(new BasicStroke(unitLineThickness));
                 g2d.drawOval(u.getX()*grid+reduction, u.getY()*grid+reduction, grid-reduction*2, grid-reduction*2);
+                g2d.setStroke(new BasicStroke(1));
             }
 
             if (u.getType().isStockpile) {

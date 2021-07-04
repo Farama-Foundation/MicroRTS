@@ -1,3 +1,4 @@
 *.class
 /bin/
 build
+microrts.jar
