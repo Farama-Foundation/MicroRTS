@@ -1,7 +1,6 @@
 package rts;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import rts.units.Unit;
 
 /**
@@ -55,6 +54,61 @@ public class PartiallyObservableGameState extends GameState {
 		}
 
         return false;
+    }
+
+	public int [][][] getMatrixObservation(int player){
+        if (matrixObservation == null) {
+            matrixObservation = new int[2][numFeatureMaps+1][pgs.height][pgs.width]; 
+        }
+        // hitpointsMatrix is matrixObservation[player][0]
+        // resourcesMatrix is matrixObservation[player][1]
+        // playersMatrix is matrixObservation[player][2]
+        // unitTypesMatrix is matrixObservation[player][3]
+        // unitActionMatrix is matrixObservation[player][4]
+
+
+        for (int i=0; i<matrixObservation[player][0].length; i++) {
+            Arrays.fill(matrixObservation[player][0][i], 0);
+            Arrays.fill(matrixObservation[player][1][i], 0);
+            Arrays.fill(matrixObservation[player][4][i], 0);
+			Arrays.fill(matrixObservation[player][5][i], 0);
+            // temp default value for empty spaces
+            Arrays.fill(matrixObservation[player][2][i], -1);
+            Arrays.fill(matrixObservation[player][3][i], -1);			
+        }
+
+        for (int i = 0; i < pgs.units.size(); i++) {
+            Unit u = pgs.units.get(i);
+            UnitActionAssignment uaa = unitActions.get(u);
+            matrixObservation[player][0][u.getY()][u.getX()] = u.getHitPoints();
+            matrixObservation[player][1][u.getY()][u.getX()] = u.getResources();
+            matrixObservation[player][2][u.getY()][u.getX()] = (u.getPlayer() + player) % 2;
+            matrixObservation[player][3][u.getY()][u.getX()] = u.getType().ID;
+            if (uaa != null) {
+                matrixObservation[player][4][u.getY()][u.getX()] = uaa.action.type;
+            } else {
+                matrixObservation[player][4][u.getY()][u.getX()] = UnitAction.TYPE_NONE;
+            }
+        }
+
+        // normalize by getting rid of -1
+        for(int i=0; i<matrixObservation[player][2].length; i++) {
+            for(int j=0; j<matrixObservation[player][2][i].length; j++) {
+                matrixObservation[player][3][i][j] += 1;
+                matrixObservation[player][2][i][j] += 1;
+            }
+        }
+
+		for (int y = 0; y<pgs.height; y++)
+		{
+			for (int x=0; x<pgs.width; x++)
+			{
+				if(observable(x,y))
+					matrixObservation[player][5][y][x] = 1;
+			}
+		}
+
+        return matrixObservation[player];
     }
 
     /* (non-Javadoc)
