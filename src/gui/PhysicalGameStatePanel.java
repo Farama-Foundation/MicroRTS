@@ -32,6 +32,21 @@ public class PhysicalGameStatePanel extends JPanel {
     public static int COLORSCHEME_BLACK = 1;
     public static int COLORSCHEME_WHITE = 2;
 
+    // White theme vars
+    static Color GRIDLINE = Color.decode("#BDBEC1"); // soft gray
+    static Color PLAYER1UNIT_OUTLINE = Color.decode("#1074BC"); // soft blue
+    static Color PLAYER1_PARTIAL_VISIBILITY = Color.decode("#94D2FE"); // softer blue
+    static Color PLAYER2UNIT_OUTLINE = Color.decode("#F0593E"); // soft red
+    static Color PLAYER2_PARTIAL_VISIBILITY = Color.decode("#FFB7AA"); // softer red
+    static Color PLAYERBOTH_VISIBILITY = Color.decode("#C5AAFF"); // softer purple
+    static Color RESOURCE = Color.decode("#C2DFAE"); // soft green
+    static Color LIGHT = Color.decode("#FECD70"); // soft yellow
+    static Color RANGED = Color.decode("#86B1DE"); // soft cyan
+    // static Color HEAVY = Color.decode("#FECD70"); // soft 
+    
+    // Color WHITE_THEME_GREEN = Color.decode("#C2DFAE");
+    // 86B1DE
+
     boolean fullObservability = true;
     int drawFromPerspectiveOfPlayer = -1;   // if fullObservability is false, and this is 0 or 1, it only draws what the specified player can see
     GameState gs;
@@ -55,7 +70,7 @@ public class PhysicalGameStatePanel extends JPanel {
     int last_start_y = 0;
     int last_grid = 0;
 
-    int colorScheme = COLORSCHEME_BLACK;
+    int colorScheme = COLORSCHEME_WHITE;
 
     public PhysicalGameStatePanel(GameState a_gs) {
         this(a_gs, new SimpleEvaluationFunction());
@@ -80,8 +95,7 @@ public class PhysicalGameStatePanel extends JPanel {
         }
         this.evalFunction = evalFunction;
 
-        if (colorScheme==COLORSCHEME_BLACK) setBackground(Color.BLACK);
-        if (colorScheme==COLORSCHEME_WHITE) setBackground(Color.WHITE);
+        setColorScheme(colorScheme);
     }
 
 
@@ -94,8 +108,7 @@ public class PhysicalGameStatePanel extends JPanel {
         this.evalFunction = evalFunction;
         colorScheme = cs;
 
-        if (colorScheme==COLORSCHEME_BLACK) setBackground(Color.BLACK);
-        if (colorScheme==COLORSCHEME_WHITE) setBackground(Color.WHITE);
+        setColorScheme(colorScheme);
     }
 
     public static PhysicalGameStateJFrame newVisualizer(GameState a_gs) {
@@ -139,6 +152,8 @@ public class PhysicalGameStatePanel extends JPanel {
         colorScheme = cs;
         if (colorScheme==COLORSCHEME_BLACK) setBackground(Color.BLACK);
         if (colorScheme==COLORSCHEME_WHITE) setBackground(Color.WHITE);
+        RESOURCE = Color.decode("#C2DFAE"); // soft green
+        PLAYER1UNIT_OUTLINE = Color.decode("#1074BC"); // soft blue
     }
 
     public int getColorScheme() {
@@ -252,9 +267,9 @@ public class PhysicalGameStatePanel extends JPanel {
         int grid = Math.min(gridx,gridy);
         int sizex = grid*pgs.getWidth();
         int sizey = grid*pgs.getHeight();
-        int unitLineThickness = 1;
-        if (grid > 10) unitLineThickness = 2;
-        if (grid > 20) unitLineThickness = 4;
+        float unitLineThickness = 1.8f;
+        if (grid > 10) unitLineThickness = 1.8f;
+        if (grid > 20) unitLineThickness = 1.8f;
 
         if (!fullObservability && pogs!=null && pogs[0]!=null && pogs[1]!=null) {
             if (pogs[0].getTime() != gs.getTime()) {
@@ -303,9 +318,6 @@ public class PhysicalGameStatePanel extends JPanel {
 
         Color playerColor = null;
         Color wallColor = new Color(0, 0.33f, 0);
-        Color po0color = new Color(0, 0, 0.25f);
-        Color po1color = new Color(0.25f, 0, 0);
-        Color pobothcolor = new Color(0.25f, 0, 0.25f);
 
         for(int j = 0;j<pgs.getWidth();j++) {
             for(int i = 0;i<pgs.getHeight();i++) {
@@ -314,25 +326,25 @@ public class PhysicalGameStatePanel extends JPanel {
                     if (drawFromPerspectiveOfPlayer>=0) {
                         if (pogs[drawFromPerspectiveOfPlayer].observable(j, i)) {
                             if (drawFromPerspectiveOfPlayer==0) {
-                                g2d.setColor(po0color);
+                                g2d.setColor(PLAYER1_PARTIAL_VISIBILITY);
                                 g2d.fillRect(j*grid, i*grid, grid, grid);
                             } else {
-                                g2d.setColor(po1color);
+                                g2d.setColor(PLAYER2_PARTIAL_VISIBILITY);
                                 g2d.fillRect(j*grid, i*grid, grid, grid);
                             }
                         }
                     } else {
                         if (pogs[0].observable(j, i)) {
                             if (pogs[1].observable(j, i)) {
-                                g2d.setColor(pobothcolor);
+                                g2d.setColor(PLAYERBOTH_VISIBILITY);
                                 g2d.fillRect(j*grid, i*grid, grid, grid);
                             } else {
-                                g2d.setColor(po0color);
+                                g2d.setColor(PLAYER1_PARTIAL_VISIBILITY);
                                 g2d.fillRect(j*grid, i*grid, grid, grid);
                             }
                         } else {
                             if (pogs[1].observable(j, i)) {
-                                g2d.setColor(po1color);
+                                g2d.setColor(PLAYER2_PARTIAL_VISIBILITY);
                                 g2d.fillRect(j*grid, i*grid, grid, grid);
                             }
                         }
@@ -347,8 +359,9 @@ public class PhysicalGameStatePanel extends JPanel {
         }
 
         // draw grid:
-        if (colorScheme==COLORSCHEME_BLACK) g2d.setColor(Color.GRAY);
-        if (colorScheme==COLORSCHEME_WHITE) g2d.setColor(Color.BLACK);
+        // if (colorScheme==COLORSCHEME_BLACK) 
+        g2d.setColor(Color.BLACK);
+        // if (colorScheme==COLORSCHEME_WHITE) g2d.setColor(Color.BLACK);
         for(int i = 0;i<=pgs.getWidth();i++)
             g2d.drawLine(i*grid, 0, i*grid, pgs.getHeight()*grid);
         for(int i = 0;i<=pgs.getHeight();i++)
@@ -384,20 +397,20 @@ public class PhysicalGameStatePanel extends JPanel {
                         g2d.drawLine(u.getX()*grid+grid/2, u.getY()*grid+grid/2, u.getX()*grid+grid/2 + offsx, u.getY()*grid+grid/2 + offsy);
                         break;
                     case UnitAction.TYPE_ATTACK_LOCATION:
-                        g2d.setColor(Color.RED);
+                        g2d.setColor(PLAYER2UNIT_OUTLINE);
                         g2d.drawLine(u.getX()*grid+grid/2, u.getY()*grid+grid/2, u.getX()*grid+grid/2 + offsx, u.getY()*grid+grid/2 + offsy);
                         break;
                     case UnitAction.TYPE_PRODUCE:
-                        g2d.setColor(Color.BLUE);
+                        g2d.setColor(PLAYER1UNIT_OUTLINE);
                         g2d.drawLine(u.getX() * grid + grid / 2, u.getY() * grid + grid / 2, u.getX() * grid + grid / 2 + offsx, u.getY() * grid + grid / 2 + offsy);
                         // draw building progress bar
                         int ETA = uaa.time + uaa.action.ETA(uaa.unit) - gs.getTime();
-                        g2d.setColor(Color.BLUE);
+                        g2d.setColor(PLAYER1UNIT_OUTLINE);
                         g2d.fillRect(u.getX() * grid + offsx, u.getY() * grid + offsy,
                                 grid - (int) (grid * (((float) ETA) / uaa.action.ETA(uaa.unit))), (int) (grid / 5.0));
 
                         String txt = uaa.action.getUnitType().name;
-                        g2d.setColor(Color.BLUE);
+                        g2d.setColor(PLAYER1UNIT_OUTLINE);
                         FontMetrics fm = g2d.getFontMetrics(g2d.getFont());
                         int width = fm.stringWidth(txt);
                         g2d.drawString(txt, u.getX() * grid + grid / 2 - width / 2 + offsx, u.getY() * grid + grid / 2 + offsy);
@@ -412,15 +425,15 @@ public class PhysicalGameStatePanel extends JPanel {
             }
 
             if (u.getPlayer()==0) {
-                playerColor = Color.blue;
+                playerColor = PLAYER1UNIT_OUTLINE;
             } else if (u.getPlayer()==1) {
-                playerColor = Color.red;
+                playerColor = PLAYER2UNIT_OUTLINE;
             } else if (u.getPlayer()==-1) {
                 playerColor = null;
             }
 
             if (u.getType().name.equals("Resource")) {
-                g2d.setColor(Color.green);
+                g2d.setColor(RESOURCE);
             }
             if (u.getType().name.equals("Base")) {
                 if (colorScheme==COLORSCHEME_BLACK) g2d.setColor(Color.white);
@@ -435,12 +448,12 @@ public class PhysicalGameStatePanel extends JPanel {
                 reduction = grid/4;
             }
             if (u.getType().name.equals("Light")) {
-                g2d.setColor(Color.orange);
+                g2d.setColor(LIGHT);
                 reduction = grid/8;
             }
             if (u.getType().name.equals("Heavy")) g2d.setColor(Color.yellow);
             if (u.getType().name.equals("Ranged")) {
-                g2d.setColor(Color.cyan);
+                g2d.setColor(RANGED);
                 reduction = grid/8;
             }
 
@@ -479,7 +492,7 @@ public class PhysicalGameStatePanel extends JPanel {
             }
 
             if (u.getHitPoints()<u.getMaxHitPoints()) {
-                g2d.setColor(Color.RED);
+                g2d.setColor(PLAYER2UNIT_OUTLINE);
                 g2d.fillRect(u.getX() * grid, u.getY() * grid, grid, (int) (grid / 5.0));
                 g2d.setColor(Color.GREEN);
                 g2d.fillRect(u.getX() * grid, u.getY() * grid, (int) (grid * (((float) u.getHitPoints()) / u.getMaxHitPoints())), (int) (grid / 5.0));
