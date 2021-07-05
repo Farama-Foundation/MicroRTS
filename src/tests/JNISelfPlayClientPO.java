@@ -106,7 +106,7 @@ public class JNISelfPlayClientPO {
 
     public byte[] render(boolean returnPixels) throws Exception {
         if (w==null) {
-            w = PhysicalGameStatePanel.newVisualizer(gs, 640, 640, true, renderTheme);
+            w = PhysicalGameStatePanel.newVisualizer(gs, 640, 640, true, null, renderTheme);
         }
         w.setStateCloning(gs);
         w.repaint();

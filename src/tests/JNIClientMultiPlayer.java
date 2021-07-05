@@ -104,7 +104,7 @@ public class JNIClientMultiPlayer {
         // TODO: The blue and red color reversed. Low priority
         long startTime = System.nanoTime();
         if (w==null) {
-            w = PhysicalGameStatePanel.newVisualizer(gs, 640, 640, false, renderTheme);
+            w = PhysicalGameStatePanel.newVisualizer(gs, 640, 640, false, null, renderTheme);
         }
         w.setStateCloning(gs);
         w.repaint();

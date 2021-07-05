@@ -121,7 +121,7 @@ public class JNIGridnetClient {
 
     public byte[] render(boolean returnPixels) throws Exception {
         if (w==null) {
-            w = PhysicalGameStatePanel.newVisualizer(gs, 640, 640, false, renderTheme);
+            w = PhysicalGameStatePanel.newVisualizer(gs, 640, 640, false, null, renderTheme);
         }
         w.setStateCloning(gs);
         w.repaint();
