@@ -23,9 +23,10 @@ import ai.RandomBiasedAI;
 import ai.RandomNoAttackAI;
 import ai.core.AI;
 import ai.jni.JNIAI;
-import ai.jni.JNILocalAI;
 import ai.rewardfunction.RewardFunctionInterface;
 import ai.jni.JNIInterface;
+import ai.jni.Response;
+import ai.jni.Responses;
 import gui.PhysicalGameStateJFrame;
 import gui.PhysicalGameStatePanel;
 import rts.GameState;
@@ -38,8 +39,6 @@ import rts.UnitAction;
 import rts.UnitActionAssignment;
 import rts.units.Unit;
 import rts.units.UnitTypeTable;
-import tests.JNIGridnetClient;
-import tests.JNIGridnetClient.Response;
 import tests.JNIGridnetClientSelfPlay;
 
 /**
@@ -69,7 +68,7 @@ public class JNIGridnetVecClient {
     int[][][][] observation;
     double[][] reward;
     boolean[][] done;
-    JNIGridnetClient.Response[] rs;
+    Response[] rs;
     Responses responses;
 
     double[] terminalReward1;
@@ -95,7 +94,7 @@ public class JNIGridnetVecClient {
         }
 
         // initialize storage
-        JNIGridnetClient.Response r = new JNIGridnetClient(a_rfs, a_micrortsPath, a_mapPath, new PassiveAI(a_utt), a_utt).reset(0);
+        Response r = new JNIGridnetClient(a_rfs, a_micrortsPath, a_mapPath, new PassiveAI(a_utt), a_utt).reset(0);
         int s1 = a_num_selfplayenvs + a_num_envs, s2 = r.observation.length, s3 = r.observation[0].length,
                 s4 = r.observation[0][0].length;
         masks = new int[s1][][][];
@@ -107,28 +106,7 @@ public class JNIGridnetVecClient {
         terminalReward2 = new double[rfs.length];
         terminalRone2 = new boolean[rfs.length];
         responses = new Responses(null, null, null);
-        rs = new JNIGridnetClient.Response[s1];
-    }
-
-    public class Responses {
-        public int[][][][] observation;
-        public double[][] reward;
-        public boolean[][] done;
-        // public String info;
-
-        public Responses(int[][][][] observation, double reward[][], boolean done[][]) {
-            this.observation = observation;
-            this.reward = reward;
-            this.done = done;
-            // this.info = info;
-        }
-
-        public void set(int[][][][] observation, double reward[][], boolean done[][]) {
-            this.observation = observation;
-            this.reward = reward;
-            this.done = done;
-            // this.info = info;
-        }
+        rs = new Response[s1];
     }
 
     public Responses reset(int[] players) throws Exception {

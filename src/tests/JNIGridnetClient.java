@@ -19,9 +19,9 @@ import ai.RandomBiasedAI;
 import ai.RandomNoAttackAI;
 import ai.core.AI;
 import ai.jni.JNIAI;
-import ai.jni.JNILocalAI;
 import ai.rewardfunction.RewardFunctionInterface;
 import ai.jni.JNIInterface;
+import ai.jni.Response;
 import gui.PhysicalGameStateJFrame;
 import gui.PhysicalGameStatePanel;
 import rts.GameState;
@@ -72,27 +72,6 @@ public class JNIGridnetClient {
     Response response;
     PlayerAction pa1;
     PlayerAction pa2;
-
-    public static class Response {
-        public int[][][] observation;
-        public double[] reward;
-        public boolean[] done;
-        public String info;
-
-        public Response(int[][][] observation, double reward[], boolean done[], String info) {
-            this.observation = observation;
-            this.reward = reward;
-            this.done = done;
-            this.info = info;
-        }
-
-        public void set(int[][][] observation, double reward[], boolean done[], String info) {
-            this.observation = observation;
-            this.reward = reward;
-            this.done = done;
-            this.info = info;
-        }
-    }
 
     public JNIGridnetClient(RewardFunctionInterface[] a_rfs, String a_micrortsPath, String a_mapPath, AI a_ai2, UnitTypeTable a_utt) throws Exception{
         micrortsPath = a_micrortsPath;

@@ -22,9 +22,9 @@ import ai.RandomBiasedAI;
 import ai.RandomNoAttackAI;
 import ai.core.AI;
 import ai.jni.JNIAI;
-import ai.jni.JNILocalAI;
 import ai.rewardfunction.RewardFunctionInterface;
 import ai.jni.JNIInterface;
+import ai.jni.Response;
 import gui.PhysicalGameStateJFrame;
 import gui.PhysicalGameStatePanel;
 import rts.GameState;
@@ -37,8 +37,6 @@ import rts.UnitActionAssignment;
 import rts.units.Unit;
 import rts.units.UnitTypeTable;
 import weka.core.pmml.jaxbbindings.False;
-import tests.JNIGridnetVecClient;
-import tests.JNIGridnetClient.Response;
 
 /**
  *

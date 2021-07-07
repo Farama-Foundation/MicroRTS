@@ -19,13 +19,11 @@ import ai.RandomBiasedAI;
 import ai.RandomNoAttackAI;
 import ai.core.AI;
 import ai.jni.JNIAI;
-import ai.jni.JNILocalAI;
 import ai.rewardfunction.RewardFunctionInterface;
 import ai.jni.JNIInterface;
 import gui.PhysicalGameStateJFrame;
 import gui.PhysicalGameStatePanel;
 import rts.GameState;
-import rts.PartiallyObservableGameState;
 import rts.PhysicalGameState;
 import rts.PlayerAction;
 import rts.Trace;
@@ -50,13 +48,12 @@ import weka.core.pmml.jaxbbindings.False;
  *         the same server.
  * 
  */
-public class JNIClientPO {
+public class JNIBotClient {
 
     PhysicalGameStateJFrame w;
-    public JNIInterface ai1;
+    public AI ai1;
     public AI ai2;
     PhysicalGameState pgs;
-    PartiallyObservableGameState pogs1, pogs2;
     GameState gs;
     UnitTypeTable utt;
     public RewardFunctionInterface[] rfs;
@@ -96,16 +93,16 @@ public class JNIClientPO {
         }
     }
 
-    public JNIClientPO(RewardFunctionInterface[] a_rfs, String a_micrortsPath, String a_mapPath, AI a_ai2, UnitTypeTable a_utt) throws Exception{
+    public JNIBotClient(RewardFunctionInterface[] a_rfs, String a_micrortsPath, String a_mapPath, AI a_ai1, AI a_ai2, UnitTypeTable a_utt) throws Exception{
         micrortsPath = a_micrortsPath;
         mapPath = a_mapPath;
         rfs = a_rfs;
         utt = a_utt;
         maxAttackRadius = utt.getMaxAttackRange() * 2 + 1;
-        ai1 = new JNIAI(100, 0, utt);
+        ai1 = a_ai1;
         ai2 = a_ai2;
-        if (ai2 == null) {
-            throw new Exception("no ai2 was chosen");
+        if (ai1 == null || ai2 == null) {
+            throw new Exception("no ai1 or ai2 was chosen");
         }
         if (micrortsPath.length() != 0) {
             this.mapPath = Paths.get(micrortsPath, mapPath).toString();
@@ -123,7 +120,7 @@ public class JNIClientPO {
 
     public byte[] render(boolean returnPixels) throws Exception {
         if (w==null) {
-            w = PhysicalGameStatePanel.newVisualizer(gs, 640, 640, true, null, renderTheme);
+            w = PhysicalGameStatePanel.newVisualizer(gs, 640, 640, false, null, renderTheme);
         }
         w.setStateCloning(gs);
         w.repaint();
@@ -140,11 +137,9 @@ public class JNIClientPO {
         return data.getData();
     }
 
-    public Response gameStep(int[][] action, int player) throws Exception {
-        pogs1 = new PartiallyObservableGameState(gs, player);
-        pogs2 = new PartiallyObservableGameState(gs, 1 - player);
-        pa1 = ai1.getAction(player, pogs1, action);
-        pa2 = ai2.getAction(1 - player, pogs2);
+    public Response gameStep(int player) throws Exception {
+        pa1 = ai1.getAction(player, gs);
+        pa2 = ai2.getAction(1 - player, gs);
 
         gs.issueSafe(pa1);
         gs.issueSafe(pa2);
@@ -155,7 +150,7 @@ public class JNIClientPO {
         // simulate:
         gameover = gs.cycle();
         if (gameover) {
-            // ai1.gameOver(gs.winner());
+            ai1.gameOver(gs.winner());
             ai2.gameOver(gs.winner());
         }
         for (int i = 0; i < rewards.length; i++) {
@@ -164,30 +159,11 @@ public class JNIClientPO {
             rewards[i] = rfs[i].getReward();
         }
         response.set(
-            ai1.getObservation(player, pogs1),
+            null,
             rewards,
             dones,
-            ai1.computeInfo(player, pogs1));
+            "{}");
         return response;
-    }
-
-    public int[][][] getMasks(int player) throws Exception {
-        for (int i = 0; i < masks.length; i++) {
-            for (int j = 0; j < masks[0].length; j++) {
-                for (int k = 0; k < masks[0][0].length; k++) {
-                    masks[i][j][k] = 0;
-                }
-            }
-        }
-        for (int i = 0; i < pgs.getUnits().size(); i++) {
-            Unit u = pgs.getUnits().get(i);
-            UnitActionAssignment uaa = gs.getUnitActions().get(u);
-            if (u.getPlayer() == player && uaa == null) {
-                masks[u.getY()][u.getX()][0] = 1;
-                UnitAction.getValidActionArray(u, gs, utt, masks[u.getY()][u.getX()], maxAttackRadius, 1);
-            }
-        }
-        return masks;
     }
 
     public String sendUTT() throws Exception {
@@ -197,20 +173,19 @@ public class JNIClientPO {
     }
 
     public Response reset(int player) throws Exception {
+        ai1 = ai1.clone();
         ai1.reset();
         ai2 = ai2.clone();
         ai2.reset();
         pgs = PhysicalGameState.load(mapPath, utt);
         gs = new GameState(pgs, utt);
-        pogs1 = new PartiallyObservableGameState(gs, player);
-        pogs2 = new PartiallyObservableGameState(gs, 1-player);
 
         for (int i = 0; i < rewards.length; i++) {
             rewards[i] = 0;
             dones[i] = false;
         }
         response.set(
-            ai1.getObservation(player, pogs1),
+            null,
             rewards,
             dones,
             "{}");
