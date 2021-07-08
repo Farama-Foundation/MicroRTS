@@ -62,6 +62,7 @@ public class JNIGridnetVecClient {
     public int[] envSteps; 
     public RewardFunctionInterface[] rfs;
     public UnitTypeTable utt;
+    boolean partialObs = false;
 
     // storage
     int[][][][] masks;
@@ -77,24 +78,25 @@ public class JNIGridnetVecClient {
     boolean[] terminalRone2;
 
     public JNIGridnetVecClient(int a_num_selfplayenvs, int a_num_envs, int a_max_steps, RewardFunctionInterface[] a_rfs, String a_micrortsPath, String a_mapPath,
-            AI[] a_ai2s, UnitTypeTable a_utt) throws Exception {
+            AI[] a_ai2s, UnitTypeTable a_utt, boolean partial_obs) throws Exception {
         maxSteps = a_max_steps;
         utt = a_utt;
         rfs = a_rfs;
+        partialObs = partial_obs;
 
         // initialize clients
         envSteps = new int[a_num_selfplayenvs + a_num_envs];
         selfPlayClients = new JNIGridnetClientSelfPlay[a_num_selfplayenvs/2];
         for (int i = 0; i < selfPlayClients.length; i++) {
-            selfPlayClients[i] = new JNIGridnetClientSelfPlay(a_rfs, a_micrortsPath, a_mapPath, a_utt);
+            selfPlayClients[i] = new JNIGridnetClientSelfPlay(a_rfs, a_micrortsPath, a_mapPath, a_utt, partialObs);
         }
         clients = new JNIGridnetClient[a_num_envs];
         for (int i = 0; i < clients.length; i++) {
-            clients[i] = new JNIGridnetClient(a_rfs, a_micrortsPath, a_mapPath, a_ai2s[i], a_utt);
+            clients[i] = new JNIGridnetClient(a_rfs, a_micrortsPath, a_mapPath, a_ai2s[i], a_utt, partialObs);
         }
 
         // initialize storage
-        Response r = new JNIGridnetClient(a_rfs, a_micrortsPath, a_mapPath, new PassiveAI(a_utt), a_utt).reset(0);
+        Response r = new JNIGridnetClient(a_rfs, a_micrortsPath, a_mapPath, new PassiveAI(a_utt), a_utt, partialObs).reset(0);
         int s1 = a_num_selfplayenvs + a_num_envs, s2 = r.observation.length, s3 = r.observation[0].length,
                 s4 = r.observation[0][0].length;
         masks = new int[s1][][][];

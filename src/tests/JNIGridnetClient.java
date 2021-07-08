@@ -25,6 +25,7 @@ import ai.jni.Response;
 import gui.PhysicalGameStateJFrame;
 import gui.PhysicalGameStatePanel;
 import rts.GameState;
+import rts.PartiallyObservableGameState;
 import rts.PhysicalGameState;
 import rts.PlayerAction;
 import rts.Trace;
@@ -51,19 +52,24 @@ import weka.core.pmml.jaxbbindings.False;
  */
 public class JNIGridnetClient {
 
-    PhysicalGameStateJFrame w;
-    public JNIInterface ai1;
+    // Settings
+    public RewardFunctionInterface[] rfs;
+    String micrortsPath;
+    String mapPath;
     public AI ai2;
+    UnitTypeTable utt;
+    public boolean partialObs = false;
+
+    // Internal State
     PhysicalGameState pgs;
     GameState gs;
-    UnitTypeTable utt;
-    public RewardFunctionInterface[] rfs;
-    String mapPath;
-    String micrortsPath;
+    GameState player1gs, player2gs;
     boolean gameover = false;
     boolean layerJSON = true;
     public int renderTheme = PhysicalGameStatePanel.COLORSCHEME_WHITE;
     public int maxAttackRadius;
+    PhysicalGameStateJFrame w;
+    public JNIInterface ai1;
 
     // storage
     int[][][] masks;
@@ -73,11 +79,12 @@ public class JNIGridnetClient {
     PlayerAction pa1;
     PlayerAction pa2;
 
-    public JNIGridnetClient(RewardFunctionInterface[] a_rfs, String a_micrortsPath, String a_mapPath, AI a_ai2, UnitTypeTable a_utt) throws Exception{
+    public JNIGridnetClient(RewardFunctionInterface[] a_rfs, String a_micrortsPath, String a_mapPath, AI a_ai2, UnitTypeTable a_utt, boolean partial_obs) throws Exception{
         micrortsPath = a_micrortsPath;
         mapPath = a_mapPath;
         rfs = a_rfs;
         utt = a_utt;
+        partialObs = partial_obs;
         maxAttackRadius = utt.getMaxAttackRange() * 2 + 1;
         ai1 = new JNIAI(100, 0, utt);
         ai2 = a_ai2;
@@ -100,7 +107,7 @@ public class JNIGridnetClient {
 
     public byte[] render(boolean returnPixels) throws Exception {
         if (w==null) {
-            w = PhysicalGameStatePanel.newVisualizer(gs, 640, 640, false, null, renderTheme);
+            w = PhysicalGameStatePanel.newVisualizer(gs, 640, 640, partialObs, null, renderTheme);
         }
         w.setStateCloning(gs);
         w.repaint();
@@ -118,9 +125,15 @@ public class JNIGridnetClient {
     }
 
     public Response gameStep(int[][] action, int player) throws Exception {
-        pa1 = ai1.getAction(player, gs, action);
-        pa2 = ai2.getAction(1 - player, gs);
-
+        if (partialObs) {
+            player1gs = new PartiallyObservableGameState(gs, player);
+            player2gs = new PartiallyObservableGameState(gs, 1 - player);
+        } else {
+            player1gs = gs;
+            player2gs = gs;
+        }
+        pa1 = ai1.getAction(player, player1gs, action);
+        pa2 = ai2.getAction(1 - player, player2gs);
         gs.issueSafe(pa1);
         gs.issueSafe(pa2);
         TraceEntry te  = new TraceEntry(gs.getPhysicalGameState().clone(), gs.getTime());
@@ -139,10 +152,10 @@ public class JNIGridnetClient {
             rewards[i] = rfs[i].getReward();
         }
         response.set(
-            ai1.getObservation(player, gs),
+            ai1.getObservation(player, player1gs),
             rewards,
             dones,
-            ai1.computeInfo(player, gs));
+            ai1.computeInfo(player, player2gs));
         return response;
     }
 
@@ -177,13 +190,18 @@ public class JNIGridnetClient {
         ai2.reset();
         pgs = PhysicalGameState.load(mapPath, utt);
         gs = new GameState(pgs, utt);
+        if (partialObs) {
+            player1gs = new PartiallyObservableGameState(gs, player);
+        } else {
+            player1gs = gs;
+        }
 
         for (int i = 0; i < rewards.length; i++) {
             rewards[i] = 0;
             dones[i] = false;
         }
         response.set(
-            ai1.getObservation(player, gs),
+            ai1.getObservation(player, player1gs),
             rewards,
             dones,
             "{}");

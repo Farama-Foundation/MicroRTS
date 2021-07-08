@@ -28,6 +28,7 @@ import ai.jni.Response;
 import gui.PhysicalGameStateJFrame;
 import gui.PhysicalGameStatePanel;
 import rts.GameState;
+import rts.PartiallyObservableGameState;
 import rts.PhysicalGameState;
 import rts.PlayerAction;
 import rts.Trace;
@@ -54,16 +55,21 @@ import weka.core.pmml.jaxbbindings.False;
  */
 public class JNIGridnetClientSelfPlay {
 
+
+    // Settings
+    public RewardFunctionInterface[] rfs;
+    String micrortsPath;
+    String mapPath;
+    public AI ai2;
+    UnitTypeTable utt;
+    boolean partialObs = false;
+
+    // Internal State
     PhysicalGameStateJFrame w;
     public JNIInterface[] ais = new JNIInterface[2];
-    // public JNIInterface ai1;
-    // public JNIInterface ai2;
     PhysicalGameState pgs;
     GameState gs;
-    UnitTypeTable utt;
-    public RewardFunctionInterface[] rfs;
-    String mapPath;
-    String micrortsPath;
+    GameState[] playergs = new GameState[2];
     boolean gameover = false;
     boolean layerJSON = true;
     public int renderTheme = PhysicalGameStatePanel.COLORSCHEME_WHITE;
@@ -77,11 +83,12 @@ public class JNIGridnetClientSelfPlay {
     Response[] response = new Response[2];
     PlayerAction[] pas = new PlayerAction[2];
 
-    public JNIGridnetClientSelfPlay(RewardFunctionInterface[] a_rfs, String a_micrortsPath, String a_mapPath, UnitTypeTable a_utt) throws Exception{
+    public JNIGridnetClientSelfPlay(RewardFunctionInterface[] a_rfs, String a_micrortsPath, String a_mapPath, UnitTypeTable a_utt, boolean partial_obs) throws Exception{
         micrortsPath = a_micrortsPath;
         mapPath = a_mapPath;
         rfs = a_rfs;
         utt = a_utt;
+        partialObs = partial_obs;
         maxAttackRadius = utt.getMaxAttackRange() * 2 + 1;
         if (micrortsPath.length() != 0) {
             this.mapPath = Paths.get(micrortsPath, mapPath).toString();
@@ -102,7 +109,7 @@ public class JNIGridnetClientSelfPlay {
 
     public byte[] render(boolean returnPixels) throws Exception {
         if (w==null) {
-            w = PhysicalGameStatePanel.newVisualizer(gs, 640, 640, false, null, renderTheme);
+            w = PhysicalGameStatePanel.newVisualizer(gs, 640, 640, partialObs, null, renderTheme);
         }
         w.setStateCloning(gs);
         w.repaint();
@@ -122,7 +129,11 @@ public class JNIGridnetClientSelfPlay {
     public void gameStep(int[][] action1, int[][] action2) throws Exception {
         TraceEntry te  = new TraceEntry(gs.getPhysicalGameState().clone(), gs.getTime());
         for (int i = 0; i < numPlayers; i++) {
-            pas[i] = i == 0 ? ais[i].getAction(i, gs, action1) : ais[i].getAction(i, gs, action2);
+            playergs[i] = gs;
+            if (partialObs) {
+                playergs[i] = new PartiallyObservableGameState(gs, i);
+            }
+            pas[i] = i == 0 ? ais[i].getAction(i, playergs[0], action1) : ais[i].getAction(i, playergs[1], action2);
             gs.issueSafe(pas[i]);
             te.addPlayerAction(pas[i].clone());
         }
@@ -140,7 +151,7 @@ public class JNIGridnetClientSelfPlay {
                 dones[i][j] = rfs[j].isDone();
             }
             response[i].set(
-                ais[i].getObservation(i, gs),
+                ais[i].getObservation(i, playergs[i]),
                 rewards[i],
                 dones[i],
                 "{}");
@@ -176,13 +187,17 @@ public class JNIGridnetClientSelfPlay {
         pgs = PhysicalGameState.load(mapPath, utt);
         gs = new GameState(pgs, utt);
         for (int i = 0; i < numPlayers; i++) {
+            playergs[i] = gs;
+            if (partialObs) {
+                playergs[i] = new PartiallyObservableGameState(gs, i);
+            }
             ais[i].reset();
             for (int j = 0; j < rewards.length; j++) {
                 rewards[i][j] = 0;
                 dones[i][j] = false;
             }
             response[i].set(
-                ais[i].getObservation(i, gs),
+                ais[i].getObservation(i, playergs[i]),
                 rewards[i],
                 dones[i],
                 "{}");
