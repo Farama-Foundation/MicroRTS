@@ -1,3 +1,4 @@
+rm -rf build microrts.jar
 mkdir build
 javac -d "./build" -cp "./lib/*" -sourcepath "./src"  $(find ./src/* | grep .java)
 # javac ./src/tests/*.java ./src/tests/sockets/*.java
