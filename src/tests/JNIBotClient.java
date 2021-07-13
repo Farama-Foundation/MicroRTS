@@ -21,6 +21,7 @@ import ai.core.AI;
 import ai.jni.JNIAI;
 import ai.rewardfunction.RewardFunctionInterface;
 import ai.jni.JNIInterface;
+import ai.jni.Response;
 import gui.PhysicalGameStateJFrame;
 import gui.PhysicalGameStatePanel;
 import rts.GameState;
@@ -56,6 +57,7 @@ public class JNIBotClient {
     PhysicalGameState pgs;
     GameState gs;
     UnitTypeTable utt;
+    boolean partialObs;
     public RewardFunctionInterface[] rfs;
     String mapPath;
     String micrortsPath;
@@ -72,32 +74,12 @@ public class JNIBotClient {
     PlayerAction pa1;
     PlayerAction pa2;
 
-    public static class Response {
-        public int[][][] observation;
-        public double[] reward;
-        public boolean[] done;
-        public String info;
-
-        public Response(int[][][] observation, double reward[], boolean done[], String info) {
-            this.observation = observation;
-            this.reward = reward;
-            this.done = done;
-            this.info = info;
-        }
-
-        public void set(int[][][] observation, double reward[], boolean done[], String info) {
-            this.observation = observation;
-            this.reward = reward;
-            this.done = done;
-            this.info = info;
-        }
-    }
-
-    public JNIBotClient(RewardFunctionInterface[] a_rfs, String a_micrortsPath, String a_mapPath, AI a_ai1, AI a_ai2, UnitTypeTable a_utt) throws Exception{
+    public JNIBotClient(RewardFunctionInterface[] a_rfs, String a_micrortsPath, String a_mapPath, AI a_ai1, AI a_ai2, UnitTypeTable a_utt, boolean partial_obs) throws Exception{
         micrortsPath = a_micrortsPath;
         mapPath = a_mapPath;
         rfs = a_rfs;
         utt = a_utt;
+        partialObs = partial_obs;
         maxAttackRadius = utt.getMaxAttackRange() * 2 + 1;
         ai1 = a_ai1;
         ai2 = a_ai2;

@@ -58,6 +58,7 @@ import tests.JNIGridnetClientSelfPlay;
 public class JNIGridnetVecClient {
     public JNIGridnetClient[] clients;
     public JNIGridnetClientSelfPlay[] selfPlayClients;
+    public JNIBotClient[] botClients;
     public int maxSteps;
     public int[] envSteps; 
     public RewardFunctionInterface[] rfs;
@@ -78,7 +79,7 @@ public class JNIGridnetVecClient {
     boolean[] terminalRone2;
 
     public JNIGridnetVecClient(int a_num_selfplayenvs, int a_num_envs, int a_max_steps, RewardFunctionInterface[] a_rfs, String a_micrortsPath, String a_mapPath,
-            AI[] a_ai2s, UnitTypeTable a_utt, boolean partial_obs) throws Exception {
+        AI[] a_ai2s, UnitTypeTable a_utt, boolean partial_obs) throws Exception {
         maxSteps = a_max_steps;
         utt = a_utt;
         rfs = a_rfs;
@@ -111,7 +112,40 @@ public class JNIGridnetVecClient {
         rs = new Response[s1];
     }
 
+    public JNIGridnetVecClient(int a_max_steps, RewardFunctionInterface[] a_rfs, String a_micrortsPath, String a_mapPath,
+        AI[] a_ai1s, AI[] a_ai2s, UnitTypeTable a_utt, boolean partial_obs) throws Exception {
+        maxSteps = a_max_steps;
+        utt = a_utt;
+        rfs = a_rfs;
+        partialObs = partial_obs;
+
+        // initialize clients
+        botClients = new JNIBotClient[a_ai2s.length];
+        for (int i = 0; i < botClients.length; i++) {
+            botClients[i] = new JNIBotClient(a_rfs, a_micrortsPath, a_mapPath, a_ai1s[i], a_ai2s[i], a_utt, partialObs);
+        }
+        responses = new Responses(null, null, null);
+        rs = new Response[a_ai2s.length];
+        reward = new double[a_ai2s.length][rfs.length];
+        done = new boolean[a_ai2s.length][rfs.length];
+        envSteps = new int[a_ai2s.length];
+        terminalReward1 = new double[rfs.length];
+        terminalRone1 = new boolean[rfs.length];
+    }
+
     public Responses reset(int[] players) throws Exception {
+        if (botClients != null) {
+            for (int i = 0; i < botClients.length; i++) {
+                rs[i] = botClients[i].reset(players[i]);
+            }
+            for (int i = 0; i < rs.length; i++) {
+                // observation[i] = rs[i].observation;
+                reward[i] = rs[i].reward;
+                done[i] = rs[i].done;
+            }
+            responses.set(null, reward, done);
+            return responses;
+        }
         for (int i = 0; i < selfPlayClients.length; i++) {
             selfPlayClients[i].reset();
             rs[i*2] = selfPlayClients[i].getResponse(0);
@@ -131,6 +165,32 @@ public class JNIGridnetVecClient {
     }
 
     public Responses gameStep(int[][][] action, int[] players) throws Exception {
+        if (botClients != null) {
+            for (int i = 0; i < botClients.length; i++) {
+                rs[i] = botClients[i].gameStep(players[i]);
+                envSteps[i] += 1;
+                if (rs[i].done[0] || envSteps[i] >= maxSteps) {
+                    for (int j = 0; j < terminalReward1.length; j++) {
+                        terminalReward1[j] = rs[i].reward[j];
+                        terminalRone1[j] = rs[i].done[j];
+                    }
+                    botClients[i].reset(players[i]);
+                    for (int j = 0; j < terminalReward1.length; j++) {
+                        rs[i].reward[j] = terminalReward1[j];
+                        rs[i].done[j] = terminalRone1[j];
+                    }
+                    rs[i].done[0] = true;
+                    envSteps[i] =0;
+                }
+            }
+            for (int i = 0; i < rs.length; i++) {
+                // observation[i] = rs[i].observation;
+                reward[i] = rs[i].reward;
+                done[i] = rs[i].done;
+            }
+            responses.set(null, reward, done);
+            return responses;
+        }
         for (int i = 0; i < selfPlayClients.length; i++) {
             selfPlayClients[i].gameStep(action[i*2], action[i*2+1]);
             rs[i*2] = selfPlayClients[i].getResponse(0);
@@ -200,11 +260,20 @@ public class JNIGridnetVecClient {
     }
 
     public void close() throws Exception {
-        for (JNIGridnetClient client : clients) {
-            client.close();
+        if (clients != null) {
+            for (JNIGridnetClient client : clients) {
+                client.close();
+            }
         }
-        for (JNIGridnetClientSelfPlay client : selfPlayClients) {
-            client.close();
+        if (selfPlayClients != null) {
+            for (JNIGridnetClientSelfPlay client : selfPlayClients) {
+                client.close();
+            }
+        }
+        if (botClients != null) {
+            for (int i = 0; i < botClients.length; i++) {
+                botClients[i].close();
+            }
         }
     }
 }
