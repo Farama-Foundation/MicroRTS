@@ -50,9 +50,10 @@ public class PlayerActionGenerator {
      * Generating all possible actions for a player in a given state
      * @param a_gs
      * @param pID
+     * @param noneDuration
      * @throws Exception
      */
-    public PlayerActionGenerator(GameState a_gs, int pID) throws Exception {
+    public PlayerActionGenerator(GameState a_gs, int pID, int noneDuration) throws Exception {
         // Generate the reserved resources:
         base_ru = new ResourceUsage();
         gameState = a_gs;
@@ -70,7 +71,7 @@ public class PlayerActionGenerator {
 		for (Unit u : physicalGameState.getUnits()) {
 			if (u.getPlayer() == pID) {
 				if (gameState.unitActions.get(u) == null) {
-					List<UnitAction> l = u.getUnitActions(gameState);
+					List<UnitAction> l = u.getUnitActions(gameState, noneDuration);
 					choices.add(new Pair<>(u, l));
 					// make sure we don't overflow:
 					long tmp = l.size();
@@ -103,6 +104,12 @@ public class PlayerActionGenerator {
             i++;
         }
     } 
+    
+    
+    public PlayerActionGenerator(GameState a_gs, int pID) throws Exception {
+        this(a_gs, pID, 10);
+    }
+    
     
     /**
      * Shuffles the list of choices
