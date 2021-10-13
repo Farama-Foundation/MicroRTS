@@ -331,7 +331,20 @@ public class UnitTypeTable  {
         return moveConflictResolutionStrategy;
     }
     
-    
+    /**
+     * Roop through the list of unit types and return the largest attack range
+     * @return
+     */
+    public int getMaxAttackRange() {
+        int maxAttackRange = 0;
+        for (UnitType unitType : unitTypes) {
+            if (unitType.attackRange > maxAttackRange) {
+                maxAttackRange = unitType.attackRange;
+            }
+        }
+        return maxAttackRange;
+    }
+
     /**
      * Writes a XML representation of this UnitTypeTable
      * @param w

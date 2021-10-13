@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -37,6 +38,9 @@ public class GameState {
     protected PhysicalGameState pgs;
     protected HashMap<Unit,UnitActionAssignment> unitActions = new LinkedHashMap<>();
     protected UnitTypeTable utt;
+
+    protected int [][][][] matrixObservation;
+    public static final int numFeatureMaps = 5;
 
     /**
      * Initializes the GameState with a PhysicalGameState and a UnitTypeTable
@@ -884,6 +888,55 @@ public class GameState {
         }
         
         return gs;
+    }
+
+    /**
+     * Constructs a matrix ovservation for a player
+     * @param player
+     * @return a matrix observation for the specified player
+     */
+    public int [][][] getMatrixObservation(int player){
+        if (matrixObservation == null) {
+            matrixObservation = new int[2][numFeatureMaps][pgs.height][pgs.width]; 
+        }
+        // hitpointsMatrix is matrixObservation[player][0]
+        // resourcesMatrix is matrixObservation[player][1]
+        // playersMatrix is matrixObservation[player][2]
+        // unitTypesMatrix is matrixObservation[player][3]
+        // unitActionMatrix is matrixObservation[player][4]
+
+        for (int i=0; i<matrixObservation[player][0].length; i++) {
+            Arrays.fill(matrixObservation[player][0][i], 0);
+            Arrays.fill(matrixObservation[player][1][i], 0);
+            Arrays.fill(matrixObservation[player][4][i], 0);
+            // temp default value for empty spaces
+            Arrays.fill(matrixObservation[player][2][i], -1);
+            Arrays.fill(matrixObservation[player][3][i], -1);
+        }
+
+        for (int i = 0; i < pgs.units.size(); i++) {
+            Unit u = pgs.units.get(i);
+            UnitActionAssignment uaa = unitActions.get(u);
+            matrixObservation[player][0][u.getY()][u.getX()] = u.getHitPoints();
+            matrixObservation[player][1][u.getY()][u.getX()] = u.getResources();
+            matrixObservation[player][2][u.getY()][u.getX()] = (u.getPlayer() + player) % 2;
+            matrixObservation[player][3][u.getY()][u.getX()] = u.getType().ID;
+            if (uaa != null) {
+                matrixObservation[player][4][u.getY()][u.getX()] = uaa.action.type;
+            } else {
+                matrixObservation[player][4][u.getY()][u.getX()] = UnitAction.TYPE_NONE;
+            }
+        }
+
+        // normalize by getting rid of -1
+        for(int i=0; i<matrixObservation[player][2].length; i++) {
+            for(int j=0; j<matrixObservation[player][2][i].length; j++) {
+                matrixObservation[player][3][i][j] += 1;
+                matrixObservation[player][2][i][j] += 1;
+            }
+        }
+
+        return matrixObservation[player];
     }
 
 }
