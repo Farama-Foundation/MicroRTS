@@ -283,7 +283,7 @@ public class PhysicalGameStatePanel extends JPanel {
         float eval0 = (evalFunction!=null ? evalFunction.evaluate(0, 1, gs):0);
         float eval1 = (evalFunction!=null ? evalFunction.evaluate(1, 0, gs):0);
 
-        String info = "T: " + gs.getTime() + ", P₀: " + unitCount0 + " (" + eval0 + "), P₁: " + unitCount1 + " (" + eval1 + ")";
+        String info = "T: " + gs.getTime() + ", P0: " + unitCount0 + " (" + eval0 + "), P1: " + unitCount1 + " (" + eval1 + ")";
         g2d.drawString(info, 10, dy-15);
 
 //        g.drawString(gs.getTime() + "", 10, getHeight()-15);
