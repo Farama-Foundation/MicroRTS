@@ -381,10 +381,7 @@ public class PlayerAction {
         for(int[] action:actions) {
             Unit u = gs.pgs.getUnitAt(action[0] % gs.pgs.width, action[0] / gs.pgs.width);
             UnitActionAssignment uaa = gs.unitActions.get(u);
-            
-            // if (uaa != null && ua.type != UnitAction.TYPE_NONE) {
-            //     ipas.numInvalidActionBusyUnit += 1;
-            // }
+
             if (u != null && u.getPlayer() == currentPlayer && uaa == null) {
                 UnitAction ua = UnitAction.fromActionArray(action, utt, gs, u, maxAttackRadius);
                 // execute the action if the following happens
