@@ -365,7 +365,7 @@ public class PlayerAction {
     }
 
 
-    public static PlayerAction fromActionArrays(int[][] actions, GameState gs, UnitTypeTable utt, int currentPlayer, int maxAttackRadius) {
+    public static PlayerAction fromVectorAction(int[][] actions, GameState gs, UnitTypeTable utt, int currentPlayer, int maxAttackRadius) {
         PlayerAction pa = new PlayerAction();
         // calculating the resource usage of existing actions
         ResourceUsage base_ru = new ResourceUsage();
@@ -387,7 +387,7 @@ public class PlayerAction {
             // 2. The unit selected is owned by the current player
             // 3. The unit is not currently busy (its unit action is null)
             if (u != null && u.getPlayer() == currentPlayer && uaa == null) {
-                UnitAction ua = UnitAction.fromActionArray(action, utt, gs, u, maxAttackRadius);
+                UnitAction ua = UnitAction.fromVectorAction(action, utt, gs, u, maxAttackRadius);
                 if (ua.resourceUsage(u, gs.pgs).consistentWith(pa.getResourceUsage(), gs)) {
                     ResourceUsage ru = ua.resourceUsage(u, gs.pgs);
                     pa.getResourceUsage().merge(ru);                        

@@ -667,7 +667,7 @@ public class UnitAction {
      * @param maxAttackRange
      * @return
      */
-    public static UnitAction fromActionArray(int[] action, UnitTypeTable utt, GameState gs, Unit u, int maxAttackRange) {
+    public static UnitAction fromVectorAction(int[] action, UnitTypeTable utt, GameState gs, Unit u, int maxAttackRange) {
         int actionType = action[1];
         UnitAction ua = new UnitAction(actionType);
         int centerCoordinate = maxAttackRange / 2;

@@ -47,13 +47,13 @@ public class JNIAI extends AIWithComputationBudget implements JNIInterface {
     }
 
     public PlayerAction getAction(int player, GameState gs, int[][] action) throws Exception {
-        PlayerAction pa = PlayerAction.fromActionArrays(action, gs, utt, player, maxAttackRadius);
+        PlayerAction pa = PlayerAction.fromVectorAction(action, gs, utt, player, maxAttackRadius);
         pa.fillWithNones(gs, player, 1);
         return pa;
     }
 
     public int[][][] getObservation(int player, GameState gs) throws Exception {
-        return gs.getMatrixObservation(player);
+        return gs.getVectorObservation(player);
     }
 
     @Override
