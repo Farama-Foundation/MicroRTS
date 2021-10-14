@@ -382,13 +382,12 @@ public class PlayerAction {
             Unit u = gs.pgs.getUnitAt(action[0] % gs.pgs.width, action[0] / gs.pgs.width);
             UnitActionAssignment uaa = gs.unitActions.get(u);
 
+            // execute the action if the following happens
+            // 1. The selected unit is *not* null.
+            // 2. The unit selected is owned by the current player
+            // 3. The unit is not currently busy (its unit action is null)
             if (u != null && u.getPlayer() == currentPlayer && uaa == null) {
                 UnitAction ua = UnitAction.fromActionArray(action, utt, gs, u, maxAttackRadius);
-                // execute the action if the following happens
-                // 1. The selected unit is *not* null.
-                // 2. The unit selected is owned by the current player
-                // 3. The unit is not currently busy (its unit action is null)
-                // int id = (int) u.getID();
                 if (ua.resourceUsage(u, gs.pgs).consistentWith(pa.getResourceUsage(), gs)) {
                     ResourceUsage ru = ua.resourceUsage(u, gs.pgs);
                     pa.getResourceUsage().merge(ru);                        
