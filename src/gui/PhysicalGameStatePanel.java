@@ -59,9 +59,9 @@ public class PhysicalGameStatePanel extends JPanel {
     int colorScheme = COLORSCHEME_BLACK;
     static Color GRIDLINE;
     static Color PLAYER0UNIT_OUTLINE;
-    static Color PLAYER0_PARTIAL_VISIBILITY;
+    static Color PLAYER0_PARTIAL_OBSERVABILITY;
     static Color PLAYER1UNIT_OUTLINE;
-    static Color PLAYER1_PARTIAL_VISIBILITY;
+    static Color PLAYER1_PARTIAL_OBSERVABILITY;
     static Color PLAYERBOTH_VISIBILITY;
     static Color RESOURCE;
     static Color LIGHT;
@@ -151,9 +151,9 @@ public class PhysicalGameStatePanel extends JPanel {
             // dark theme vars
             GRIDLINE = Color.decode("#adbbc7"); // soft gray
             PLAYER0UNIT_OUTLINE = Color.decode("#0C7BDC"); // soft blue
-            PLAYER0_PARTIAL_VISIBILITY = Color.decode("#9CCAE4"); // softer blue
+            PLAYER0_PARTIAL_OBSERVABILITY = Color.decode("#9CCAE4"); // softer blue
             PLAYER1UNIT_OUTLINE = Color.decode("#BF3682"); // soft red
-            PLAYER1_PARTIAL_VISIBILITY = Color.decode("#C183A6"); // softer red
+            PLAYER1_PARTIAL_OBSERVABILITY = Color.decode("#C183A6"); // softer red
             PLAYERBOTH_VISIBILITY = Color.decode("#E69F00"); // softer purple
             RESOURCE = Color.decode("#C2DFAE"); // soft green
             LIGHT = Color.decode("#D55E00"); // soft orange
@@ -166,9 +166,9 @@ public class PhysicalGameStatePanel extends JPanel {
             // White theme vars
             GRIDLINE = Color.decode("#000000"); // soft gray
             PLAYER0UNIT_OUTLINE = Color.decode("#0C7BDC"); // soft blue
-            PLAYER0_PARTIAL_VISIBILITY = Color.decode("#9CCAE4"); // softer blue
+            PLAYER0_PARTIAL_OBSERVABILITY = Color.decode("#9CCAE4"); // softer blue
             PLAYER1UNIT_OUTLINE = Color.decode("#BF3682"); // soft red
-            PLAYER1_PARTIAL_VISIBILITY = Color.decode("#C183A6"); // softer red
+            PLAYER1_PARTIAL_OBSERVABILITY = Color.decode("#C183A6"); // softer red
             PLAYERBOTH_VISIBILITY = Color.decode("#E69F00"); // softer purple
             RESOURCE = Color.decode("#C2DFAE"); // soft green
             LIGHT = Color.decode("#D55E00"); // soft orange
@@ -350,10 +350,10 @@ public class PhysicalGameStatePanel extends JPanel {
                     if (drawFromPerspectiveOfPlayer>=0) {
                         if (pogs[drawFromPerspectiveOfPlayer].observable(j, i)) {
                             if (drawFromPerspectiveOfPlayer==0) {
-                                g2d.setColor(PLAYER0_PARTIAL_VISIBILITY);
+                                g2d.setColor(PLAYER0_PARTIAL_OBSERVABILITY);
                                 g2d.fillRect(j*grid, i*grid, grid, grid);
                             } else {
-                                g2d.setColor(PLAYER1_PARTIAL_VISIBILITY);
+                                g2d.setColor(PLAYER1_PARTIAL_OBSERVABILITY);
                                 g2d.fillRect(j*grid, i*grid, grid, grid);
                             }
                         }
@@ -363,12 +363,12 @@ public class PhysicalGameStatePanel extends JPanel {
                                 g2d.setColor(PLAYERBOTH_VISIBILITY);
                                 g2d.fillRect(j*grid, i*grid, grid, grid);
                             } else {
-                                g2d.setColor(PLAYER0_PARTIAL_VISIBILITY);
+                                g2d.setColor(PLAYER0_PARTIAL_OBSERVABILITY);
                                 g2d.fillRect(j*grid, i*grid, grid, grid);
                             }
                         } else {
                             if (pogs[1].observable(j, i)) {
-                                g2d.setColor(PLAYER1_PARTIAL_VISIBILITY);
+                                g2d.setColor(PLAYER1_PARTIAL_OBSERVABILITY);
                                 g2d.fillRect(j*grid, i*grid, grid, grid);
                             }
                         }
