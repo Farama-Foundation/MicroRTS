@@ -62,7 +62,7 @@ public class PhysicalGameStatePanel extends JPanel {
     static Color PLAYER0_PARTIAL_OBSERVABILITY;
     static Color PLAYER1UNIT_OUTLINE;
     static Color PLAYER1_PARTIAL_OBSERVABILITY;
-    static Color PLAYERBOTH_VISIBILITY;
+    static Color PLAYERBOTH_OBSERVABILITY;
     static Color RESOURCE;
     static Color LIGHT;
     static Color RANGED;
@@ -154,7 +154,7 @@ public class PhysicalGameStatePanel extends JPanel {
             PLAYER0_PARTIAL_OBSERVABILITY = Color.decode("#9CCAE4"); // softer blue
             PLAYER1UNIT_OUTLINE = Color.decode("#BF3682"); // soft red
             PLAYER1_PARTIAL_OBSERVABILITY = Color.decode("#C183A6"); // softer red
-            PLAYERBOTH_VISIBILITY = Color.decode("#E69F00"); // softer purple
+            PLAYERBOTH_OBSERVABILITY = Color.decode("#E69F00"); // softer purple
             RESOURCE = Color.decode("#C2DFAE"); // soft green
             LIGHT = Color.decode("#D55E00"); // soft orange
             RANGED = Color.decode("#0072B2"); // soft cyan
@@ -169,7 +169,7 @@ public class PhysicalGameStatePanel extends JPanel {
             PLAYER0_PARTIAL_OBSERVABILITY = Color.decode("#9CCAE4"); // softer blue
             PLAYER1UNIT_OUTLINE = Color.decode("#BF3682"); // soft red
             PLAYER1_PARTIAL_OBSERVABILITY = Color.decode("#C183A6"); // softer red
-            PLAYERBOTH_VISIBILITY = Color.decode("#E69F00"); // softer purple
+            PLAYERBOTH_OBSERVABILITY = Color.decode("#E69F00"); // softer purple
             RESOURCE = Color.decode("#C2DFAE"); // soft green
             LIGHT = Color.decode("#D55E00"); // soft orange
             RANGED = Color.decode("#0072B2"); // soft cyan
@@ -360,7 +360,7 @@ public class PhysicalGameStatePanel extends JPanel {
                     } else {
                         if (pogs[0].observable(j, i)) {
                             if (pogs[1].observable(j, i)) {
-                                g2d.setColor(PLAYERBOTH_VISIBILITY);
+                                g2d.setColor(PLAYERBOTH_OBSERVABILITY);
                                 g2d.fillRect(j*grid, i*grid, grid, grid);
                             } else {
                                 g2d.setColor(PLAYER0_PARTIAL_OBSERVABILITY);
