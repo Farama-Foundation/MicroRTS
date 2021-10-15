@@ -18,6 +18,10 @@ Santiago Ontañón (2013) The Combinatorial Multi-Armed Bandit Problem and its A
 
 Watch [this YouTube video](https://www.youtube.com/watch?v=_jVOMNqw3Qs) to learn how to acquire microRTS and setup a project using Netbeans.
 
+## Reinforcement Learning in microRTS
+
+If you'd like to use reinforcement learning in microRTS please check this project: https://github.com/vwxyzjn/gym-microrts
+
 ## Executing microRTS through the terminal
 
 If you want to build and run microRTS from source using the command line, clone or download this repository and run the following commands in the root folder of the project to compile the source code:
