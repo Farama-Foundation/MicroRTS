@@ -114,6 +114,28 @@ public class JNIGridnetVecClient {
         rs = new Response[s1];
     }
 
+    public JNIGridnetVecClient(int a_max_steps, RewardFunctionInterface[] a_rfs, String a_micrortsPath, String[] a_mapPaths,
+        AI[] a_ai1s, AI[] a_ai2s, UnitTypeTable a_utt, boolean partial_obs) throws Exception {
+        maxSteps = a_max_steps;
+        utt = a_utt;
+        rfs = a_rfs;
+        partialObs = partial_obs;
+        mapPaths = a_mapPaths;
+
+        // initialize clients
+        botClients = new JNIBotClient[a_ai2s.length];
+        for (int i = 0; i < botClients.length; i++) {
+            botClients[i] = new JNIBotClient(a_rfs, a_micrortsPath, mapPaths[i], a_ai1s[i], a_ai2s[i], a_utt, partialObs);
+        }
+        responses = new Responses(null, null, null);
+        rs = new Response[a_ai2s.length];
+        reward = new double[a_ai2s.length][rfs.length];
+        done = new boolean[a_ai2s.length][rfs.length];
+        envSteps = new int[a_ai2s.length];
+        terminalReward1 = new double[rfs.length];
+        terminalRone1 = new boolean[rfs.length];
+    }
+
     public Responses reset(int[] players) throws Exception {
         if (botClients != null) {
             for (int i = 0; i < botClients.length; i++) {
