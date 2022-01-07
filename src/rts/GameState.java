@@ -28,8 +28,10 @@ public class GameState {
     protected HashMap<Unit,UnitActionAssignment> unitActions = new LinkedHashMap<>();
     protected UnitTypeTable utt = null;
 
-    protected int [][][][] matrixObservation;
+    public int [][][][] matrixObservation;
     public static final int numFeatureMaps = 5;
+    public int [][][] matrixObservationPlanes;
+    public static final int numFeaturePlanes = 27;
 
     /**
      * Initializes the GameState with a PhysicalGameState and a UnitTypeTable
@@ -813,6 +815,35 @@ public class GameState {
             }
         }
 
+        return matrixObservation[player];
+    }
+
+    /*
+    | Observation Features | Planes | Description                                             |
+    |----------------------|--------|---------------------------------------------------------|
+    | Hit Points           | 5      | 0,1,2,3,>=4                                             |
+    | Resources            | 5      | 0,1,2,3,>=4                                             |
+    | Owner                | 3      | player 1,-, player 2                                    |
+    | Unit Types           | 8      | -, resource, base, barrack,worker, light, heavy, ranged |
+    | Current Action       | 6      | -, move, harvest, return, produce, attack               |
+    */
+    public int [][][] getMatrixObservationPlanes(int player){
+        if (matrixObservationPlanes == null) {
+            matrixObservation = new int[2][pgs.height][pgs.width][numFeaturePlanes]; 
+        }
+        for (int i = 0; i < pgs.units.size(); i++) {
+            Unit u = pgs.units.get(i);
+            UnitActionAssignment uaa = unitActions.get(u);
+            matrixObservation[player][u.getY()][u.getX()][0+Math.min(u.getHitPoints(), 5)] = 1;
+            matrixObservation[player][u.getY()][u.getX()][5+Math.min(u.getResources(), 5)] = 1;
+            matrixObservation[player][u.getY()][u.getX()][10+((u.getPlayer()+player)%2)] = 1;
+            // matrixObservation[player][u.getY()][u.getX()][13+(u.getType().ID+1)] = 1;
+            // if (uaa != null) {
+            //     matrixObservation[player][u.getY()][u.getX()][21+(uaa.action.type+1)] = 1;
+            // } else {
+            //     matrixObservation[player][u.getY()][u.getX()][21+(UnitAction.TYPE_NONE+1)] = 1;
+            // }
+        }
         return matrixObservation[player];
     }
 
