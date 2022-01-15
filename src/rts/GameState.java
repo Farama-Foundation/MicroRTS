@@ -834,15 +834,19 @@ public class GameState {
         for (int i = 0; i < pgs.units.size(); i++) {
             Unit u = pgs.units.get(i);
             UnitActionAssignment uaa = unitActions.get(u);
-            matrixObservation[player][u.getY()][u.getX()][0+Math.min(u.getHitPoints(), 5)] = 1;
-            matrixObservation[player][u.getY()][u.getX()][5+Math.min(u.getResources(), 5)] = 1;
-            matrixObservation[player][u.getY()][u.getX()][10+((u.getPlayer()+player)%2)] = 1;
-            // matrixObservation[player][u.getY()][u.getX()][13+(u.getType().ID+1)] = 1;
-            // if (uaa != null) {
-            //     matrixObservation[player][u.getY()][u.getX()][21+(uaa.action.type+1)] = 1;
-            // } else {
-            //     matrixObservation[player][u.getY()][u.getX()][21+(UnitAction.TYPE_NONE+1)] = 1;
-            // }
+            matrixObservation[player][u.getY()][u.getX()][0+Math.min(u.getHitPoints(), 4)] = 1;
+            matrixObservation[player][u.getY()][u.getX()][5+Math.min(u.getResources(), 4)] = 1;
+            if (u.getPlayer() == -1) {
+                matrixObservation[player][u.getY()][u.getX()][10] = 1;
+            } else {
+                matrixObservation[player][u.getY()][u.getX()][10+1+((u.getPlayer()+player)%2)] = 1;
+            }
+            matrixObservation[player][u.getY()][u.getX()][13+(u.getType().ID+1)] = 1;
+            if (uaa != null) {
+                matrixObservation[player][u.getY()][u.getX()][21+(uaa.action.type)] = 1;
+            } else {
+                matrixObservation[player][u.getY()][u.getX()][21+(UnitAction.TYPE_NONE)] = 1;
+            }
         }
         return matrixObservation[player];
     }
