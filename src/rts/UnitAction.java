@@ -3,6 +3,7 @@ package rts;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 import java.io.Writer;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import org.jdom.Element;
@@ -702,4 +703,40 @@ public class UnitAction {
         return ua;
     }
 
+    public static void getValidActionArray(Unit u, GameState gs, UnitTypeTable utt, int[] mask, int maxAttackRange, int idxOffset) {
+        final List<UnitAction> uas = u.getUnitActions(gs);
+        int centerCoordinate = maxAttackRange / 2;
+        int numUnits = utt.getUnitTypes().size();
+        for (UnitAction ua:uas) {
+            mask[idxOffset+ua.type] = 1;
+            switch (ua.type) {
+                case TYPE_NONE: {
+                    break;
+                }
+                case TYPE_MOVE: {
+                    mask[idxOffset+6+ua.parameter] = 1;
+                    break;
+                }
+                case TYPE_HARVEST: {
+                    mask[idxOffset+6+4+ua.parameter] = 1;
+                    break;
+                }
+                case TYPE_RETURN: {
+                    mask[idxOffset+6+4+4+ua.parameter] = 1;
+                    break;
+                }
+                case TYPE_PRODUCE: {
+                    mask[idxOffset+6+4+4+4+ua.parameter] = 1;
+                    mask[idxOffset+6+4+4+4+4+ua.unitType.ID] = 1;
+                    break;
+                }
+                case TYPE_ATTACK_LOCATION: {
+                    int relative_x = ua.x - u.getX();
+                    int relative_y = ua.y - u.getY();
+                    mask[idxOffset+6+4+4+4+4+numUnits+(centerCoordinate+relative_y)*maxAttackRange+(centerCoordinate+relative_x)] = 1;
+                    break;
+                }
+            }
+        }
+    }
 }
