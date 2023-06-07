@@ -1,12 +1,15 @@
 package rts;
 
-import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonObject;
 import java.io.Writer;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+
 import org.jdom.Element;
+
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonObject;
+
 import rts.units.Unit;
 import rts.units.UnitType;
 import rts.units.UnitTypeTable;
@@ -690,7 +693,7 @@ public class UnitAction {
             }
             case TYPE_PRODUCE: {
                 ua.parameter = action[5];
-                ua.unitType = utt.getUnitType(action[6]);
+                ua.unitType = utt.getUnitType(action[6]);		// FIXME should there be a break here?
             }
             case TYPE_ATTACK_LOCATION: {
                 int relative_x = (action[7] % maxAttackRange - centerCoordinate);
@@ -706,7 +709,7 @@ public class UnitAction {
     public static void getValidActionArray(Unit u, GameState gs, UnitTypeTable utt, int[] mask, int maxAttackRange, int idxOffset) {
         final List<UnitAction> uas = u.getUnitActions(gs);
         int centerCoordinate = maxAttackRange / 2;
-        int numUnits = utt.getUnitTypes().size();
+        int numUnitTypes = utt.getUnitTypes().size();
         for (UnitAction ua:uas) {
             mask[idxOffset+ua.type] = 1;
             switch (ua.type) {
@@ -733,7 +736,7 @@ public class UnitAction {
                 case TYPE_ATTACK_LOCATION: {
                     int relative_x = ua.x - u.getX();
                     int relative_y = ua.y - u.getY();
-                    mask[idxOffset+6+4+4+4+4+numUnits+(centerCoordinate+relative_y)*maxAttackRange+(centerCoordinate+relative_x)] = 1;
+                    mask[idxOffset+6+4+4+4+4+numUnitTypes+(centerCoordinate+relative_y)*maxAttackRange+(centerCoordinate+relative_x)] = 1;
                     break;
                 }
             }

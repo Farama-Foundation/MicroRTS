@@ -1,13 +1,16 @@
 package rts.units;
 
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.jdom.Element;
+
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
-import org.jdom.Element;
+
 import util.XMLWriter;
 
 /**
@@ -332,7 +335,7 @@ public class UnitTypeTable  {
     }
     
     /**
-     * Roop through the list of unit types and return the largest attack range
+     * Loop through the list of unit types and return the largest attack range
      * @return
      */
     public int getMaxAttackRange() {

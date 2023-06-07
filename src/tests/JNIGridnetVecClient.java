@@ -1,58 +1,15 @@
-/*
-* To change this template, choose Tools | Templates
-* and open the template in the editor.
-*/
 package tests;
 
-import java.io.Writer;
-import java.nio.file.Paths;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.awt.image.BufferedImage;
-import java.io.StringWriter;
-import java.awt.image.DataBufferByte;
-import java.awt.image.WritableRaster;
-
 import ai.PassiveAI;
-import ai.RandomBiasedAI;
 import ai.core.AI;
-import ai.jni.JNIAI;
-import ai.reward.RewardFunctionInterface;
-import ai.jni.JNIInterface;
 import ai.jni.Response;
 import ai.jni.Responses;
-import gui.PhysicalGameStateJFrame;
-import gui.PhysicalGameStatePanel;
-import rts.GameState;
-import rts.PhysicalGameState;
-import rts.Player;
-import rts.PlayerAction;
-import rts.Trace;
-import rts.TraceEntry;
-import rts.UnitAction;
-import rts.UnitActionAssignment;
-import rts.units.Unit;
+import ai.reward.RewardFunctionInterface;
 import rts.units.UnitTypeTable;
-import tests.JNIGridnetClientSelfPlay;
 
 /**
  *
- * @author santi
- * 
- *         Once you have the server running (for example, run
- *         "RunServerExample.java"), set the proper IP and port in the variable
- *         below, and run this file. One of the AIs (ai1) is run remotely using
- *         the server.
- * 
- *         Notice that as many AIs as needed can connect to the same server. For
- *         example, uncomment line 44 below and comment 45, to see two AIs using
- *         the same server.
- * 
+ * @author santi and costa
  */
 public class JNIGridnetVecClient {
     public JNIGridnetClient[] clients;
