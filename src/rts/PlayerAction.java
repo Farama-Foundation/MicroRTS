@@ -1,14 +1,17 @@
 package rts;
 
+import java.io.Writer;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.jdom.Element;
+
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
-import java.io.Writer;
+
 import rts.units.Unit;
-import java.util.LinkedList;
-import java.util.List;
-import org.jdom.Element;
 import rts.units.UnitTypeTable;
 import util.Pair;
 import util.XMLWriter;
@@ -364,7 +367,20 @@ public class PlayerAction {
         return pa;
     }
 
-
+    /**
+     * Creates a full assignment of actions to inactive units for a given player
+     * from a vector-based action representation.
+     * 
+     * @param actions Vector representation of actions. Outer dimension is for
+     * 	the list of actions/units, i.e. actions[i] gives us the vector
+     * 	representation for the i^th unit that we are assigning an action to.
+     * @param gs
+     * @param utt
+     * @param currentPlayer Player whom we are processing actions for
+     * @param maxAttackRadius This should be 2*a + 1, where a is the maximum 
+     * 	attack range over all units.
+     * @return The constructed PlayerAction object
+     */
     public static PlayerAction fromVectorAction(int[][] actions, GameState gs, UnitTypeTable utt, int currentPlayer, int maxAttackRadius) {
         PlayerAction pa = new PlayerAction();
         // calculating the resource usage of existing actions
@@ -376,17 +392,19 @@ public class PlayerAction {
 				base_ru.merge(ru);
 			}
         }
+		
+		// FIXME is the clone() really necessary here? base_ru was just newly constructed,
+		// and will not be used outside of this, so I think we can just pass it directly?
         pa.setResourceUsage(base_ru.clone());
 
         for(int[] action:actions) {
             Unit u = gs.pgs.getUnitAt(action[0] % gs.pgs.width, action[0] / gs.pgs.width);
-            UnitActionAssignment uaa = gs.unitActions.get(u);
 
             // execute the action if the following happens
             // 1. The selected unit is *not* null.
             // 2. The unit selected is owned by the current player
             // 3. The unit is not currently busy (its unit action is null)
-            if (u != null && u.getPlayer() == currentPlayer && uaa == null) {
+            if (u != null && u.getPlayer() == currentPlayer && gs.unitActions.get(u) == null) {
                 UnitAction ua = UnitAction.fromVectorAction(action, utt, gs, u, maxAttackRadius);
                 if (ua.resourceUsage(u, gs.pgs).consistentWith(pa.getResourceUsage(), gs)) {
                     ResourceUsage ru = ua.resourceUsage(u, gs.pgs);
