@@ -659,8 +659,8 @@ public class UnitAction {
 
 
     /**
-     * Creates a UnitAction from an action array
-     * expects [x_coordinate(x) * y_coordinate(y), a_t(6), p_move(4), p_harvest(4), p_return(4), p_produce_direction(4), 
+     * Creates a UnitAction from an action array.
+     * Expects [x_coordinate(x) * y_coordinate(y), a_t(6), p_move(4), p_harvest(4), p_return(4), p_produce_direction(4), 
      * p_produce_unit_type(z), p_attack_location_x_coordinate(x) * p_attack_location_y_coordinate(y), frameskip(n)]
      *
      * @param action
@@ -668,8 +668,9 @@ public class UnitAction {
      * @param gs
      * @param u
      * @param max
-     * @param maxAttackRange
-     * @return
+     * @param maxAttackRange This should be 2*a + 1, where a is the maximum 
+     * 	attack range over all units.
+     * @return The created UnitAction.
      */
     public static UnitAction fromVectorAction(int[] action, UnitTypeTable utt, GameState gs, Unit u, int maxAttackRange) {
         int actionType = action[1];
