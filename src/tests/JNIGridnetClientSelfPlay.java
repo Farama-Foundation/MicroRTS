@@ -27,6 +27,10 @@ import rts.units.UnitTypeTable;
 /**
  * Instances of this class each let us run a single environment (or sequence
  * of them, if we reset() in between) between two players. 
+ * 
+ * In this client, it is assumed that actions are selected by external code for 
+ * **both** players. See JNIGridnetClient.java for a client where only one
+ * player is externally controlled, and the other is a plain Java AI.
  *
  * @author santi and costa
  */

@@ -1,52 +1,39 @@
-/*
-* To change this template, choose Tools | Templates
-* and open the template in the editor.
-*/
 package tests;
 
-import java.io.Writer;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.awt.image.BufferedImage;
-import java.io.StringWriter;
 import java.awt.image.DataBufferByte;
 import java.awt.image.WritableRaster;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.nio.file.Paths;
+import java.util.Arrays;
 
-import ai.PassiveAI;
-import ai.RandomBiasedAI;
 import ai.core.AI;
 import ai.jni.JNIAI;
-import ai.reward.RewardFunctionInterface;
 import ai.jni.JNIInterface;
 import ai.jni.Response;
+import ai.reward.RewardFunctionInterface;
 import gui.PhysicalGameStateJFrame;
 import gui.PhysicalGameStatePanel;
 import rts.GameState;
 import rts.PartiallyObservableGameState;
 import rts.PhysicalGameState;
 import rts.PlayerAction;
-import rts.Trace;
 import rts.TraceEntry;
 import rts.UnitAction;
-import rts.UnitActionAssignment;
 import rts.units.Unit;
 import rts.units.UnitTypeTable;
-import weka.core.pmml.jaxbbindings.False;
 
 /**
+ * Instances of this class each let us run a single environment (or sequence
+ * of them, if we reset() in between) between two players. 
+ * 
+ * In this client, it is assumed that actions are selected by external code for 
+ * **one** player, where the opponent is controlled directly by a Java-based AI. 
+ * See JNIGridnetClientSelfPlay.java for a client where both players are 
+ * externally controlled.
  *
- * @author santi
- * 
- *         Once you have the server running (for example, run
- *         "RunServerExample.java"), set the proper IP and port in the variable
- *         below, and run this file. One of the AIs (ai1) is run remotely using
- *         the server.
- * 
- *         Notice that as many AIs as needed can connect to the same server. For
- *         example, uncomment line 44 below and comment 45, to see two AIs using
- *         the same server.
- * 
+ * @author santi and costa
  */
 public class JNIGridnetClient {
 
@@ -69,14 +56,66 @@ public class JNIGridnetClient {
     PhysicalGameStateJFrame w;
     public JNIInterface ai1;
 
-    // storage
+    // Storage
+    
+    // [Y][X][
+    //		0: do we own a unit without action assignment here?			|-- 1
+    //
+    //		1: can we do a no-op action?								|
+    //		2: can we do a move action?									|
+    //		3: can we do a harvest action?								|-- 6 action types
+    //		4: can we do a return to base with resources action?		|
+    //		5: can we do a produce unit action?							|
+    //		6: can we do an attack action								|
+    //
+    //		7: can we move up/north?									|
+    //		8: can we move right/east?									|-- 4 move directions
+    //		9: can we move down/south?									|
+    //		10: can we move left/west?									|
+    //
+    //		11: can we harvest up/north?								|
+    //		12: can we harvest right/east?								|-- 4 harvest directions
+    //		13: can we harvest down/south?								|
+    //		14: can we harvest left/west?								|
+    //
+    //		15: can we return resources to base up/north?				|
+    //		16: can we return resources to base right/east?				|-- 4 return resources to base directions
+    //		17: can we return resources to base down/south?				|
+    //		18: can we return resources to base left/west?				|
+    //
+    //		19: can we produce unit up/north?							|
+    //		20: can we produce unit right/east?							|-- 4 produce unit directions
+    //		21: can we produce unit down/south?							|
+    //		22: can we produce unit left/west?							|
+    //
+    //		23: can we produce a unit of type 0?						|
+    //		24: can we produce a unit of type 1?						|-- k (= 7) unit types to produce
+    //		...: ....													|
+    //		29: can we produce a unit of type 6?						|
+    //
+    //		30: can we attack relative position at ...?					|
+    //		31: can we attack relative position at ...?					|-- (maxAttackRange)^2 relative attack locations
+    //		...: ...													|
+    // ]
     int[][][] masks;
+    
     double[] rewards;
     boolean[] dones;
     Response response;
     PlayerAction pa1;
     PlayerAction pa2;
 
+    /**
+     * 
+     * @param a_rfs Reward functions we want to use to compute rewards at every step.
+     * @param a_micrortsPath Path for the microrts root directory (with Java code and maps).
+     * @param a_mapPath Path (under microrts root dir) for map to load.
+     * @param a_ai2 The AI object that should select actions for the opponent (i.e., for the
+     * 	player that will not be controlled by external/JNI/Python code)
+     * @param a_utt
+     * @param partial_obs
+     * @throws Exception
+     */
     public JNIGridnetClient(RewardFunctionInterface[] a_rfs, String a_micrortsPath, String a_mapPath, AI a_ai2, UnitTypeTable a_utt, boolean partial_obs) throws Exception{
         micrortsPath = a_micrortsPath;
         mapPath = a_mapPath;
@@ -156,17 +195,19 @@ public class JNIGridnetClient {
         return response;
     }
 
+    /**
+     * @param player
+     * @return Legal actions mask for given player.
+     * @throws Exception
+     */
     public int[][][] getMasks(int player) throws Exception {
         for (int i = 0; i < masks.length; i++) {
             for (int j = 0; j < masks[0].length; j++) {
-                for (int k = 0; k < masks[0][0].length; k++) {
-                    masks[i][j][k] = 0;
-                }
+                Arrays.fill(masks[i][j], 0);
             }
         }
         for (Unit u: pgs.getUnits()) {
-            final UnitActionAssignment uaa = gs.getActionAssignment(u);
-            if (u.getPlayer() == player && uaa == null) {
+            if (u.getPlayer() == player && gs.getActionAssignment(u) == null) {
                 masks[u.getY()][u.getX()][0] = 1;
                 UnitAction.getValidActionArray(u, gs, utt, masks[u.getY()][u.getX()], maxAttackRadius, 1);
             }
@@ -174,6 +215,10 @@ public class JNIGridnetClient {
         return masks;
     }
 
+    /**
+     * @return String representation (in JSON format) of the Unit Type Table
+     * @throws Exception
+     */
     public String sendUTT() throws Exception {
         Writer w = new StringWriter();
         utt.toJSON(w);
