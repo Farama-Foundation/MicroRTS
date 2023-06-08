@@ -718,26 +718,31 @@ public class UnitAction {
                     break;
                 }
                 case TYPE_MOVE: {
-                    mask[idxOffset+6+ua.parameter] = 1;
+                    mask[idxOffset+NUMBER_OF_ACTION_TYPES+ua.parameter] = 1;
                     break;
                 }
                 case TYPE_HARVEST: {
-                    mask[idxOffset+6+4+ua.parameter] = 1;
+                	// +4 offset --> slots for movement directions
+                    mask[idxOffset+NUMBER_OF_ACTION_TYPES+4+ua.parameter] = 1;
                     break;
                 }
                 case TYPE_RETURN: {
-                    mask[idxOffset+6+4+4+ua.parameter] = 1;
+                	// +4+4 offset --> slots for movement and harvest directions
+                    mask[idxOffset+NUMBER_OF_ACTION_TYPES+4+4+ua.parameter] = 1;
                     break;
                 }
                 case TYPE_PRODUCE: {
-                    mask[idxOffset+6+4+4+4+ua.parameter] = 1;
-                    mask[idxOffset+6+4+4+4+4+ua.unitType.ID] = 1;
+                	// +4+4+4 offset --> slots for movement, harvest, and resource-return directions
+                    mask[idxOffset+NUMBER_OF_ACTION_TYPES+4+4+4+ua.parameter] = 1;
+                    // +4+4+4+4 offset --> slots for movement, harvest, resource-return, and unit-produce directions
+                    mask[idxOffset+NUMBER_OF_ACTION_TYPES+4+4+4+4+ua.unitType.ID] = 1;
                     break;
                 }
                 case TYPE_ATTACK_LOCATION: {
                     int relative_x = ua.x - u.getX();
                     int relative_y = ua.y - u.getY();
-                    mask[idxOffset+6+4+4+4+4+numUnitTypes+(centerCoordinate+relative_y)*maxAttackRange+(centerCoordinate+relative_x)] = 1;
+                    // +4+4+4+4 offset --> slots for movement, harvest, resource-return, and unit-produce directions
+                    mask[idxOffset+NUMBER_OF_ACTION_TYPES+4+4+4+4+numUnitTypes+(centerCoordinate+relative_y)*maxAttackRange+(centerCoordinate+relative_x)] = 1;
                     break;
                 }
             }
