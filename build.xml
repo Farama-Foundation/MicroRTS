@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="export_jar" name="microrts">
+    <property environment="env"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.8"/>
+    <property name="source" value="1.8"/>
+    <path id="microrts.classpath">
+        <pathelement location="bin"/>
+        <pathelement location="lib/bots/Coac.jar"/>
+        <pathelement location="lib/bots/Droplet.jar"/>
+        <pathelement location="lib/bots/GRojoA3N.jar"/>
+        <pathelement location="lib/bots/Izanagi.jar"/>
+        <pathelement location="lib/bots/mayariBot.jar"/>
+        <pathelement location="lib/bots/MixedBot.jar"/>
+        <pathelement location="lib/bots/TiamatBot.jar"/>
+        <pathelement location="lib/jdom.jar"/>
+        <pathelement location="lib/minimal-json-0.9.4.jar"/>
+        <pathelement location="lib/weka.jar"/>
+    </path>
+    <target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target depends="build-project" name="build"/>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="microrts.classpath"/>
+        </javac>
+    </target>
+	<target name="export_jar" depends="cleanall,build-project">
+		<mkdir dir="build" />
+		<jar destfile="build/microrts.jar" basedir="bin" duplicate="preserve">
+			<zipgroupfileset dir="./lib/" includes="**/*.jar" />
+			<manifest>
+				<attribute name="Main-Class" value="gui.frontend.FrontEnd" />
+			</manifest>
+		</jar>
+	</target>
+</project>
