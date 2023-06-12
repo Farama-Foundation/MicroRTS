@@ -1,9 +1,5 @@
 package rts;
 
-import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonArray;
-import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -14,10 +10,17 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
+
 import rts.units.Unit;
 import rts.units.UnitType;
 import rts.units.UnitTypeTable;
@@ -891,7 +894,7 @@ public class GameState {
     }
 
     /**
-     * Constructs a vector ovservation for a player
+     * Constructs a vector observation for a player
      * @param player
      * @return a vector observation for the specified player
      */
@@ -929,7 +932,7 @@ public class GameState {
         }
 
         // normalize by getting rid of -1
-        for(int i=0; i<vectorObservation[player][2].length; i++) {
+       for(int i=0; i<vectorObservation[player][2].length; i++) {
             for(int j=0; j<vectorObservation[player][2][i].length; j++) {
                 vectorObservation[player][3][i][j] += 1;
                 vectorObservation[player][2][i][j] += 1;

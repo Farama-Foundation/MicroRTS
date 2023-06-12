@@ -1,20 +1,20 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ai.jni;
+
+import java.util.List;
 
 import ai.core.AI;
 import ai.core.AIWithComputationBudget;
 import ai.core.ParameterSpecification;
 import ai.evaluation.SimpleEvaluationFunction;
-import java.util.List;
 import rts.GameState;
 import rts.PlayerAction;
 import rts.units.UnitTypeTable;
 
 /**
+ * This AI does not actually have the ability to make its own decisions for actions.
+ * It is a helper class that we can pass actions that we have already decided upon
+ * externally (e.g., in Python code) in vector-format, and this class can convert
+ * them for us into the PlayerAction format.
  *
  * @author costa
  */

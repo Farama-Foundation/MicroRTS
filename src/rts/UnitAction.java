@@ -1,12 +1,15 @@
 package rts;
 
-import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonObject;
 import java.io.Writer;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+
 import org.jdom.Element;
+
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonObject;
+
 import rts.units.Unit;
 import rts.units.UnitType;
 import rts.units.UnitTypeTable;
@@ -656,8 +659,8 @@ public class UnitAction {
 
 
     /**
-     * Creates a UnitAction from an action array
-     * expects [x_coordinate(x) * y_coordinate(y), a_t(6), p_move(4), p_harvest(4), p_return(4), p_produce_direction(4), 
+     * Creates a UnitAction from an action array.
+     * Expects [x_coordinate(x) * y_coordinate(y), a_t(6), p_move(4), p_harvest(4), p_return(4), p_produce_direction(4), 
      * p_produce_unit_type(z), p_attack_location_x_coordinate(x) * p_attack_location_y_coordinate(y), frameskip(n)]
      *
      * @param action
@@ -665,8 +668,9 @@ public class UnitAction {
      * @param gs
      * @param u
      * @param max
-     * @param maxAttackRange
-     * @return
+     * @param maxAttackRange This should be 2*a + 1, where a is the maximum 
+     * 	attack range over all units.
+     * @return The created UnitAction.
      */
     public static UnitAction fromVectorAction(int[] action, UnitTypeTable utt, GameState gs, Unit u, int maxAttackRange) {
         int actionType = action[1];
@@ -690,7 +694,7 @@ public class UnitAction {
             }
             case TYPE_PRODUCE: {
                 ua.parameter = action[5];
-                ua.unitType = utt.getUnitType(action[6]);
+                ua.unitType = utt.getUnitType(action[6]);		// FIXME should there be a break here?
             }
             case TYPE_ATTACK_LOCATION: {
                 int relative_x = (action[7] % maxAttackRange - centerCoordinate);
@@ -706,7 +710,7 @@ public class UnitAction {
     public static void getValidActionArray(Unit u, GameState gs, UnitTypeTable utt, int[] mask, int maxAttackRange, int idxOffset) {
         final List<UnitAction> uas = u.getUnitActions(gs);
         int centerCoordinate = maxAttackRange / 2;
-        int numUnits = utt.getUnitTypes().size();
+        int numUnitTypes = utt.getUnitTypes().size();
         for (UnitAction ua:uas) {
             mask[idxOffset+ua.type] = 1;
             switch (ua.type) {
@@ -714,26 +718,31 @@ public class UnitAction {
                     break;
                 }
                 case TYPE_MOVE: {
-                    mask[idxOffset+6+ua.parameter] = 1;
+                    mask[idxOffset+NUMBER_OF_ACTION_TYPES+ua.parameter] = 1;
                     break;
                 }
                 case TYPE_HARVEST: {
-                    mask[idxOffset+6+4+ua.parameter] = 1;
+                	// +4 offset --> slots for movement directions
+                    mask[idxOffset+NUMBER_OF_ACTION_TYPES+4+ua.parameter] = 1;
                     break;
                 }
                 case TYPE_RETURN: {
-                    mask[idxOffset+6+4+4+ua.parameter] = 1;
+                	// +4+4 offset --> slots for movement and harvest directions
+                    mask[idxOffset+NUMBER_OF_ACTION_TYPES+4+4+ua.parameter] = 1;
                     break;
                 }
                 case TYPE_PRODUCE: {
-                    mask[idxOffset+6+4+4+4+ua.parameter] = 1;
-                    mask[idxOffset+6+4+4+4+4+ua.unitType.ID] = 1;
+                	// +4+4+4 offset --> slots for movement, harvest, and resource-return directions
+                    mask[idxOffset+NUMBER_OF_ACTION_TYPES+4+4+4+ua.parameter] = 1;
+                    // +4+4+4+4 offset --> slots for movement, harvest, resource-return, and unit-produce directions
+                    mask[idxOffset+NUMBER_OF_ACTION_TYPES+4+4+4+4+ua.unitType.ID] = 1;
                     break;
                 }
                 case TYPE_ATTACK_LOCATION: {
                     int relative_x = ua.x - u.getX();
                     int relative_y = ua.y - u.getY();
-                    mask[idxOffset+6+4+4+4+4+numUnits+(centerCoordinate+relative_y)*maxAttackRange+(centerCoordinate+relative_x)] = 1;
+                    // +4+4+4+4 offset --> slots for movement, harvest, resource-return, and unit-produce directions
+                    mask[idxOffset+NUMBER_OF_ACTION_TYPES+4+4+4+4+numUnitTypes+(centerCoordinate+relative_y)*maxAttackRange+(centerCoordinate+relative_x)] = 1;
                     break;
                 }
             }
