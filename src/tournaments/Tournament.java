@@ -234,7 +234,7 @@ class Tournament {
                 this.AItimeout[ai1_idx][ai2_idx]++;
             }
             if (timedout == 1) {
-                if (crashed==1) opponentAItimeout[ai1_idx][ai2_idx]++;
+                this.opponentAItimeout[ai1_idx][ai2_idx]++;
             }
         } else {
             winner = gs.winner();
