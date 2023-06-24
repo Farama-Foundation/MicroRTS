@@ -20,3 +20,5 @@ jobs:
           architecture: x64 # (x64 or x86) - defaults to x64
       - name: Build the JAR
         run: ant -noinput -buildfile build.xml export_jar
+      - name: Run JUnit tests
+        run: ant -noinput -buildfile build.xml test

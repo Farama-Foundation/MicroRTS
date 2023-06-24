@@ -7,13 +7,13 @@
     </rts.Player>
   </players>
   <units>
-    <rts.units.Light ID="0" player="0" x="0" y="0" resources="0" hitpoints="4">
-    </rts.units.Light>
-    <rts.units.Heavy ID="1" player="0" x="0" y="1" resources="0" hitpoints="4">
-    </rts.units.Heavy>
-    <rts.units.Light ID="2" player="1" x="3" y="2" resources="0" hitpoints="4">
-    </rts.units.Light>
-    <rts.units.Heavy ID="3" player="1" x="3" y="3" resources="0" hitpoints="4">
-    </rts.units.Heavy>
+    <rts.units.Unit type="Light" ID="0" player="0" x="0" y="0" resources="0" hitpoints="4">
+    </rts.units.Unit>
+    <rts.units.Unit type="Heavy" ID="1" player="0" x="0" y="1" resources="0" hitpoints="4">
+    </rts.units.Unit>
+    <rts.units.Unit type="Light" ID="2" player="1" x="3" y="2" resources="0" hitpoints="4">
+    </rts.units.Unit>
+    <rts.units.Unit type="Heavy" ID="3" player="1" x="3" y="3" resources="0" hitpoints="4">
+    </rts.units.Unit>
   </units>
 </rts.PhysicalGameState>
