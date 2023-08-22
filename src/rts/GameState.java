@@ -922,7 +922,11 @@ public class GameState {
             UnitActionAssignment uaa = unitActions.get(u);
             vectorObservation[player][0][u.getY()][u.getX()] = u.getHitPoints();
             vectorObservation[player][1][u.getY()][u.getX()] = u.getResources();
-            vectorObservation[player][2][u.getY()][u.getX()] = (u.getPlayer() + player) % 2;
+            final int owner = u.getPlayer();
+            if (owner < 0)		// Neutral / resource
+            	vectorObservation[player][2][u.getY()][u.getX()] = -1;
+            else	
+            	vectorObservation[player][2][u.getY()][u.getX()] = (u.getPlayer() + player) % 2;
             vectorObservation[player][3][u.getY()][u.getX()] = u.getType().ID;
             if (uaa != null) {
                 vectorObservation[player][4][u.getY()][u.getX()] = uaa.action.type;
