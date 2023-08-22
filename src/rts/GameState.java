@@ -923,9 +923,7 @@ public class GameState {
             vectorObservation[player][1][u.getY()][u.getX()] = u.getResources();
             
             final int owner = u.getPlayer();
-            if (owner < 0)		// Neutral / resource
-            	vectorObservation[player][2][u.getY()][u.getX()] = 0;
-            else	
+            if (owner >= 0)		// Owned by a player, not neutral
             	vectorObservation[player][2][u.getY()][u.getX()] = ((u.getPlayer() + player) % 2) + 1;
             
             vectorObservation[player][3][u.getY()][u.getX()] = u.getType().ID + 1;
