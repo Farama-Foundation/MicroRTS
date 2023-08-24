@@ -911,10 +911,9 @@ public class GameState {
         for (int i=0; i<vectorObservation[player][0].length; i++) {
             Arrays.fill(vectorObservation[player][0][i], 0);
             Arrays.fill(vectorObservation[player][1][i], 0);
+            Arrays.fill(vectorObservation[player][2][i], 0);
+            Arrays.fill(vectorObservation[player][3][i], 0);
             Arrays.fill(vectorObservation[player][4][i], 0);
-            // temp default value for empty spaces
-            Arrays.fill(vectorObservation[player][2][i], -1);
-            Arrays.fill(vectorObservation[player][3][i], -1);
         }
 
         for (int i = 0; i < pgs.units.size(); i++) {
@@ -922,20 +921,17 @@ public class GameState {
             UnitActionAssignment uaa = unitActions.get(u);
             vectorObservation[player][0][u.getY()][u.getX()] = u.getHitPoints();
             vectorObservation[player][1][u.getY()][u.getX()] = u.getResources();
-            vectorObservation[player][2][u.getY()][u.getX()] = (u.getPlayer() + player) % 2;
-            vectorObservation[player][3][u.getY()][u.getX()] = u.getType().ID;
+            
+            final int owner = u.getPlayer();
+            if (owner >= 0)		// Owned by a player, not neutral
+            	vectorObservation[player][2][u.getY()][u.getX()] = ((u.getPlayer() + player) % 2) + 1;
+            
+            vectorObservation[player][3][u.getY()][u.getX()] = u.getType().ID + 1;
+            
             if (uaa != null) {
                 vectorObservation[player][4][u.getY()][u.getX()] = uaa.action.type;
             } else {
                 vectorObservation[player][4][u.getY()][u.getX()] = UnitAction.TYPE_NONE;
-            }
-        }
-
-        // normalize by getting rid of -1
-       for(int i=0; i<vectorObservation[player][2].length; i++) {
-            for(int j=0; j<vectorObservation[player][2][i].length; j++) {
-                vectorObservation[player][3][i][j] += 1;
-                vectorObservation[player][2][i][j] += 1;
             }
         }
 
