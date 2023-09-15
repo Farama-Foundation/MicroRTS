@@ -694,7 +694,8 @@ public class UnitAction {
             }
             case TYPE_PRODUCE: {
                 ua.parameter = action[5];
-                ua.unitType = utt.getUnitType(action[6]);		// FIXME should there be a break here?
+                ua.unitType = utt.getUnitType(action[6]);
+                break;
             }
             case TYPE_ATTACK_LOCATION: {
                 int relative_x = (action[7] % maxAttackRange - centerCoordinate);

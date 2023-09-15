@@ -157,7 +157,6 @@ public class JNIGridnetClientSelfPlay {
     }
 
     public void gameStep(int[][] action1, int[][] action2) throws Exception {
-    	// FIXME do we really need to create this TraceEntry object at all?
         TraceEntry te  = new TraceEntry(gs.getPhysicalGameState().clone(), gs.getTime());
         for (int i = 0; i < numPlayers; i++) {
             playergs[i] = gs;
