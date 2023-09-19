@@ -28,8 +28,8 @@ public class BFSPathFinding extends PathFinding {
     int openremove = 0;
     
     
-    // This fucntion finds the shortest path from 'start' to 'targetpos' and then returns
-    // a UnitAction of the type 'actionType' with the direction of the first step in the shorteet path
+    // This function finds the shortest path from 'start' to 'targetpos' and then returns
+    // a UnitAction of the type 'actionType' with the direction of the first step in the shortest path
     public UnitAction findPath(Unit start, int targetpos, GameState gs, ResourceUsage ru) {        
         return findPathToPositionInRange(start,targetpos,0,gs,ru);
     }    
