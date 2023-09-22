@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import ai.RandomAI;
 import ai.RandomBiasedAI;
 import ai.abstraction.LightRush;
 import ai.abstraction.RangedRush;
@@ -31,7 +30,7 @@ import rts.units.UnitTypeTable;
 public class GenerateTestTraces {
 	
 	/** Number of traces we'll generate per map, per AI */
-	private static final int NUM_TRACES_PER_SETUP = 2;
+	private static final int NUM_TRACES_PER_SETUP = 1;
 	
 	/** Max cycles per trace */
 	private static final int MAX_CYCLES = 500;
@@ -40,10 +39,7 @@ public class GenerateTestTraces {
 	
 	/** All the agents for which we want to generate traces */
 	private static final AI[] AGENTS = new AI[] {
-			new RandomAI(UTT),
-			new RandomBiasedAI(UTT),
 			new LightRush(UTT),
-			new WorkerRush(UTT),
 			new PortfolioAI
 			(
 				new AI[]
