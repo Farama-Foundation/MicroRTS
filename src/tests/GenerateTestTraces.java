@@ -1,7 +1,6 @@
 package tests;
 
 import java.io.File;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -95,7 +94,7 @@ public class GenerateTestTraces {
 							
 							for (int traceIdx = 0; traceIdx < NUM_TRACES_PER_SETUP; ++traceIdx) {
 								final File outFile = 
-										new File("data/traces/" + traceDirMapPart + traceDirAgentsPart + "/trace_" + traceIdx + ".json");
+										new File("data/traces/" + traceDirMapPart + traceDirAgentsPart + "/trace_" + traceIdx + ".zip");
 								
 								if (!outFile.exists()) {
 									// Need to generate trace and write file
@@ -132,10 +131,7 @@ public class GenerateTestTraces {
 							        // Write our file
 							        System.out.println("Writing trace file: " + outFile.getAbsolutePath() + "...");
 							        outFile.getParentFile().mkdirs();
-							        try (final PrintWriter writer = new PrintWriter(outFile, "UTF-8")) {
-							        	trace.toJSON(writer);
-							        	writer.flush();
-							        }
+							        trace.toZip(outFile.getAbsolutePath());
 								}
 							}
 						}
