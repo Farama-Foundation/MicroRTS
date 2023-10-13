@@ -98,7 +98,7 @@ public class GenerateTestTraces {
 								
 								if (!outFile.exists()) {
 									// Need to generate trace and write file
-									final GameState gs = new GameState(pgs, UTT);
+									final GameState gs = new GameState(pgs.clone(), UTT);
 							        boolean gameover = false;
 							        
 							        final Trace trace = new Trace(UTT);
