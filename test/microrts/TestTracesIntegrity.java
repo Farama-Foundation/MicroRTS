@@ -99,6 +99,8 @@ public class TestTracesIntegrity {
 			// Applying the actions as stored in trace
 			final List<Pair<Unit, UnitAction>> traceActions = traceEntry.getActions();
 			if (!traceActions.isEmpty()) {
+				boolean containsRealActions = false;
+				
 				final PlayerAction p1Action = new PlayerAction();
 				final PlayerAction p2Action = new PlayerAction();
 				
@@ -110,13 +112,16 @@ public class TestTracesIntegrity {
 						assertEquals(1, action.m_a.getPlayer());
 						p2Action.addUnitAction(action.m_a, action.m_b);
 					}
+					
+					containsRealActions = containsRealActions || action.m_b.getType() != UnitAction.TYPE_NONE;
 				}
 				
 				assertEquals(traceActions.size(), p1Action.getActions().size() + p2Action.getActions().size());
 				
 				boolean issuedActions = gameState.issueSafe(p1Action);
 				issuedActions = gameState.issueSafe(p2Action) || issuedActions;
-				assert(issuedActions);
+				
+				assert(containsRealActions == issuedActions);
 			}
 		}
 	}
