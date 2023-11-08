@@ -61,7 +61,7 @@ public class TestPathfinding {
 				}
 				else {
 					final String path = file.getAbsolutePath();
-					if (!path.endsWith(".DS_Store") && path.endsWith(".xml")) {
+					if (path.endsWith(".xml")) {
 						maps.add(path);
 					}
 				}
