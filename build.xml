@@ -46,6 +46,8 @@
 		<junit fork="yes" haltonfailure="yes" filtertrace="off" maxmemory="4096m">
 			<formatter type="plain" usefile="false"/>
 			<test name="microrts.TestLoadingMaps" todir="${junit.output.dir}"/>
+			<test name="microrts.TestTracesIntegrity" todir="${junit.output.dir}"/>
+			<test name="microrts.TestPathfinding" todir="${junit.output.dir}"/>
 		    <jvmarg line="-ea -XX:ErrorFile=./hs_err.log -XX:ReplayDataFile=./replay.log"/>
 		    <classpath refid="microrts.classpath"/>
 		</junit>

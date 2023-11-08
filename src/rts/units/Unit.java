@@ -1,11 +1,14 @@
 package rts.units;
 
-import com.eclipsesource.json.JsonObject;
 import java.io.Serializable;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.jdom.Element;
+
+import com.eclipsesource.json.JsonObject;
+
 import rts.GameState;
 import rts.PhysicalGameState;
 import rts.Player;

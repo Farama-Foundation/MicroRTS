@@ -169,9 +169,10 @@ public class Trace {
     }
     
     public static Trace fromZip(String path) throws Exception {
-    	 ZipInputStream zis = new ZipInputStream(new FileInputStream(path));
-		 zis.getNextEntry();
-		 return new Trace(new SAXBuilder().build(zis).getRootElement());
+    	 try (ZipInputStream zis = new ZipInputStream(new FileInputStream(path))) {
+    		 zis.getNextEntry();
+    		 return new Trace(new SAXBuilder().build(zis).getRootElement());
+    	 }
     }
 
     /**
