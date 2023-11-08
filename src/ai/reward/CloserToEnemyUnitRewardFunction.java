@@ -13,8 +13,6 @@ import rts.units.Unit;
  */
 public class CloserToEnemyUnitRewardFunction extends RewardFunctionInterface{
 
-    public static float ATTACK_REWARD = 1;
-
     public void computeReward(int maxplayer, int minplayer, TraceEntry te, GameState afterGs) {
         reward = 0.0;
         done = false;

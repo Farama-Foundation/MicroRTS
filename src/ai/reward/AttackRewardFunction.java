@@ -13,18 +13,23 @@ import util.Pair;
  *
  * @author costa
  */
-public class AttackRewardFunction extends RewardFunctionInterface{
+public class AttackRewardFunction extends RewardFunctionInterface {
 
     public static float ATTACK_REWARD = 1;
 
     public void computeReward(int maxplayer, int minplayer, TraceEntry te, GameState afterGs) {
         reward = 0.0;
         done = false;
-        for(Pair<Unit, UnitAction> p:te.getActions()) {
-            if (p.m_a.getPlayer()==maxplayer && p.m_b.getType()==UnitAction.TYPE_ATTACK_LOCATION) {
+        for (Pair<Unit, UnitAction> p : te.getActions()) {
+            if (p.m_a.getPlayer() == maxplayer && p.m_b.getType() == UnitAction.TYPE_ATTACK_LOCATION) {
                 Unit other = te.getPhysicalGameState().getUnitAt(p.m_b.getLocationX(), p.m_b.getLocationY());
                 if (other != null) {
-                    reward += ATTACK_REWARD;
+                	if (other.getPlayer() == minplayer) {
+                		reward += ATTACK_REWARD;		// Positive reward for attacking opponent
+                	}
+                	else if (other.getPlayer() == maxplayer) {
+                		reward -= ATTACK_REWARD;		// Negative reward for attacking self
+                	}
                 }
             }
         }

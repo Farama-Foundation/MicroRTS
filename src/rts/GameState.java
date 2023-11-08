@@ -344,24 +344,32 @@ public class GameState {
             }
             
             // get the unit that corresponds to that action (since the state might have been cloned):
-            if (pgs.units.indexOf(p.m_a)==-1) {
-                boolean found = false;
-                for(Unit u:pgs.units) {
-                    if (u.getClass()==p.m_a.getClass() &&
-//                        u.getID() == p.m_a.getID()) {
-                        u.getX()==p.m_a.getX() &&
-                        u.getY()==p.m_a.getY()) {
-                        p.m_a = u;
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    System.err.println("Inconsistent order: " + pa);
+            boolean foundRealUnit = false;
+            Unit substituteUnit = null;
+            for (final Unit u : pgs.units) {
+            	if (u.equals(p.m_a)) {
+            		foundRealUnit = true;
+            		break;
+            	}
+            	
+            	if (substituteUnit == null) {
+            		// TODO should we also compare u.getType() to p.m_a.getType()?
+            		if (u.getX() == p.m_a.getX() && u.getY() == p.m_a.getY()) {
+            			substituteUnit = u;
+            		}
+            	}
+            }
+            
+            if (!foundRealUnit) {
+            	if (substituteUnit == null) {
+            		System.err.println("Inconsistent order: " + pa);
                     System.err.println(this);
                     System.err.println("The problem was with unit " + p.m_a);
-                }
-            }   
+            	}
+            	else {
+            		p.m_a = substituteUnit;
+            	}
+            }
 
             {
                 // check to see if the action is legal!
