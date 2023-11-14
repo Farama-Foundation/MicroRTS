@@ -936,6 +936,7 @@ public class GameState {
             Arrays.fill(vectorObservation[player][2][i], 0);
             Arrays.fill(vectorObservation[player][3][i], 0);
             Arrays.fill(vectorObservation[player][4][i], 0);
+            Arrays.fill(vectorObservation[player][5][i], 0);
         }
 
         for (int i = 0; i < pgs.units.size(); i++) {
@@ -956,6 +957,12 @@ public class GameState {
                 // Commented line of code is unnecessary: already initialised to 0
             	//vectorObservation[player][4][u.getY()][u.getX()] = UnitAction.TYPE_NONE;
             }
+        }
+        
+        // Encode the presence of walls
+        final int[] terrain = pgs.terrain;
+        for (int y = 0; y < pgs.height; ++y) {
+        	System.arraycopy(terrain, y * pgs.width, vectorObservation[player][5][y], 0, pgs.width);
         }
 
         return vectorObservation[player];
