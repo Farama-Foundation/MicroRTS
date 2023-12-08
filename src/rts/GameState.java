@@ -939,8 +939,7 @@ public class GameState {
             Arrays.fill(vectorObservation[player][5][i], 0);
         }
 
-        for (int i = 0; i < pgs.units.size(); i++) {
-            Unit u = pgs.units.get(i);
+        for (final Unit u : pgs.units) {
             UnitActionAssignment uaa = unitActions.get(u);
             vectorObservation[player][0][u.getY()][u.getX()] = u.getHitPoints();
             vectorObservation[player][1][u.getY()][u.getX()] = u.getResources();
