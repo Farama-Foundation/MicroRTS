@@ -4,6 +4,8 @@
  */
 package ai.abstraction.pathfinding;
 
+import java.util.Arrays;
+
 import rts.GameState;
 import rts.PhysicalGameState;
 import rts.ResourceUsage;
@@ -107,11 +109,9 @@ public class AStarPathFinding extends PathFinding {
             if (heuristic[i]+cost[open[i]]>=h+cost[newPos]) {
 //                System.out.println("Inserting at " + (i+1) + " / " + openinsert);
                 // shift all the elements:
-                for(int j = openinsert;j>=i+1;j--) {
-                    open[j] = open[j-1];
-                    heuristic[j] = heuristic[j-1];
-                    parents[j] = parents[j-1];
-                }
+            	System.arraycopy(open, i, open, i + 1, openinsert - i);
+            	System.arraycopy(heuristic, i, heuristic, i + 1, openinsert - i);
+            	System.arraycopy(parents, i, parents, i + 1, openinsert - i);
                 
                 // insert at i+1:
                 open[i+1] = newPos;
@@ -125,13 +125,11 @@ public class AStarPathFinding extends PathFinding {
         // i = -1;
 //        System.out.println("Inserting at " + 0 + " / " + openinsert);
         // shift all the elements:
-        for(int j = openinsert;j>=1;j--) {
-            open[j] = open[j-1];
-            heuristic[j] = heuristic[j-1];
-            parents[j] = parents[j-1];
-        }
+        System.arraycopy(open, 0, open, 1, openinsert);
+        System.arraycopy(heuristic, 0, heuristic, 1, openinsert);
+        System.arraycopy(parents, 0, parents, 1, openinsert);
 
-        // insert at i+1:
+        // insert at 0:
         open[0] = newPos;
         heuristic[0] = h;
         parents[0] = oldPos;
@@ -178,7 +176,7 @@ public class AStarPathFinding extends PathFinding {
         PhysicalGameState pgs = gs.getPhysicalGameState();
         int w = pgs.getWidth();
         int h = pgs.getHeight();
-        if (free==null || free.length<w*h) {
+        if (free==null || free.length < w || free[0].length < h) {
             free = new Boolean[w][h];        
             closed = new int[w*h];
             open = new int[w*h];
@@ -187,13 +185,13 @@ public class AStarPathFinding extends PathFinding {
             inOpenOrClosed = new int[w*h];
             cost = new int[w*h];
         }
-        for(int y = 0, i = 0;y<h;y++) {
-            for(int x = 0;x<w;x++,i++) {
-                free[x][y] = null;
-                closed[i] = -1;           
-                inOpenOrClosed[i] = 0;
-            }
+        
+        for (int x = 0; x < w; ++x) {
+        	Arrays.fill(free[x], null);
         }
+        Arrays.fill(closed, -1);
+        Arrays.fill(inOpenOrClosed, 0);
+        
         if (ru!=null) {
             for(int pos:ru.getPositionsUsed()) {
                 free[pos%w][pos/w] = false;

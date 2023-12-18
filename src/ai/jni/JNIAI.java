@@ -32,7 +32,8 @@ public class JNIAI extends AIWithComputationBudget implements JNIInterface {
         maxAttackRadius = utt.getMaxAttackRange() * 2 + 1;
     }
 
-    public double computeReward(int maxplayer, int minplayer, GameState gs) throws Exception {
+    @Override
+    public double computeReward(final int maxplayer, final int minplayer, final GameState gs) throws Exception {
         // do something
         if (firstRewardCalculation) {
             oldReward = ef.evaluate(maxplayer, minplayer, gs);
@@ -46,13 +47,15 @@ public class JNIAI extends AIWithComputationBudget implements JNIInterface {
         return reward;
     }
 
-    public PlayerAction getAction(int player, GameState gs, int[][] action) throws Exception {
+    @Override
+	public PlayerAction getAction(final int player, final GameState gs, final int[][] action) throws Exception {
         PlayerAction pa = PlayerAction.fromVectorAction(action, gs, utt, player, maxAttackRadius);
         pa.fillWithNones(gs, player, 1);
         return pa;
     }
 
-    public int[][][] getObservation(int player, GameState gs) throws Exception {
+    @Override
+	public int[][][] getObservation(final int player, final GameState gs) throws Exception {
         return gs.getVectorObservation(player);
     }
 

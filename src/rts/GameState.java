@@ -42,8 +42,17 @@ public class GameState {
     protected HashMap<Unit,UnitActionAssignment> unitActions = new LinkedHashMap<>();
     protected UnitTypeTable utt;
 
+    // [player][feature map][Y][X] --> Note: feature maps not yet binarised here!
     protected int [][][][] vectorObservation;
-    public static final int numVectorObservationFeatureMaps = 5;
+    
+    // Feature maps:
+    // 1: hit points
+    // 2: resources
+    // 3: player
+    // 4: unit type
+    // 5: current unit action
+    // 6: wall
+    public static final int numVectorObservationFeatureMaps = 6;
 
     /**
      * Initializes the GameState with a PhysicalGameState and a UnitTypeTable
@@ -262,6 +271,7 @@ public class GameState {
                                 default:
                                     System.err.println("Unknown move conflict resolution strategy in the UnitTypeTable!: " + utt.getMoveConflictResolutionStrategy());
                                     System.err.println("Defaulting to MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH");
+                                //$FALL-THROUGH$
                                 case UnitTypeTable.MOVE_CONFLICT_RESOLUTION_CANCEL_BOTH:
                                     cancel_old = cancel_new = true;
                                     break;
@@ -577,7 +587,8 @@ public class GameState {
     /* 
      * @see java.lang.Object#clone()
      */
-    public GameState clone() {
+    @Override
+	public GameState clone() {
         GameState gs = new GameState(pgs.clone(), utt);
         gs.time = time;
         gs.unitCancelationCounter = unitCancelationCounter;
@@ -656,7 +667,8 @@ public class GameState {
     /* 
      * @see java.lang.Object#equals(java.lang.Object)
      */
-    public boolean equals(Object o) {
+    @Override
+	public boolean equals(Object o) {
         if (!(o instanceof GameState)) return false;
         
         GameState s2 = (GameState)o;
@@ -727,7 +739,8 @@ public class GameState {
     /*
      * @see java.lang.Object#toString()
      */
-    public String toString() {
+    @Override
+	public String toString() {
         StringBuilder tmp = new StringBuilder("ObservableGameState: " + time + "\n");
         for(Player p:pgs.getPlayers()) tmp.append("player ").append(p.ID).append(": ").append(p.getResources()).append("\n");
         for(Unit u:unitActions.keySet()) {
@@ -906,7 +919,7 @@ public class GameState {
      * @param player
      * @return a vector observation for the specified player
      */
-    public int [][][] getVectorObservation(int player){
+    public int [][][] getVectorObservation(final int player){
         if (vectorObservation == null) {
             vectorObservation = new int[2][numVectorObservationFeatureMaps][pgs.height][pgs.width]; 
         }
@@ -915,6 +928,7 @@ public class GameState {
         // playersMatrix is vectorObservation[player][2]
         // unitTypesMatrix is vectorObservation[player][3]
         // unitActionMatrix is vectorObservation[player][4]
+        // wallMatrix is vectorObservation[player][5]
 
         for (int i=0; i<vectorObservation[player][0].length; i++) {
             Arrays.fill(vectorObservation[player][0][i], 0);
@@ -922,6 +936,7 @@ public class GameState {
             Arrays.fill(vectorObservation[player][2][i], 0);
             Arrays.fill(vectorObservation[player][3][i], 0);
             Arrays.fill(vectorObservation[player][4][i], 0);
+            Arrays.fill(vectorObservation[player][5][i], 0);
         }
 
         for (int i = 0; i < pgs.units.size(); i++) {
@@ -939,8 +954,15 @@ public class GameState {
             if (uaa != null) {
                 vectorObservation[player][4][u.getY()][u.getX()] = uaa.action.type;
             } else {
-                vectorObservation[player][4][u.getY()][u.getX()] = UnitAction.TYPE_NONE;
+                // Commented line of code is unnecessary: already initialised to 0
+            	//vectorObservation[player][4][u.getY()][u.getX()] = UnitAction.TYPE_NONE;
             }
+        }
+        
+        // Encode the presence of walls
+        final int[] terrain = pgs.terrain;
+        for (int y = 0; y < pgs.height; ++y) {
+        	System.arraycopy(terrain, y * pgs.width, vectorObservation[player][5][y], 0, pgs.width);
         }
 
         return vectorObservation[player];
