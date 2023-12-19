@@ -1,8 +1,5 @@
 package rts;
 
-import com.eclipsesource.json.JsonArray;
-import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,12 +9,18 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import util.XMLWriter;
+
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
+
 import rts.units.Unit;
 import rts.units.UnitTypeTable;
+import util.XMLWriter;
 
 /**
  * The physical game state (the actual 'map') of a microRTS game
@@ -182,6 +185,10 @@ public class PhysicalGameState {
                         "PhysicalGameState.addUnit: added two units in position: (" + newUnit.getX() + ", " + newUnit.getY() + ")");
             }
         }
+        assert newUnit.getX() >= 0;
+        assert newUnit.getX() < this.getWidth();
+        assert newUnit.getY() >= 0;
+        assert newUnit.getY() < this.getHeight();
         units.add(newUnit);
     }
 
