@@ -230,6 +230,7 @@ public class JNIGridnetClient {
         ai2 = ai2.clone();
         ai2.reset();
         pgs = PhysicalGameState.load(mapPath, utt);
+        masks = new int[pgs.getHeight()][pgs.getWidth()][1+6+4+4+4+4+utt.getUnitTypes().size()+maxAttackRadius*maxAttackRadius];
         gs = new GameState(pgs, utt);
         if (partialObs) {
             player1gs = new PartiallyObservableGameState(gs, player);
