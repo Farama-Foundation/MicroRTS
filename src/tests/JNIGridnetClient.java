@@ -208,6 +208,14 @@ public class JNIGridnetClient {
         }
         for (Unit u: pgs.getUnits()) {
             if (u.getPlayer() == player && gs.getActionAssignment(u) == null) {
+            	if (u.getY() >= masks.length || u.getX() >= masks[0].length) {
+            		System.err.println("u.getY() = " + u.getY());
+            		System.err.println("u.getX() = " + u.getX());
+            		System.err.println("pgs.getHeight() = " + pgs.getHeight());
+            		System.err.println("pgs.getWidth() = " + pgs.getWidth());
+            		System.err.println("mapPath = " + mapPath);
+            	}
+            	
                 masks[u.getY()][u.getX()][0] = 1;
                 UnitAction.getValidActionArray(u, gs, utt, masks[u.getY()][u.getX()], maxAttackRadius, 1);
             }
