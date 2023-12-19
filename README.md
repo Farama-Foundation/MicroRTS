@@ -26,7 +26,7 @@ Watch [this YouTube video](https://www.youtube.com/watch?v=_jVOMNqw3Qs) to learn
 
 ## Reinforcement Learning in microRTS
 
-If you'd like to use reinforcement learning in microRTS please check this project: https://github.com/vwxyzjn/gym-microrts
+If you'd like to use reinforcement learning in microRTS please check this project: https://github.com/Farama-Foundation/MicroRTS-Py
 
 ## Executing microRTS through the terminal
 
