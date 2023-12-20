@@ -169,7 +169,14 @@ public class JNIGridnetClient {
             player2gs = gs;
         }
         pa1 = ai1.getAction(player, player1gs, action);
-        pa2 = ai2.getAction(1 - player, player2gs);
+        try {
+        	pa2 = ai2.getAction(1 - player, player2gs);
+        }
+        catch (final Exception e) {
+        	System.out.println("AI crash on map: " + mapPath);
+        	e.printStackTrace(System.out);
+        	throw e;
+        }
         gs.issueSafe(pa1);
         gs.issueSafe(pa2);
         TraceEntry te  = new TraceEntry(gs.getPhysicalGameState().clone(), gs.getTime());
