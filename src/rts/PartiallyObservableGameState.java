@@ -146,8 +146,8 @@ public class PartiallyObservableGameState extends GameState {
         final int[][] opponentVisibility = calculateVisibility(enemyUnits, pgs.width, pgs.height);
 
         for (int y = 0; y < pgs.height; y++) {
-        	System.arraycopy(playerVisibility, y * pgs.width, vectorObservation[player][6][y], 0, pgs.width);
-        	System.arraycopy(opponentVisibility, y * pgs.width, vectorObservation[player][7][y], 0, pgs.width);
+            System.arraycopy(playerVisibility[y], 0, vectorObservation[player][6][y], 0, pgs.width);
+            System.arraycopy(opponentVisibility[y], 0, vectorObservation[player][7][y], 0, pgs.width);
         }
 
         return vectorObservation[player];
