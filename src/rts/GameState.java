@@ -52,7 +52,7 @@ public class GameState {
     // 4: unit type
     // 5: current unit action
     // 6: wall
-    public static final int numVectorObservationFeatureMaps = 6;
+    private static final int NUM_VECTOR_OBSERVATION_FEATURE_MAPS = 6;
 
     /**
      * Initializes the GameState with a PhysicalGameState and a UnitTypeTable
@@ -921,7 +921,7 @@ public class GameState {
      */
     public int [][][] getVectorObservation(final int player){
         if (vectorObservation == null) {
-            vectorObservation = new int[2][numVectorObservationFeatureMaps][pgs.height][pgs.width]; 
+            vectorObservation = new int[2][NUM_VECTOR_OBSERVATION_FEATURE_MAPS][pgs.height][pgs.width]; 
         }
         // hitpointsMatrix is vectorObservation[player][0]
         // resourcesMatrix is vectorObservation[player][1]
