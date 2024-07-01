@@ -220,6 +220,11 @@ public class JNIGridnetClientSelfPlay {
 
     public void reset() throws Exception {
         pgs = PhysicalGameState.load(mapPath, utt);
+        
+        for (int i = 0; i < numPlayers; i++) {
+            masks[i] = new int[pgs.getHeight()][pgs.getWidth()][1+6+4+4+4+4+utt.getUnitTypes().size()+maxAttackRadius*maxAttackRadius];
+        }
+        
         gs = new GameState(pgs, utt);
         for (int i = 0; i < numPlayers; i++) {
             playergs[i] = gs;
